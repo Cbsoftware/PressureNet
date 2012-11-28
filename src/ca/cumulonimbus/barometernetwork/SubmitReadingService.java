@@ -72,6 +72,10 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     
 	private static ArrayList<BarometerReading> submitList = new ArrayList<BarometerReading>();
 	
+	private boolean barometerReadingsActive = false;
+	
+	private long lastSubmitTime;
+	
 	// Add a new barometer reading to the local history file
 	/*
 	public void addToLocalHistory(BarometerReading br) {
@@ -123,8 +127,19 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	    public void onLocationChanged(Location location) {
     	        // Called when a new location is found by the network location provider.
     	    	try {
+    	    		
+    	    		
 	    	    	double latitude = location.getLatitude();
 	    	    	double longitude = location.getLongitude();
+	    	    	
+	    	    	// no changes. stop for now.
+	    	    	if(mLatitude == latitude) {
+	    	    		if (mLongitude == longitude) {
+	    	    			locationManager.removeUpdates(locationListener);
+	    	    		}
+	    	    	}
+	    	    	
+	    	    	
 	    	    	mLatitude = latitude;
 	    	    	mLongitude = longitude;
 	    	    	log("new location " + latitude + " " + longitude);
@@ -159,7 +174,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
 	    	
 	    	if(bar!=null) {
-	        	boolean running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
+	    		barometerReadingsActive = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
 	    	}
     	} catch(Exception e) {
     		
@@ -229,6 +244,16 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 				return null;
 			}
 			
+			// don't submit too frequently
+			long limit = 1000 * 45; // 45 seconds
+			if(System.currentTimeMillis() - lastSubmitTime < limit) {
+				log("too frequent; cancelling this submit");
+				return null;
+			}
+			
+			lastSubmitTime = System.currentTimeMillis();
+			
+			
 	    	BarometerReading br = new BarometerReading();
 	    	br.setLatitude(mLatitude);
 	    	br.setLongitude(mLongitude);
@@ -254,6 +279,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			    		HttpResponse response = client.execute(httppost);
 		    		}
 		    		
+		    		
+		    		
 		    		log("reading sender posting current " + mReading);
 		    		// current reading
 		    		List<NameValuePair> nvps = barometerReadingToNVP(br);
@@ -261,8 +288,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		    		HttpResponse response = client.execute(httppost);
 		    		// Until we implement tendencies, don't write to the local file
 		    		addToLocalDatabase(br);
-
-					
+		    		
 		    		
 		    	} catch(ClientProtocolException cpe) {
 		    		log(cpe.getMessage());
@@ -279,6 +305,9 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    			log(e.getMessage());
 	    		}
 	    	}
+
+			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			sm.unregisterListener(that);
 	    	return null;
 		}
     	
@@ -290,6 +319,13 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		}
     }
     
+    private Runnable mWaitForBarometer = new Runnable() {
+    	public void run() {
+    		log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
+    		new ReadingSender().execute("");
+    	}
+    };
+    
     public void sendBarometerReading() {
     	//System.out.println("send barometer reading");
     	log("send barometer reading");
@@ -297,9 +333,15 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	setUpBarometer();
     	setId();
     	
-    	log(mLatitude + " " + mLongitude + ": " + mReading);
-    	new ReadingSender().execute("");
-    	
+    	if(mReading == 0.0) {
+    		log("active barometer: " + barometerReadingsActive);
+    	} else {
+	    	log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
+	    	new ReadingSender().execute("");
+
+			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			sm.unregisterListener(that);
+	    }
     }
     
 	private Runnable mSubmitReading = new Runnable() {
@@ -307,13 +349,11 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		public void run() {
 			long base = SystemClock.uptimeMillis();
 			log("run mSubmitReading");
+			
 			sendBarometerReading();
 			
-    		
-    		// stop listening for pressure readings
-    		sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-			sm.unregisterListener(that);
 			
+    		
 			mHandler.postAtTime(this, base + (mSeconds * 1000));
 		}
 	};
@@ -385,6 +425,17 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
+
+		// stop listening for pressure readings
+		// and location readings
+		try {
+			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			sm.unregisterListener(that);
+			locationManager.removeUpdates(locationListener);
+		} catch(Exception e) {
+			
+		}
+		
 		try {
 			dbAdapter.close();
 		} catch (Exception e) {
@@ -399,7 +450,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		//System.out.println("on start submitreadingservice");
 		System.out.println("on start");
 		try {
-			sendDataPeriodically();
+			//sendDataPeriodically();
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -463,6 +514,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		case Sensor.TYPE_PRESSURE: 
 			mReading = event.values[0];
 			log("new sensor reading: " + mReading);
+			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			sm.unregisterListener(that);
 		    break;
 	    }		
 	}
