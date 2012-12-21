@@ -1,11 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- 
+
     <item android:id="@+id/menu_load_data_vis"
       android:title="@string/data_visualization"
       android:icon="@drawable/ic_menu_vis"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
-    -->
     <item android:id="@+id/menu_my_info"
       android:title="@string/my_info"
       android:icon="@drawable/ic_menu_stats"
@@ -28,11 +27,16 @@
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
      -->      
-      
+    <!-- <item android:id="@+id/menu_about"
+      android:title="@string/about"
+      android:icon="@drawable/ic_menu_settings"
+      android:enabled="true"
+      android:showAsAction="ifRoom|withText" /> --> 
     <item android:id="@+id/menu_settings"
       android:title="@string/settings"
       android:icon="@drawable/ic_menu_settings"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
 
+    
 </menu>

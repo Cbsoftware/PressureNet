@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="ca.cumulonimbus.barometernetwork"
-      android:versionCode="211"
-      android:versionName="2.1.1">
+      android:versionCode="220"
+      android:versionName="2.2">
     <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="14" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -12,18 +12,23 @@
         		 android:label="@string/app_name">
         <activity android:name="ca.cumulonimbus.barometernetwork.SettingsActivity"
                   android:label="@string/settings"
-                  android:theme="@android:style/Theme.Holo.Light.Dialog"
+                  android:theme="@style/CustomTheme"
                   android:excludeFromRecents="true"> 
         </activity>
         
         <activity android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity" 
             	  android:label="@string/logViewer" 
             	  android:excludeFromRecents="true" 
-            	  android:theme="@android:style/Theme.Holo.Light.Dialog"></activity>
+            	  android:theme="@style/CustomTheme"></activity>
         <activity android:name="ca.cumulonimbus.barometernetwork.SingleUserChartActivity" 
             	  android:label="@string/chartView" 
             	  android:excludeFromRecents="true" 
-            	  android:theme="@android:style/Theme.Holo.Light.Dialog"></activity>
+            	  android:theme="@style/CustomTheme"></activity>
+        <activity android:name="ca.cumulonimbus.barometernetwork.PNDVActivity" 
+            	  android:label="@string/pndv" 
+            	  android:excludeFromRecents="true" 
+            	  android:theme="@style/CustomTheme"></activity>
+        
         <activity android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             	  android:label="@string/app_name"
             	  android:theme="@style/CustomTheme"

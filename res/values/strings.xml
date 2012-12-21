@@ -42,4 +42,7 @@
     <string name="logViewer">Log Viewer (last 24h)</string>
     <string name="view_log">View Log</string>
     <string name="data_visualization">Data Visualization</string>
+    <string name="about">About</string>
+    <string name="pndv">pressureNET Data Visualization</string>
+    <string name="loadInBrowser">Load in Browser</string>
 </resources>

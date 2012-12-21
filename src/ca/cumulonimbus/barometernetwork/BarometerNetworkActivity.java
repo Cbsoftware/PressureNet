@@ -202,12 +202,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			submitDataToServer();
     	} else if(item.getItemId()==R.id.menu_log_viewer) {
     		showRecentHistory();
-    	} /*else if(item.getItemId()==R.id.menu_load_data_vis) {
-    		Uri uri = Uri.parse("http://cumulonimbus.ca");
-    		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    	} else if(item.getItemId()==R.id.menu_load_data_vis) {
+    		//Uri uri = Uri.parse("http://pndv.cumulonimbus.ca");
+    		//Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    		Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
     		startActivity(intent);
     		
-    	} *//*else if(item.getItemId()==R.id.menu_reload) {
+    	} /* else if(item.getItemId()==R.id.menu_about) {
+    		Toast.makeText(getApplicationContext(), "About pressureNET and Cumulonimbus", Toast.LENGTH_SHORT).show();
+    		
+    	}*/ /*else if(item.getItemId()==R.id.menu_reload) {
     		loadAndShowData();
     	}/* 
     		// Show a graph of local data points. Local is defined by
