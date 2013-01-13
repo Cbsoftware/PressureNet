@@ -16,6 +16,10 @@
                     <TextView android:id="@+id/textUnits" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/units" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_vertical" android:layout_weight="0.5"></TextView>
             		<Spinner android:layout_height="wrap_content" android:id="@+id/spinnerUnits" android:layout_width="257dip" android:layout_weight="0.5" android:layout_gravity="right"></Spinner>
                 </TableRow>
+ 				<TableRow android:id="@+id/tableRow5" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                    <TextView android:id="@+id/textShareWith" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/shareWith" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_vertical" android:layout_weight="0.5"></TextView>
+            		<Spinner android:layout_height="wrap_content" android:id="@+id/spinnerSharing" android:layout_width="257dip" android:layout_weight="0.5" android:layout_gravity="right"></Spinner>
+                </TableRow>                
                 <TableRow android:id="@+id/tableRow6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="right">
                     
                     <Button android:text="@string/delete" android:id="@+id/buttonDelete" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>

@@ -15,6 +15,7 @@ public class BarometerReading implements Serializable {
 	double reading;
 	int timeZoneOffset;
 	String androidId;
+	String sharingPrivacy;
 	
 	public String toString() {
 		String ret = "Reading: " + reading + "\n" +
@@ -22,13 +23,18 @@ public class BarometerReading implements Serializable {
 				     "Longitude: " + longitude + "\n" +
 				     "ID: " + androidId + "\n" +
 				     "Time: " + time + "\n" +
-				     "TZOffset: " + timeZoneOffset + "\n"; 
+				     "TZOffset: " + timeZoneOffset + "\n" +
+				     "Sharing: " + sharingPrivacy + "\n"; 
 		
 		return ret;
 	}
 
-	
-	
+	public String getSharingPrivacy() {
+		return sharingPrivacy;
+	}
+	public void setSharingPrivacy(String sharingPrivacy) {
+		this.sharingPrivacy = sharingPrivacy;
+	}
 	public String getAndroidId() {
 		return androidId;
 	}

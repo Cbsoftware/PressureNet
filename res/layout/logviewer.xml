@@ -8,12 +8,12 @@
 
         <EditText
             android:id="@+id/editLog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_gravity="top"
             android:layout_weight="1"
             android:editable="false"
-            android:maxLines="10"
+            android:gravity="top"
             android:scrollbars="vertical"
             android:textSize="8pt" >
 

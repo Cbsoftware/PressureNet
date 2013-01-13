@@ -206,6 +206,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	nvp.add(new BasicNameValuePair("time",br.getTime() + ""));
     	nvp.add(new BasicNameValuePair("tzoffset",br.getTimeZoneOffset() + ""));
     	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
+    	nvp.add(new BasicNameValuePair("share", br.getSharingPrivacy() + ""));
     	return nvp;
     }
     
@@ -229,7 +230,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		try {
 			dbAdapter = new DBAdapter(this);
 	    	dbAdapter.open();
-	    	dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime());
+	    	dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy());
 	    	dbAdapter.close();
 		} catch(Exception e) {
 			
@@ -244,6 +245,14 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 				return null;
 			}
 			
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+			
+			// No sharing? get out!
+			if(share.equals("None")) {
+				return null;
+			}
+			
 			// don't submit too frequently
 			long limit = 1000 * 45; // 45 seconds
 			if(System.currentTimeMillis() - lastSubmitTime < limit) {
@@ -253,7 +262,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			
 			lastSubmitTime = System.currentTimeMillis();
 			
-			
 	    	BarometerReading br = new BarometerReading();
 	    	br.setLatitude(mLatitude);
 	    	br.setLongitude(mLongitude);
@@ -261,6 +269,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	br.setTimeZoneOffset(Calendar.getInstance().getTimeZone().getOffset((long)br.getTime()));
 	    	br.setReading(mReading);
 	    	br.setAndroidId(android_id);
+	    	br.setSharingPrivacy(share);
 	    	
 	    	// check for active network. if connected, send everything in the queue as 
 	    	// well as the current reading. if not connected, add to the queue

@@ -291,6 +291,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			//Toast.makeText(getApplicationContext(), mReading + "", Toast.LENGTH_SHORT).show();
 			update(new Intent(), mReading);
 			sm.unregisterListener(this);
+			mReading = 0.0;
 		    break;
 	    }
 		

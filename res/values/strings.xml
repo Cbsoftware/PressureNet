@@ -45,4 +45,12 @@
     <string name="about">About</string>
     <string name="pndv">pressureNET Data Visualization</string>
     <string name="loadInBrowser">Load in Browser</string>
+    <string name="shareWith">Share with</string>
+    <string-array name="privacy_settings">
+        <item>None</item>
+        <item>Cumulonimbus only</item>
+        <item>Cumulonimbus and Researchers</item>
+        <item>Cumulonimbus, Researchers and Businesses</item>
+        <item>Public</item>
+    </string-array>
 </resources>

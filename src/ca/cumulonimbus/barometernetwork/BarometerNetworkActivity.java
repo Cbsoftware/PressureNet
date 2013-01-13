@@ -83,7 +83,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     private final Handler statusHandler = new Handler();
     private final Handler mapHandler = new Handler();
 	
-    private String serverURL = "";  
+    private String serverURL = "";
     
 	public static final String PREFS_NAME = "pressureNETPrefs";
 	
@@ -146,7 +146,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     // the data offline (no server visibility to the data.)
 	public void addToLocalDatabase(BarometerReading br) {
 		try {
-			dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime());
+			dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy());
 		} catch(RuntimeException re) {
 			// :(
 		}
@@ -662,6 +662,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		br.setTime(Double.parseDouble(values[3]));
 	    		br.setTimeZoneOffset(Integer.parseInt(values[4]));
 	    		br.setAndroidId(values[5]);
+	    		br.setSharingPrivacy(values[6]);
 	    		readingsList.add(br);
     		} catch(NumberFormatException nfe) {
     			// Likely, tomcat returned an error.
@@ -727,6 +728,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	nvp.add(new BasicNameValuePair("time",br.getTime() + ""));
     	nvp.add(new BasicNameValuePair("tzoffset",br.getTimeZoneOffset() + ""));
     	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
+    	nvp.add(new BasicNameValuePair("share",br.getSharingPrivacy() + ""));
     	return nvp;
     }
     
@@ -758,6 +760,15 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 				return null;
 			}
 			
+			// get sharing preference
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+		    
+			// if sharing is None, don't send anything anywhere.
+			if (share.equals("None")) {
+				return null;
+			}
+			
 	    	BarometerReading br = new BarometerReading();
 	    	br.setLatitude(mLatitude);
 	    	br.setLongitude(mLongitude);
@@ -765,6 +776,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	br.setTimeZoneOffset(Calendar.getInstance().getTimeZone().getOffset((long)br.getTime()));
 	    	br.setReading(mReading);
 	    	br.setAndroidId(android_id);
+	    	br.setSharingPrivacy(share);
+	    	
 	    	
 	    	
 	    	DefaultHttpClient client = new SecureHttpClient(getApplicationContext());

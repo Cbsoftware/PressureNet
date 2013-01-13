@@ -40,13 +40,14 @@ public class SettingsActivity extends Activity {
 	public static final String PREFS_NAME = "pressureNETPrefs";
 	
 	private String serverURL = "";
-
+	
 	SensorManager sm;
 	
 	boolean hasBarometer = true;
 	
 	Spinner spinnerFrequency;
 	Spinner spinnerUnits;
+	Spinner spinnerSharing;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,13 @@ public class SettingsActivity extends Activity {
 	            this, R.array.default_units, android.R.layout.simple_spinner_item);
 	    adapterUnits.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    spinnerUnits.setAdapter(adapterUnits);
+	    
+	    spinnerSharing = (Spinner) findViewById(R.id.spinnerSharing);
+	    ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter.createFromResource(
+	    		this, R.array.privacy_settings, android.R.layout.simple_spinner_item);
+	    adapterSharing.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    spinnerSharing.setAdapter(adapterSharing);
+	    
 	    
 	    restoreSettings();
 	    setUpListeners();
@@ -109,6 +117,13 @@ public class SettingsActivity extends Activity {
 	      editor.commit();
 	}
 	
+	public void saveSharingPrivacy(String value) {
+	      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	      SharedPreferences.Editor editor = settings.edit();
+	      editor.putString("sharing_preference", value);
+	      editor.commit();
+	}
+	
 	private void restoreSettings() {
 		CheckBox refreshCheck = (CheckBox) findViewById(R.id.checkboxRefresh);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -139,6 +154,17 @@ public class SettingsActivity extends Activity {
 	    	}
 	    }
 	    refreshFrequency.setSelection(position);
+	    
+	    final Spinner spinnerSharing = (Spinner) findViewById(R.id.spinnerSharing);
+	    String[] sharingArray = getResources().getStringArray(R.array.privacy_settings);
+	    String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+	    int positionShare = 0;
+	    for(int i = 0; i < sharingArray.length; i++) {
+	    	if(sharingArray[i].equals(share)) {
+	    		positionShare=i;
+	    	}
+	    }
+	    spinnerSharing.setSelection(positionShare);
 	    
 	    // Disable spinner if auto submit is unchecked
 	    if(!refreshCheck.isChecked()) {
@@ -228,8 +254,9 @@ public class SettingsActivity extends Activity {
 	
 	private void setUpListeners() {
 		CheckBox refreshCheck = (CheckBox) findViewById(R.id.checkboxRefresh);
-		final Spinner refreshFrequency = (Spinner) findViewById(R.id.spinnerFrequency);
+		final Spinner spinnerFrequency = (Spinner) findViewById(R.id.spinnerFrequency);
 		final Spinner spinnerUnitPrefs = (Spinner) findViewById(R.id.spinnerUnits);
+		final Spinner spinnerSharing = (Spinner) findViewById(R.id.spinnerSharing);
 		final Button close = (Button) findViewById(R.id.buttonClose);
 		final Button delete = (Button) findViewById(R.id.buttonDelete);
 		
@@ -255,16 +282,16 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean value) {
 				if(value) {
-					refreshFrequency.setEnabled(true);
+					spinnerFrequency.setEnabled(true);
 					saveRefresh(true);
 				} else {
-					refreshFrequency.setEnabled(false);
+					spinnerFrequency.setEnabled(false);
 					saveRefresh(false);
 				}
 			}
 		});
 		
-		refreshFrequency.setOnItemSelectedListener(new OnItemSelectedListener() {
+		spinnerFrequency.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View view,
@@ -287,6 +314,22 @@ public class SettingsActivity extends Activity {
 					int position, long id) {
 				String[] array = getResources().getStringArray(R.array.default_units);
 				saveUnit(array[position]);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				
+			}
+			
+		});
+		
+		spinnerSharing.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View view,
+					int position, long id) {
+				String[] array = getResources().getStringArray(R.array.privacy_settings);
+				saveSharingPrivacy(array[position]);
 			}
 
 			@Override
