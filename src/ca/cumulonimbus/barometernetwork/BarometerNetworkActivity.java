@@ -1031,7 +1031,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        String toPrint = df.format(value);
 	    	textView.setText(toPrint + " " + abbrev);
 		} else {
-			textView.setVisibility(View.GONE);
+			textView.setText("No barometer detected.");
+			// textView.setVisibility(View.GONE);
 		}
 	}
 	
