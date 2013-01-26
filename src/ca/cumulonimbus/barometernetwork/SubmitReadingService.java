@@ -207,6 +207,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	nvp.add(new BasicNameValuePair("tzoffset",br.getTimeZoneOffset() + ""));
     	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
     	nvp.add(new BasicNameValuePair("share", br.getSharingPrivacy() + ""));
+    	nvp.add(new BasicNameValuePair("client_key", getApplicationContext().getPackageName()));
     	return nvp;
     }
     

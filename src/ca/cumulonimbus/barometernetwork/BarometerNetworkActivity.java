@@ -177,8 +177,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    return true;
 	}
 	
-	
-	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		cleanUI(menu);
@@ -729,6 +727,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	nvp.add(new BasicNameValuePair("tzoffset",br.getTimeZoneOffset() + ""));
     	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
     	nvp.add(new BasicNameValuePair("share",br.getSharingPrivacy() + ""));
+    	nvp.add(new BasicNameValuePair("client_key", getApplicationContext().getPackageName()));
     	return nvp;
     }
     
