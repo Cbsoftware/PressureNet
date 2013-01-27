@@ -384,11 +384,17 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         log("about to get controller");
         try {
         	MapController mc = mapView.getController();
+        	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         	
-        	mc.setZoom(5);
-	        if(mLatitude!=0.0) {
-	        	//mc.setCenter(new GeoPoint((int)(mLatitude*1E6), (int)(mLongitude*1E6)));
-	        }
+        	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        	mc.setZoom(8);
+        	if(loc.getLatitude()!=0) {
+        		log("setting center " + loc.getLatitude() + " " + loc.getLongitude());
+        		mc.animateTo(new GeoPoint((int)(loc.getLatitude()*1E6), (int)(loc.getLongitude() * 1E6)));
+        	} else {
+        		log("no known last location");
+        	}
+
 	        
 	        mapView.invalidate();
 	        mapView.refreshDrawableState();
@@ -1031,6 +1037,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	System.out.println(text);
     }
 }
