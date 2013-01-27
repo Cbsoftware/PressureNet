@@ -262,12 +262,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		} catch(Exception e) {
 			
 		}
-
-		/*String message = ScienceHandler.findTendency(recents);
-		AlertDialog alertDialog = new AlertDialog.Builder(BarometerNetworkActivity.this).create();
-		alertDialog.setTitle("Tendency");
-		alertDialog.setMessage(message);
-		alertDialog.show();*/
 		
 	}
 
@@ -299,7 +293,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			//serviceIntent.putExtra("appdir", mAppDir);
 			startService(serviceIntent);
 		} catch(Exception e) {
-			log(e.getMessage());
+			log(e.getMessage() + "");
 		}
 
     }
@@ -318,7 +312,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		log("abbrev: "  + abbrev);
     		
     	} catch(Exception e) {
-    		log(e.getMessage());
+    		log(e.getMessage() + "");
     		mUpdateServerAutomatically = false;
     	}
     }
@@ -338,7 +332,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		}
     		android_id = hexString.toString();
     	} catch(Exception e) {
-    		log(e.getMessage());
+    		log(e.getMessage() + "");
     	}
     }
     
@@ -374,7 +368,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	}
 	    	invalidateOptionsMenu(); // ensure right right menus are showing, given barometer detection status
     	} catch(Exception e) {
-    		log(e.getMessage());
+    		log(e.getMessage() + "");
     	}
     }
     
@@ -399,7 +393,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        mapView.invalidate();
 	        mapView.refreshDrawableState();
         } catch(Exception e) {
-        	log(e.getMessage());
+        	log(e.getMessage() + "");
         }
        
     }
@@ -451,7 +445,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     		
     	} catch(Exception e) {
-    		log(e.getMessage());
+    		log(e.getMessage() + "");
     	}
 
     }
@@ -553,7 +547,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		                canvas.drawRoundRect(new RectF(rect), 6, 6, bgPaint);
 		                canvas.drawText(toPrint, ptScreenCoord.x, ptScreenCoord.y+mTextSize, paint);
 	            	} catch(Exception e) {
-	            		log(e.getMessage());
+	            		log(e.getMessage() + "");
 	            	}
 	            }
 	        }
@@ -593,26 +587,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		if(showTendencies) {
 
 	    			
-	    			/*
-	    			 * 
-	    			 * TODO: implement tendencies on the server side.
-	    			 * 
-	    			 * 
-	    			 * 
-					//log("tendencies size: " + tendencies.size());
-	    			//log(br.getAndroidId());
-	    			String tendency = tendencies.get(br.getAndroidId());
-	    			log("tendency " + tendency);
-	    			if(tendency.equals("Rising")) {
-	    				overlay = new MapOverlay(upArrowDrawable, this, 20);
-	    			} else if(tendency.equals("Falling")) {
-	    				overlay = new MapOverlay(downArrowDrawable, this, 20);
-	    			} else if(tendency.equals("Steady")) {
-	    				overlay = new MapOverlay(drawable, this, 20);
-	    			} else {
-	    				overlay = new MapOverlay(drawable, this, 20); // default
-	    			} 
-	    			*/
+	    			
 	    		} else {
 	    			if(brIsMe(br)) {
 		    			overlay = new MapOverlay(selfDrawable, this, 20);
@@ -652,7 +627,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	ArrayList<BarometerReading> readingsList = new ArrayList<BarometerReading>();
     	for(int i = 0; i<readings.length; i++) {
     		try {
-	    		String[] values = readings[i].split(",");
+	    		String[] values = readings[i].split("\\|");
 	    		BarometerReading br = new BarometerReading();
 	    		br.setLatitude(Double.parseDouble(values[0]));
 	    		br.setLongitude(Double.parseDouble(values[1]));
@@ -703,13 +678,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		String[] csvReading = result.split(";");
 	    		ArrayList<BarometerReading> readings = csvToBarometerReadings(csvReading);
 	    		addDataToMap(readings, false, null);
-    		} else if(result.contains("local_data_tendency return;")) {
-    			result = result.substring("local_data_tendency return;".length());
-	    		String[] csvReading = result.split(";");
-	    		ArrayList<BarometerReading> readings = csvToBarometerReadings(csvReading);
-	    		HashMap<String, String> tendencies = csvToBarometerTendencies(csvReading);
-	    		addDataToMap(readings, true, tendencies);
-    		}
+    		} 
     	} else {
     		// updateStatusText("Error: No data."); ancient
     		
@@ -873,7 +842,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		    		responseText = total.toString();
 	    		}
 	    	} catch(Exception e) {
-	    		log(e.getMessage());
+	    		log(e.getMessage() + "");
 	    	}
 	    	return responseText;
 		}
@@ -914,7 +883,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 				}
 			} catch(Exception e) {
 				// Probably no barometer reading.
-				log(e.getMessage());				
+				log(e.getMessage() + "");				
 			}
 		}
 		
