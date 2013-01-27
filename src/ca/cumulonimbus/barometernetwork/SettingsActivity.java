@@ -31,6 +31,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -92,7 +93,10 @@ public class SettingsActivity extends Activity {
 			CheckBox checkBoxRefresh = (CheckBox) findViewById(R.id.checkboxRefresh);
 			checkBoxRefresh.setVisibility(View.GONE);
 			Button delete = (Button) findViewById(R.id.buttonDelete);
-			delete.setVisibility(View.GONE);			
+			delete.setVisibility(View.GONE);
+			spinnerSharing.setVisibility(View.GONE);
+			TextView shareWith = (TextView) findViewById(R.id.textShareWith);
+			shareWith.setVisibility(View.GONE);
 		}
 	}
 

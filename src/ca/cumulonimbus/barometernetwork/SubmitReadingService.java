@@ -76,22 +76,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	private long lastSubmitTime;
 	
-	// Add a new barometer reading to the local history file
-	/*
-	public void addToLocalHistory(BarometerReading br) {
-		String singleLine = br.getReading() + "," + br.getLatitude() + "," + br.getLongitude() + "," + br.getTime() + "\n";
-		try {
-			OutputStream output = new FileOutputStream(mAppDir + "/" + localHistoryFile, true);
-			output.write(singleLine.getBytes());
-			output.close();
-			
-		} catch(FileNotFoundException e) {
-			
-		} catch(IOException ioe) {
-			
-		}
-	}
-	*/
+	private boolean waitingForReading = false;
+	
 	private boolean networkOnline() {
 		try {
 			// Test connectivity before attempting to send readings
@@ -170,14 +156,19 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     // Start getting barometer readings.
     public void setUpBarometer() {
     	try {
+    		log("setting up barometer");
 	    	sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
 	    	
 	    	if(bar!=null) {
-	    		barometerReadingsActive = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
+	    		barometerReadingsActive = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_UI);
+
+	    		log("bar is not null, listening " + barometerReadingsActive);
+	    	} else {
+	    		log("bar is null");
 	    	}
     	} catch(Exception e) {
-    		
+    		log("setupbarometer exception: " + e.getMessage());
     	}
     }
     
@@ -316,8 +307,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    		}
 	    	}
 
-			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-			sm.unregisterListener(that);
+			//sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			//sm.unregisterListener(that);
 	    	return null;
 		}
     	
@@ -346,11 +337,11 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	if(mReading == 0.0) {
     		log("active barometer: " + barometerReadingsActive);
     	} else {
-	    	log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
-	    	new ReadingSender().execute("");
-
-			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-			sm.unregisterListener(that);
+			log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
+			new ReadingSender().execute("");
+			
+			//sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			//sm.unregisterListener(that);
 	    }
     }
     
@@ -359,6 +350,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		public void run() {
 			long base = SystemClock.uptimeMillis();
 			log("run mSubmitReading");
+			waitingForReading = true;
 			
 			sendBarometerReading();
 			
@@ -399,7 +391,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	//System.out.println(text);
+    	// System.out.println(text);
     	//logToFile(text);
     }
 	
@@ -520,12 +512,14 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		log("on sensor changed " + event.timestamp);
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_PRESSURE: 
 			mReading = event.values[0];
 			log("new sensor reading: " + mReading);
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			sm.unregisterListener(that);
+			waitingForReading = false;
 		    break;
 	    }		
 	}

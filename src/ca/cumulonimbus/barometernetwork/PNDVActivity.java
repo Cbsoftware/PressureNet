@@ -14,7 +14,7 @@ public class PNDVActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId()==R.id.menu_inbrowser) {
-    		Uri uri = Uri.parse("http://pndv.cumulonimbus.ca");
+    		Uri uri = Uri.parse("http://pressurenet.cumulonimbus.ca");
     		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     		startActivity(intent);
     	}

@@ -23,8 +23,6 @@
         <item>1 hour</item>
         <item>6 hours</item>
         <item>12 hours</item>
-        <item>1 day</item>
-        <item>1 week</item>
     </string-array>
     <string-array name="default_units">
         <item>Millibars (mbar)</item>
@@ -47,10 +45,10 @@
     <string name="loadInBrowser">Load in Browser</string>
     <string name="shareWith">Share with</string>
     <string-array name="privacy_settings">
-        <item>None</item>
-        <item>Cumulonimbus only</item>
+        <item>Me Only</item>
+        <item>Cumulonimbus</item>
         <item>Cumulonimbus and Researchers</item>
-        <item>Cumulonimbus, Researchers and Businesses</item>
+        <item>Cumulonimbus, Researchers and Professional Forecasters</item>
         <item>Public</item>
     </string-array>
 </resources>
