@@ -589,16 +589,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 
 	    		// Pick an overlay icon depending on the BR and 
 	    		// the current settings. BR aging icon? Tendency?
-	    		overlay = new MapOverlay(drawable, this, 20); // default
+	    		overlay = new MapOverlay(drawable, this, 14); // default
 	    		if(showTendencies) {
 
 	    			
 	    			
 	    		} else {
 	    			if(brIsMe(br)) {
-		    			overlay = new MapOverlay(selfDrawable, this, 20);
+		    			overlay = new MapOverlay(selfDrawable, this, 14);
 		    		} else {
-		    			overlay = new MapOverlay(drawable, this, 20);
+		    			overlay = new MapOverlay(drawable, this, 14);
 		    		}	
 	    		}
 	    		
