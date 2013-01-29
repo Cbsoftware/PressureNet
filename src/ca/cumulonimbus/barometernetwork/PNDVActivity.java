@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -41,7 +43,20 @@ public class PNDVActivity extends Activity {
 		WebSettings webSettings = pndvWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setBuiltInZoomControls(true);
-		pndvWebView.loadUrl("http://pndv.cumulonimbus.ca");
+		Intent intent = getIntent();
+		double latitude = intent.getDoubleExtra("latitude",0.0);
+		double longitude = intent.getDoubleExtra("longitude", 0.0);
+		Calendar cal = Calendar.getInstance();
+		long now = cal.getTimeInMillis();
+		long dayInMillis = 1000*60*60*24;
+		long twoDaysAgo = cal.getTimeInMillis() - (2 * dayInMillis);
+		// gotta use tomorrow for UTC hack
+		long tomorrow = now + dayInMillis;
+		if(latitude!=0){
+			pndvWebView.loadUrl("http://pressurenet.cumulonimbus.ca/?event=true&latitude=" + latitude + "&longitude=" + longitude + "&startTime=" + twoDaysAgo + "&endTime=" + tomorrow + "&zoomLevel=10");
+		} else {
+			pndvWebView.loadUrl("http://pressurenet.cumulonimbus.ca");
+		}
 	}
 
 	@Override

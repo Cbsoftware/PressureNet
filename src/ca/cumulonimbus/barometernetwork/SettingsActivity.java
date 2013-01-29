@@ -84,7 +84,6 @@ public class SettingsActivity extends Activity {
 	    
 	}
 	
-	
 	public void setUI() {
 		if(hasBarometer) {
 
@@ -133,7 +132,6 @@ public class SettingsActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 	    refreshCheck.setChecked(settings.getBoolean("autoupdate", true));
 
-	    
 	    // TODO: This is definitely not the right way to do this.
 	    
 	    final Spinner spinnerUnits = (Spinner) findViewById(R.id.spinnerUnits);
@@ -161,7 +159,7 @@ public class SettingsActivity extends Activity {
 	    
 	    final Spinner spinnerSharing = (Spinner) findViewById(R.id.spinnerSharing);
 	    String[] sharingArray = getResources().getStringArray(R.array.privacy_settings);
-	    String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+	    String share = settings.getString("sharing_preference", "Us, Researchers and Forecasters");
 	    int positionShare = 0;
 	    for(int i = 0; i < sharingArray.length; i++) {
 	    	if(sharingArray[i].equals(share)) {
