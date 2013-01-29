@@ -55,7 +55,7 @@
     <string name="appAndSharingDescritption">pressureNET is an open source global barometer network. 
         We intend to improve weather forecasting by increasing inputs into weather models. 
         \n\nIt is important that our users contribute data. The data we collect is the location
-        of your phone, the time, and your atmospheric pressure. We will share this data only according to your wishes,
+        of your device, the time, and your atmospheric pressure. We will share this data only according to your wishes,
         but remember that limiting your sharing  will limit our ability to help scientists improve 
         weather forecasting. You can change your prefence below or at any time through Settings. 
         We are currently building a system to let you access this data yourself, since you contribute. Thank you!
