@@ -15,6 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -24,6 +25,7 @@ public class ReadingSender extends AsyncTask<String, Integer, String> {
 	Context appContext = null;
 	private String serverURL = ""; 
 	private String responseText = "";
+	private static final String PREFS_NAME = "pressureNETPrefs";
 	
 	public ReadingSender(Context context) {
 		appContext = context;
@@ -34,6 +36,15 @@ public class ReadingSender extends AsyncTask<String, Integer, String> {
 		DefaultHttpClient client = new SecureHttpClient(appContext);
 		HttpPost httppost = new HttpPost(serverURL);
 		try {
+
+			SharedPreferences settings = appContext.getSharedPreferences(PREFS_NAME, 0);
+			String share = settings.getString("sharing_preference", "Us, Researchers and Forecasters");
+			
+			// No sharing? get out!
+			if(share.equals("Nobody")) {
+				return null;
+			}
+			
 			// split the args into nvps assuming each string is csv
 			ArrayList<NameValuePair> nvps = new ArrayList<NameValuePair>();
 			for(String singleParam : params) {

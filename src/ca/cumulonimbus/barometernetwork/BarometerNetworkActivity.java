@@ -109,10 +109,30 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         setId();
         setUpFiles();
         setUpMap();
+        showWelcomeActivity();
         startSendingData();
         setUpActionBar();
     }
-   
+
+    /**
+     * Welcome the user to pressureNET and explain the 
+     * privacy options
+     */
+    public void showWelcomeActivity() {
+    	// has this been shown yet?
+    	if(barometerDetected) {
+	    	SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    	int firstRun = settings.getInt("first_run", 0);
+	    	if(firstRun==0) {
+	    		Intent intent = new Intent(this, ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
+	    		startActivityForResult(intent, 0);
+	    		firstRun++;
+	    		SharedPreferences.Editor editor = settings.edit();
+	    		editor.putInt("first_run", firstRun);
+	  	      	editor.commit();
+	    	}
+    	}
+    }
 
     /**
      * Some devices have barometers, other's don't. Fix up the UI 
@@ -201,11 +221,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	} else if(item.getItemId()==R.id.menu_log_viewer) {
     		showRecentHistory();
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
-    		//Uri uri = Uri.parse("http://pndv.cumulonimbus.ca");
-    		//Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-    		Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
+    		// Load up pressurenet.cumulonimbus.ca with the user's location
+    		// and current timeframe
+        	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        	double latitude = loc.getLatitude();
+        	double longitude = loc.getLongitude();
+        	Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
+    		intent.putExtra("latitude", latitude);
+    		intent.putExtra("longitude", longitude);
     		startActivity(intent);
-    		
     	} /* else if(item.getItemId()==R.id.menu_about) {
     		Toast.makeText(getApplicationContext(), "About pressureNET and Cumulonimbus", Toast.LENGTH_SHORT).show();
     		
@@ -385,7 +410,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         try {
         	MapController mc = mapView.getController();
         	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-        	
         	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	mc.setZoom(8);
         	if(loc.getLatitude()!=0) {
@@ -1037,6 +1061,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     public void log(String text) {
     	//logToFile(text);
-    	System.out.println(text);
+    	//System.out.println(text);
     }
 }

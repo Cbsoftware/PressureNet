@@ -238,10 +238,10 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			}
 			
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+			String share = settings.getString("sharing_preference", "Us, Researchers and Forecasters");
 			
 			// No sharing? get out!
-			if(share.equals("None")) {
+			if(share.equals("Nobody")) {
 				return null;
 			}
 			
@@ -277,6 +277,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			    		submitList.remove(0);
 			    		List<NameValuePair> nvps = barometerReadingToNVP(reading);
 			    		httppost.setEntity(new UrlEncodedFormEntity(nvps));
+			    		
 			    		HttpResponse response = client.execute(httppost);
 		    		}
 		    		
@@ -391,7 +392,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	// System.out.println(text);
+    	//System.out.println(text);
     	//logToFile(text);
     }
 	
