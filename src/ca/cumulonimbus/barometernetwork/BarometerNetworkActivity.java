@@ -223,14 +223,27 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
     		// Load up pressurenet.cumulonimbus.ca with the user's location
     		// and current timeframe
-        	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-        	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        	double latitude = loc.getLatitude();
-        	double longitude = loc.getLongitude();
-        	Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
-    		intent.putExtra("latitude", latitude);
-    		intent.putExtra("longitude", longitude);
-    		startActivity(intent);
+        	try {
+        		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        		Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        		double latitude = loc.getLatitude();
+        		double longitude = loc.getLongitude();
+        		Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
+        		intent.putExtra("latitude", latitude);
+        		intent.putExtra("longitude", longitude);
+        		startActivity(intent);
+        	} catch (NullPointerException npe) {
+        		// Android 4.2 NPEs here. Try again but still be careful
+        		try {
+	        		Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
+	        		intent.putExtra("latitude", mLatitude);
+	        		intent.putExtra("longitude", mLongitude);
+	        		startActivity(intent);        		
+        		} catch(Exception e) {
+        			Intent intent = new Intent(getApplicationContext(),PNDVActivity.class);
+	        		startActivity(intent);	
+        		}
+        	}
     	} /* else if(item.getItemId()==R.id.menu_about) {
     		Toast.makeText(getApplicationContext(), "About pressureNET and Cumulonimbus", Toast.LENGTH_SHORT).show();
     		
