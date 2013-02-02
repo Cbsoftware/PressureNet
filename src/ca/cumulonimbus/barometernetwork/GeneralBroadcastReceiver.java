@@ -8,8 +8,12 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-    	Intent startServiceIntent = new Intent(context, SubmitReadingService.class);
-        context.startService(startServiceIntent);
+    	try {
+    		Intent startServiceIntent = new Intent(context, SubmitReadingService.class);
+    		context.startService(startServiceIntent);
+    	} catch (Exception e) {
+    		// 
+    	}
     }
 }
 

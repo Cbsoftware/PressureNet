@@ -42,7 +42,7 @@ public class SecureHttpClient extends DefaultHttpClient {
             try {
                 // Initialize the keystore with the provided trusted certificates
                 // Also provide the password of the keystore
-                trusted.load(in, "PASS".toCharArray());
+                trusted.load(in, PressureNETConfiguration.HTTPS_PASSWORD.toCharArray());
             } finally {
                 in.close();
             }

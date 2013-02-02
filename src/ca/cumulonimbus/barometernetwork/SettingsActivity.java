@@ -40,7 +40,7 @@ public class SettingsActivity extends Activity {
 	
 	public static final String PREFS_NAME = "pressureNETPrefs";
 	
-	private String serverURL = "";
+	private String serverURL = PressureNETConfiguration.SERVER_URL;
 	
 	SensorManager sm;
 	

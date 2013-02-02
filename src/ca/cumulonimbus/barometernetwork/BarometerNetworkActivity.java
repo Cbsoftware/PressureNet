@@ -83,7 +83,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     private final Handler statusHandler = new Handler();
     private final Handler mapHandler = new Handler();
 	
-    private String serverURL = "";
+    private String serverURL = PressureNETConfiguration.SERVER_URL;
+    
     
 	public static final String PREFS_NAME = "pressureNETPrefs";
 	

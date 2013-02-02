@@ -23,7 +23,7 @@ import android.webkit.WebView;
 public class ReadingSender extends AsyncTask<String, Integer, String> {
 	
 	Context appContext = null;
-	private String serverURL = ""; 
+	private String serverURL = PressureNETConfiguration.SERVER_URL;
 	private String responseText = "";
 	private static final String PREFS_NAME = "pressureNETPrefs";
 	

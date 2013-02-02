@@ -68,8 +68,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	private boolean showToast = false;
 	
-	private String serverURL = "";  
-    
+	private String serverURL = PressureNETConfiguration.SERVER_URL;
+	
 	private static ArrayList<BarometerReading> submitList = new ArrayList<BarometerReading>();
 	
 	private boolean barometerReadingsActive = false;
@@ -331,19 +331,23 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     public void sendBarometerReading() {
     	//System.out.println("send barometer reading");
     	log("send barometer reading");
-    	getLocationInformation();
-    	setUpBarometer();
-    	setId();
-    	
-    	if(mReading == 0.0) {
-    		log("active barometer: " + barometerReadingsActive);
-    	} else {
-			log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
-			new ReadingSender().execute("");
-			
-			//sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-			//sm.unregisterListener(that);
-	    }
+    	try {
+	    	getLocationInformation();
+	    	setUpBarometer();
+	    	setId();
+	    	
+	    	if(mReading == 0.0) {
+	    		log("active barometer: " + barometerReadingsActive);
+	    	} else {
+				log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
+				new ReadingSender().execute("");
+				
+				//sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+				//sm.unregisterListener(that);
+		    }
+    	} catch(Exception e) {
+    		// 
+    	}
     }
     
 	private Runnable mSubmitReading = new Runnable() {
@@ -475,7 +479,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		System.out.println("on start command");
 		log("on start command");
 		try {
 			//mAppDir = intent.getStringExtra("appdir");
