@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">pressureNET</string>
     <string name="currentReading">Current Reading:</string>
     <string name="empty"></string>
@@ -17,12 +17,20 @@
     <string name="refreshFrequency">Auto-Submit</string>
     <string name="submitEvery">Submit Every:</string>
     <string-array name="refresh_frequency">
-        <item>1 minute</item>
-        <item>5 minutes</item>
-        <item>10 minutes</item>
-        <item>1 hour</item>
-        <item>6 hours</item>
-        <item>12 hours</item>
+        <item name="1 minute">1 minute</item>
+        <item name="5 minutes">5 minutes</item>
+        <item name="10 minutes">10 minutes</item>
+        <item name="1 hour">1 hour</item>
+        <item name="6 hours">6 hours</item>
+        <item name="12 hours">12 hours</item>
+    </string-array>
+    <string-array name="refresh_frequency_values">
+        <item name="1 minute">1 minute</item>
+        <item name="5 minutes">5 minutes</item>
+        <item name="10 minutes">10 minutes</item>
+        <item name="1 hour">1 hour</item>
+        <item name="6 hours">6 hours</item>
+        <item name="12 hours">12 hours</item>
     </string-array>
     <string-array name="default_units">
         <item>Millibars (mbar)</item>

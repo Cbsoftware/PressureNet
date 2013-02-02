@@ -16,6 +16,9 @@
                   android:excludeFromRecents="true"> 
         </activity>
         
+        <activity android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity" 
+            	  android:label="@string/settings" 
+            	  android:excludeFromRecents="true"></activity>
         <activity android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity" 
             	  android:label="@string/logViewer" 
             	  android:excludeFromRecents="true" 

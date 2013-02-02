@@ -210,6 +210,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		Intent i = new Intent(this, SettingsActivity.class);
     		i.putExtra("hasBarometer", barometerDetected);
     		startActivityForResult(i, 1);
+    	} else if(item.getItemId()==R.id.menu_settings2) {
+    		Intent i = new Intent(this, PreferencesActivity.class);
+    		i.putExtra("hasBarometer", barometerDetected);
+    		startActivityForResult(i, 1);
     	} else if(item.getItemId()==R.id.menu_my_info) {
     		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
     		intent.putExtra("userid", android_id);
@@ -832,7 +836,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		
 	    		// Instantiate the custom HttpClient
 	    		DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
-
+	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		
 	    		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
