@@ -214,7 +214,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			String unit = oldSettings.getString("units", "Millibars (mbar)" );
 		    String autoFrequency = oldSettings.getString("autofrequency", "10 minutes");
 		    String sharing = oldSettings.getString("sharing_preference", "Us, Researchers and Forecasters");
-
+		    int firstRun = oldSettings.getInt("first_run", 1);
+		    
+		    firstRun++;
+		    
 		    // Store
 		    SharedPreferences newSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		    SharedPreferences.Editor editor = newSharedPreferences.edit();
@@ -222,6 +225,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		    editor.putString("units", unit);
 		    editor.putString("autoFrequency", autoFrequency);
 		    editor.putString("sharing_preference", sharing);
+		    editor.putInt("first_run", firstRun);
 		    editor.commit();
 	    }
     }
