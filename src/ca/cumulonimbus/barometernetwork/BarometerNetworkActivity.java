@@ -25,8 +25,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -43,7 +45,6 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -117,6 +118,90 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         setUpActionBar();
     }
     
+    // Get the phone ID and hash it
+	public String getID() {
+    	try {
+    		MessageDigest md = MessageDigest.getInstance("MD5");
+    		
+    		String actual_id = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+    		byte[] bytes = actual_id.getBytes();
+    		byte[] digest = md.digest(bytes);
+    		StringBuffer hexString = new StringBuffer();
+    		for(int i = 0; i< digest.length; i++) {
+    			hexString.append(Integer.toHexString(0xFF & digest[i]));
+    		}
+    		return hexString.toString();
+    	} catch(Exception e) {
+    		return "--";
+    	}
+	}
+	
+	/**
+	 * Tell the server the user wants to delete his/her data
+	 *
+	 */
+    private class SendDeleteRequest extends AsyncTask<String, String, String> {
+    	String responseText= "";
+    	
+    	@Override
+		protected String doInBackground(String... arg0) {
+    		DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+        	HttpPost httppost = new HttpPost(serverURL);
+        	String id = getID();
+        	try {
+        		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
+        		nvp.add(new BasicNameValuePair("download","full_delete_request"));
+        		nvp.add(new BasicNameValuePair("userid",id));
+        
+        		httppost.setEntity(new UrlEncodedFormEntity(nvp));
+        		HttpResponse response = client.execute(httppost);
+        		HttpEntity responseEntity = response.getEntity();
+        		
+        		BufferedReader r = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
+        		
+        		StringBuilder total = new StringBuilder();
+        		
+        		String line;
+        		if(r!=null) {
+    	    		while((line = r.readLine()) != null) {
+    	    			total.append(line);
+    	    		}
+    	    		responseText = total.toString();
+        		}
+        		return responseText;
+        		
+        	}catch(Exception e) {
+        		
+        	}
+	    	return responseText;
+		}
+		protected void onPostExecute(String result) {
+			
+			Toast.makeText(getApplicationContext(), "Data deleted.", Toast.LENGTH_SHORT).show();
+		}
+    }
+	
+	public void deleteUserData() {
+		// show a dialog, listen for its response.
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getResources().getString(R.string.deleteWarning)).setPositiveButton("Continue", dialogDeleteClickListener)
+		    .setNegativeButton("Cancel", dialogDeleteClickListener).show();
+	}
+    
+	DialogInterface.OnClickListener dialogDeleteClickListener = new DialogInterface.OnClickListener() {
+	    @Override
+	    public void onClick(DialogInterface dialog, int which) {
+	        switch (which){
+	        case DialogInterface.BUTTON_POSITIVE:
+	        	new SendDeleteRequest().execute("");
+	        	break;
+
+	        case DialogInterface.BUTTON_NEGATIVE:
+	            break;
+	        }
+	    }
+	};
+    
     /**
      * Migrate from the old 'pressureNETprefs' system to the new one. 3.0 -> 3.0.1
      */
@@ -174,7 +259,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		menu.removeItem(R.id.menu_my_info);
     		menu.removeItem(R.id.menu_submit_reading);
     		menu.removeItem(R.id.menu_log_viewer);
-    		
+    		menu.removeItem(R.id.menu_delete_data);
     	}
     }
     
@@ -271,7 +356,12 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        		startActivity(intent);	
         		}
         	}
-    	} /* else if(item.getItemId()==R.id.menu_about) {
+    	} else if (item.getItemId() == R.id.menu_delete_data) {
+    		deleteUserData();
+    	}
+    	
+    		/* else if(item.getItemId()==R.id.menu_about) {
+    	}
     		Toast.makeText(getApplicationContext(), "About pressureNET and Cumulonimbus", Toast.LENGTH_SHORT).show();
     		
     	}*/ /*else if(item.getItemId()==R.id.menu_reload) {
