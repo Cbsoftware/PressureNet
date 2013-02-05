@@ -18,8 +18,7 @@
 			    	  android:gravity="right"></TextView>
         </LinearLayout>        
         <LinearLayout android:layout_width="match_parent" android:id="@+id/layoutMapContainer" android:layout_height="match_parent">
-			    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent" android:weightSum="1" android:id="@+id/layoutMapView" android:layout_height="1180dp">
-                	<ca.cumulonimbus.barometernetwork.BarometerMapView
+			    	<ca.cumulonimbus.barometernetwork.BarometerMapView
 					    xmlns:android="http://schemas.android.com/apk/res/android"
 					    android:id="@+id/mapview"
 					    android:layout_width="fill_parent"
@@ -27,7 +26,7 @@
 					    android:apiKey="" 
 					    android:layout_height="fill_parent"
 					/>
-				</LinearLayout>
+			
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

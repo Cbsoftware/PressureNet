@@ -22,7 +22,7 @@ public class SingleUserChartActivity extends Activity {
 	private String mAppDir = "";
 	private String mUnits = "mbar";
 	private String userSelf = "";
-	public static final String PREFS_NAME = "pressureNETPrefs";
+	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
 	public class ChartFetcher extends ReadingSender  {
 	

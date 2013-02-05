@@ -37,7 +37,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	
 	boolean mIsBound = false;
 	
-	public static final String PREFS_NAME = "pressureNETPrefs";
+	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	Unit mUnit = new Unit("mbar");
 	
 	private String localHistoryFile = "recent.txt";

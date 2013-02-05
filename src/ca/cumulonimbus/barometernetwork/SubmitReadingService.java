@@ -45,7 +45,7 @@ import android.widget.Toast;
 
 public final class SubmitReadingService extends Service implements SensorEventListener {
 
-	private static final String PREFS_NAME = "pressureNETPrefs";
+	private static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	public static String ACTION_SUBMIT_SINGLE = "SubmitSingle";
 	private Handler mHandler = new Handler();
 	private long mSeconds; // Frequency

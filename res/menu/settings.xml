@@ -37,10 +37,5 @@
       android:icon="@drawable/ic_menu_settings"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_settings2"
-      android:title="@string/settings"
-      android:icon="@drawable/ic_menu_settings"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
     
 </menu>

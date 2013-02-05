@@ -38,7 +38,7 @@ import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 	
-	public static final String PREFS_NAME = "pressureNETPrefs";
+	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
 	private String serverURL = PressureNETConfiguration.SERVER_URL;
 	
@@ -100,38 +100,38 @@ public class SettingsActivity extends Activity {
 	}
 
 	public void saveRefresh(boolean value) {
-	      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      editor.putBoolean("autoupdate", value);
-	      editor.commit();
+	    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putBoolean("autoupdate", value);
+	    editor.commit();
 	}
 	
 	public void saveFrequency(String value) {
-	      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      editor.putString("autofrequency", value);
-	      editor.commit();
+	    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putString("autofrequency", value);
+	    editor.commit();
 	}
 
 	public void saveUnit(String value) {
-	      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      editor.putString("units", value);
-	      editor.commit();
+	    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putString("units", value);
+	    editor.commit();
 	}
 	
 	public void saveSharingPrivacy(String value) {
-	      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      editor.putString("sharing_preference", value);
-	      editor.commit();
+	    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    SharedPreferences.Editor editor = settings.edit();
+	    editor.putString("sharing_preference", value);
+	    editor.commit();
 	}
 	
 	private void restoreSettings() {
 		CheckBox refreshCheck = (CheckBox) findViewById(R.id.checkboxRefresh);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 	    refreshCheck.setChecked(settings.getBoolean("autoupdate", true));
-
+	    
 	    // TODO: This is definitely not the right way to do this.
 	    
 	    final Spinner spinnerUnits = (Spinner) findViewById(R.id.spinnerUnits);

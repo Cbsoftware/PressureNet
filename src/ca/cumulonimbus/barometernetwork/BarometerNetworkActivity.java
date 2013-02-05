@@ -47,6 +47,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -86,7 +87,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     private String serverURL = PressureNETConfiguration.SERVER_URL;
     
     
-	public static final String PREFS_NAME = "pressureNETPrefs";
+	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
 	private String mUpdateServerFrequency;
 	private boolean mUpdateServerAutomatically;
@@ -103,6 +104,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        migratePreferences(); 
         setUpDatabase();
         setUpBarometer();
         getStoredPreferences();
@@ -113,6 +115,30 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         showWelcomeActivity();
         startSendingData();
         setUpActionBar();
+    }
+    
+    /**
+     * Migrate from the old 'pressureNETprefs' system to the new one. 3.0 -> 3.0.1
+     */
+    private void migratePreferences() {
+		// Migrate old preferences
+		SharedPreferences oldSettings = getSharedPreferences("pressureNETPrefs", 0);
+	    if(oldSettings.contains("autoupdate")) {
+			// Load
+			boolean autoUpdate = oldSettings.getBoolean("autoupdate", true);
+			String unit = oldSettings.getString("units", "Millibars (mbar)" );
+		    String autoFrequency = oldSettings.getString("autofrequency", "10 minutes");
+		    String sharing = oldSettings.getString("sharing_preference", "Us, Researchers and Forecasters");
+
+		    // Store
+		    SharedPreferences newSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		    SharedPreferences.Editor editor = newSharedPreferences.edit();
+		    editor.putBoolean("autoupdate", autoUpdate);
+		    editor.putString("units", unit);
+		    editor.putString("autoFrequency", autoFrequency);
+		    editor.putString("sharing_preference", sharing);
+		    editor.commit();
+	    }
     }
 
     /**
@@ -207,10 +233,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId()==R.id.menu_settings) {
-    		Intent i = new Intent(this, SettingsActivity.class);
-    		i.putExtra("hasBarometer", barometerDetected);
-    		startActivityForResult(i, 1);
-    	} else if(item.getItemId()==R.id.menu_settings2) {
     		Intent i = new Intent(this, PreferencesActivity.class);
     		i.putExtra("hasBarometer", barometerDetected);
     		startActivityForResult(i, 1);
@@ -305,7 +327,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		} catch(Exception e) {
 			
 		}
-		
 	}
 
     

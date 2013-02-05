@@ -13,7 +13,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 public class WelcomeActivity extends Activity {
 	
-	public static final String PREFS_NAME = "pressureNETPrefs";
+	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
 	Spinner spinnerWelcomeSharing;
 	Button closeButton;
