@@ -462,12 +462,12 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
     		mUpdateServerAutomatically = settings.getBoolean("autoupdate", true);
     		mUpdateServerFrequency = settings.getString("autofrequency", "10 minutes");
-    		log("shared prefs: " + mUpdateServerFrequency + " " + mUpdateServerAutomatically);
+    		//log("shared prefs: " + mUpdateServerFrequency + " " + mUpdateServerAutomatically);
     		
     		// Units
     		String abbrev = settings.getString("units", "mbar"); 
     		mUnit = new Unit(abbrev);
-    		log("abbrev: "  + abbrev);
+    		//log("abbrev: "  + abbrev);
     		
     	} catch(Exception e) {
     		log(e.getMessage() + "");
@@ -494,17 +494,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	}
     }
     
-    
-    
     // Used to write a log to SD card. Not used unless logging enabled.
     public void setUpFiles() {
     	try {
 	    	File homeDirectory = getExternalFilesDir(null);
 	    	if(homeDirectory!=null) {
 	    		mAppDir = homeDirectory.getAbsolutePath();
+	    		
 	    	}
     	} catch (Exception e) {
-    		//log(e.getMessage());
+    		log(e.getMessage());
     	}
     }
     
@@ -517,7 +516,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	
 	    	if(bar!=null) {
 	        	boolean running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
-	        	log(running + "");
+	        	//log(running + "");
 	        	barometerDetected = true;
 	    	} else {
 	    		barometerDetected = false;
@@ -539,14 +538,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         
         // Set default coordinates (centered around the user's location)
 
-        log("about to get controller");
         try {
         	MapController mc = mapView.getController();
         	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	mc.setZoom(8);
         	if(loc.getLatitude()!=0) {
-        		log("setting center " + loc.getLatitude() + " " + loc.getLongitude());
+        		//log("setting center " + loc.getLatitude() + " " + loc.getLongitude());
         		mc.animateTo(new GeoPoint((int)(loc.getLatitude()*1E6), (int)(loc.getLongitude() * 1E6)));
         	} else {
         		log("no known last location");
@@ -586,10 +584,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	    	mLatitude = latitude;
 	    	    	mLongitude = longitude;
 	    	    	if(first) {
-	    	    		log("first location start");
+	    	    		//log("first location start");
 	    	    		setUpMap();
 	    	    		loadAndShowData();
-	    	    		log("end");
+	    	    		//log("end");
 	    	    	}
     	    	} catch(Exception e) {
     	    		log("On Location change failed.");
@@ -738,7 +736,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	mapOverlays.clear();
     	
     	// add a bunch of coords
-    	log("starting adding total " + list.size());
     	try {
 	    	for(BarometerReading br : list) {
 	    		// log(br.getReading() + "");
@@ -772,7 +769,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    } catch(Exception e) {
 	    	log("add data error: " + e.getMessage());
 	    }
-    	log("end of adddatatomap");
+    	
     }
         
     // Runnable to refresh the map. Can be called when another
@@ -811,16 +808,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     
     // Assemble a HashMap of userIDs and tendencies. //This is the opposite of function barometerReadingToWeb in the servlet.
     public HashMap<String, String> csvToBarometerTendencies(String[] readings) {
-    	log("csv to barometer tendencies : " + readings[0] + ", " + readings.length);
+    	//log("csv to barometer tendencies : " + readings[0] + ", " + readings.length);
     	HashMap<String, String> tendencies = new HashMap<String, String>();
     	for(int i = 0; i<readings.length; i++) {
     		try {
 	    		String[] values = readings[i].split(",");
 	    		
 	    		for(String a : values) {
-	    			log(a);
+	    			//log(a);
 	    		}
-	    		log("tendency check " + values[5]);
+	    		//log("tendency check " + values[5]);
 	    		tendencies.put(values[5], values[6]); // userid, tendency
     		} catch(Exception e) {
     			// Likely, the server returned an error.
@@ -947,7 +944,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	String responseText = "";
 	    	
 	    	try {
-	    		log("DataDownload doInBackground start try block");
+	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
 	    		DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
@@ -1010,7 +1007,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	return responseText;
 		}
 		protected void onPostExecute(String result) {
-			log("datadownload post execute " + result);
+			//log("datadownload post execute " + result);
 			processDownloadResult(result);
 		
 			mapHandler.postDelayed(refreshMap, 100);
@@ -1193,7 +1190,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	}
 	
     public void log(String text) {
-    	//logToFile(text);
-    	//System.out.println(text);
+    	logToFile(text);
+    	System.out.println(text);
     }
 }
