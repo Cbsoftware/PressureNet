@@ -41,5 +41,9 @@
       android:title="@string/delete"
       android:enabled="true"
       android:showAsAction="never" />
+<item android:id="@+id/send_debug_log"
+      android:title="@string/send_debug_log"
+      android:enabled="true"
+      android:showAsAction="never" />
     
 </menu>

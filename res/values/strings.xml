@@ -71,6 +71,7 @@
         We are currently building a system to let you access this data yourself, since you contribute. Thank you!
     </string>
     <string name="closeWelcome">Okay, sounds good!</string>
+    <string name="send_debug_log">Send Debug Log</string>
 </resources>
 
 
