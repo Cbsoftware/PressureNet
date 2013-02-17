@@ -81,6 +81,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     
     private String localHistoryFile = "recent.txt";
     
+    private boolean debugMode = true;
+    
     public String statusText = "";
     private final Handler statusHandler = new Handler();
     private final Handler mapHandler = new Handler();
@@ -265,6 +267,11 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		menu.removeItem(R.id.menu_log_viewer);
     		menu.removeItem(R.id.menu_delete_data);
     	}
+    	
+    	if (!debugMode) {
+    		// hide menu item
+    		
+    	}
     }
     
     public void setUpDatabase() {
@@ -336,6 +343,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			submitDataToServer();
     	} else if(item.getItemId()==R.id.menu_log_viewer) {
     		showRecentHistory();
+    	} else if(item.getItemId()==R.id.send_debug_log) {
+    		// send logs to Cumulonimbus
+    		Toast.makeText(this, "Sending", Toast.LENGTH_SHORT).show();
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
     		// Load up pressurenet.cumulonimbus.ca with the user's location
     		// and current timeframe
