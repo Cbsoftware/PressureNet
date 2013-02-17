@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -45,6 +46,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -80,6 +82,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     private String android_id;
     
     private String localHistoryFile = "recent.txt";
+    
+    private boolean debugMode = true;
     
     public String statusText = "";
     private final Handler statusHandler = new Handler();
@@ -265,6 +269,11 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		menu.removeItem(R.id.menu_log_viewer);
     		menu.removeItem(R.id.menu_delete_data);
     	}
+    	
+    	if (!debugMode) {
+    		// hide menu item
+    		menu.removeItem(R.id.send_debug_log);
+    	}
     }
     
     public void setUpDatabase() {
@@ -336,6 +345,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			submitDataToServer();
     	} else if(item.getItemId()==R.id.menu_log_viewer) {
     		showRecentHistory();
+    	} else if(item.getItemId()==R.id.send_debug_log) {
+    		// send logs to Cumulonimbus
+    		emailLogs();
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
     		// Load up pressurenet.cumulonimbus.ca with the user's location
     		// and current timeframe
@@ -381,6 +393,54 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	}*/
     	
 		return super.onOptionsItemSelected(item);
+	}
+	
+
+
+	/**
+	 * 
+	 * Email debug logs to Cumulonimbus.
+	 * 
+	 */
+	public void emailLogs() {
+		try {
+			String strFile = mAppDir + "/log.txt";
+
+			File file = new File(strFile);
+			if (!file.exists())
+				file.mkdirs();
+			
+			final Intent emailIntent = new Intent(
+					android.content.Intent.ACTION_SEND);
+
+			PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			String version = pInfo.versionName;
+			
+			String address = "software@cumulonimbus.ca";
+			String subject = "pressureNET " + version  + " Debug Log"; 
+			String emailtext = "Debug log sent " + (new Date()).toLocaleString();
+
+			emailIntent.setType("plain/text");
+
+			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+					new String[] { address });
+
+			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+					subject);
+
+			emailIntent.putExtra(Intent.EXTRA_STREAM,
+					Uri.parse("file://" + strFile));
+
+			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+					emailtext);
+
+			this.startActivity(Intent.createChooser(emailIntent,
+					"Send mail..."));
+
+		} catch (Throwable t) {
+			Toast.makeText(this, "Request failed: " + t.toString(),
+					Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	private String fullUnitToRealAbbrev(String unit) {
