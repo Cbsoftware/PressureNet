@@ -2,12 +2,16 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -44,11 +48,13 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	
 	private String mAppDir = "";
 	
+	
+	
 	public void startListening() {
 		try {
 	    	sm = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
-	    	
+	    	log("widget start listening pressure");
 	    	if(bar!=null) {
 	        	running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
 	        	//Toast.makeText(getApplicationContext(), "starting listener", Toast.LENGTH_SHORT).show();
@@ -112,6 +118,8 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
 					recents = dbAdapter.fetchRecentReadings(5); // the last few hours
 					String tendency = ScienceHandler.findTendency(recents);
+					
+					log("widget getting tendency, updating and sending");
 					
 					if(tendency.contains("rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
@@ -262,6 +270,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	public void onStart(Intent intent, int startId) {
 		try {
 			mAppDir = intent.getStringExtra("appdir"); 
+			
 		} catch(Exception e) {
 			
 		}
@@ -282,13 +291,15 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_PRESSURE: 
 			mReading = event.values[0];
-			//Toast.makeText(getApplicationContext(), mReading + "", Toast.LENGTH_SHORT).show();
+			log("widget sensor changed " + mReading + " and unregistering");
 			update(new Intent(), mReading);
 			sm.unregisterListener(this);
 			mReading = 0.0;
@@ -297,4 +308,25 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		
 	}
 
+	// Log data to SD card for debug purposes.
+	// To enable logging, ensure the Manifest allows writing to SD card.
+	public void logToFile(String text) {
+		try {
+			OutputStream output = new FileOutputStream(mAppDir + "/log.txt", true);
+			String logString = (new Date()).toString() + ": " + text + "\n";
+			output.write(logString.getBytes());
+			output.close();
+			
+		} catch(FileNotFoundException e) {
+			
+		} catch(IOException ioe) {
+			
+		}
+	}
+	
+    public void log(String text) {
+    	System.out.println(text);
+    	logToFile(text);
+    }
+	
 }
