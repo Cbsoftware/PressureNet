@@ -2,6 +2,7 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -78,6 +79,21 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	private boolean waitingForReading = false;
 	
+
+    // Used to write a log to SD card. Not used unless logging enabled.
+    public void setUpFiles() {
+    	try {
+	    	File homeDirectory = getExternalFilesDir(null);
+	    	if(homeDirectory!=null) {
+	    		mAppDir = homeDirectory.getAbsolutePath();
+	    	}
+	    	log("setting up logging");
+    	} catch (Exception e) {
+    		//log(e.getMessage());
+    	}
+    }
+    
+	
 	private boolean networkOnline() {
 		try {
 			// Test connectivity before attempting to send readings
@@ -103,7 +119,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	LocationListener locationListener;
     // Get the user's location from the location service, preferably GPS.
     public void getLocationInformation() {
-    
+    	log("get location information");
     	// get the location
     	// Acquire a reference to the system Location Manager
     	locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -121,6 +137,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	    	// no changes. stop for now.
 	    	    	if(mLatitude == latitude) {
 	    	    		if (mLongitude == longitude) {
+	    	    			log("pausing location lookup");
 	    	    			locationManager.removeUpdates(locationListener);
 	    	    		}
 	    	    	}
@@ -163,7 +180,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	if(bar!=null) {
 	    		barometerReadingsActive = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_UI);
 
-	    		log("bar is not null, listening " + barometerReadingsActive);
 	    	} else {
 	    		log("bar is null");
 	    	}
@@ -302,7 +318,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    		try {
 	    			log("offline. adding to queue " + mReading + " of size " + submitList.size());
 	    			submitList.add(br);
-	    			log("added to queue");
 	    		} catch(Exception e) {
 	    			log(e.getMessage());
 	    		}
@@ -323,7 +338,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     
     private Runnable mWaitForBarometer = new Runnable() {
     	public void run() {
-    		log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
+    		//log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
     		new ReadingSender().execute("");
     	}
     };
@@ -337,7 +352,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	setId();
 	    	
 	    	if(mReading == 0.0) {
-	    		log("active barometer: " + barometerReadingsActive);
+	    		//log("active barometer: " + barometerReadingsActive);
 	    	} else {
 				log("rs attempt: " + mLatitude + " " + mLongitude + ": " + mReading);
 				new ReadingSender().execute("");
@@ -396,8 +411,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	//System.out.println(text);
-    	//logToFile(text);
+    	System.out.println(text);
+    	logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {
@@ -452,19 +467,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		// TODO Auto-generated method stub
-		//System.out.println("on start submitreadingservice");
-		System.out.println("on start");
-		try {
-			//sendDataPeriodically();
-		} catch(Exception e) {
-			System.out.println(e.getMessage());
-		}
-		super.onStart(intent, startId);
-	}
-
-	@Override
 	public boolean onUnbind(Intent intent) {
 		// TODO Auto-generated method stub
 		try {
@@ -481,11 +483,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		log("on start command");
 		try {
-			//mAppDir = intent.getStringExtra("appdir");
-		} catch(Exception e) {
-			
-		}
-		try {
+			setUpFiles(); // start logs
 			setUpDatabase();
 		} catch(Exception e) {
 			
