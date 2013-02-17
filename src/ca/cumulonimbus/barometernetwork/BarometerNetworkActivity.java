@@ -272,7 +272,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	if (!debugMode) {
     		// hide menu item
-    		
+    		menu.removeItem(R.id.send_debug_log);
     	}
     }
     
