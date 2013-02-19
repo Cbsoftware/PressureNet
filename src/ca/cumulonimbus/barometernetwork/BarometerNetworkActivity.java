@@ -489,7 +489,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == 105) {
+		if(requestCode == 105) {
 			// Clear the log
 			String strFile = mAppDir + "/log.txt";
 			File file = new File(strFile);
