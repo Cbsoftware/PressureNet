@@ -21,6 +21,34 @@ public class ScienceHandler {
     	return ((second.getReading() - first.getReading()) / (second.getTime() -  first.getTime())); 
     }
     
+    private static int slopeOfBestFit(ArrayList<BarometerReading> recents) {
+    	
+    	
+    	return 0;
+    }
+    
+    // 2013's improvement to yesterday's tendency algorithm
+    public static String findApproximateTendency(ArrayList<BarometerReading> recents) {
+    	if(recents == null) {
+    		return "Unknown";
+    	}
+    	if(recents.size() < 5) {
+    		return "Unknown";
+    	}
+    	
+    	int slope = slopeOfBestFit(recents);
+    	
+    	if (slope == 1) {
+    		return "Rising";
+    	} else if(slope == -1) {
+    		return "Falling";
+    	} else if (slope == 0) {
+    		return "Steady";
+    	} else {
+    		return "Unknown";
+    	}
+    }
+    
     // Given a list of recent readings, find the tendency and return it
     public static String findTendency(ArrayList<BarometerReading> recents) {
     	// a nice, rough-guide approach is to look for change more than
