@@ -462,6 +462,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			this.startActivity(Intent.createChooser(emailIntent,
 					"Send mail..."));
 
+			// Clear the log
+			file.delete();
 		} catch (Throwable t) {
 			Toast.makeText(this, "Request failed: " + t.toString(),
 					Toast.LENGTH_LONG).show();
