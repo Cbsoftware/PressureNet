@@ -1,10 +1,20 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+
+import android.app.Activity;
 
 public class ScienceHandler {
+	
+	private String mAppDir;
     
 	private static class TimeComparator implements Comparator<BarometerReading> {
         @Override
@@ -17,8 +27,87 @@ public class ScienceHandler {
         }
     }
     
-    public static double slopeOfReadings(BarometerReading first, BarometerReading second) {
-    	return ((second.getReading() - first.getReading()) / (second.getTime() -  first.getTime())); 
+    
+    private int slopeOfBestFit(ArrayList<BarometerReading> recents) {
+    	double time[] = new double[recents.size()];
+    	double pressure[] = new double[recents.size()];
+    	int x = 0;
+    	long sumTime = 0L;
+    	long sumPressure = 0L;
+    	for(BarometerReading br : recents) {
+    		time[x] = br.getTime();
+    		sumTime += time[x];
+    		sumTime += time[x] * time[x];
+    		sumPressure += pressure[x];
+    		pressure[x] = br.getReading();
+    		x++;
+    	}
+		double timeBar = sumTime / x;
+		double pressureBar = sumPressure / x;
+		double ttBar = 0.0;
+		double tpBar = 0.0;
+		for (int y = 0; y < x; y++) {
+			ttBar += (time[y] - timeBar) * (time[y] - timeBar);
+			tpBar += (time[y] - timeBar) * (pressure[y] - pressureBar);
+		}
+		double beta1 = tpBar / ttBar;
+		log("tendency best fit slope " + beta1);
+		if (beta1 < -0.1) {
+			return -1;
+		} else if (beta1 > 0.1) {
+			return 1;
+		} else if (beta1 >= -0.1 && beta1 <= 0.1) {
+			return 0;
+		} else {
+		   	return 0;
+		}
+    }
+    
+    // 2013's improvement to yesterday's tendency algorithm
+    public String findApproximateTendency(ArrayList<BarometerReading> recents) {
+    	if(recents == null) {
+    		return "Unknown";
+    	}
+    	if(recents.size() < 5) {
+    		return "Unknown";
+    	}
+    	
+    	int slope = slopeOfBestFit(recents);
+    	
+    	if (slope == 1) {
+    		return "Rising";
+    	} else if(slope == -1) {
+    		return "Falling";
+    	} else if (slope == 0) {
+    		return "Steady";
+    	} else {
+    		return "Unknown";
+    	}
+    }
+    
+    
+	// Log data to SD card for debug purposes.
+	// To enable logging, ensure the Manifest allows writing to SD card.
+	public void logToFile(String text) {
+		try {
+			OutputStream output = new FileOutputStream(mAppDir + "/log.txt", true);
+			String logString = (new Date()).toString() + ": " + text + "\n";
+			output.write(logString.getBytes());
+			output.close();
+		} catch(FileNotFoundException e) {
+			
+		} catch(IOException ioe) {
+			
+		}
+	}
+	
+	public ScienceHandler(String appDir) {
+		mAppDir = appDir;
+	}
+	
+    public void log(String text) {
+    	logToFile(text);
+    	System.out.println(text);
     }
     
     // Given a list of recent readings, find the tendency and return it
@@ -70,4 +159,10 @@ public class ScienceHandler {
     		return "steady";
     	}
     }
+    
+	// Not really very useful.
+    public static double slopeOfReadings(BarometerReading first, BarometerReading second) {
+    	return ((second.getReading() - first.getReading()) / (second.getTime() -  first.getTime())); 
+    }
+
 }
