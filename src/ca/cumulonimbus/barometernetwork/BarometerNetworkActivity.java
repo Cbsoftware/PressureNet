@@ -459,11 +459,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 					emailtext);
 
-			this.startActivity(Intent.createChooser(emailIntent,
-					"Send mail..."));
+			startActivityForResult(Intent.createChooser(emailIntent,
+					"Send mail..."),105);
 
-			// Clear the log
-			file.delete();
+
 		} catch (Throwable t) {
 			Toast.makeText(this, "Request failed: " + t.toString(),
 					Toast.LENGTH_LONG).show();
@@ -484,6 +483,20 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		} else {
 			return "mbar";
 		}
+	}
+	
+	
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == 105) {
+			// Clear the log
+			String strFile = mAppDir + "/log.txt";
+			File file = new File(strFile);
+			if (file.exists())
+				file.delete();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	// Give a quick overview of recent 
