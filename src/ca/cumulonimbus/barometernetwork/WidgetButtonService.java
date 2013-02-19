@@ -117,21 +117,23 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					dbAdapter.open();
 					ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
 					recents = dbAdapter.fetchRecentReadings(5); // the last few hours
-					String tendency = ScienceHandler.findTendency(recents);
+					// String tendency = ScienceHandler.findTendency(recents);
+					ScienceHandler science = new ScienceHandler(mAppDir);
+					String tendency = science.findApproximateTendency(recents);
 					
 					log("widget getting tendency, updating and sending");
 					
-					if(tendency.contains("rising")) {
+					if(tendency.contains("Rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.INVISIBLE);
 						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.TOP);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "rising");
-					} else if(tendency.contains("falling")) {
+					} else if(tendency.contains("Falling")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.VISIBLE);
 						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.BOTTOM);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "falling");
-					} else if(tendency.contains("steady")) {
+					} else if(tendency.contains("Steady")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.INVISIBLE);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "steady");
