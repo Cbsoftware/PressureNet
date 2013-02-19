@@ -1,9 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -61,23 +58,16 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	private SubmitReadingService that = this;
 	
-	//private String localHistoryFile = "recent.txt";
-	
 	private String mAppDir = "";
-	
 	private String android_id;
-	
 	private boolean showToast = false;
-	
 	private String serverURL = PressureNETConfiguration.SERVER_URL;
-	
 	private static ArrayList<BarometerReading> submitList = new ArrayList<BarometerReading>();
-	
 	private boolean barometerReadingsActive = false;
-	
 	private long lastSubmitTime;
-	
 	private boolean waitingForReading = false;
+	private long lastLocationSuccess = 0; 
+	
 	
 
     // Used to write a log to SD card. Not used unless logging enabled.
@@ -119,11 +109,17 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	LocationListener locationListener;
     // Get the user's location from the location service, preferably GPS.
     public void getLocationInformation() {
-    	log("get location information");
+    	log("service get location information");
     	// get the location
     	// Acquire a reference to the system Location Manager
     	locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+    	// Check when we last got a location successfully. Too recently? Don't bother checking. 
+    	long now = Calendar.getInstance().getTimeInMillis();
+    	long difference = now - lastLocationSuccess;
+    	log("service location time check difference " + difference);
+    	
+    	
     	// Define a listener that responds to location updates
     	locationListener = new LocationListener() {
     	    public void onLocationChanged(Location location) {
@@ -137,7 +133,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	    	// no changes. stop for now.
 	    	    	if(mLatitude == latitude) {
 	    	    		if (mLongitude == longitude) {
-	    	    			log("pausing location lookup");
+	    	    			log("service pausing location lookup");
 	    	    			locationManager.removeUpdates(locationListener);
 	    	    		}
 	    	    	}
@@ -146,7 +142,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	    	mLatitude = latitude;
 	    	    	mLongitude = longitude;
 	    	    	log("new location " + latitude + " " + longitude);
-	    	    	
+	    	    	lastLocationSuccess = Calendar.getInstance().getTimeInMillis();
 	    	    	// now stop. we'll start again next time.
 	    	    	locationManager.removeUpdates(locationListener);
     	    	} catch(Exception e) {
@@ -297,9 +293,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			    		HttpResponse response = client.execute(httppost);
 		    		}
 		    		
-		    		
-		    		
-		    		log("reading sender posting current " + mReading);
+		    		log("service sender posting current " + mReading);
 		    		// current reading
 		    		List<NameValuePair> nvps = barometerReadingToNVP(br);
 		    		httppost.setEntity(new UrlEncodedFormEntity(nvps));
@@ -307,10 +301,28 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		    		// Until we implement tendencies, don't write to the local file
 		    		addToLocalDatabase(br);
 		    		
+		    		try {
+		    			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		    			locationManager.removeUpdates(locationListener);
+		    		} catch(Exception e) {
+		    			log(e.getMessage());
+		    		}
 		    		
 		    	} catch(ClientProtocolException cpe) {
+		    		try {
+		    			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		    			locationManager.removeUpdates(locationListener);
+		    		} catch(Exception e) {
+		    			log(e.getMessage());
+		    		}
 		    		log(cpe.getMessage());
 		    	} catch(IOException ioe) {
+		    		try {
+		    			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		    			locationManager.removeUpdates(locationListener);
+		    		} catch(Exception e) {
+		    			log(e.getMessage());
+		    		}
 		    		log(ioe.getMessage());
 		    	}
 	    	} else {
@@ -318,6 +330,12 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    		try {
 	    			log("offline. adding to queue " + mReading + " of size " + submitList.size());
 	    			submitList.add(br);
+	    			try {
+		    			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		    			locationManager.removeUpdates(locationListener);
+		    		} catch(Exception e) {
+		    			log(e.getMessage());
+		    		}
 	    		} catch(Exception e) {
 	    			log(e.getMessage());
 	    		}
@@ -344,7 +362,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     };
     
     public void sendBarometerReading() {
-    	//System.out.println("send barometer reading");
     	log("send barometer reading");
     	try {
 	    	getLocationInformation();
@@ -361,7 +378,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 				//sm.unregisterListener(that);
 		    }
     	} catch(Exception e) {
-    		// 
+    		log("service send barometer reading exception " + e.getMessage());
     	}
     }
     
@@ -369,11 +386,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		
 		public void run() {
 			long base = SystemClock.uptimeMillis();
-			log("run mSubmitReading");
 			waitingForReading = true;
-			
 			sendBarometerReading();
-			
 			
     		
 			mHandler.postAtTime(this, base + (mSeconds * 1000));
@@ -436,6 +450,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	@Override
 	public void onCreate() {
+		log("service oncreate");
 		try {
 			setUpDatabase();
 		} catch(Exception e) {
@@ -447,7 +462,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
-
+		log("service ondestroy");
 		// stop listening for pressure readings
 		// and location readings
 		try {
@@ -469,6 +484,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	@Override
 	public boolean onUnbind(Intent intent) {
 		// TODO Auto-generated method stub
+		log("service unbinding, closing db");
 		try {
 			dbAdapter.close();
 		} catch(Exception e) {
@@ -481,7 +497,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		log("on start command");
+		log("service on start command");
 		try {
 			setUpFiles(); // start logs
 			setUpDatabase();
@@ -497,7 +513,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		log("on bind");
+		log("service on bind");
 		/*
 		if(intent.getAction().equals(ACTION_SUBMIT_SINGLE)) {
 			showToast = true;
@@ -514,11 +530,10 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		log("on sensor changed " + event.timestamp);
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_PRESSURE: 
 			mReading = event.values[0];
-			log("new sensor reading: " + mReading);
+			log("new service sensor reading: " + mReading);
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			sm.unregisterListener(that);
 			waitingForReading = false;

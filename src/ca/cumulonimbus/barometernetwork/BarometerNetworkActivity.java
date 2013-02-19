@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -110,6 +111,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         migratePreferences(); 
+        startLog();
         setUpDatabase();
         setUpBarometer();
         getStoredPreferences();
@@ -120,6 +122,19 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         showWelcomeActivity();
         startSendingData();
         setUpActionBar();
+    }
+    
+    public void startLog() {
+    	// Log
+    	String version = "";
+		PackageInfo pInfo;
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			version = pInfo.versionName;
+		} catch (NameNotFoundException e) { }
+		
+    	
+    	log("oncreate main activity v: " + version);
     }
     
     // Get the phone ID and hash it
@@ -210,6 +225,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
      * Migrate from the old 'pressureNETprefs' system to the new one. 3.0 -> 3.0.1
      */
     private void migratePreferences() {
+    	// Log
+    	String version = "";
+		PackageInfo pInfo;
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			version = pInfo.versionName;
+		} catch (NameNotFoundException e) { }
+		
+    	log("migrate prefs to " + version);
+		
 		// Migrate old preferences
 		SharedPreferences oldSettings = getSharedPreferences("pressureNETPrefs", 0);
 	    if(oldSettings.contains("autoupdate")) {
