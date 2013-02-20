@@ -990,12 +990,14 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			
 			// get sharing preference
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String share = settings.getString("sharing_preference", "Cumulonimbus and Academic Researchers");
+			String share = settings.getString("sharing_preference", "Us and Researchers");
 		    
 			// if sharing is None, don't send anything anywhere.
-			if (share.equals("None")) {
+			if (share.equals("Nobody")) {
 				return null;
 			}
+			
+			log("app sending " + mReading);
 			
 	    	BarometerReading br = new BarometerReading();
 	    	br.setLatitude(mLatitude);
