@@ -121,7 +121,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					ScienceHandler science = new ScienceHandler(mAppDir);
 					String tendency = science.findApproximateTendency(recents);
 					
-					log("widget getting tendency, updating and sending");
+					log("widget getting tendency, updating and sending: " + tendency);
 					
 					if(tendency.contains("Rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);

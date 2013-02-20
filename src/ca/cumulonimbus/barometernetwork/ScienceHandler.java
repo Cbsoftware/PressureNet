@@ -26,7 +26,17 @@ public class ScienceHandler {
             }
         }
     }
-    
+
+	private static class PressureComparator implements Comparator<BarometerReading> {
+        @Override
+        public int compare(BarometerReading o1, BarometerReading o2) {
+            if(o1.getReading() < o2.getReading()) {
+            	return -1;
+            } else {
+            	return 1;
+            }
+        }
+    }
     
     private int slopeOfBestFit(ArrayList<BarometerReading> recents) {
     	double time[] = new double[recents.size()];
@@ -63,22 +73,50 @@ public class ScienceHandler {
 		}
     }
     
+    // Take a good guess about the recent meteorological trends
+    // (TODO: There's too much sorting going on here. Should use min and max) 
+    private int guessedButGoodDecision(ArrayList<BarometerReading> recents) {
+    	// Sort by pressure
+    	Collections.sort(recents, new PressureComparator());
+    	double minPressure = recents.get(0).getReading();
+    	double maxPressure = recents.get(recents.size()-1).getReading();
+    	
+    	// Sort by time
+    	Collections.sort(recents, new TimeComparator());
+    	double minTime = recents.get(0).getTime();
+    	double maxTime = recents.get(recents.size()-1).getTime();
+    	// Start time at 0
+    	for(BarometerReading br : recents) {
+    		// we'd like to compare delta pressure and delta time
+    		// preferably in millibars and hours.
+    		br.setTime((br.getTime() - minTime) / (1000 * 3600));
+    		br.setReading(br.getReading() - minPressure);
+    	}
+    	int slope = slopeOfBestFit(recents);
+    	
+    	return slope;
+    }
+    
     // 2013's improvement to yesterday's tendency algorithm
     public String findApproximateTendency(ArrayList<BarometerReading> recents) {
     	if(recents == null) {
+    		log("tendency: recents is null");
     		return "Unknown";
     	}
     	if(recents.size() < 5) {
+    		log("tendency: fewer than 5");
     		return "Unknown";
     	}
     	
-    	int slope = slopeOfBestFit(recents);
+    	int decision = guessedButGoodDecision(recents);
     	
-    	if (slope == 1) {
+    	log("tendency decision: " + decision + " from size " + recents.size());
+    	
+    	if (decision == 1) {
     		return "Rising";
-    	} else if(slope == -1) {
+    	} else if(decision == -1) {
     		return "Falling";
-    	} else if (slope == 0) {
+    	} else if (decision == 0) {
     		return "Steady";
     	} else {
     		return "Unknown";
@@ -110,59 +148,5 @@ public class ScienceHandler {
     	System.out.println(text);
     }
     
-    // Given a list of recent readings, find the tendency and return it
-    public static String findTendency(ArrayList<BarometerReading> recents) {
-    	// a nice, rough-guide approach is to look for change more than
-    	// 3-4 millibars over about 5 hours.
-    	if(recents==null) {
-    		return "no recents";
-    	}
-    	// bail if there aren't many results
-    	if(recents.size() < 4) {
-    		return "unknown";
-    	}
-    	// sort recents by time.
-    	Collections.sort(recents, new TimeComparator());
-    	// compare the first and last, 
-    	// and maybe the ones in the middle
-    	BarometerReading first = recents.get(0);
-    	BarometerReading second = recents.get(1);
-    	BarometerReading last = recents.get(recents.size() - 1);
-    	BarometerReading secondlast = recents.get(recents.size() - 2);
-    	double widerSlope = slopeOfReadings(first, last);
-    	double innerSlope = slopeOfReadings(second, secondlast);
-    	if(widerSlope > 0) {
-    		double diff = second.getReading() - first.getReading();
-    		diff = Math.abs(diff);
-    		if(diff > 2) {
-	    		if(innerSlope > 0) {
-	    			return "rising";
-	    		} else {
-	    			return "probably rising";
-	    		}
-    		} else {
-    			return "maybe rising";
-    		}
-    	} else if(widerSlope < 0) {
-    		double diff = second.getReading() - first.getReading();
-    		diff = Math.abs(diff);
-    		if(diff > 2) {
-	    		if(innerSlope < 0) {
-	    			return "falling";
-	    		} else {
-	    			return "probably falling";
-	    		} 
-    		} else {
-    			return "maybe falling";
-    		}
-    	} else {
-    		return "steady";
-    	}
-    }
-    
-	// Not really very useful.
-    public static double slopeOfReadings(BarometerReading first, BarometerReading second) {
-    	return ((second.getReading() - first.getReading()) / (second.getTime() -  first.getTime())); 
-    }
 
 }

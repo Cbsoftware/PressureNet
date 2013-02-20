@@ -117,7 +117,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	// Check when we last got a location successfully. Too recently? Don't bother checking. 
     	long now = System.currentTimeMillis();
     	long difference = now - lastLocationSuccess;
-    	log("service location time check difference " + difference);
     	
     	// Five Seconds Maximum
     	if(difference > 1000*5) {
@@ -360,7 +359,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     };
     
     public void sendBarometerReading() {
-    	log("send barometer reading");
+    	log("service send barometer reading");
     	try {
 	    	getLocationInformation();
 	    	setUpBarometer();
@@ -527,7 +526,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			// Log
 			long now = System.currentTimeMillis();
 			long difference = now - lastPressureSuccess;
-			log("service pressure change difference " + difference);
 			if(difference > 1000) {
 			
 				mReading = event.values[0];
