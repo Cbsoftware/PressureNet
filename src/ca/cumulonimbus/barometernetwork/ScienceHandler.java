@@ -1,6 +1,5 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,14 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-
-import android.app.Activity;
+import java.util.List;
 
 public class ScienceHandler {
 	
 	private String mAppDir;
     
-	private static class TimeComparator implements Comparator<BarometerReading> {
+	public static class TimeComparator implements Comparator<BarometerReading> {
         @Override
         public int compare(BarometerReading o1, BarometerReading o2) {
             if(o1.getTime() < o2.getTime()) {
@@ -27,7 +25,7 @@ public class ScienceHandler {
         }
     }
 
-	private static class PressureComparator implements Comparator<BarometerReading> {
+	public static class PressureComparator implements Comparator<BarometerReading> {
         @Override
         public int compare(BarometerReading o1, BarometerReading o2) {
             if(o1.getReading() < o2.getReading()) {
@@ -38,7 +36,7 @@ public class ScienceHandler {
         }
     }
     
-    private int slopeOfBestFit(ArrayList<BarometerReading> recents) {
+    private int slopeOfBestFit(List<BarometerReading> recents) {
     	double time[] = new double[recents.size()];
     	double pressure[] = new double[recents.size()];
     	int x = 0;
@@ -75,7 +73,7 @@ public class ScienceHandler {
     
     // Take a good guess about the recent meteorological trends
     // (TODO: There's too much sorting going on here. Should use min and max) 
-    private int guessedButGoodDecision(ArrayList<BarometerReading> recents) {
+    private int guessedButGoodDecision(List<BarometerReading> recents) {
     	// Sort by pressure
     	Collections.sort(recents, new PressureComparator());
     	double minPressure = recents.get(0).getReading();
@@ -98,7 +96,7 @@ public class ScienceHandler {
     }
     
     // 2013's improvement to yesterday's tendency algorithm
-    public String findApproximateTendency(ArrayList<BarometerReading> recents) {
+    public String findApproximateTendency(List<BarometerReading> recents) {
     	if(recents == null) {
     		log("tendency: recents is null");
     		return "Unknown";
