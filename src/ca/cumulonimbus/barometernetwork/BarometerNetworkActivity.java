@@ -137,6 +137,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			ScienceHandler science = new ScienceHandler(mAppDir);
 			String tendency = science.findApproximateTendency(recents);
 			mTendency = tendency;
+			if (mTendency.equals("Unknown")) {
+				mTendency = "";
+			}
 			dbAdapter.close();
 		} catch(Exception e) {
 			System.out.println("tendency error " + e.getMessage());
