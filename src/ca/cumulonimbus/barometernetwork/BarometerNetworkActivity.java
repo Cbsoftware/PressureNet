@@ -86,6 +86,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     
     private boolean debugMode = true;
     
+    private String mTendency = "";
+    
     public String statusText = "";
     private final Handler statusHandler = new Handler();
     private final Handler mapHandler = new Handler();
@@ -122,6 +124,23 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         showWelcomeActivity();
         startSendingData();
         setUpActionBar();
+        findTendency();
+    }
+    
+    public void findTendency() {
+    	try {
+			dbAdapter = new DBAdapter(getApplicationContext());
+			dbAdapter.open();
+			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
+			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
+			// String tendency = ScienceHandler.findTendency(recents);
+			ScienceHandler science = new ScienceHandler(mAppDir);
+			String tendency = science.findApproximateTendency(recents);
+			mTendency = tendency;
+			dbAdapter.close();
+		} catch(Exception e) {
+			System.out.println("tendency error " + e.getMessage());
+		}
     }
     
     public void startLog() {
@@ -1259,7 +1278,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			String abbrev = mUnit.getAbbreviation();
 	    	DecimalFormat df = new DecimalFormat("####.00");
 	        String toPrint = df.format(value);
-	    	textView.setText(toPrint + " " + abbrev);
+	    	textView.setText(toPrint + " " + abbrev + " " + mTendency);
 		} else {
 			textView.setText("No barometer detected.");
 			// textView.setVisibility(View.GONE);
