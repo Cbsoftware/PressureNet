@@ -28,7 +28,7 @@ public class CurrentConditionsActivity extends Activity {
 		buttonSunny.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
+				// send out 'sunny' with 'current_condition' nvp
 			}
 		});
 		

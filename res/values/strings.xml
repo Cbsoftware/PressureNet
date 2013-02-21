@@ -72,6 +72,25 @@
     </string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
+    <string name="sunny">Sun</string>
+    <string name="foggy">Fog</string>
+    <string name="cloudy">Clouds</string>
+    <string name="precipitation">Precip.</string>
+    <string name="thunderstorm">!!!</string>
+    <string name="current_conditions">Current Conditions</string>
+    <string-array name="sunny_subset">
+        <item name="windy">Windy</item>
+        <item name="calm">Calm</item>
+    </string-array>
+    <string-array name="foggy_subset">
+        <item name="thick">Thick</item>
+        <item name="think">Thin</item>
+    </string-array>
+    <string-array name="precipitation_subset">
+        <item name="rain">Rain</item>
+        <item name="hail">Hail</item>
+        <item name="snow">Snow</item>
+    </string-array>
 </resources>
 
 

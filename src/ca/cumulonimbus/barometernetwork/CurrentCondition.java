@@ -10,6 +10,7 @@ package ca.cumulonimbus.barometernetwork;
  */
 public class CurrentCondition {
 	private double time;
+	private int tzoffset;
 	private String location_type;
 	private double latitude;
 	private double longitude;
@@ -19,11 +20,19 @@ public class CurrentCondition {
 	private String fog_thickness;
 	private String cloud_type;
 	private String precipitation_type;
-	private String precipitation_amount;
+	private double precipitation_amount;
+	private String precipitation_unit;
 	private String thunderstorm_intensity;
 	private String user_id;
 	private String sharing_policy;
+	private String user_comment;
 	
+	public String getUser_comment() {
+		return user_comment;
+	}
+	public void setUser_comment(String user_comment) {
+		this.user_comment = user_comment;
+	}
 	public String getUser_id() {
 		return user_id;
 	}
@@ -38,6 +47,12 @@ public class CurrentCondition {
 	}
 	public double getTime() {
 		return time;
+	}
+	public int getTzoffset() {
+		return tzoffset;
+	}
+	public void setTzoffset(int tzoffset) {
+		this.tzoffset = tzoffset;
 	}
 	public void setTime(double time) {
 		this.time = time;
@@ -96,20 +111,22 @@ public class CurrentCondition {
 	public void setPrecipitation_type(String precipitation_type) {
 		this.precipitation_type = precipitation_type;
 	}
-	public String getPrecipitation_amount() {
+	public double getPrecipitation_amount() {
 		return precipitation_amount;
 	}
-	public void setPrecipitation_amount(String precipitation_amount) {
+	public void setPrecipitation_amount(double precipitation_amount) {
 		this.precipitation_amount = precipitation_amount;
+	}
+	public String getPrecipitation_unit() {
+		return precipitation_unit;
+	}
+	public void setPrecipitation_unit(String precipitation_unit) {
+		this.precipitation_unit = precipitation_unit;
 	}
 	public String getThunderstorm_intensity() {
 		return thunderstorm_intensity;
 	}
 	public void setThunderstorm_intensity(String thunderstorm_intensity) {
 		this.thunderstorm_intensity = thunderstorm_intensity;
-	}
-	
-	
-	
-	
+	}	
 }
