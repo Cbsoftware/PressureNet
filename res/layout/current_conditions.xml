@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+<ScrollView 
+    android:layout_width="fill_parent" android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+    <Button
+        android:id="@+id/buttonSunny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sunny" />
+
+    <Button
+        android:id="@+id/buttonFoggy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/foggy" />
+
+    <Button
+        android:id="@+id/buttonCloudy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cloudy" />
+
+    <Button
+        android:id="@+id/buttonPrecipitation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/precipitation" />
+    
+    <Button
+        android:id="@+id/buttonThunderstorm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/thunderstorm" />
+    
+    
+    </LinearLayout>
+</ScrollView>
+
+</LinearLayout>

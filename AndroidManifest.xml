@@ -17,6 +17,9 @@
                   android:excludeFromRecents="true"> 
         </activity>
         
+        <activity android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity" 
+            	  android:label="@string/current_conditions" 
+            	  android:excludeFromRecents="true"></activity>
         <activity android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity" 
             	  android:label="@string/settings" 
             	  android:excludeFromRecents="true"></activity>

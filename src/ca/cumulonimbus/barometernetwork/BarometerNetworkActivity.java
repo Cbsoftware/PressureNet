@@ -395,6 +395,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	} else if(item.getItemId()==R.id.send_debug_log) {
     		// send logs to Cumulonimbus
     		emailLogs();
+    	}  else if(item.getItemId()==R.id.menu_current_conditions) {
+    		// Current conditions
+    		Intent intent = new Intent(getApplicationContext(), CurrentConditionsActivity.class);
+    		startActivity(intent);
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
     		// Load up pressurenet.cumulonimbus.ca with the user's location
     		// and current timeframe
