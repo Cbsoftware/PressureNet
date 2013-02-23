@@ -460,6 +460,35 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
 
 
+    // Assemble a list of CurrentConditions. This is the opposite of function currentConditionToWeb in the servlet.
+	public ArrayList<CurrentCondition> csvToCurrentConditions(String[] conditions) {
+    	ArrayList<CurrentCondition> conditionsList = new ArrayList<CurrentCondition>();
+    	for(int i = 0; i<conditions.length; i++) {
+    		try {
+	    		String[] values = conditions[i].split("\\|");
+	    		CurrentCondition cc = new CurrentCondition();
+	    		cc.setLatitude(Double.parseDouble(values[0]));
+	    		cc.setLongitude(Double.parseDouble(values[1]));
+	    		cc.setGeneral_condition(values[2]);
+	    		cc.setTime(Double.parseDouble(values[3]));
+	    		cc.setTzoffset((Integer.parseInt(values[4])));
+	    		cc.setWindy(values[5]);
+	    		cc.setFog_thickness(values[6]);
+	    		cc.setPrecipitation_type(values[7]);
+	    		cc.setPrecipitation_amount(Double.parseDouble(values[8]));
+	    		cc.setThunderstorm_intensity(values[9]);
+	    		cc.setUser_id(values[10]);
+	    		conditionsList.add(cc);
+    		} catch(NumberFormatException nfe) {
+    			// Likely, tomcat returned an error.
+    			log("Server error? " + nfe.getMessage());
+    		}
+    	}
+    	
+    	return conditionsList;
+    }
+	
+
 	/**
 	 * 
 	 * Email debug logs to Cumulonimbus.
@@ -858,40 +887,59 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	return ((br.getAndroidId().equals(android_id)));
     }
     
-    // Put a bunch of barometer readings on the map.
-    public void addDataToMap(ArrayList<BarometerReading> list, boolean showTendencies, HashMap<String, String> tendencies) {
+    // Put a bunch of barometer readings and current conditions on the map.
+    public void addDataToMap(ArrayList<BarometerReading> readingsList, ArrayList<CurrentCondition> conditionsList, boolean showTendencies, HashMap<String, String> tendencies) {
     	log("add data to map");
     	BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-    	
     	List<Overlay> mapOverlays = mv.getOverlays();
     	
     	Drawable drawable = this.getResources().getDrawable(R.drawable.ic_marker);
-    	Drawable selfDrawable = this.getResources().getDrawable(R.drawable.ic_marker);
-    	//Drawable upArrowDrawable = this.getResources().getDrawable(R.drawable.ic_tend_up);
-    	//Drawable downArrowDrawable = this.getResources().getDrawable(R.drawable.ic_tend_down); 
-
-    	
     	mapOverlays.clear();
     	
     	// add a bunch of coords
     	try {
-	    	for(BarometerReading br : list) {
-	    		// log(br.getReading() + "");
+    		for(BarometerReading br : readingsList) {
 	    		MapOverlay overlay;
-
-	    		// Pick an overlay icon depending on the BR and 
-	    		// the current settings. BR aging icon? Tendency?
-	    		overlay = new MapOverlay(drawable, this, 14); // default
-	    		if(showTendencies) {
-
-	    			
-	    			
-	    		} else {
-	    			if(brIsMe(br)) {
-		    			overlay = new MapOverlay(selfDrawable, this, 14);
-		    		} else {
-		    			overlay = new MapOverlay(drawable, this, 14);
-		    		}	
+	    		
+	    		// Pick an overlay icon depending on the reading and 
+	    		// the current conditions. reading alone? reading with tendency?
+	    		// current condition alone? current condition with tendency?
+	    		
+	    		// is there a current condition from the same user as this reading?
+	    		overlay = new MapOverlay(drawable, this, 14);
+	    		for(CurrentCondition condition: conditionsList) {
+	    			if(condition.getUser_id().equals(br.getAndroidId())) {
+	    				if(condition.getGeneral_condition().equals("Sunny")) {
+	    					log("Sunny condition found, changing overlay to sun");
+	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_sun);
+	    					overlay = new MapOverlay(sunDrawable, this, 14);
+	    				} else if(condition.getGeneral_condition().equals("Precipitation")) {
+	    					if(condition.getPrecipitation_type().equals("Rain")) {
+	    						log("Rainy condition found, changing overlay to rain");
+	    						Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_rain3);
+		    					overlay = new MapOverlay(rainDrawable, this, 14);
+	    					} else if(condition.getPrecipitation_type().equals("Snow")) {
+	    						log("Snowy condition found, changing overlay to snow");
+	    						Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_snow3);
+		    					overlay = new MapOverlay(snowDrawable, this, 14);
+	    					} else if(condition.getPrecipitation_type().equals("Hail")) {
+	    						log("Hail condition found, changing overlay to hail");
+	    						Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_hail3);
+		    					overlay = new MapOverlay(hailDrawable, this, 14);
+	    					}
+	    				} else if(condition.getGeneral_condition().equals("Cloudy")) {
+	    					log("Cloudy condition found, changing overlay to cloudy");
+    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_cloud_dark);
+	    					overlay = new MapOverlay(cloudDrawable, this, 14);
+	    				} else {
+	    					log(condition.getGeneral_condition() + " huh");
+	    				}
+	    			} else {
+	    				// there is no current condition. show just the barometer icon
+	    				// perhaps with a tendency arrow
+	    				log("No condition found, default.");
+	    				overlay = new MapOverlay(drawable, this, 14);
+	    			}
 	    		}
 	    		
 	        	GeoPoint point = new GeoPoint((int)((br.getLatitude()) * 1E6), (int)((br.getLongitude()) * 1E6));
@@ -902,7 +950,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        	mapOverlays.add(overlay);
 	        	
 	        	mv.invalidate();
-	        	//mv.refreshDrawableState();
 	    	}
 	    } catch(Exception e) {
 	    	log("add data error: " + e.getMessage());
@@ -972,13 +1019,28 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	log("process download result");
     	if(!result.equals("")) {
     		if(result.contains("local_data return;")) {
+    			// local_data return now contains both pressure readings
+    			// and current conditions
+    			
+    			// get the result
     			result = result.substring("local_data return;".length());
-	    		String[] csvReading = result.split(";");
-	    		ArrayList<BarometerReading> readings = csvToBarometerReadings(csvReading);
-	    		addDataToMap(readings, false, null);
+	    		
+    			// split into barometer data and weather data
+    			String[] bothDataSets = result.split("----------");
+    			
+    			try {
+	    			String[] csvReading = bothDataSets[0].split(";");
+	    			String[] csvConditions = bothDataSets[1].split(";");
+	    			ArrayList<BarometerReading> readings = csvToBarometerReadings(csvReading);
+	    			ArrayList<CurrentCondition> conditions = csvToCurrentConditions(csvConditions);
+		    		addDataToMap(readings, conditions, false, null);
+	    		} catch(Exception e) {
+	    			log("error in add data : " + e.getMessage());
+	    		}
+	    		
     		} 
     	} else {
-    		// updateStatusText("Error: No data."); ancient
+    		log("failed to process download result.");
     		
     	}
     }
@@ -1076,7 +1138,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 
     // Download data from the server in the background
     private class DataDownload extends AsyncTask<String, String, String> {
-    	
     	@Override
 		protected String doInBackground(String... arg0) {
 			log("DataDownload doInBackground start");
@@ -1093,7 +1154,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		
 	    		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
-	    		String type = "local_data";
+	    		String type = "local_current_data";
 	    		
 	    		if(type.equals("all_data")) {
 	    			nvps.add(new BasicNameValuePair("download","all_data"));
@@ -1101,6 +1162,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    			nvps.add(new BasicNameValuePair("download","recent_data"));
 	    			nvps.add(new BasicNameValuePair("days","1"));
 	    		} else if(type.equals("local_data")) {
+	    			// PRESSURENET DEFAULT v. 1.0 to 3.0.1
 	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		    		GeoPoint center = mv.getMapCenter();
 		    		int latSpan = mv.getLatitudeSpan();
@@ -1111,6 +1173,20 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		    		nvps.add(new BasicNameValuePair("centerlon", center.getLongitudeE6() + ""));
 		    		nvps.add(new BasicNameValuePair("latspan", latSpan + ""));
 		    		nvps.add(new BasicNameValuePair("longspan", longSpan + ""));
+	    		} else if(type.equals("local_current_data")) {
+	    			// Same base as local_data but with Current Conditions added
+	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
+		    		GeoPoint center = mv.getMapCenter();
+		    		int latSpan = mv.getLatitudeSpan();
+		    		int longSpan = mv.getLongitudeSpan();
+		    		
+		    		// masquerading as local_data might break the local_data else if above
+		    		nvps.add(new BasicNameValuePair("download", "local_data")); 
+		    		nvps.add(new BasicNameValuePair("centerlat", center.getLatitudeE6() + ""));
+		    		nvps.add(new BasicNameValuePair("centerlon", center.getLongitudeE6() + ""));
+		    		nvps.add(new BasicNameValuePair("latspan", latSpan + ""));
+		    		nvps.add(new BasicNameValuePair("longspan", longSpan + ""));
+		    		
 	    		} else if(type.equals("local_tendency_data")) {
 	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		    		GeoPoint center = mv.getMapCenter();
@@ -1147,7 +1223,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	return responseText;
 		}
 		protected void onPostExecute(String result) {
-			//log("datadownload post execute " + result);
+			log("datadownload post execute: '" + result + "'");
 			processDownloadResult(result);
 		
 			mapHandler.postDelayed(refreshMap, 100);
