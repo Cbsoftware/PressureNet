@@ -91,6 +91,7 @@
         <item name="hail">Hail</item>
         <item name="snow">Snow</item>
     </string-array>
+    <string name="send_condition">Send!</string>
 </resources>
 
 

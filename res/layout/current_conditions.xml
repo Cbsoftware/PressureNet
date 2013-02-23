@@ -43,4 +43,11 @@
     </LinearLayout>
 </ScrollView>
 
+<Button
+        android:id="@+id/buttonSendCondition"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_condition" />
+    
+
 </LinearLayout>

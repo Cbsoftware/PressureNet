@@ -398,7 +398,19 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	}  else if(item.getItemId()==R.id.menu_current_conditions) {
     		// Current conditions
     		Intent intent = new Intent(getApplicationContext(), CurrentConditionsActivity.class);
-    		startActivity(intent);
+    		try {
+        		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        		Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        		double latitude = loc.getLatitude();
+        		double longitude = loc.getLongitude();
+        		intent.putExtra("appdir", mAppDir);
+        		intent.putExtra("latitude", latitude);
+        		intent.putExtra("longitude", longitude);
+        		log("starting condition " + latitude + " , " + longitude);
+        		startActivity(intent);
+    		} catch(NullPointerException e) {
+    			Toast.makeText(getApplicationContext(), "No location found. Please try again soon.", Toast.LENGTH_SHORT).show();
+    		}
     	} else if(item.getItemId()==R.id.menu_load_data_vis) {
     		// Load up pressurenet.cumulonimbus.ca with the user's location
     		// and current timeframe
