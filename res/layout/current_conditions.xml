@@ -2,52 +2,201 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-<ScrollView 
-    android:layout_width="fill_parent" android:layout_height="wrap_content">
-    <LinearLayout
-        android:id="@+id/layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollGeneralCondition">
+	    <LinearLayout
+	        android:id="@+id/layoutGeneral"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	
+	    <Button
+	        android:id="@+id/buttonSunny"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+			style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/sunny" />
+	
+	    <Button
+	        android:id="@+id/buttonFoggy"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/foggy" />
+	
+	    <Button
+	        android:id="@+id/buttonCloudy"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/cloudy" />
+	
+	    <Button
+	        android:id="@+id/buttonPrecipitation"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/precipitation" />
+	    
+	    <Button
+	        android:id="@+id/buttonThunderstorm"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/thunderstorm" />
+	    </LinearLayout>
+	</ScrollView>
 
-    <Button
-        android:id="@+id/buttonSunny"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sunny" />
+	<TextView
+	    android:id="@+id/generalDescription"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:text="@string/sunny" />
 
-    <Button
-        android:id="@+id/buttonFoggy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/foggy" />
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollWindy">
+	    <LinearLayout
+	        android:id="@+id/layoutWindy"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	    <Button
+	        android:id="@+id/buttonIsWindy"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windy" />
+	    
+	    <Button
+	        android:id="@+id/buttonIsCalm"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/calm" />
+	    </LinearLayout>
+	</ScrollView>
 
-    <Button
-        android:id="@+id/buttonCloudy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cloudy" />
+	<TextView
+	    android:id="@+id/windyDescription"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:text="@string/calm" />
 
-    <Button
-        android:id="@+id/buttonPrecipitation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/precipitation" />
-    
-    <Button
-        android:id="@+id/buttonThunderstorm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/thunderstorm" />
-    
-    
-    </LinearLayout>
-</ScrollView>
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollPrecip">
+	    <LinearLayout
+	        android:id="@+id/layoutPrecip"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	    <Button
+	        android:id="@+id/buttonRain"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/rain" />
+	    
+	    <Button
+	        android:id="@+id/buttonSnow"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/snow" />
+	    <Button
+	        android:id="@+id/buttonHail"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/hail" />
+	    </LinearLayout>
+	</ScrollView>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/precipitationDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"/>
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollPrecipAmount">
+	    <LinearLayout
+	        android:id="@+id/layoutPrecipAmount"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	    <Button
+	        android:id="@+id/buttonLowPrecip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/low_precip" />
+	    
+	    <Button
+	        android:id="@+id/buttonModeratePrecip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/moderate_precip" />
+	    <Button
+	        android:id="@+id/buttonHeavyPrecip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/heavy_precip" />
+	    </LinearLayout>
+	</ScrollView>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/precipitationAmountDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"/>
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollLightning">
+	    <LinearLayout
+	        android:id="@+id/layoutLightning"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	    <Button
+	        android:id="@+id/buttonInfrequentLightning"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/infrequentLightning" />
+	    
+	    <Button
+	        android:id="@+id/buttonFrequentLightning"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/frequentLightning" />
+	    <Button
+	        android:id="@+id/buttonHeavyLightning"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/heavyLightning" />
+	    </LinearLayout>
+	</ScrollView>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/lightningDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"/>
 
-<Button
-        android:id="@+id/buttonSendCondition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/send_condition" />
-    
+	<Button
+	    android:id="@+id/buttonSendCondition"
+	    style="?android:attr/buttonBarButtonStyle"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="@string/send_condition" />
 
 </LinearLayout>

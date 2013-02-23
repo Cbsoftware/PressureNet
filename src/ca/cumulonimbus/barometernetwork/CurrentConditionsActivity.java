@@ -26,6 +26,7 @@ import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CurrentConditionsActivity extends Activity {
@@ -36,6 +37,23 @@ public class CurrentConditionsActivity extends Activity {
 	private Button buttonPrecipitation;
 	private Button buttonThunderstorm;
 	private Button buttonSendCondition;
+	private Button buttonIsWindy;
+	private Button buttonIsCalm;
+	private Button buttonRain;
+	private Button buttonSnow;
+	private Button buttonHail;
+	private Button buttonInfrequentLightning;
+	private Button buttonFrequentLightning;
+	private Button buttonHeavyLightning;
+	private Button buttonLowPrecip;
+	private Button buttonModeratePrecip;
+	private Button buttonHeavyPrecip;
+	
+	private TextView textGeneralDescription;
+	private TextView textWindyDescription;
+	private TextView textPrecipitationDescription;
+	private TextView textPrecipitationAmountDescription;
+	private TextView textLightningDescription;
 	
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
@@ -48,13 +66,18 @@ public class CurrentConditionsActivity extends Activity {
 	public String mAppDir = "";
 	
     // Send data to the server in the background.
-    private class ConditionSender extends AsyncTask<String, Integer, Long> {
+    private class ConditionSender extends AsyncTask<String, Integer, String> {
 		@Override
-		protected Long doInBackground(String... arg0) {
+		protected String doInBackground(String... arg0) {
+			
+			// Display condition information;
+			String displayInfo = condition.toString();
+			// Toast.makeText(getApplicationContext(), displayInfo, Toast.LENGTH_LONG).show();
+			log("sending " + displayInfo);
 			
 			if((mLatitude == 0.0) || (mLongitude == 0.0)) {
 				//don't submit
-				return null;
+				return "conditionsender bailing. no location.";
 			}
 			
 			// get sharing preference
@@ -63,7 +86,7 @@ public class CurrentConditionsActivity extends Activity {
 		    
 			// if sharing is None, don't send anything anywhere.
 			if (share.equals("Nobody")) {
-				return null;
+				return "conditionsender bailing. no permission to share.";
 			}
 			
 			log("app sending " + condition.getGeneral_condition());
@@ -81,17 +104,21 @@ public class CurrentConditionsActivity extends Activity {
 	    		HttpResponse response = client.execute(httppost);
 	    	} catch(ClientProtocolException cpe) {
 	    		log(cpe.getMessage());
-	    		// TODO: alert of failed submit
+	    		return cpe.getMessage();
 	    	} catch(IOException ioe) {
 	    		log(ioe.getMessage());
-	    		// TODO: alert of failed submit
+	    		return ioe.getMessage();
 	    	}
-			return null;
+			return "Success";
 		}
     	
 		protected void onPostExecute(Long result) {	
+			if(!result.equals("Success")) {
+				log("failed to send condition: " + result);
+				Toast.makeText(getApplicationContext(), "Failed to send condition: "+ result, Toast.LENGTH_LONG).show();
+			}
 			Toast.makeText(getApplicationContext(), "Sent: " + condition.getGeneral_condition(), Toast.LENGTH_SHORT).show();
-//			finish();
+			finish();
 		}
     }
     
@@ -112,8 +139,6 @@ public class CurrentConditionsActivity extends Activity {
     		return "--";
     	}
 	}
-
-	
     
     // Preparation for sending a condition through the network. 
     // Take the object and NVP it.
@@ -125,6 +150,10 @@ public class CurrentConditionsActivity extends Activity {
     	nvp.add(new BasicNameValuePair("user_id", cc.getUser_id() + ""));
     	nvp.add(new BasicNameValuePair("time", cc.getTime() + ""));
     	nvp.add(new BasicNameValuePair("tzoffset", cc.getTzoffset() + ""));
+    	nvp.add(new BasicNameValuePair("windy", cc.getWindy() + ""));
+    	nvp.add(new BasicNameValuePair("precipitation_type", cc.getPrecipitation_type() + ""));
+    	nvp.add(new BasicNameValuePair("precipitation_amount", cc.getPrecipitation_amount() + ""));
+    	nvp.add(new BasicNameValuePair("thunderstorm_intensity", cc.getThunderstorm_intensity() + ""));
     	return nvp;
     }
     
@@ -141,6 +170,23 @@ public class CurrentConditionsActivity extends Activity {
 		buttonPrecipitation = (Button) findViewById(R.id.buttonPrecipitation);
 		buttonThunderstorm = (Button) findViewById(R.id.buttonThunderstorm);
 		buttonSendCondition = (Button) findViewById(R.id.buttonSendCondition);
+		buttonIsWindy = (Button) findViewById(R.id.buttonIsWindy);
+		buttonIsCalm = (Button) findViewById(R.id.buttonIsCalm);
+		buttonRain = (Button) findViewById(R.id.buttonRain);
+		buttonSnow = (Button) findViewById(R.id.buttonSnow);
+		buttonHail= (Button) findViewById(R.id.buttonHail);
+		buttonInfrequentLightning = (Button) findViewById(R.id.buttonInfrequentLightning);
+		buttonFrequentLightning = (Button) findViewById(R.id.buttonFrequentLightning);
+		buttonHeavyLightning = (Button) findViewById(R.id.buttonHeavyLightning);
+		buttonLowPrecip = (Button) findViewById(R.id.buttonLowPrecip);
+		buttonModeratePrecip = (Button) findViewById(R.id.buttonModeratePrecip);
+		buttonHeavyPrecip = (Button) findViewById(R.id.buttonHeavyPrecip);
+		
+		textGeneralDescription = (TextView) findViewById(R.id.generalDescription);
+		textWindyDescription = (TextView) findViewById(R.id.windyDescription);
+		textLightningDescription = (TextView) findViewById(R.id.lightningDescription);
+		textPrecipitationDescription = (TextView) findViewById(R.id.precipitationDescription);
+		textPrecipitationAmountDescription = (TextView) findViewById(R.id.precipitationAmountDescription);
 		
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
@@ -152,35 +198,157 @@ public class CurrentConditionsActivity extends Activity {
 		buttonSunny.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				condition.setGeneral_condition("Sunny");
+				String value = "Sunny";
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
 			}
 		});
 		
 		buttonFoggy.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				condition.setGeneral_condition("Foggy");
+				String value = "Foggy";
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
 			}
 		});
 		
 		buttonCloudy.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				condition.setGeneral_condition("Cloudy");
+				String value = "Cloudy";
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
 			}
 		});
 		
 		buttonPrecipitation.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				condition.setGeneral_condition("Precipitation");
+				String value = "Precipitation";
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
 			}
 		});
 		
 		buttonThunderstorm.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				condition.setGeneral_condition("Thunderstorm!");
+				String value = "Thunderstorm!";
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
+			}
+		});
+		
+		buttonIsWindy.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Yes";
+				condition.setWindy("Yes");
+				textWindyDescription.setText(value);
+			}
+		});
+		
+		buttonIsCalm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "No";
+				condition.setWindy(value);
+				textWindyDescription.setText(value);
+			}
+		});
+		
+		buttonRain.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Rain";
+				condition.setPrecipitation_type(value);
+				textPrecipitationDescription.setText(value);
+			}
+		});
+		
+		buttonSnow.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Snow";
+				condition.setPrecipitation_type(value);
+				textPrecipitationDescription.setText(value);
+			}
+		});
+		
+		buttonHail.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Hail";
+				condition.setPrecipitation_type(value);
+				textPrecipitationDescription.setText(value);
+			}
+		});
+		
+		buttonLowPrecip.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				double value = 0.0;
+				condition.setPrecipitation_amount(value);
+				textPrecipitationAmountDescription.setText(value + "");
+				
+			}
+		});
+		
+		buttonModeratePrecip.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				double value = 1.0;
+				condition.setPrecipitation_amount(value);
+				textPrecipitationAmountDescription.setText(value + "");
+				
+			}
+		});
+		
+		buttonHeavyPrecip.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				double value = 2.0;
+				condition.setPrecipitation_amount(value);
+				textPrecipitationAmountDescription.setText(value + "");
+			}
+		});
+		
+		buttonInfrequentLightning.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Low intensity";
+				condition.setThunderstorm_intensity(value);
+				textLightningDescription.setText(value);
+			}
+		});
+		
+		buttonFrequentLightning.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Moderate Intensity";
+				condition.setThunderstorm_intensity(value);
+				textLightningDescription.setText(value);
+			}
+		});
+		
+		buttonHeavyLightning.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = "Heavy Thunderstorm";
+				condition.setThunderstorm_intensity(value);
+				textLightningDescription.setText(value);
 			}
 		});
 		
@@ -200,7 +368,6 @@ public class CurrentConditionsActivity extends Activity {
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
 		}
-		
 	}
 	
 	// Log data to SD card for debug purposes.
@@ -228,7 +395,4 @@ public class CurrentConditionsActivity extends Activity {
 
 		super.onPause();
 	}
-
-	
-	
 }

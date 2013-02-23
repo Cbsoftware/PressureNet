@@ -76,22 +76,23 @@
     <string name="foggy">Fog</string>
     <string name="cloudy">Clouds</string>
     <string name="precipitation">Precip.</string>
-    <string name="thunderstorm">!!!</string>
+    <string name="thunderstorm">Thunder!</string>
     <string name="current_conditions">Current Conditions</string>
-    <string-array name="sunny_subset">
-        <item name="windy">Windy</item>
-        <item name="calm">Calm</item>
-    </string-array>
-    <string-array name="foggy_subset">
-        <item name="thick">Thick</item>
-        <item name="think">Thin</item>
-    </string-array>
-    <string-array name="precipitation_subset">
-        <item name="rain">Rain</item>
-        <item name="hail">Hail</item>
-        <item name="snow">Snow</item>
-    </string-array>
+    <string name="windy">Windy</string>
+    <string name="calm">Calm</string>
+    <string name="thick_fog">Thick Fog</string>
+    <string name="thin_fog">Thin Fog</string>
+    <string name="rain">Rain</string>
+    <string name="hail">Hail</string>
+    <string name="snow">Snow</string>
+    <string name="low_precip">Low</string>
+    <string name="moderate_precip">Moderate</string>
+    <string name="heavy_precip">Heavy</string>
+    <string name="infrequentLightning">!</string>
+    <string name="frequentLightning">!!</string>
+    <string name="heavyLightning">!!!</string>
     <string name="send_condition">Send!</string>
+    
 </resources>
 
 
