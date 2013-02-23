@@ -116,12 +116,12 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					dbAdapter = new DBAdapter(getApplicationContext());
 					dbAdapter.open();
 					ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
-					recents = dbAdapter.fetchRecentReadings(5); // the last few hours
+					recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
 					// String tendency = ScienceHandler.findTendency(recents);
 					ScienceHandler science = new ScienceHandler(mAppDir);
 					String tendency = science.findApproximateTendency(recents);
 					
-					log("widget getting tendency, updating and sending");
+					log("widget getting tendency, updating and sending: " + tendency);
 					
 					if(tendency.contains("Rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
