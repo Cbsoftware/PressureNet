@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,6 +22,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -92,6 +94,25 @@ public class CurrentConditionsActivity extends Activity {
 //			finish();
 		}
     }
+    
+    // Get the phone ID and hash it
+	public String getID() {
+    	try {
+    		MessageDigest md = MessageDigest.getInstance("MD5");
+    		
+    		String actual_id = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+    		byte[] bytes = actual_id.getBytes();
+    		byte[] digest = md.digest(bytes);
+    		StringBuffer hexString = new StringBuffer();
+    		for(int i = 0; i< digest.length; i++) {
+    			hexString.append(Integer.toHexString(0xFF & digest[i]));
+    		}
+    		return hexString.toString();
+    	} catch(Exception e) {
+    		return "--";
+    	}
+	}
+
 	
     
     // Preparation for sending a condition through the network. 
@@ -101,6 +122,9 @@ public class CurrentConditionsActivity extends Activity {
     	nvp.add(new BasicNameValuePair("latitude", cc.getLatitude() + ""));
     	nvp.add(new BasicNameValuePair("longitude", cc.getLongitude() + ""));
     	nvp.add(new BasicNameValuePair("general_condition", cc.getGeneral_condition() + ""));
+    	nvp.add(new BasicNameValuePair("user_id", cc.getUser_id() + ""));
+    	nvp.add(new BasicNameValuePair("time", cc.getTime() + ""));
+    	nvp.add(new BasicNameValuePair("tzoffset", cc.getTzoffset() + ""));
     	return nvp;
     }
     
@@ -160,6 +184,7 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		});
 		
+		// Start adding the data for our current condition
 		Bundle bundle = getIntent().getExtras();
 		try {
 			mAppDir = bundle.getString("appdir");
@@ -167,6 +192,10 @@ public class CurrentConditionsActivity extends Activity {
 			mLongitude = bundle.getDouble("longitude");
 			condition.setLatitude(mLatitude);
 			condition.setLongitude(mLongitude);
+			condition.setUser_id(getID());
+			condition.setTime(Calendar.getInstance().getTimeInMillis());
+	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
+	    	
 			//Toast.makeText(this, userSelf + " " + mAppDir, Toast.LENGTH_SHORT).show();
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
