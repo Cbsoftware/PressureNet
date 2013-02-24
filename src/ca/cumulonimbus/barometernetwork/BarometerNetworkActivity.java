@@ -458,8 +458,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		return super.onOptionsItemSelected(item);
 	}
 	
-
-
     // Assemble a list of CurrentConditions. This is the opposite of function currentConditionToWeb in the servlet.
 	public ArrayList<CurrentCondition> csvToCurrentConditions(String[] conditions) {
     	ArrayList<CurrentCondition> conditionsList = new ArrayList<CurrentCondition>();
@@ -473,11 +471,11 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		cc.setTime(Double.parseDouble(values[3]));
 	    		cc.setTzoffset((Integer.parseInt(values[4])));
 	    		cc.setWindy(values[5]);
-	    		cc.setFog_thickness(values[6]);
-	    		cc.setPrecipitation_type(values[7]);
-	    		cc.setPrecipitation_amount(Double.parseDouble(values[8]));
-	    		cc.setThunderstorm_intensity(values[9]);
-	    		cc.setUser_id(values[10]);
+	    		//cc.setFog_thickness(values[6]);
+	    		cc.setPrecipitation_type(values[6]);
+	    		cc.setPrecipitation_amount(Double.parseDouble(values[7]));
+	    		cc.setThunderstorm_intensity(values[8]);
+	    		cc.setUser_id(values[9]);
 	    		conditionsList.add(cc);
     		} catch(NumberFormatException nfe) {
     			// Likely, tomcat returned an error.
@@ -687,7 +685,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        	barometerDetected = true;
 	    	} else {
 	    		barometerDetected = false;
-	    		
 	    		//Toast.makeText(getApplicationContext(), "No barometer detected.", Toast.LENGTH_SHORT).show();
 	    	}
 	    	invalidateOptionsMenu(); // ensure right right menus are showing, given barometer detection status
@@ -909,35 +906,54 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		overlay = new MapOverlay(drawable, this, 14);
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
-	    				if(condition.getGeneral_condition().equals("Sunny")) {
-	    					log("Sunny condition found, changing overlay to sun");
-	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_sun);
+	    				if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
+	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_on_sun);
 	    					overlay = new MapOverlay(sunDrawable, this, 14);
-	    				} else if(condition.getGeneral_condition().equals("Precipitation")) {
-	    					if(condition.getPrecipitation_type().equals("Rain")) {
-	    						log("Rainy condition found, changing overlay to rain");
-	    						Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_rain3);
-		    					overlay = new MapOverlay(rainDrawable, this, 14);
-	    					} else if(condition.getPrecipitation_type().equals("Snow")) {
-	    						log("Snowy condition found, changing overlay to snow");
-	    						Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_snow3);
-		    					overlay = new MapOverlay(snowDrawable, this, 14);
-	    					} else if(condition.getPrecipitation_type().equals("Hail")) {
-	    						log("Hail condition found, changing overlay to hail");
-	    						Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_hail3);
-		    					overlay = new MapOverlay(hailDrawable, this, 14);
+	    				} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
+	    					if(condition.getPrecipitation_type().equals(getString(R.string.rain))) {
+	    						if(condition.getPrecipitation_amount() == 0.0) {
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain1);
+	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 1.0) {
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain2);
+	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 2.0) {
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain3);
+	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    						}
+	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.snow))) {
+	    						if(condition.getPrecipitation_amount() == 0.0) {
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow1);
+	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 1.0) {
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow2);
+	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 2.0) {
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow3);
+	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    						}
+	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.hail))) {
+	    						if(condition.getPrecipitation_amount() == 0.0) { 
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail1);
+		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 1.0) { 
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail2);
+		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    						} else if(condition.getPrecipitation_amount() == 2.0) { 
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail3);
+		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    						} 
 	    					}
-	    				} else if(condition.getGeneral_condition().equals("Cloudy")) {
-	    					log("Cloudy condition found, changing overlay to cloudy");
-    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_cloud_dark);
+	    				} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
+    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_on_cloud_dark);
 	    					overlay = new MapOverlay(cloudDrawable, this, 14);
 	    				} else {
-	    					log(condition.getGeneral_condition() + " huh");
+	    					
 	    				}
 	    			} else {
 	    				// there is no current condition. show just the barometer icon
 	    				// perhaps with a tendency arrow
-	    				log("No condition found, default.");
+	    				//log("No condition found, default: " + getString(R.string.precipitation) + " " + condition.getGeneral_condition());
 	    				overlay = new MapOverlay(drawable, this, 14);
 	    			}
 	    		}
@@ -954,9 +970,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    } catch(Exception e) {
 	    	log("add data error: " + e.getMessage());
 	    }
-    	
     }
-        
+
     // Runnable to refresh the map. Can be called when another
     // thread wishes to refresh the view.
     private final Runnable refreshMap = new Runnable() {

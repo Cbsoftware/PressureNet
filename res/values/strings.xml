@@ -72,14 +72,15 @@
     </string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
-    <string name="sunny">Sun</string>
-    <string name="foggy">Fog</string>
-    <string name="cloudy">Clouds</string>
-    <string name="precipitation">Precip.</string>
-    <string name="thunderstorm">Thunder!</string>
+    <string name="sunny">Sunny</string>
+    <string name="foggy">Foggy</string>
+    <string name="cloudy">Cloudy</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="thunderstorm">Thunderstorm</string>
     <string name="current_conditions">Current Conditions</string>
-    <string name="windy">Windy</string>
-    <string name="calm">Calm</string>
+    <string name="windyOne">A little windy</string>
+    <string name="windyTwo">Very windy</string>
+    <string name="calm">No wind</string>
     <string name="thick_fog">Thick Fog</string>
     <string name="thin_fog">Thin Fog</string>
     <string name="rain">Rain</string>
@@ -88,10 +89,11 @@
     <string name="low_precip">Low</string>
     <string name="moderate_precip">Moderate</string>
     <string name="heavy_precip">Heavy</string>
-    <string name="infrequentLightning">!</string>
-    <string name="frequentLightning">!!</string>
-    <string name="heavyLightning">!!!</string>
+    <string name="infrequentLightning">Infrequent Lightning</string>
+    <string name="frequentLightning">Frequent Lightning</string>
+    <string name="heavyLightning">Heavy Lightning</string>
     <string name="send_condition">Send!</string>
+    <string name="cancel_condition">Cancel</string>
     
 </resources>
 

@@ -6,45 +6,52 @@
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
 	    android:id="@+id/scrollGeneralCondition">
+
 	    <LinearLayout
 	        android:id="@+id/layoutGeneral"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
 	
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonSunny"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 			style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/sunny" />
+	        android:text="@string/sunny"
+	        android:src="@drawable/ic_sun" />
 	
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonFoggy"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/foggy" />
+	        android:text="@string/foggy"
+	        android:src="@drawable/ic_fog3" />
 	
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonCloudy"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/cloudy" />
+	        android:text="@string/cloudy" 
+	        android:src="@drawable/ic_cloudy"/>
 	
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonPrecipitation"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/precipitation" />
+	        android:text="@string/precipitation"
+	        android:src="@drawable/ic_precip" />
 	    
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonThunderstorm"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/thunderstorm" />
+	        android:text="@string/thunderstorm"
+	        android:src="@drawable/ic_lightning3" />
 	    </LinearLayout>
 	</ScrollView>
 
@@ -52,30 +59,45 @@
 	    android:id="@+id/generalDescription"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center"
-	    android:text="@string/sunny" />
+	    android:gravity="center"/>
 
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
 	    android:id="@+id/scrollWindy">
+
 	    <LinearLayout
 	        android:id="@+id/layoutWindy"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
-	    <Button
-	        android:id="@+id/buttonIsWindy"
-	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/windy" />
-	    
-	    <Button
+	        android:gravity="center" >
+
+	    <ImageButton
 	        android:id="@+id/buttonIsCalm"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/calm" />
+	        android:text="@string/calm"
+	       	android:src="@drawable/ic_wind0" />
+	        
+	    <ImageButton
+	        android:id="@+id/buttonIsWindy1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windyOne" 
+	        android:src="@drawable/ic_wind1"
+	        />
+
+	   	<ImageButton
+	        android:id="@+id/buttonIsWindy2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windyTwo" 
+	        android:src="@drawable/ic_wind2"
+	        />
+	    	    
 	    </LinearLayout>
 	</ScrollView>
 
@@ -83,36 +105,42 @@
 	    android:id="@+id/windyDescription"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center"
-	    android:text="@string/calm" />
+	    android:gravity="center" />
 
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-	    android:id="@+id/scrollPrecip">
+	    android:id="@+id/scrollPrecip"
+	    android:visibility="gone">
+
 	    <LinearLayout
 	        android:id="@+id/layoutPrecip"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
-	    <Button
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
 	        android:id="@+id/buttonRain"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/rain" />
+	        android:text="@string/rain"
+	        android:src="@drawable/ic_rain3"  />
 	    
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonSnow"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/snow" />
-	    <Button
+	        android:text="@string/snow"
+	        android:src="@drawable/ic_snow3"  />
+	    <ImageButton
 	        android:id="@+id/buttonHail"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/hail" />
+	        android:text="@string/hail"
+	        android:src="@drawable/ic_hail3"  />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -120,34 +148,43 @@
 	    android:layout_height="wrap_content"
 	    android:id="@+id/precipitationDescription"
 	    android:text="@string/empty"
-	    android:gravity="center"/>
+	    android:gravity="center"
+	    android:visibility="gone"/>
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-	    android:id="@+id/scrollPrecipAmount">
+	    android:id="@+id/scrollPrecipAmount"
+	    android:visibility="gone">
+
 	    <LinearLayout
 	        android:id="@+id/layoutPrecipAmount"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
-	    <Button
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
 	        android:id="@+id/buttonLowPrecip"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/low_precip" />
+	        android:text="@string/low_precip" 
+	        android:src="@drawable/ic_rain1"/>
 	    
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonModeratePrecip"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/moderate_precip" />
-	    <Button
+	        android:text="@string/moderate_precip"
+	        android:src="@drawable/ic_rain2"/>
+	    
+	    <ImageButton
 	        android:id="@+id/buttonHeavyPrecip"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/heavy_precip" />
+	        android:text="@string/heavy_precip"
+	        android:src="@drawable/ic_rain3" />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -155,34 +192,42 @@
 	    android:layout_height="wrap_content"
 	    android:id="@+id/precipitationAmountDescription"
 	    android:text="@string/empty"
-	    android:gravity="center"/>
+	    android:gravity="center"
+	    android:visibility="gone"/>
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
-	    android:id="@+id/scrollLightning">
+	    android:id="@+id/scrollLightning"
+	    android:visibility="gone">
+
 	    <LinearLayout
 	        android:id="@+id/layoutLightning"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
-	    <Button
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
 	        android:id="@+id/buttonInfrequentLightning"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/infrequentLightning" />
+	        android:text="@string/infrequentLightning"
+	        android:src="@drawable/ic_r_l1" />
 	    
-	    <Button
+	    <ImageButton
 	        android:id="@+id/buttonFrequentLightning"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/frequentLightning" />
-	    <Button
+	        android:text="@string/frequentLightning"
+	        android:src="@drawable/ic_r_l2"  />
+	    <ImageButton
 	        android:id="@+id/buttonHeavyLightning"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/heavyLightning" />
+	        android:text="@string/heavyLightning"
+	        android:src="@drawable/ic_r_l3"  />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -190,13 +235,28 @@
 	    android:layout_height="wrap_content"
 	    android:id="@+id/lightningDescription"
 	    android:text="@string/empty"
-	    android:gravity="center"/>
-
-	<Button
-	    android:id="@+id/buttonSendCondition"
-	    style="?android:attr/buttonBarButtonStyle"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="@string/send_condition" />
-
+	    android:gravity="center"
+	    android:visibility="gone"/>
+	<LinearLayout
+	        android:id="@+id/layoutFinish"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+		
+		<Button
+		    android:id="@+id/buttonCancelCondition"
+		    style="?android:attr/buttonBarButtonStyle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/cancel_condition"
+		     />
+		<Button
+		    android:id="@+id/buttonSendCondition"
+		    style="?android:attr/buttonBarButtonStyle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/send_condition"
+		     />
+		
+	</LinearLayout>
 </LinearLayout>

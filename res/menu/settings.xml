@@ -2,7 +2,7 @@
 
     <item android:id="@+id/menu_current_conditions"
       android:title="@string/current_conditions"
-      android:icon="@drawable/ic_menu_vis"
+      android:icon="@drawable/ic_cloud_light"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_load_data_vis"
