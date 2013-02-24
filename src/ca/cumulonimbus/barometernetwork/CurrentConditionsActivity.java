@@ -205,9 +205,15 @@ public class CurrentConditionsActivity extends Activity {
     		scrollLightning.setVisibility(View.GONE);
     		textLightningDescription.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.precipitation))) {
+    		// Visibility of other rows
     		scrollPrecipitation.setVisibility(View.VISIBLE);
     		textPrecipitationDescription.setVisibility(View.VISIBLE);
+    		
     		buttonPrecipitation.setImageResource(R.drawable.ic_on_precip);
+    		
+    		// Precipitation initialization
+    		// buttonRain.setImageResource(R.drawable.ic_on_rain3);
+    		// textPrecipitationDescription.setText(getString(R.string.rain));
     	} else if(condition.equals(getString(R.string.thunderstorm))) {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
@@ -240,43 +246,51 @@ public class CurrentConditionsActivity extends Activity {
      * heaviness of the precipitation type
      * @param condition
      */
-    private void switchVisiblePrecipitations(String condition) {
-    	if(condition.equals(getString(R.string.rain))) {
+    private void switchVisiblePrecipitations(String precipCondition) {
+    	if(precipCondition.equals(getString(R.string.rain))) {
     		buttonLowPrecip.setImageResource(R.drawable.ic_on_rain1);
     		buttonModeratePrecip.setImageResource(R.drawable.ic_rain2);
     		buttonHeavyPrecip.setImageResource(R.drawable.ic_rain3);
-    	} else if(condition.equals(getString(R.string.snow))) {
+    	} else if(precipCondition.equals(getString(R.string.snow))) {
     		buttonLowPrecip.setImageResource(R.drawable.ic_on_snow1);
     		buttonModeratePrecip.setImageResource(R.drawable.ic_snow2);
-    		buttonHeavyPrecip.setImageResource(R.drawable.ic_snow3);    	
-    	} else if(condition.equals(getString(R.string.hail))) {
+    		buttonHeavyPrecip.setImageResource(R.drawable.ic_snow3);
+    	} else if(precipCondition.equals(getString(R.string.hail))) {
     		buttonLowPrecip.setImageResource(R.drawable.ic_on_hail1);
     		buttonModeratePrecip.setImageResource(R.drawable.ic_hail2);
     		buttonHeavyPrecip.setImageResource(R.drawable.ic_hail3);
     	}
+    	
+    	double value = 0.0;
+		String printValue = "Minimal " + condition.getPrecipitation_type();
+		switchActivePrecipitationAmount("low");
+		condition.setPrecipitation_amount(value);
+		textPrecipitationAmountDescription.setText(printValue);
     }
     
     /**
      * Change the buttons on the UI. Precipitation
      * @param condition
      */
-    private void switchActivePrecipitation(String condition) {
+    private void switchActivePrecipitation(String precipCondition) {
     	// Turn everything off
     	buttonRain.setImageResource(R.drawable.ic_rain3);
     	buttonSnow.setImageResource(R.drawable.ic_snow3);
     	buttonHail.setImageResource(R.drawable.ic_hail3);
     	
     	// Turn the new one on
-    	if(condition.equals(getString(R.string.rain))) {
+    	if(precipCondition.equals(getString(R.string.rain))) {
     		switchVisiblePrecipitations(getString(R.string.rain));
     		buttonRain.setImageResource(R.drawable.ic_on_rain3);
-    	} else if(condition.equals(getString(R.string.snow))) {
+    	} else if(precipCondition.equals(getString(R.string.snow))) {
     		switchVisiblePrecipitations(getString(R.string.snow));
     		buttonSnow.setImageResource(R.drawable.ic_on_snow3);
-    	} else if(condition.equals(getString(R.string.hail))) {
+    	} else if(precipCondition.equals(getString(R.string.hail))) {
     		switchVisiblePrecipitations(getString(R.string.hail));
     		buttonHail.setImageResource(R.drawable.ic_on_hail3);
     	} 
+    	
+    	
     	
     	scrollPrecipitationAmount.setVisibility(View.VISIBLE);
     	textPrecipitationAmountDescription.setVisibility(View.VISIBLE);
@@ -492,7 +506,7 @@ public class CurrentConditionsActivity extends Activity {
 			public void onClick(View v) {
 				String value = getString(R.string.calm);
 				switchActiveWindy(value);
-				condition.setWindy(value);
+				condition.setWindy(0 + "");
 				textWindyDescription.setText(value);
 			}
 		});
@@ -506,9 +520,10 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String value = getString(R.string.rain);
-				switchActivePrecipitation(value);
+				
 				condition.setPrecipitation_type(value);
 				textPrecipitationDescription.setText(value);
+				switchActivePrecipitation(value);
 			}
 		});
 		
@@ -517,9 +532,10 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String value = getString(R.string.snow);
-				switchActivePrecipitation(value);
+				
 				condition.setPrecipitation_type(value);
 				textPrecipitationDescription.setText(value);
+				switchActivePrecipitation(value);
 			}
 		});
 		
@@ -528,9 +544,10 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String value = getString(R.string.hail);
-				switchActivePrecipitation(value);
+				
 				condition.setPrecipitation_type(value);
 				textPrecipitationDescription.setText(value);
+				switchActivePrecipitation(value);
 			}
 		});
 		
@@ -630,6 +647,18 @@ public class CurrentConditionsActivity extends Activity {
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
 		}
+		
+		// Set the initial state: Sunny, no wind
+		// Or guess from pressure data
+		condition.setGeneral_condition(getString(R.string.sunny));
+		buttonSunny.setImageResource(R.drawable.ic_on_sun);
+		textGeneralDescription.setText(getString(R.string.sunny));
+		
+		buttonIsCalm.setImageResource(R.drawable.ic_on_wind0);
+		textWindyDescription.setText(getString(R.string.calm));
+		condition.setWindy(0 + "");
+		
+		
 	}
 	
 	// Log data to SD card for debug purposes.
