@@ -102,7 +102,7 @@ public class CurrentConditionsActivity extends Activity {
 			log("app sending " + condition.getGeneral_condition());
 			
 			
-	    	DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+	    	DefaultHttpClient client = new DefaultHttpClient();
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// TODO: keep a history of readings on the user's device
 	    	// addToLocalDatabase(cc);
@@ -657,8 +657,6 @@ public class CurrentConditionsActivity extends Activity {
 		buttonIsCalm.setImageResource(R.drawable.ic_on_wind0);
 		textWindyDescription.setText(getString(R.string.calm));
 		condition.setWindy(0 + "");
-		
-		
 	}
 	
 	// Log data to SD card for debug purposes.

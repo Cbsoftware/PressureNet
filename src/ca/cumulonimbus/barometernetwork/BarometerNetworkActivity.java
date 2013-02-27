@@ -67,7 +67,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-
+ 
 public class BarometerNetworkActivity extends MapActivity implements SensorEventListener {
 	
 	double mLatitude = 0.0;
@@ -186,7 +186,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	@Override
 		protected String doInBackground(String... arg0) {
-    		DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+    		DefaultHttpClient client = new DefaultHttpClient();
         	HttpPost httppost = new HttpPost(serverURL);
         	String id = getID();
         	try {
@@ -907,46 +907,57 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
 	    				if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
-	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_on_sun);
+	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_col_sun);
 	    					overlay = new MapOverlay(sunDrawable, this, 14);
 	    				} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
 	    					if(condition.getPrecipitation_type().equals(getString(R.string.rain))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) {
-	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain1);
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain1);
 	    							overlay = new MapOverlay(rainDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) {
-	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain2);
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain2);
 	    							overlay = new MapOverlay(rainDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) {
-	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_on_rain3);
+	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain3);
 	    							overlay = new MapOverlay(rainDrawable, this, 14);
 	    						}
 	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.snow))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) {
-	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow1);
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow1);
 	    							overlay = new MapOverlay(snowDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) {
-	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow2);
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow2);
 	    							overlay = new MapOverlay(snowDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) {
-	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_on_snow3);
+	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow3);
 	    							overlay = new MapOverlay(snowDrawable, this, 14);
 	    						}
 	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.hail))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) { 
-	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail1);
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail1);
 		    						overlay = new MapOverlay(hailDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) { 
-	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail2);
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail2);
 		    						overlay = new MapOverlay(hailDrawable, this, 14);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) { 
-	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_on_hail3);
+	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail3);
 		    						overlay = new MapOverlay(hailDrawable, this, 14);
 	    						} 
 	    					}
 	    				} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
-    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_on_cloud_dark);
+    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy);
 	    					overlay = new MapOverlay(cloudDrawable, this, 14);
+	    				} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
+	    					if(Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) { 
+    							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l1);
+	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+	    					} else if(Double.parseDouble(condition.getThunderstorm_intensity()) == 1.0) { 
+    							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l2);
+	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+	    					} else if(Double.parseDouble(condition.getThunderstorm_intensity()) == 2.0) {
+    							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l3);
+	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+    						} 
 	    				} else {
 	    					
 	    				}
@@ -1125,7 +1136,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	
 	    	
 	    	
-	    	DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+	    	DefaultHttpClient client = new DefaultHttpClient();
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// keep a history of readings on the user's device
 	    	addToLocalDatabase(br);
@@ -1135,10 +1146,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		httppost.setEntity(new UrlEncodedFormEntity(nvps));
 	    		HttpResponse response = client.execute(httppost);
 	    	} catch(ClientProtocolException cpe) {
-	    		log(cpe.getMessage());
+	    		// BROKEN HERE
+	    		cpe.printStackTrace();
+	    		// log(cpe.getMessage());
 	    		// TODO: alert of failed submit
 	    	} catch(IOException ioe) {
-	    		log(ioe.getMessage());
+	    		ioe.printStackTrace();
+	    		// log(ioe.getMessage());
 	    		// TODO: alert of failed submit
 	    	}
 			return null;
@@ -1163,7 +1177,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
-	    		DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+	    		DefaultHttpClient client = new DefaultHttpClient();
 	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		

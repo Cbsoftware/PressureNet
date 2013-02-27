@@ -251,7 +251,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			dbAdapter = new DBAdapter(this);
 			dbAdapter.open();
 			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
-			recents = dbAdapter.fetchRecentReadings(2); // the last little while (in hours)
+			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
 			
 			List<BarometerReading> theHalf;
 			// split in half
@@ -299,7 +299,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			// Prepare intent which is triggered if the
 			// notification is selected
 
-			Intent intent = new Intent(this, BarometerNetworkActivity.class);
+			Intent intent = new Intent(this, CurrentConditionsActivity.class);
 			PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
 			// Build notification
@@ -356,7 +356,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	// well as the current reading. if not connected, add to the queue
 	    	if(networkOnline()) {
 	    		log("network is online");
-		    	DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+		    	DefaultHttpClient client = new DefaultHttpClient();
 		    	HttpPost httppost = new HttpPost(serverURL);
 		    	try {
 		    		// all in the queue
