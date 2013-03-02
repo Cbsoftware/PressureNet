@@ -97,7 +97,10 @@
     <string name="cancel_condition">Cancel</string>
     <string name="partly_cloudy">Party Cloudy</string>
     <string name="mostly_cloudy">Mostly Cloudy</string>
-    <string name="very_cloudy">Very Cloudy</string>    
+    <string name="very_cloudy">Very Cloudy</string>
+    <string name="light_fog">Light Fog</string>
+    <string name="moderate_fog">Moderate Fog</string>
+    <string name="heavy_fog">Heavy Fog</string>
 </resources>
 
 

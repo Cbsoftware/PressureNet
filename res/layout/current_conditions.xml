@@ -98,7 +98,49 @@
 	        android:src="@drawable/ic_hail3"  />
 	    </LinearLayout>
 	</ScrollView>
-	
+		<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollFog"
+	    android:visibility="gone">
+
+	    <LinearLayout
+	        android:id="@+id/layoutFog"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
+	        android:id="@+id/buttonFoggy1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/light_fog"
+	        android:src="@drawable/ic_fog1"  />
+	    
+	    <ImageButton
+	        android:id="@+id/buttonFoggy2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/moderate_fog"
+	        android:src="@drawable/ic_fog2"  />
+	    <ImageButton
+	        android:id="@+id/buttonFoggy3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/heavy_fog"
+	        android:src="@drawable/ic_fog3"  />
+	    </LinearLayout>
+	</ScrollView>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/foggyDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"
+	    android:visibility="gone"/>
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
@@ -314,6 +356,7 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:text="@string/send_condition"
+		    android:enabled="false"
 		     />
 		
 	</LinearLayout>

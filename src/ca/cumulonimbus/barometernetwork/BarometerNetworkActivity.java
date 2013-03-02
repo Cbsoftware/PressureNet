@@ -479,7 +479,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		cc.setPrecipitation_amount(Double.parseDouble(values[7]));
 	    		cc.setThunderstorm_intensity(values[8]);
 	    		cc.setCloud_type(values[9]);
-	    		cc.setUser_id(values[10]);
+	    		cc.setFog_thickness(values[10]);
+	    		cc.setUser_id(values[11]);
 	    		conditionsList.add(cc);
     		} catch(NumberFormatException nfe) {
     			// Likely, tomcat returned an error.

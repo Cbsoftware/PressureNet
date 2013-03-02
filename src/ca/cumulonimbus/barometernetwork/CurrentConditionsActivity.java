@@ -56,6 +56,9 @@ public class CurrentConditionsActivity extends Activity {
 	private ImageButton buttonPartlyCloudy;
 	private ImageButton buttonMostlyCloudy;
 	private ImageButton buttonVeryCloudy;
+	private ImageButton buttonLightFog;
+	private ImageButton buttonModerateFog;
+	private ImageButton buttonHeavyFog;
 	
 	private TextView textGeneralDescription;
 	private TextView textWindyDescription;
@@ -63,6 +66,7 @@ public class CurrentConditionsActivity extends Activity {
 	private TextView textPrecipitationAmountDescription;
 	private TextView textLightningDescription;
 	private TextView textCloudyDescription;
+	private TextView textFoggyDescription;
 	
 	private ScrollView scrollGeneral;
 	private ScrollView scrollWind;
@@ -70,6 +74,7 @@ public class CurrentConditionsActivity extends Activity {
 	private ScrollView scrollPrecipitationAmount;
 	private ScrollView scrollLightning;
 	private ScrollView scrollClouds;
+	private ScrollView scrollFoggy;
 	
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
@@ -171,6 +176,7 @@ public class CurrentConditionsActivity extends Activity {
     	nvp.add(new BasicNameValuePair("precipitation_amount", cc.getPrecipitation_amount() + ""));
     	nvp.add(new BasicNameValuePair("thunderstorm_intensity", cc.getThunderstorm_intensity() + ""));
     	nvp.add(new BasicNameValuePair("cloud_type", cc.getCloud_type() + ""));
+    	nvp.add(new BasicNameValuePair("foggy", cc.getFog_thickness() + ""));
     	return nvp;
     }
     
@@ -197,6 +203,8 @@ public class CurrentConditionsActivity extends Activity {
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
+    		scrollFoggy.setVisibility(View.GONE);
+    		textFoggyDescription.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.foggy))) {
     		buttonFoggy.setImageResource(R.drawable.ic_on_fog3);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -207,6 +215,8 @@ public class CurrentConditionsActivity extends Activity {
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
+    		scrollFoggy.setVisibility(View.VISIBLE);
+    		textFoggyDescription.setVisibility(View.VISIBLE);
     	} else if(condition.equals(getString(R.string.cloudy))) {
     		buttonCloudy.setImageResource(R.drawable.ic_on_cloudy);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -217,6 +227,8 @@ public class CurrentConditionsActivity extends Activity {
     		textLightningDescription.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.VISIBLE);
     		scrollClouds.setVisibility(View.VISIBLE);
+    		scrollFoggy.setVisibility(View.GONE);
+    		textFoggyDescription.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.precipitation))) {
     		// Visibility of other rows
     		scrollPrecipitation.setVisibility(View.VISIBLE);
@@ -229,19 +241,46 @@ public class CurrentConditionsActivity extends Activity {
     		// Precipitation initialization
     		// buttonRain.setImageResource(R.drawable.ic_on_rain3);
     		// textPrecipitationDescription.setText(getString(R.string.rain));
+    		scrollFoggy.setVisibility(View.GONE);
+    		textFoggyDescription.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.thunderstorm))) {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
     		buttonThunderstorm.setImageResource(R.drawable.ic_on_lightning3);
     		textCloudyDescription.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
+    		scrollFoggy.setVisibility(View.GONE);
+    		textFoggyDescription.setVisibility(View.GONE);
     	}
     	
     	// Whichever one is chosen, show windy
     	scrollWind.setVisibility(View.VISIBLE);
     	textWindyDescription.setVisibility(View.VISIBLE);
+    	// And enable the submit button
+    	buttonSendCondition.setEnabled(true);
     }
 
+    /**
+     * Change the buttons on the UI. Foggy
+     * @param condition
+     */
+    private void switchActiveFoggy(String foggy) {
+    	// Turn everything off
+    	buttonLightFog.setImageResource(R.drawable.ic_fog1);
+    	buttonModerateFog.setImageResource(R.drawable.ic_fog2);
+    	buttonHeavyFog.setImageResource(R.drawable.ic_fog3);
+    	
+    	// Turn the new one on
+
+    	if(foggy.equals(getString(R.string.light_fog))) {
+    		buttonLightFog.setImageResource(R.drawable.ic_on_fog1);
+    	} else if(foggy.equals(getString(R.string.moderate_fog))) {
+    		buttonModerateFog.setImageResource(R.drawable.ic_on_fog2);
+    	} else if(foggy.equals(getString(R.string.heavy_fog))) {
+    		buttonHeavyFog.setImageResource(R.drawable.ic_on_fog3);
+    	} 
+    }
+    
     /**
      * Change the buttons on the UI. Windy
      * @param condition
@@ -315,8 +354,7 @@ public class CurrentConditionsActivity extends Activity {
     	} 
     	
     }
-        
-    
+
     /**
      * Change the buttons on the UI. Precipitation
      * @param condition
@@ -445,6 +483,10 @@ public class CurrentConditionsActivity extends Activity {
 		buttonPartlyCloudy = (ImageButton) findViewById(R.id.buttonCloudy1);
 		buttonMostlyCloudy = (ImageButton) findViewById(R.id.buttonCloudy2);
 		buttonVeryCloudy = (ImageButton) findViewById(R.id.buttonCloudy3);
+		buttonLightFog = (ImageButton) findViewById(R.id.buttonFoggy1);
+		buttonModerateFog = (ImageButton) findViewById(R.id.buttonFoggy2);
+		buttonHeavyFog = (ImageButton) findViewById(R.id.buttonFoggy3);
+		
 		
 		textGeneralDescription = (TextView) findViewById(R.id.generalDescription);
 		textWindyDescription = (TextView) findViewById(R.id.windyDescription);
@@ -452,6 +494,7 @@ public class CurrentConditionsActivity extends Activity {
 		textPrecipitationDescription = (TextView) findViewById(R.id.precipitationDescription);
 		textPrecipitationAmountDescription = (TextView) findViewById(R.id.precipitationAmountDescription);
 		textCloudyDescription = (TextView) findViewById(R.id.cloudyDescription);
+		textFoggyDescription = (TextView) findViewById(R.id.foggyDescription);
 		
 		scrollGeneral = (ScrollView) findViewById(R.id.scrollGeneralCondition);
 		scrollWind = (ScrollView) findViewById(R.id.scrollWindy);
@@ -459,11 +502,14 @@ public class CurrentConditionsActivity extends Activity {
 		scrollPrecipitationAmount = (ScrollView) findViewById(R.id.scrollPrecipAmount);
 		scrollLightning = (ScrollView) findViewById(R.id.scrollLightning);
 		scrollClouds = (ScrollView) findViewById(R.id.scrollClouds);
+		scrollFoggy = (ScrollView) findViewById(R.id.scrollFog);
+		
 		
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				new ConditionSender().execute("");
+				finish();
 			}
 		});
 		
@@ -660,6 +706,46 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		});
 		
+		
+		/*
+		 * Foggy Conditions
+		 */
+		
+		buttonLightFog.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.light_fog);
+				
+				condition.setFog_thickness(value);
+				textFoggyDescription.setText(value);
+				switchActiveFoggy(value);
+			}
+		});
+
+		buttonModerateFog.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.moderate_fog);
+				
+				condition.setFog_thickness(value);
+				textFoggyDescription.setText(value);
+				switchActiveFoggy(value);
+			}
+		});
+		
+		buttonHeavyFog.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.heavy_fog);
+				
+				condition.setCloud_type(value);
+				textFoggyDescription.setText(value);
+				switchActiveFoggy(value);
+			}
+		});
 		
 		/*
 		 * Precipitation amount
