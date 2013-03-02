@@ -384,8 +384,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		i.putExtra("hasBarometer", barometerDetected);
     		startActivityForResult(i, 1);
     	} else if(item.getItemId() == R.id.menu_check_trend) { 
-    		ScienceHandler science = new ScienceHandler(mAppDir);
+    		ScienceHandler science = new ScienceHandler(mAppDir, getApplicationContext());
     		science.checkForTrends(dbAdapter);
+    		
     	} else if(item.getItemId()==R.id.menu_my_info) {
     		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
     		intent.putExtra("userid", android_id);

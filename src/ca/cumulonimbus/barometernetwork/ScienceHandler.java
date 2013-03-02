@@ -10,21 +10,22 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
 
-public class ScienceHandler extends Service {
+public class ScienceHandler  {
 	
 	private String mAppDir;
+	private Context mContext;
 	
 	public String findTendency(DBAdapter dbAdapter, int half) {
 		String tendency = "";
 		try {
-			dbAdapter = new DBAdapter(getApplicationContext());
+			dbAdapter = new DBAdapter(mContext);
 			dbAdapter.open();
 			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
 			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
@@ -47,6 +48,7 @@ public class ScienceHandler extends Service {
 	}
 
 	public void checkForTrends(DBAdapter dbAdapter) {
+		log("ctx" + mContext);
 		// TODO: Check the Preferences to see if we're allowed
 		if (true) {
 			String firstHalf = findTendency(dbAdapter, 1);
@@ -65,21 +67,20 @@ public class ScienceHandler extends Service {
 			} 
 			
 			if (notificationString.equals("")) {
-				return;
+				notificationString = "Empty notification";
+				//return;
 			}
 			
 			log("checking for trends: " + notificationString);
-			NotificationManager notificationManager = (NotificationManager) 
-					  getSystemService(NOTIFICATION_SERVICE); 
+			NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE); 
 			// Prepare intent which is triggered if the
 			// notification is selected
 
-			Intent intent = new Intent(getApplicationContext(), CurrentConditionsActivity.class);
-			PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+			Intent intent = new Intent(mContext, CurrentConditionsActivity.class);
+			PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 			
 			// Build notification
-			// Actions are just fake
-			Notification noti = new Notification.Builder(getApplicationContext())
+			Notification noti = new Notification.Builder(mContext)
 			        .setContentTitle("pressureNET Alert")
 			        .setContentText(notificationString).setSmallIcon(R.drawable.ic_launcher)
 			        .setContentIntent(pIntent).getNotification();
@@ -218,18 +219,16 @@ public class ScienceHandler extends Service {
 	public ScienceHandler(String appDir) {
 		mAppDir = appDir;
 	}
+	public ScienceHandler(String appDir, Context context) {
+		mAppDir = appDir;
+		mContext = context;
+	}
 	
     public void log(String text) {
     	logToFile(text);
     	System.out.println(text);
     }
 
-
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
     
 
 }
