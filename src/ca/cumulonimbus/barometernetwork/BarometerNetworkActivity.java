@@ -40,6 +40,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -94,6 +95,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     private String serverURL = PressureNETConfiguration.SERVER_URL;
     
+    private int mapFontSize = 16;
     
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
@@ -474,7 +476,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		cc.setTime(Double.parseDouble(values[3]));
 	    		cc.setTzoffset((Integer.parseInt(values[4])));
 	    		cc.setWindy(values[5]);
-	    		//cc.setFog_thickness(values[6]);
 	    		cc.setPrecipitation_type(values[6]);
 	    		cc.setPrecipitation_amount(Double.parseDouble(values[7]));
 	    		cc.setThunderstorm_intensity(values[8]);
@@ -487,7 +488,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     			log("Server error? " + nfe.getMessage());
     		}
     	}
-    	
     	return conditionsList;
     }
 	
@@ -837,6 +837,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		@Override
 		public void draw(android.graphics.Canvas canvas, MapView mapView, boolean shadow)
 	    {
+			shadow = false;
 	        super.draw(canvas, mapView, shadow);
 
 	        if (shadow == false)
@@ -901,65 +902,136 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		for(BarometerReading br : readingsList) {
 	    		MapOverlay overlay;
 	    		
+	    		Drawable weatherBackgroundDrawable = this.getResources().getDrawable(R.drawable.bg_wea_square);
+	    		Drawable pressureBackgroundDrawable = this.getResources().getDrawable(R.drawable.bg_pre_rect);
+	    		
+	    		
 	    		// Pick an overlay icon depending on the reading and 
 	    		// the current conditions. reading alone? reading with tendency?
 	    		// current condition alone? current condition with tendency?
 	    		
 	    		// is there a current condition from the same user as this reading?
-	    		overlay = new MapOverlay(drawable, this, 14);
+	    		overlay = new MapOverlay(drawable, this, mapFontSize);
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
 	    				if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 	    					Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_col_sun);
-	    					overlay = new MapOverlay(sunDrawable, this, 14);
+	    					Drawable[] layers = {weatherBackgroundDrawable, sunDrawable};
+	    					LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    				} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
 	    					if(condition.getPrecipitation_type().equals(getString(R.string.rain))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) {
 	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain1);
-	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, rainDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) {
 	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain2);
-	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, rainDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) {
 	    							Drawable rainDrawable = this.getResources().getDrawable(R.drawable.ic_col_rain3);
-	    							overlay = new MapOverlay(rainDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, rainDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						}
 	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.snow))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) {
 	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow1);
-	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, snowDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) {
 	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow2);
-	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, snowDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) {
 	    							Drawable snowDrawable = this.getResources().getDrawable(R.drawable.ic_col_snow3);
-	    							overlay = new MapOverlay(snowDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, snowDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    							overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						}
 	    					} else if(condition.getPrecipitation_type().equals(getString(R.string.hail))) {
 	    						if(condition.getPrecipitation_amount() == 0.0) { 
 	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail1);
-		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, hailDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+		    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 1.0) { 
 	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail2);
-		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, hailDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+		    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} else if(condition.getPrecipitation_amount() == 2.0) { 
 	    							Drawable hailDrawable = this.getResources().getDrawable(R.drawable.ic_col_hail3);
-		    						overlay = new MapOverlay(hailDrawable, this, 14);
+	    							Drawable[] layers = {weatherBackgroundDrawable, hailDrawable};
+	    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+		    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    						} 
 	    					}
 	    				} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
-    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy);
-	    					overlay = new MapOverlay(cloudDrawable, this, 14);
+	    					if(condition.getCloud_type().equals(getString(R.string.partly_cloudy))) {
+	    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy1);
+    							Drawable[] layers = {weatherBackgroundDrawable, cloudDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else if(condition.getCloud_type().equals(getString(R.string.mostly_cloudy))) {
+	    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy2);
+    							Drawable[] layers = {weatherBackgroundDrawable, cloudDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else if(condition.getCloud_type().equals(getString(R.string.very_cloudy))) {
+	    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy);
+    							Drawable[] layers = {weatherBackgroundDrawable, cloudDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else {
+	    						Drawable cloudDrawable = this.getResources().getDrawable(R.drawable.ic_col_cloudy);
+    							Drawable[] layers = {weatherBackgroundDrawable, cloudDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					}
+	    				}  else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
+	    					if(condition.getFog_thickness().equals(getString(R.string.light_fog))) {
+	    						Drawable fogDrawable = this.getResources().getDrawable(R.drawable.ic_fog1);
+    							Drawable[] layers = {weatherBackgroundDrawable, fogDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else if(condition.getFog_thickness().equals(getString(R.string.moderate_fog))) {
+	    						Drawable fogDrawable = this.getResources().getDrawable(R.drawable.ic_col_fog2);
+    							Drawable[] layers = {weatherBackgroundDrawable, fogDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else if(condition.getFog_thickness().equals(getString(R.string.heavy_fog))) {
+	    						Drawable fogDrawable = this.getResources().getDrawable(R.drawable.ic_col_fog3);
+    							Drawable[] layers = {weatherBackgroundDrawable, fogDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					} else {
+	    						Drawable fogDrawable = this.getResources().getDrawable(R.drawable.ic_fog2);
+    							Drawable[] layers = {weatherBackgroundDrawable, fogDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+	    					}
 	    				} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
 	    					if(Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) { 
     							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l1);
-	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+    							Drawable[] layers = {weatherBackgroundDrawable, thunderstormDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    					} else if(Double.parseDouble(condition.getThunderstorm_intensity()) == 1.0) { 
     							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l2);
-	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+    							Drawable[] layers = {weatherBackgroundDrawable, thunderstormDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 	    					} else if(Double.parseDouble(condition.getThunderstorm_intensity()) == 2.0) {
     							Drawable thunderstormDrawable = this.getResources().getDrawable(R.drawable.ic_col_r_l3);
-	    						overlay = new MapOverlay(thunderstormDrawable, this, 14);
+    							Drawable[] layers = {weatherBackgroundDrawable, thunderstormDrawable};
+    							LayerDrawable layerDrawable = new LayerDrawable(layers);
+	    						overlay = new MapOverlay(layerDrawable, this, mapFontSize);
     						} 
 	    				} else {
 	    					
@@ -968,7 +1040,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    				// there is no current condition. show just the barometer icon
 	    				// perhaps with a tendency arrow
 	    				//log("No condition found, default: " + getString(R.string.precipitation) + " " + condition.getGeneral_condition());
-	    				overlay = new MapOverlay(drawable, this, 14);
+	    				overlay = new MapOverlay(drawable, this, mapFontSize);
 	    			}
 	    		}
 	    		
