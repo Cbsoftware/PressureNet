@@ -47,8 +47,13 @@ public class ScienceHandler  {
 		return tendency;
 	}
 
-	public void checkForTrends(DBAdapter dbAdapter) {
-		log("ctx" + mContext);
+	public void checkForTrends(Context context, DBAdapter dbAdapter, double latitude, double longitude, boolean notify) {
+		if(dbAdapter == null) {
+			dbAdapter = new DBAdapter(mContext);
+			dbAdapter.open();
+			
+		}
+		mContext = context;
 		// TODO: Check the Preferences to see if we're allowed
 		if (true) {
 			String firstHalf = findTendency(dbAdapter, 1);
@@ -67,8 +72,11 @@ public class ScienceHandler  {
 			} 
 			
 			if (notificationString.equals("")) {
-				notificationString = "Empty notification";
-				//return;
+				if(notify) {
+					notificationString = "Empty notification";
+				} else {
+					return;
+				}
 			}
 			
 			log("checking for trends: " + notificationString);
@@ -77,12 +85,16 @@ public class ScienceHandler  {
 			// notification is selected
 
 			Intent intent = new Intent(mContext, CurrentConditionsActivity.class);
+			intent.putExtra("latitude", latitude);
+			intent.putExtra("longitude", longitude);
+			intent.putExtra("appdir", mAppDir);
+
 			PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 			
 			// Build notification
 			Notification noti = new Notification.Builder(mContext)
 			        .setContentTitle("pressureNET Alert")
-			        .setContentText(notificationString).setSmallIcon(R.drawable.ic_launcher)
+			        .setContentText(notificationString).setSmallIcon(R.drawable.ic_notification)
 			        .setContentIntent(pIntent).getNotification();
 			        
 			    
@@ -225,8 +237,8 @@ public class ScienceHandler  {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 
     

@@ -19,6 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +69,15 @@ public class CurrentConditionsActivity extends Activity {
 	private TextView textLightningDescription;
 	private TextView textCloudyDescription;
 	private TextView textFoggyDescription;
+	
+	private ImageView imageHrGeneral;
+	private ImageView imageHrPrecipitation;
+	private ImageView imageHrFoggy;
+	private ImageView imageHrCloudy;
+	private ImageView imageHrPrecipitationAmount;
+	private ImageView imageHrLightning;
+	private ImageView imageHrWindy;
+	
 	
 	private ScrollView scrollGeneral;
 	private ScrollView scrollWind;
@@ -192,51 +203,69 @@ public class CurrentConditionsActivity extends Activity {
     	buttonPrecipitation.setImageResource(R.drawable.ic_precip);
     	buttonThunderstorm.setImageResource(R.drawable.ic_lightning3);
     	
+    	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.sunny))) {
     		buttonSunny.setImageResource(R.drawable.ic_on_sun);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
+    		imageHrPrecipitation.setVisibility(View.GONE);
     		scrollLightning.setVisibility(View.GONE);
     		textLightningDescription.setVisibility(View.GONE);
+    		imageHrLightning.setVisibility(View.GONE);
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
+    		imageHrPrecipitationAmount.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
+    		imageHrFoggy.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.foggy))) {
     		buttonFoggy.setImageResource(R.drawable.ic_on_fog3);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
+    		imageHrPrecipitation.setVisibility(View.GONE);
     		scrollLightning.setVisibility(View.GONE);
     		textLightningDescription.setVisibility(View.GONE);
+    		imageHrLightning.setVisibility(View.GONE);
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
+    		imageHrPrecipitationAmount.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
     		scrollFoggy.setVisibility(View.VISIBLE);
     		textFoggyDescription.setVisibility(View.VISIBLE);
+    		imageHrFoggy.setVisibility(View.VISIBLE);
     	} else if(condition.equals(getString(R.string.cloudy))) {
     		buttonCloudy.setImageResource(R.drawable.ic_on_cloudy);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
+    		imageHrPrecipitation.setVisibility(View.GONE);
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
+    		imageHrPrecipitationAmount.setVisibility(View.GONE);
     		scrollLightning.setVisibility(View.GONE);
     		textLightningDescription.setVisibility(View.GONE);
+    		imageHrLightning.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.VISIBLE);
+    		imageHrCloudy.setVisibility(View.VISIBLE);    		
     		scrollClouds.setVisibility(View.VISIBLE);
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
+    		imageHrFoggy.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.precipitation))) {
     		// Visibility of other rows
     		scrollPrecipitation.setVisibility(View.VISIBLE);
     		textPrecipitationDescription.setVisibility(View.VISIBLE);
+    		imageHrPrecipitation.setVisibility(View.VISIBLE);
     		textCloudyDescription.setVisibility(View.GONE);
+    		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
     		buttonPrecipitation.setImageResource(R.drawable.ic_on_precip);
     		textLightningDescription.setVisibility(View.GONE);
+    		imageHrLightning.setVisibility(View.GONE);
+    		
     		scrollLightning.setVisibility(View.GONE);
     		// Precipitation initialization
     		// buttonRain.setImageResource(R.drawable.ic_on_rain3);
@@ -246,11 +275,14 @@ public class CurrentConditionsActivity extends Activity {
     	} else if(condition.equals(getString(R.string.thunderstorm))) {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
+    		imageHrLightning.setVisibility(View.VISIBLE);
     		buttonThunderstorm.setImageResource(R.drawable.ic_on_lightning3);
     		textCloudyDescription.setVisibility(View.GONE);
+    		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
+    		imageHrFoggy.setVisibility(View.GONE);
     	}
     	
     	// Whichever one is chosen, show windy
@@ -271,7 +303,7 @@ public class CurrentConditionsActivity extends Activity {
     	buttonHeavyFog.setImageResource(R.drawable.ic_fog3);
     	
     	// Turn the new one on
-
+    	
     	if(foggy.equals(getString(R.string.light_fog))) {
     		buttonLightFog.setImageResource(R.drawable.ic_on_fog1);
     	} else if(foggy.equals(getString(R.string.moderate_fog))) {
@@ -291,6 +323,8 @@ public class CurrentConditionsActivity extends Activity {
     	buttonIsWindy1.setImageResource(R.drawable.ic_wind1);
     	buttonIsWindy2.setImageResource(R.drawable.ic_wind2);
     	buttonIsWindy3.setImageResource(R.drawable.ic_wind3);
+    	
+    	
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.calm))) {
@@ -341,6 +375,7 @@ public class CurrentConditionsActivity extends Activity {
     	buttonMostlyCloudy.setImageResource(R.drawable.ic_cloudy2);
     	buttonVeryCloudy.setImageResource(R.drawable.ic_cloudy);
     	
+    	
     	// Turn the new one on
     	if(cloudyCondition.equals(getString(R.string.partly_cloudy))) {
     		switchVisiblePrecipitations(getString(R.string.partly_cloudy));
@@ -365,6 +400,8 @@ public class CurrentConditionsActivity extends Activity {
     	buttonSnow.setImageResource(R.drawable.ic_snow3);
     	buttonHail.setImageResource(R.drawable.ic_hail3);
     	
+    	
+    	
     	// Turn the new one on
     	if(precipCondition.equals(getString(R.string.rain))) {
     		switchVisiblePrecipitations(getString(R.string.rain));
@@ -381,6 +418,7 @@ public class CurrentConditionsActivity extends Activity {
     	
     	scrollPrecipitationAmount.setVisibility(View.VISIBLE);
     	textPrecipitationAmountDescription.setVisibility(View.VISIBLE);
+    	imageHrPrecipitationAmount.setVisibility(View.VISIBLE);
     }
         
     /**
@@ -388,6 +426,7 @@ public class CurrentConditionsActivity extends Activity {
      * @param condition
      */
     private void switchActivePrecipitationAmount(String amount) {
+    	
     	// Off and on, all in one go
     	try {
 	    	if (condition.getPrecipitation_type().equals(getString(R.string.rain))) {
@@ -443,6 +482,8 @@ public class CurrentConditionsActivity extends Activity {
     	buttonInfrequentLightning.setImageResource(R.drawable.ic_r_l1);
     	buttonFrequentLightning.setImageResource(R.drawable.ic_r_l2);
     	buttonHeavyLightning.setImageResource(R.drawable.ic_r_l3);
+
+    	
     	// Turn the new one on
     	if(value.equals(getString(R.string.infrequentLightning))) {
     		buttonInfrequentLightning.setImageResource(R.drawable.ic_on_r_l1);
@@ -487,6 +528,14 @@ public class CurrentConditionsActivity extends Activity {
 		buttonModerateFog = (ImageButton) findViewById(R.id.buttonFoggy2);
 		buttonHeavyFog = (ImageButton) findViewById(R.id.buttonFoggy3);
 		
+		imageHrGeneral = (ImageView) findViewById(R.id.hrGeneral);
+		imageHrPrecipitation = (ImageView) findViewById(R.id.hrPrecipitation);
+		imageHrFoggy = (ImageView) findViewById(R.id.hrFoggy);
+		imageHrCloudy = (ImageView) findViewById(R.id.hrCloudy);
+		imageHrPrecipitationAmount = (ImageView) findViewById(R.id.hrPreciptitationAmount);
+		imageHrLightning = (ImageView) findViewById(R.id.hrLightning);
+		imageHrWindy = (ImageView) findViewById(R.id.hrWindy);
+
 		
 		textGeneralDescription = (TextView) findViewById(R.id.generalDescription);
 		textWindyDescription = (TextView) findViewById(R.id.windyDescription);
@@ -828,17 +877,19 @@ public class CurrentConditionsActivity extends Activity {
 		});
 		
 		// Start adding the data for our current condition
-		Bundle bundle = getIntent().getExtras();
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+		
 		try {
 			mAppDir = bundle.getString("appdir");
-			mLatitude = bundle.getDouble("latitude");
-			mLongitude = bundle.getDouble("longitude");
+			mLatitude = intent.getDoubleExtra("latitude",0.0);
+			mLongitude = intent.getDoubleExtra("longitude",-1.0);
 			condition.setLatitude(mLatitude);
 			condition.setLongitude(mLongitude);
 			condition.setUser_id(getID());
 			condition.setTime(Calendar.getInstance().getTimeInMillis());
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
-	    	
+	   
 			//Toast.makeText(this, userSelf + " " + mAppDir, Toast.LENGTH_SHORT).show();
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
@@ -871,8 +922,8 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 	
 	@Override

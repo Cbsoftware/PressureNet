@@ -116,6 +116,14 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	// get the location
     	// Acquire a reference to the system Location Manager
     	locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    	
+    	// default to last known
+    	Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		double latitude = loc.getLatitude();
+		double longitude = loc.getLongitude();
+		mLatitude = latitude;
+		mLongitude = longitude;
+		
 
     	// Check when we last got a location successfully. Too recently? Don't bother checking. 
     	long now = System.currentTimeMillis();
@@ -351,7 +359,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			// After we're done submitting, 
 			// check the last hour to see if trends have changed
 			ScienceHandler science = new ScienceHandler(mAppDir);
-			science.checkForTrends(dbAdapter);
+			science.checkForTrends(getApplicationContext(), dbAdapter, mLatitude, mLongitude, false);
 			
 			
 			if(showToast) {
@@ -432,8 +440,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	System.out.println(text);
-    	logToFile(text);
+    	//System.out.println(text);
+    	//logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {

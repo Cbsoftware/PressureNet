@@ -61,6 +61,14 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"/>
 
+	<ImageView
+	    android:id="@+id/hrGeneral"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"/>
 
 	<ScrollView 
 	    android:layout_width="fill_parent" 
@@ -98,7 +106,28 @@
 	        android:src="@drawable/ic_hail3"  />
 	    </LinearLayout>
 	</ScrollView>
-		<ScrollView 
+	
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/precipitationDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"
+	    android:visibility="gone"/>
+	
+	
+	<ImageView
+	    android:id="@+id/hrPrecipitation"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
+	    android:visibility="gone"/>
+	
+	
+	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
 	    android:id="@+id/scrollFog"
@@ -141,6 +170,17 @@
 	    android:text="@string/empty"
 	    android:gravity="center"
 	    android:visibility="gone"/>
+	
+	<ImageView
+	    android:id="@+id/hrFoggy"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
+	    android:visibility="gone"/>
+	
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
@@ -184,12 +224,15 @@
 	    android:text="@string/empty"
 	    android:gravity="center"
 	    android:visibility="gone"/>
-	<TextView 
+	
+	<ImageView
+	    android:id="@+id/hrCloudy"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:id="@+id/precipitationDescription"
-	    android:text="@string/empty"
 	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
 	    android:visibility="gone"/>
 	
 	<ScrollView 
@@ -236,6 +279,17 @@
 	    android:text="@string/empty"
 	    android:gravity="center"
 	    android:visibility="gone"/>
+	
+	<ImageView
+	    android:id="@+id/hrPreciptitationAmount"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
+	    android:visibility="gone"/>
+	
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
@@ -278,6 +332,16 @@
 	    android:id="@+id/lightningDescription"
 	    android:text="@string/empty"
 	    android:gravity="center"
+	    android:visibility="gone"/>
+	
+	<ImageView
+	    android:id="@+id/hrLightning"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
 	    android:visibility="gone"/>
 	
 	<ScrollView 
@@ -336,6 +400,16 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"
 	    android:visibility="gone" />
+	
+	<ImageView
+	    android:id="@+id/hrWindy"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:src="@drawable/bg_hr"
+	    android:scaleType="fitXY"
+	    android:padding="5dp"
+	    android:visibility="gone"/>
 	
 	<LinearLayout
 	        android:id="@+id/layoutFinish"
