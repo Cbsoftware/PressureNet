@@ -80,6 +80,7 @@
     <string name="current_conditions">Current Conditions</string>
     <string name="windyOne">A little windy</string>
     <string name="windyTwo">Very windy</string>
+    <string name="windyThree">Extremely windy</string>
     <string name="calm">No wind</string>
     <string name="thick_fog">Thick Fog</string>
     <string name="thin_fog">Thin Fog</string>
@@ -94,7 +95,9 @@
     <string name="heavyLightning">Heavy Lightning</string>
     <string name="send_condition">Send!</string>
     <string name="cancel_condition">Cancel</string>
-    
+    <string name="partly_cloudy">Party Cloudy</string>
+    <string name="mostly_cloudy">Mostly Cloudy</string>
+    <string name="very_cloudy">Very Cloudy</string>    
 </resources>
 
 

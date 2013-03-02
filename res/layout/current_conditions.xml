@@ -61,51 +61,6 @@
 	    android:layout_height="wrap_content"
 	    android:gravity="center"/>
 
-	<ScrollView 
-	    android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content"
-	    android:id="@+id/scrollWindy">
-
-	    <LinearLayout
-	        android:id="@+id/layoutWindy"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="center" >
-
-	    <ImageButton
-	        android:id="@+id/buttonIsCalm"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/calm"
-	       	android:src="@drawable/ic_wind0" />
-	        
-	    <ImageButton
-	        android:id="@+id/buttonIsWindy1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/windyOne" 
-	        android:src="@drawable/ic_wind1"
-	        />
-
-	   	<ImageButton
-	        android:id="@+id/buttonIsWindy2"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        style="?android:attr/buttonBarButtonStyle"
-	        android:text="@string/windyTwo" 
-	        android:src="@drawable/ic_wind2"
-	        />
-	    	    
-	    </LinearLayout>
-	</ScrollView>
-
-	<TextView
-	    android:id="@+id/windyDescription"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:gravity="center" />
 
 	<ScrollView 
 	    android:layout_width="fill_parent" 
@@ -143,6 +98,50 @@
 	        android:src="@drawable/ic_hail3"  />
 	    </LinearLayout>
 	</ScrollView>
+	
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollClouds"
+	    android:visibility="gone">
+
+	    <LinearLayout
+	        android:id="@+id/layoutClouds"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
+	        android:id="@+id/buttonCloudy1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/partly_cloudy"
+	        android:src="@drawable/ic_cloudy1"  />
+	    
+	    <ImageButton
+	        android:id="@+id/buttonCloudy2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/mostly_cloudy"
+	        android:src="@drawable/ic_cloudy2"  />
+	    <ImageButton
+	        android:id="@+id/buttonCloudy3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/very_cloudy"
+	        android:src="@drawable/ic_cloudy"  />
+	    </LinearLayout>
+	</ScrollView>
+	<TextView 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/cloudyDescription"
+	    android:text="@string/empty"
+	    android:gravity="center"
+	    android:visibility="gone"/>
 	<TextView 
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
@@ -150,6 +149,7 @@
 	    android:text="@string/empty"
 	    android:gravity="center"
 	    android:visibility="gone"/>
+	
 	<ScrollView 
 	    android:layout_width="fill_parent" 
 	    android:layout_height="wrap_content"
@@ -237,6 +237,64 @@
 	    android:text="@string/empty"
 	    android:gravity="center"
 	    android:visibility="gone"/>
+	
+	<ScrollView 
+	    android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content"
+	    android:id="@+id/scrollWindy"
+	    android:visibility="gone">
+
+	    <LinearLayout
+	        android:id="@+id/layoutWindy"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center" >
+
+	    <ImageButton
+	        android:id="@+id/buttonIsCalm"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/calm"
+	       	android:src="@drawable/ic_wind0" />
+	        
+	    <ImageButton
+	        android:id="@+id/buttonIsWindy1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windyOne" 
+	        android:src="@drawable/ic_wind1"
+	        />
+
+	   	<ImageButton
+	        android:id="@+id/buttonIsWindy2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windyTwo" 
+	        android:src="@drawable/ic_wind2"
+	        />
+	    	    
+	   	
+	   	<ImageButton
+	        android:id="@+id/buttonIsWindy3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:text="@string/windyThree" 
+	        android:src="@drawable/ic_wind3"
+	        />
+	    </LinearLayout>
+	</ScrollView>
+
+	<TextView
+	    android:id="@+id/windyDescription"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:visibility="gone" />
+	
 	<LinearLayout
 	        android:id="@+id/layoutFinish"
 	        android:layout_width="match_parent"

@@ -381,6 +381,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		Intent i = new Intent(this, PreferencesActivity.class);
     		i.putExtra("hasBarometer", barometerDetected);
     		startActivityForResult(i, 1);
+    	} else if(item.getItemId() == R.id.menu_check_trend) { 
+    		ScienceHandler science = new ScienceHandler(mAppDir);
+    		science.checkForTrends(dbAdapter);
     	} else if(item.getItemId()==R.id.menu_my_info) {
     		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
     		intent.putExtra("userid", android_id);
@@ -475,7 +478,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		cc.setPrecipitation_type(values[6]);
 	    		cc.setPrecipitation_amount(Double.parseDouble(values[7]));
 	    		cc.setThunderstorm_intensity(values[8]);
-	    		cc.setUser_id(values[9]);
+	    		cc.setCloud_type(values[9]);
+	    		cc.setUser_id(values[10]);
 	    		conditionsList.add(cc);
     		} catch(NumberFormatException nfe) {
     			// Likely, tomcat returned an error.
@@ -549,8 +553,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			return "mbar";
 		}
 	}
-	
-	
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
