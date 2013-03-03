@@ -116,6 +116,14 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	// get the location
     	// Acquire a reference to the system Location Manager
     	locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    	
+    	// default to last known
+    	Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		double latitude = loc.getLatitude();
+		double longitude = loc.getLongitude();
+		mLatitude = latitude;
+		mLongitude = longitude;
+		
 
     	// Check when we last got a location successfully. Too recently? Don't bother checking. 
     	long now = System.currentTimeMillis();
@@ -244,79 +252,6 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 			
 		}
 	}
-	
-	public String findTendency(int half) {
-		String tendency = "";
-		try {
-			dbAdapter = new DBAdapter(this);
-			dbAdapter.open();
-			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
-			recents = dbAdapter.fetchRecentReadings(2); // the last little while (in hours)
-			
-			List<BarometerReading> theHalf;
-			// split in half
-			Collections.sort(recents, new ScienceHandler.TimeComparator());
-			if (half==1) {
-				theHalf = recents.subList(0,recents.size() / 2);
-			} else {
-				theHalf = recents.subList(recents.size() / 2, recents.size() -1);
-			}
-			
-			ScienceHandler science = new ScienceHandler(mAppDir);
-			tendency = science.findApproximateTendency(theHalf);
-			dbAdapter.close();
-		} catch(Exception e) {
-			System.out.println("tendency error " + e.getMessage());
-		}
-		return tendency;
-	}
-	
-	public void checkForTrends() {
-		// TODO: Check the Preferences to see if we're allowed
-		if (true) {
-			String firstHalf = findTendency(1);
-			String secondHalf = findTendency(2);
-			String notificationString = "";
-			
-			if (firstHalf.equals("Rising") && secondHalf.equals("Falling")) {
-				// Pressure just dropped. 
-				notificationString = "The pressure is dropping";
-			} else if (firstHalf.equals("Steady") && secondHalf.equals("Falling")) {
-				// Pressure just dropped. 
-				notificationString = "The pressure is dropping";
-			} else if (firstHalf.equals("Falling") && secondHalf.equals("Rising")) {
-				// Pressure is rising. 
-				notificationString = "The pressure is starting to rise";
-			} 
-			
-			if (notificationString.equals("")) {
-				return;
-			}
-			
-			log("checking for trends: " + notificationString);
-			NotificationManager notificationManager = (NotificationManager) 
-					  getSystemService(NOTIFICATION_SERVICE); 
-			// Prepare intent which is triggered if the
-			// notification is selected
-
-			Intent intent = new Intent(this, BarometerNetworkActivity.class);
-			PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-
-			// Build notification
-			// Actions are just fake
-			Notification noti = new Notification.Builder(getApplicationContext())
-			        .setContentTitle("pressureNET Alert")
-			        .setContentText(notificationString).setSmallIcon(R.drawable.ic_launcher)
-			        .setContentIntent(pIntent).getNotification();
-			        
-			    
-			  
-			// Hide the notification after its selected
-			noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-			notificationManager.notify(0, noti); 
-		}
-	}
     
     private class ReadingSender extends AsyncTask<String, Integer, Long> {
 		@Override
@@ -356,7 +291,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	// well as the current reading. if not connected, add to the queue
 	    	if(networkOnline()) {
 	    		log("network is online");
-		    	DefaultHttpClient client = new SecureHttpClient(getApplicationContext());
+		    	DefaultHttpClient client = new DefaultHttpClient();
 		    	HttpPost httppost = new HttpPost(serverURL);
 		    	try {
 		    		// all in the queue
@@ -423,7 +358,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		protected void onPostExecute(Long result) {
 			// After we're done submitting, 
 			// check the last hour to see if trends have changed
-			checkForTrends();
+			ScienceHandler science = new ScienceHandler(mAppDir);
+			science.checkForTrends(getApplicationContext(), dbAdapter, mLatitude, mLongitude, false);
 			
 			
 			if(showToast) {
@@ -505,7 +441,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
     public void log(String text) {
     	System.out.println(text);
-    	logToFile(text);
+    	//logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {

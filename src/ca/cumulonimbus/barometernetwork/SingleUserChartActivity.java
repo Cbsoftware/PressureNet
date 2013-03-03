@@ -56,7 +56,8 @@ public class SingleUserChartActivity extends Activity {
 		log("getting chart...");
 		AsyncTask<String, Integer, String> readingSender = new ChartFetcher(this);
 		long week = 1000 * 60 * 60 * 24 * 7;
-		double dateCutoff = Calendar.getInstance().getTimeInMillis() - week;
+		long day = 1000 * 60 * 60 * 24;
+		double dateCutoff = Calendar.getInstance().getTimeInMillis() - day;
 		readingSender.execute("getcharthtml,true", "statistics,by_user", "user_id,"+userId,"sinceWhen,"+dateCutoff, "units,"+mUnits, "selfstats,"+self);
 	}
 	
@@ -122,7 +123,7 @@ public class SingleUserChartActivity extends Activity {
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	System.out.println(text);
     }
 	
 }

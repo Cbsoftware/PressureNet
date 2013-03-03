@@ -33,7 +33,7 @@ public class ReadingSender extends AsyncTask<String, Integer, String> {
 	
 	@Override
 	protected String doInBackground(String... params) {
-		DefaultHttpClient client = new SecureHttpClient(appContext);
+		DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(serverURL);
 		try {
 

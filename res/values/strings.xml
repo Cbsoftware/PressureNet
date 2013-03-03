@@ -37,6 +37,7 @@
     <string-array name="default_units">
         <item>Millibars (mbar)</item>
         <item>Hectopascals (hPa)</item>
+        <item>Kilopascals (kPa)</item>
         <item>Standard Atmosphere (atm)</item>
         <item>Millimeteres of Mercury (mmHg)</item>
         <item>Inches of Mercury (inHg)</item>
@@ -72,6 +73,35 @@
     </string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
+    <string name="sunny">Sunny</string>
+    <string name="foggy">Foggy</string>
+    <string name="cloudy">Cloudy</string>
+    <string name="precipitation">Precipitation</string>
+    <string name="thunderstorm">Thunderstorm</string>
+    <string name="current_conditions">Current Conditions</string>
+    <string name="windyOne">A little windy</string>
+    <string name="windyTwo">Very windy</string>
+    <string name="windyThree">Extremely windy</string>
+    <string name="calm">No wind</string>
+    <string name="thick_fog">Thick Fog</string>
+    <string name="thin_fog">Thin Fog</string>
+    <string name="rain">Rain</string>
+    <string name="hail">Hail</string>
+    <string name="snow">Snow</string>
+    <string name="low_precip">Low</string>
+    <string name="moderate_precip">Moderate</string>
+    <string name="heavy_precip">Heavy</string>
+    <string name="infrequentLightning">Infrequent Lightning</string>
+    <string name="frequentLightning">Frequent Lightning</string>
+    <string name="heavyLightning">Heavy Lightning</string>
+    <string name="send_condition">Send!</string>
+    <string name="cancel_condition">Cancel</string>
+    <string name="partly_cloudy">Partly Cloudy</string>
+    <string name="mostly_cloudy">Mostly Cloudy</string>
+    <string name="very_cloudy">Very Cloudy</string>
+    <string name="light_fog">Light Fog</string>
+    <string name="moderate_fog">Moderate Fog</string>
+    <string name="heavy_fog">Heavy Fog</string>
 </resources>
 
 
