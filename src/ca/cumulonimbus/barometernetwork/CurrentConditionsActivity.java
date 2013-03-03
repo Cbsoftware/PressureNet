@@ -221,6 +221,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
+    		imageHrCloudy.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.foggy))) {
     		buttonFoggy.setImageResource(R.drawable.ic_on_fog3);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -237,6 +238,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.VISIBLE);
     		textFoggyDescription.setVisibility(View.VISIBLE);
     		imageHrFoggy.setVisibility(View.VISIBLE);
+    		imageHrCloudy.setVisibility(View.GONE);
     	} else if(condition.equals(getString(R.string.cloudy))) {
     		buttonCloudy.setImageResource(R.drawable.ic_on_cloudy);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -923,7 +925,7 @@ public class CurrentConditionsActivity extends Activity {
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	System.out.println(text);
     }
 	
 	@Override

@@ -440,7 +440,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	//System.out.println(text);
+    	System.out.println(text);
     	//logToFile(text);
     }
 	

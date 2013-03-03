@@ -1,8 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/menu_check_trend"
+      android:title="notify [debug]"
+      android:enabled="true"
+      android:showAsAction="never"
+      android:visible="false" />
     <item android:id="@+id/menu_current_conditions"
       android:title="@string/current_conditions"
-      android:icon="@drawable/ic_cloud_light"
+      android:icon="@drawable/ic_menu_weather"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_load_data_vis"
@@ -49,6 +54,7 @@
 <item android:id="@+id/send_debug_log"
       android:title="@string/send_debug_log"
       android:enabled="true"
-      android:showAsAction="never" />
+      android:showAsAction="never" 
+      android:visible="false"/>
     
 </menu>

@@ -37,6 +37,7 @@
     <string-array name="default_units">
         <item>Millibars (mbar)</item>
         <item>Hectopascals (hPa)</item>
+        <item>Kilopascals (kPa)</item>
         <item>Standard Atmosphere (atm)</item>
         <item>Millimeteres of Mercury (mmHg)</item>
         <item>Inches of Mercury (inHg)</item>

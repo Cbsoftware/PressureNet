@@ -354,6 +354,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		} else if(abbrev.contains("hPa")) {
 			// mbar = hpa.
 			return read;
+		} else if(abbrev.contains("kPa")) {
+			return read * 0.1;
 		} else if(abbrev.contains("atm")) {
 			return read * 0.000986923;
 		} else if(abbrev.contains("mmHg")) {
@@ -555,6 +557,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			return "inHg";
 		} else if(unit.contains("hPa")) {
 			return "hPa";
+		} else if(unit.contains("kPa")) {
+			return "kPa";
 		} else if(unit.contains("atm")) {
 			return "atm";
 		} else {
@@ -1412,6 +1416,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 					this.value = mReading;
 				} else if(abbrev.contains("atm")) {
 					this.value = mReading * 0.000986923;
+				} else if(abbrev.contains("kPa")) {
+					this.value = mReading * 0.1;
 				} else if(abbrev.contains("mmHg")) {
 					this.value = mReading * 0.75006;
 				} else if(abbrev.contains("inHg")) {
