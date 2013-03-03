@@ -896,7 +896,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     }
     
     public MapOverlay getCurrentConditionOverlay(CurrentCondition condition, Drawable drawable) {
-    	MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);;
+    	MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);
 		
 		Drawable weatherBackgroundDrawable = this.getResources().getDrawable(R.drawable.bg_wea_square);
 		Drawable pressureBackgroundDrawable = this.getResources().getDrawable(R.drawable.bg_pre_rect);
@@ -1055,13 +1055,15 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		overlay = new MapOverlay(drawable, this, mapFontSize);
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
-	    				log("setting overlay " + condition.getGeneral_condition() + " ");
+	    				// pick and hold the overlay
 	    				overlay = getCurrentConditionOverlay(condition, drawable);
+
+	    				// remove this condition from the list and break out of the loop
+	    				// this leaves all non-barometer device conditions in the list
+	    				// for processing just after.
 	    				conditionsList.remove(condition);
 	    				break;
-	    			} else {
-	    				singletonConditions.add(condition);
-	    			}
+	    			} 
 	    		}
 	    		
 	        	GeoPoint point = new GeoPoint((int)((br.getLatitude()) * 1E6), (int)((br.getLongitude()) * 1E6));
@@ -1075,8 +1077,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	}
     		
     		// Add singleton Current Conditions
-    		log("about to add " + singletonConditions.size() + " singletons");
-    		for(CurrentCondition condition : singletonConditions) {
+    		for(CurrentCondition condition : conditionsList) {
 	    		MapOverlay overlay;
 	    		
 	    		// Pick an overlay icon depending on the reading and 
@@ -1569,6 +1570,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	System.out.println(text);
     }
 }
