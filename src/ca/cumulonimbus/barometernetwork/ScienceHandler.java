@@ -10,10 +10,102 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class ScienceHandler {
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
+public class ScienceHandler  {
 	
 	private String mAppDir;
-    
+	private Context mContext;
+	
+	public String findTendency(DBAdapter dbAdapter, int half) {
+		String tendency = "";
+		try {
+			dbAdapter = new DBAdapter(mContext);
+			dbAdapter.open();
+			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
+			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
+			
+			List<BarometerReading> theHalf;
+			// split in half
+			Collections.sort(recents, new ScienceHandler.TimeComparator());
+			if (half==1) {
+				theHalf = recents.subList(0,recents.size() / 2);
+			} else {
+				theHalf = recents.subList(recents.size() / 2, recents.size() -1);
+			}
+			
+			findApproximateTendency(theHalf);
+			dbAdapter.close();
+		} catch(Exception e) {
+			System.out.println("tendency error " + e.getMessage());
+		}
+		return tendency;
+	}
+
+	public void checkForTrends(Context context, DBAdapter dbAdapter, double latitude, double longitude, boolean notify) {
+		if(dbAdapter == null) {
+			dbAdapter = new DBAdapter(mContext);
+			dbAdapter.open();
+			
+		}
+		mContext = context;
+		// TODO: Check the Preferences to see if we're allowed
+		if (true) {
+			String firstHalf = findTendency(dbAdapter, 1);
+			String secondHalf = findTendency(dbAdapter, 2);
+			String notificationString = "";
+			
+			if (firstHalf.equals("Rising") && secondHalf.equals("Falling")) {
+				// Pressure just dropped. 
+				notificationString = "The pressure is dropping";
+			} else if (firstHalf.equals("Steady") && secondHalf.equals("Falling")) {
+				// Pressure just dropped. 
+				notificationString = "The pressure is dropping";
+			} else if (firstHalf.equals("Falling") && secondHalf.equals("Rising")) {
+				// Pressure is rising. 
+				notificationString = "The pressure is starting to rise";
+			} 
+			
+			if (notificationString.equals("")) {
+				if(notify) {
+					notificationString = "Empty notification";
+				} else {
+					return;
+				}
+			}
+			
+			log("checking for trends: " + notificationString);
+			NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE); 
+			// Prepare intent which is triggered if the
+			// notification is selected
+
+			Intent intent = new Intent(mContext, CurrentConditionsActivity.class);
+			intent.putExtra("latitude", latitude);
+			intent.putExtra("longitude", longitude);
+			intent.putExtra("appdir", mAppDir);
+
+			PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+			
+			// Build notification
+			Notification noti = new Notification.Builder(mContext)
+			        .setContentTitle("pressureNET Alert")
+			        .setContentText(notificationString).setSmallIcon(R.drawable.ic_notification)
+			        .setContentIntent(pIntent).getNotification();
+			        
+			    
+			  
+			// Hide the notification after its selected
+			noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+			notificationManager.notify(0, noti); 
+		}
+	}
+	
 	public static class TimeComparator implements Comparator<BarometerReading> {
         @Override
         public int compare(BarometerReading o1, BarometerReading o2) {
@@ -121,7 +213,6 @@ public class ScienceHandler {
     	}
     }
     
-    
 	// Log data to SD card for debug purposes.
 	// To enable logging, ensure the Manifest allows writing to SD card.
 	public void logToFile(String text) {
@@ -140,11 +231,16 @@ public class ScienceHandler {
 	public ScienceHandler(String appDir) {
 		mAppDir = appDir;
 	}
+	public ScienceHandler(String appDir, Context context) {
+		mAppDir = appDir;
+		mContext = context;
+	}
 	
     public void log(String text) {
-    	logToFile(text);
+    	//logToFile(text);
     	System.out.println(text);
     }
+
     
 
 }

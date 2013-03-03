@@ -21,6 +21,8 @@ public class Unit {
 			return "mbar";
 		} else if(abbrev.contains("hPa")) {
 			return "hPa";
+		} else if(abbrev.contains("kPa")) {
+			return "kPa";
 		} else if(abbrev.contains("atm")) {
 			return "atm";
 		} else if(abbrev.contains("mmHg")) {
@@ -41,6 +43,8 @@ public class Unit {
 			} else if(abbrev.contains("hPa")) {
 				// mbar = hpa.
 				return valueInMb;
+			} else if(abbrev.contains("kPa")) {
+				return valueInMb * 0.1;
 			} else if(abbrev.contains("atm")) {
 				return valueInMb * 0.000986923;
 			} else if(abbrev.contains("mmHg")) {

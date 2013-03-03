@@ -6,6 +6,10 @@
   <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">
 	  <item name="android:actionBarStyle">@style/ActionBarStyle</item>
   </style>
+  <style name="CustomThemeDialogDark" parent="android:Theme.Holo.Dialog">
+	  <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+  </style>
+  
   
   <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
     <item name="android:background">#33b5e5</item>
