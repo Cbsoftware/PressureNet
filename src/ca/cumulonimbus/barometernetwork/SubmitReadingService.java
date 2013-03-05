@@ -56,6 +56,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     private double mReading;
 	private double mLatitude;
 	private double mLongitude;
+	private float mLocationAccuracy;
+	private float mReadingAccuracy;
 	
 	private DBAdapter dbAdapter;
 	
@@ -123,7 +125,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		double longitude = loc.getLongitude();
 		mLatitude = latitude;
 		mLongitude = longitude;
-		
+		mLocationAccuracy = loc.getAccuracy();
 
     	// Check when we last got a location successfully. Too recently? Don't bother checking. 
     	long now = System.currentTimeMillis();
@@ -149,6 +151,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		    	    	
 		    	    	mLatitude = latitude;
 		    	    	mLongitude = longitude;
+		    	    	mLocationAccuracy = location.getAccuracy();
 		    	    	log("new location " + latitude + " " + longitude);
 		    	    	lastLocationSuccess = System.currentTimeMillis();
 		    	    	// now stop. we'll start again next time.
@@ -223,6 +226,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
     	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
     	nvp.add(new BasicNameValuePair("share", br.getSharingPrivacy() + ""));
     	nvp.add(new BasicNameValuePair("client_key", getApplicationContext().getPackageName()));
+    	nvp.add(new BasicNameValuePair("location_accuracy", br.getLocationAccuracy() + ""));
+    	nvp.add(new BasicNameValuePair("reading_accuracy", br.getReadingAccuracy() + ""));
     	return nvp;
     }
     
@@ -246,7 +251,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		try {
 			dbAdapter = new DBAdapter(this);
 	    	dbAdapter.open();
-	    	dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy());
+	    	dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy(), br.getLocationAccuracy(), br.getReadingAccuracy());
 	    	dbAdapter.close();
 		} catch(Exception e) {
 			
@@ -286,6 +291,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	br.setReading(mReading);
 	    	br.setAndroidId(android_id);
 	    	br.setSharingPrivacy(share);
+	    	br.setLocationAccuracy(mLocationAccuracy);
+	    	br.setReadingAccuracy(mReadingAccuracy);
 	    	
 	    	// check for active network. if connected, send everything in the queue as 
 	    	// well as the current reading. if not connected, add to the queue
@@ -441,7 +448,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	
     public void log(String text) {
     	System.out.println(text);
-    	//logToFile(text);
+    	logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {
@@ -532,8 +539,12 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 
 	@Override
-	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		switch (sensor.getType()) {
+		case Sensor.TYPE_PRESSURE: 
+			mReading = accuracy;
+		    break;
+	    }
 		
 	}
 
