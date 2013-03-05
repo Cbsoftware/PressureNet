@@ -18,6 +18,8 @@ public class DBAdapter {
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
     public static final String KEY_SHARING = "sharingprivacy";
+    public static final String KEY_LOCATION_ACCURACY = "location_accuracy";
+    public static final String KEY_READING_ACCURACY = "reading_accuracy";
     public static final String KEY_ROWID = "_id";
 
     private static final String TAG = "pressureNETDbAdapter";
@@ -33,11 +35,13 @@ public class DBAdapter {
       + "latitude real not null, "
       + "longitude real not null, "
       + "time integer not null, "
+      + "location_accuracy real not null, "
+      + "reading_accuracy real not null, "
       + "sharingprivacy text not null);";
 
     private static final String DATABASE_NAME = "pressurenet_data";
     private static final String DATABASE_TABLE = "barometer_readings";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private final Context mCtx;
 
@@ -64,7 +68,7 @@ public class DBAdapter {
     
     public ArrayList<BarometerReading> fetchRecentReadings(int numHours) {
     	ArrayList<BarometerReading> recent = new ArrayList<BarometerReading>();
-    	String[] cols = {KEY_LATITUDE, KEY_LONGITUDE, KEY_READING, KEY_TIME, KEY_SHARING};
+    	String[] cols = {KEY_LATITUDE, KEY_LONGITUDE, KEY_READING, KEY_TIME, KEY_SHARING, KEY_LOCATION_ACCURACY, KEY_READING_ACCURACY};
     	long hoursInMillis = numHours * 60 * 60 * 1000;
     	long now = Calendar.getInstance().getTimeInMillis();
     	long millisAgo = now - hoursInMillis;
@@ -79,6 +83,8 @@ public class DBAdapter {
     		br.setReading(c.getDouble(2));
     		br.setTime(c.getDouble(3));
     		br.setSharingPrivacy(c.getString(4));
+    		br.setLocationAccuracy(c.getFloat(5));
+    		br.setReadingAccuracy(c.getFloat(6));
     		recent.add(br);
     		c.moveToNext();
     	}
@@ -96,7 +102,7 @@ public class DBAdapter {
         this.mCtx = ctx;
     }
 
-    public long addReading(double reading, double latitude, double longitude, double time, String sharingPrivacy) {
+    public long addReading(double reading, double latitude, double longitude, double time, String sharingPrivacy, float locationAccuracy, float readingAccuracy) {
     	
         ContentValues initialValues = new ContentValues();
         // System.out.println(reading + " " + latitude + " " + longitude + " " + time);
@@ -105,6 +111,8 @@ public class DBAdapter {
         initialValues.put(KEY_LONGITUDE, longitude);
         initialValues.put(KEY_TIME, time);
         initialValues.put(KEY_SHARING, time);
+        initialValues.put(KEY_LOCATION_ACCURACY, locationAccuracy);
+        initialValues.put(KEY_READING_ACCURACY, readingAccuracy);
         return mDb.insert(DATABASE_TABLE, null, initialValues);
     }
     
@@ -131,7 +139,7 @@ public class DBAdapter {
     public Cursor fetchAllReadings() {
 
         return mDb.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_READING, KEY_LATITUDE, KEY_LONGITUDE,
-                KEY_TIME, KEY_SHARING}, null, null, null, null, null);
+                KEY_TIME, KEY_SHARING, KEY_LOCATION_ACCURACY, KEY_READING_ACCURACY}, null, null, null, null, null);
     }
     
     
@@ -141,7 +149,7 @@ public class DBAdapter {
         Cursor mCursor =
 
             mDb.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
-                    KEY_READING, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_SHARING}, KEY_ROWID + "=" + rowId, null,
+                    KEY_READING, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_SHARING, KEY_LOCATION_ACCURACY, KEY_READING_ACCURACY}, KEY_ROWID + "=" + rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
