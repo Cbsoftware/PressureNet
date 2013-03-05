@@ -16,6 +16,8 @@ public class BarometerReading implements Serializable {
 	int timeZoneOffset;
 	String androidId;
 	String sharingPrivacy;
+	float locationAccuracy;
+	float readingAccuracy;
 	
 	public String toString() {
 		String ret = "Reading: " + reading + "\n" +
@@ -29,6 +31,19 @@ public class BarometerReading implements Serializable {
 		return ret;
 	}
 
+	
+	public float getLocationAccuracy() {
+		return locationAccuracy;
+	}
+	public void setLocationAccuracy(float locationAccuracy) {
+		this.locationAccuracy = locationAccuracy;
+	}
+	public float getReadingAccuracy() {
+		return readingAccuracy;
+	}
+	public void setReadingAccuracy(float readingAccuracy) {
+		this.readingAccuracy = readingAccuracy;
+	}
 	public String getSharingPrivacy() {
 		return sharingPrivacy;
 	}
