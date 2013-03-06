@@ -201,7 +201,7 @@ public class CurrentConditionsActivity extends Activity {
     	buttonFoggy.setImageResource(R.drawable.ic_fog3);
     	buttonCloudy.setImageResource(R.drawable.ic_cloudy);
     	buttonPrecipitation.setImageResource(R.drawable.ic_precip);
-    	buttonThunderstorm.setImageResource(R.drawable.ic_lightning3);
+    	buttonThunderstorm.setImageResource(R.drawable.ic_wea_r_l0);
     	
     	
     	// Turn the new one on
@@ -267,7 +267,7 @@ public class CurrentConditionsActivity extends Activity {
     		buttonPrecipitation.setImageResource(R.drawable.ic_on_precip);
     		textLightningDescription.setVisibility(View.GONE);
     		imageHrLightning.setVisibility(View.GONE);
-    		
+    		imageHrFoggy.setVisibility(View.GONE);
     		scrollLightning.setVisibility(View.GONE);
     		// Precipitation initialization
     		// buttonRain.setImageResource(R.drawable.ic_on_rain3);
@@ -278,7 +278,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
     		imageHrLightning.setVisibility(View.VISIBLE);
-    		buttonThunderstorm.setImageResource(R.drawable.ic_on_lightning3);
+    		buttonThunderstorm.setImageResource(R.drawable.ic_on_r_l0);
     		textCloudyDescription.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
@@ -481,18 +481,18 @@ public class CurrentConditionsActivity extends Activity {
     
     private void switchActiveLightning(String value) {
     	// Turn everything off
-    	buttonInfrequentLightning.setImageResource(R.drawable.ic_r_l1);
-    	buttonFrequentLightning.setImageResource(R.drawable.ic_r_l2);
-    	buttonHeavyLightning.setImageResource(R.drawable.ic_r_l3);
+    	buttonInfrequentLightning.setImageResource(R.drawable.ic_wea_lightning1);
+    	buttonFrequentLightning.setImageResource(R.drawable.ic_wea_lightning2);
+    	buttonHeavyLightning.setImageResource(R.drawable.ic_wea_lightning3);
 
     	
     	// Turn the new one on
     	if(value.equals(getString(R.string.infrequentLightning))) {
-    		buttonInfrequentLightning.setImageResource(R.drawable.ic_on_r_l1);
+    		buttonInfrequentLightning.setImageResource(R.drawable.ic_on_lightning1);
     	} else if(value.equals(getString(R.string.frequentLightning))) {
-    		buttonFrequentLightning.setImageResource(R.drawable.ic_on_r_l2);
+    		buttonFrequentLightning.setImageResource(R.drawable.ic_on_lightning2);
     	} else if(value.equals(getString(R.string.heavyLightning))) {;
-    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_r_l3);
+    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning1);
     	} 
     }
     
@@ -924,7 +924,7 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
     public void log(String text) {
-    	//logToFile(text);
+    	logToFile(text);
     	System.out.println(text);
     }
 	
