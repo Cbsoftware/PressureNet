@@ -25,6 +25,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ActionBar;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -631,9 +633,15 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     private void startSendingData() {
     	log("start sending data");
 		try {
-			serviceIntent = new Intent(this, SubmitReadingService.class);
-			//serviceIntent.putExtra("appdir", mAppDir);
-			startService(serviceIntent);
+			// only start the service if it's not already running
+			if(!isPressureNETServiceRunning()) {
+				serviceIntent = new Intent(this, SubmitReadingService.class);
+				//serviceIntent.putExtra("appdir", mAppDir);
+				startService(serviceIntent);
+			} else {
+				log("not starting service, already running");
+			}
+			
 		} catch(Exception e) {
 			log(e.getMessage() + "");
 		}
@@ -1517,11 +1525,15 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		if(mUpdateServerAutomatically) {
 			// Start the update service.
 			try {
-				log("on resume restarting the update service");
-				serviceIntent = new Intent(this, SubmitReadingService.class);
-				serviceIntent.putExtra("appdir", mAppDir);
-				stopService(serviceIntent);
-				startService(serviceIntent);
+				if(!isPressureNETServiceRunning()) {
+					log("on resume restarting the update service");
+					serviceIntent = new Intent(this, SubmitReadingService.class);
+					serviceIntent.putExtra("appdir", mAppDir);
+					stopService(serviceIntent);
+					startService(serviceIntent);
+				} else {
+					log("on resume not starting service, already running");
+				}
 			} catch(Exception e) {
 				log(e.getMessage());
 			}
@@ -1572,6 +1584,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    }
 	}
 
+	private boolean isPressureNETServiceRunning() {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (SubmitReadingService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	public void updateVisibleReading() {
 		mUnit.updateReadingFromOutside();
 		double value = mUnit.getValue();
