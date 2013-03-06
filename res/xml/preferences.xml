@@ -24,6 +24,11 @@
             android:key="sharing_preference"
             android:summary="Define data sharing preference"
             android:title="Share with" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="send_notifications"
+            android:summary="Enable Notifications"
+            android:title="Notify on pressure changes" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="units_prefs"
