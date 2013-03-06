@@ -16,11 +16,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 public class ScienceHandler  {
 	
 	private String mAppDir;
 	private Context mContext;
+	private static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
+
 	
 	public String findTendency(DBAdapter dbAdapter, int half) {
 		String tendency = "";
@@ -28,7 +31,7 @@ public class ScienceHandler  {
 			dbAdapter = new DBAdapter(mContext);
 			dbAdapter.open();
 			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
-			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
+			recents = dbAdapter.fetchRecentReadings(3); // the last little while (in hours)
 			
 			List<BarometerReading> theHalf;
 			// split in half
@@ -39,7 +42,7 @@ public class ScienceHandler  {
 				theHalf = recents.subList(recents.size() / 2, recents.size() -1);
 			}
 			
-			findApproximateTendency(theHalf);
+			tendency = findApproximateTendency(theHalf);
 			dbAdapter.close();
 		} catch(Exception e) {
 			System.out.println("tendency error " + e.getMessage());
@@ -48,6 +51,9 @@ public class ScienceHandler  {
 	}
 
 	public void checkForTrends(Context context, DBAdapter dbAdapter, double latitude, double longitude, boolean notify) {
+		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+    	boolean notificationsEnabled = settings.getBoolean("send_notifications", true);
+        
 		if(dbAdapter == null) {
 			dbAdapter = new DBAdapter(mContext);
 			dbAdapter.open();
@@ -79,7 +85,7 @@ public class ScienceHandler  {
 				}
 			}
 			
-			log("checking for trends: " + notificationString);
+			log("checking for trends: " + notificationString + " from " + firstHalf + "->" + secondHalf);
 			NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE); 
 			// Prepare intent which is triggered if the
 			// notification is selected
@@ -102,7 +108,9 @@ public class ScienceHandler  {
 			// Hide the notification after its selected
 			noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
-			notificationManager.notify(0, noti); 
+			if(notificationsEnabled) {
+				notificationManager.notify(0, noti); 	
+			}
 		}
 	}
 	
@@ -167,6 +175,7 @@ public class ScienceHandler  {
     // (TODO: There's too much sorting going on here. Should use min and max) 
     private int guessedButGoodDecision(List<BarometerReading> recents) {
     	// Sort by pressure
+    	log("science making decision, data size " + recents.size());
     	Collections.sort(recents, new PressureComparator());
     	double minPressure = recents.get(0).getReading();
     	double maxPressure = recents.get(recents.size()-1).getReading();
@@ -237,7 +246,7 @@ public class ScienceHandler  {
 	}
 	
     public void log(String text) {
-    	//logToFile(text);
+    	logToFile(text);
     	System.out.println(text);
     }
 

@@ -51,7 +51,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/thunderstorm"
-	        android:src="@drawable/ic_lightning3" />
+	        android:src="@drawable/ic_wea_r_l0" />
 	    </LinearLayout>
 	</ScrollView>
 
@@ -308,7 +308,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/infrequentLightning"
-	        android:src="@drawable/ic_r_l1" />
+	        android:src="@drawable/ic_wea_lightning1" />
 	    
 	    <ImageButton
 	        android:id="@+id/buttonFrequentLightning"
@@ -316,14 +316,14 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/frequentLightning"
-	        android:src="@drawable/ic_r_l2"  />
+	        android:src="@drawable/ic_wea_lightning2"  />
 	    <ImageButton
 	        android:id="@+id/buttonHeavyLightning"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/heavyLightning"
-	        android:src="@drawable/ic_r_l3"  />
+	        android:src="@drawable/ic_wea_lightning3"  />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
