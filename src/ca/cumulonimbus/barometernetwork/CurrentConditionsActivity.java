@@ -492,7 +492,7 @@ public class CurrentConditionsActivity extends Activity {
     	} else if(value.equals(getString(R.string.frequentLightning))) {
     		buttonFrequentLightning.setImageResource(R.drawable.ic_on_lightning2);
     	} else if(value.equals(getString(R.string.heavyLightning))) {;
-    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning1);
+    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning3);
     	} 
     }
     
