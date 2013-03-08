@@ -21,6 +21,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ActionBar;
@@ -193,7 +194,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	@Override
 		protected String doInBackground(String... arg0) {
-    		SecureHttpClient client = new SecureHttpClient();
+    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
         	HttpPost httppost = new HttpPost(serverURL);
         	String id = getID();
         	try {
@@ -920,8 +921,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);
 		
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_wea_square));
-		Drawable pressureBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_pre_rect));
-    	
+		
 		if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_col_sun);
 			Drawable[] layers = {weatherBackgroundDrawable, resizeDrawable(sunDrawable)};
@@ -1087,6 +1087,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		// current condition alone? current condition with tendency?
 	    		
 	    		// is there a current condition from the same user as this reading?
+	    		Drawable pressureBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_pre_rect));
+	        	boolean onlyPressure = true;
 	    		overlay = new MapOverlay(drawable, this, mapFontSize);
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
@@ -1096,8 +1098,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    				// this leaves all non-barometer device conditions in the list
 	    				// for processing just after.
 	    				conditionsList.remove(condition);
+	    				onlyPressure = false;
 	    				break;
 	    			} 
+	    		}
+	    		
+	    		if(onlyPressure ) {
+	       			//overlay = new MapOverlay(pressureBackgroundDrawable, this, mapFontSize);
 	    		}
 	    		
 	        	GeoPoint point = new GeoPoint((int)((br.getLatitude()) * 1E6), (int)((br.getLongitude()) * 1E6));
@@ -1319,7 +1326,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	
 	    	
 	    	
-	    	SecureHttpClient client = new SecureHttpClient();
+	    	SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// keep a history of readings on the user's device
 	    	addToLocalDatabase(br);
@@ -1360,7 +1367,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
-	    		SecureHttpClient client = new SecureHttpClient();
+	    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		
@@ -1637,7 +1644,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 }

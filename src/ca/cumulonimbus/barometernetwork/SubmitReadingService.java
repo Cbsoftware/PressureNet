@@ -299,7 +299,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	// well as the current reading. if not connected, add to the queue
 	    	if(networkOnline()) {
 	    		log("network is online");
-		    	SecureHttpClient client = new SecureHttpClient(getApplicationContext());
+	    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 		    	HttpPost httppost = new HttpPost(serverURL);
 		    	try {
 		    		// all in the queue
@@ -457,8 +457,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	System.out.println(text);
-    	logToFile(text);
+    	//System.out.println(text);
+    	//logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {

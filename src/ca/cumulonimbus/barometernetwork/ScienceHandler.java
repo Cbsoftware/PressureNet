@@ -249,8 +249,8 @@ public class ScienceHandler  {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 
     
