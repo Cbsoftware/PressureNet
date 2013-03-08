@@ -33,7 +33,7 @@ public class ReadingSender extends AsyncTask<String, Integer, String> {
 	
 	@Override
 	protected String doInBackground(String... params) {
-		DefaultHttpClient client = new DefaultHttpClient();
+		SecureHttpClient client = new SecureHttpClient(appContext);
 		HttpPost httppost = new HttpPost(serverURL);
 		try {
 
@@ -66,11 +66,11 @@ public class ReadingSender extends AsyncTask<String, Integer, String> {
 			}
 			sr.close();
 		} catch(ClientProtocolException cpe) {
-
+			cpe.printStackTrace();
 		} catch(IOException ioe) {
-
+			ioe.printStackTrace();
 		} catch(ArrayIndexOutOfBoundsException aioobe) {
-			
+			aioobe.printStackTrace();
 		}
 		return responseText;
 	}

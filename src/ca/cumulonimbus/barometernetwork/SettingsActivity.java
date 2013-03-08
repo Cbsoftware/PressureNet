@@ -197,7 +197,7 @@ public class SettingsActivity extends Activity {
     	
     	@Override
 		protected String doInBackground(String... arg0) {
-    		DefaultHttpClient client = new DefaultHttpClient();
+    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
         	HttpPost httppost = new HttpPost(serverURL);
         	String id = getID();
         	try {

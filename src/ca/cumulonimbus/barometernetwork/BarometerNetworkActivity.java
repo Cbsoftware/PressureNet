@@ -21,7 +21,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ActionBar;
@@ -194,7 +193,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	@Override
 		protected String doInBackground(String... arg0) {
-    		DefaultHttpClient client = new DefaultHttpClient();
+    		SecureHttpClient client = new SecureHttpClient();
         	HttpPost httppost = new HttpPost(serverURL);
         	String id = getID();
         	try {
@@ -823,6 +822,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         		intent.putExtra("appdir", mAppDir);
         		startActivityForResult(intent, 0);    			
     		}
+
     		return true;
     	}
 
@@ -1319,7 +1319,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	
 	    	
 	    	
-	    	DefaultHttpClient client = new DefaultHttpClient();
+	    	SecureHttpClient client = new SecureHttpClient();
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// keep a history of readings on the user's device
 	    	addToLocalDatabase(br);
@@ -1360,7 +1360,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
-	    		DefaultHttpClient client = new DefaultHttpClient();
+	    		SecureHttpClient client = new SecureHttpClient();
 	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		
