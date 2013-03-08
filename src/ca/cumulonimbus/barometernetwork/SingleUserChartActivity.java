@@ -123,7 +123,7 @@ public class SingleUserChartActivity extends Activity {
 	
     public void log(String text) {
     	//logToFile(text);
-    	System.out.println(text);
+    	//System.out.println(text);
     }
 	
 }

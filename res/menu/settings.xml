@@ -1,10 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/menu_check_trend"
-      android:title="notify [debug]"
-      android:enabled="true"
-      android:showAsAction="never"
-      android:visible="false" />
     <item android:id="@+id/menu_current_conditions"
       android:title="@string/current_conditions"
       android:icon="@drawable/ic_menu_weather"
@@ -30,7 +25,18 @@
       android:icon="@drawable/ic_menu_log"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
-    <!-- 
+    <item android:id="@+id/menu_settings"
+      android:title="@string/settings"
+      android:icon="@drawable/ic_menu_settings"
+      android:enabled="true"
+      android:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_delete_data"
+      android:title="@string/delete"
+      android:enabled="true"
+      android:showAsAction="never" />
+    
+    
+        <!-- 
     <item android:id="@+id/menu_reload"
       android:title="@string/load"
       android:icon="@drawable/ic_menu_refresh"
@@ -42,19 +48,16 @@
       android:icon="@drawable/ic_menu_settings"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" /> --> 
-    <item android:id="@+id/menu_settings"
-      android:title="@string/settings"
-      android:icon="@drawable/ic_menu_settings"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_delete_data"
-      android:title="@string/delete"
-      android:enabled="true"
-      android:showAsAction="never" />
+    
 <item android:id="@+id/send_debug_log"
       android:title="@string/send_debug_log"
       android:enabled="true"
       android:showAsAction="never" 
       android:visible="false"/>
     
+    <item android:id="@+id/menu_check_trend"
+      android:title="notify [debug]"
+      android:enabled="true"
+      android:showAsAction="never"
+      android:visible="false" />
 </menu>
