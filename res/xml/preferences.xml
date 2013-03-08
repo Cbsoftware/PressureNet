@@ -27,8 +27,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="send_notifications"
-            android:summary="Enable Notifications"
-            android:title="Notify on pressure changes" />
+            android:summary="Notify when the pressure changes"
+            android:title="Enable Notifications (BETA )" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="units_prefs"

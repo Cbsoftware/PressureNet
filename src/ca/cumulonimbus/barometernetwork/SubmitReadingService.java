@@ -73,7 +73,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	private boolean waitingForReading = false;
 	private long lastLocationSuccess = 0; 
 	private long lastPressureSuccess = 0;
-	
+	private long lastCheckedForTrends = 0;
+	private String lastTrendChangeReported = "";
 
     // Used to write a log to SD card. Not used unless logging enabled.
     public void setUpFiles() {
@@ -298,7 +299,7 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	    	// well as the current reading. if not connected, add to the queue
 	    	if(networkOnline()) {
 	    		log("network is online");
-		    	DefaultHttpClient client = new DefaultHttpClient();
+	    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 		    	HttpPost httppost = new HttpPost(serverURL);
 		    	try {
 		    		// all in the queue
@@ -365,14 +366,23 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 		protected void onPostExecute(Long result) {
 			// After we're done submitting, 
 			// check the last hour to see if trends have changed
-			ScienceHandler science = new ScienceHandler(mAppDir);
-			science.checkForTrends(getApplicationContext(), dbAdapter, mLatitude, mLongitude, false);
 			
-			
-			if(showToast) {
-				//Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
-				showToast = false;
-			}
+			// at most check once per x hours 
+			// and don't report if it's the same as the last report
+			long limit = 1000 * 3600 * 3; 
+			if(System.currentTimeMillis() - lastCheckedForTrends < limit) {
+				log("service checked for trends too recently.");
+			} else {
+				
+				ScienceHandler science = new ScienceHandler(mAppDir);
+				science.checkForTrends(getApplicationContext(), dbAdapter, mLatitude, mLongitude, false);
+				lastCheckedForTrends = System.currentTimeMillis();
+				
+				if(showToast) {
+					//Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+					showToast = false;
+				}
+			}		
 		}
     }
     
@@ -447,8 +457,8 @@ public final class SubmitReadingService extends Service implements SensorEventLi
 	}
 	
     public void log(String text) {
-    	System.out.println(text);
-    	logToFile(text);
+    	//System.out.println(text);
+    	//logToFile(text);
     }
 	
 	private long convertSettingsTextToSeconds(String text) {

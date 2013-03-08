@@ -23,7 +23,7 @@ public class ScienceHandler  {
 	private String mAppDir;
 	private Context mContext;
 	private static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
-
+	
 	
 	public String findTendency(DBAdapter dbAdapter, int half) {
 		String tendency = "";
@@ -50,7 +50,7 @@ public class ScienceHandler  {
 		return tendency;
 	}
 
-	public void checkForTrends(Context context, DBAdapter dbAdapter, double latitude, double longitude, boolean notify) {
+	public String checkForTrends(Context context, DBAdapter dbAdapter, double latitude, double longitude, boolean notify) {
 		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
     	boolean notificationsEnabled = settings.getBoolean("send_notifications", true);
         
@@ -74,14 +74,14 @@ public class ScienceHandler  {
 				notificationString = "The pressure is dropping";
 			} else if (firstHalf.equals("Falling") && secondHalf.equals("Rising")) {
 				// Pressure is rising. 
-				notificationString = "The pressure is starting to rise";
+				notificationString = "The pressure is rising";
 			} 
 			
 			if (notificationString.equals("")) {
 				if(notify) {
 					notificationString = "Empty notification";
 				} else {
-					return;
+					return "";
 				}
 			}
 			
@@ -110,8 +110,11 @@ public class ScienceHandler  {
 
 			if(notificationsEnabled) {
 				notificationManager.notify(0, noti); 	
+				return notificationString;
 			}
+			
 		}
+		return "";
 	}
 	
 	public static class TimeComparator implements Comparator<BarometerReading> {
@@ -246,8 +249,8 @@ public class ScienceHandler  {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 
     

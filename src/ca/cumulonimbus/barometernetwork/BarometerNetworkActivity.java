@@ -101,7 +101,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     private String serverURL = PressureNETConfiguration.SERVER_URL;
     
-    private int mapFontSize = 16;
+    private int mapFontSize = 18;
     
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
@@ -194,7 +194,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	@Override
 		protected String doInBackground(String... arg0) {
-    		DefaultHttpClient client = new DefaultHttpClient();
+    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
         	HttpPost httppost = new HttpPost(serverURL);
         	String id = getID();
         	try {
@@ -817,11 +817,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		// Open the chart view
     		OverlayItem item = mOverlays.get(index);
     		String snippet = item.getSnippet();
-    		
-    		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
-    		intent.putExtra("userid", snippet);
-    		intent.putExtra("appdir", mAppDir);
-    		startActivityForResult(intent, 0);
+    		if(!snippet.equals("singleton_condition")) {
+        		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
+        		intent.putExtra("userid", snippet);
+        		intent.putExtra("appdir", mAppDir);
+        		startActivityForResult(intent, 0);    			
+    		}
+
     		return true;
     	}
 
@@ -919,8 +921,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);
 		
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_wea_square));
-		Drawable pressureBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_pre_rect));
-    	
+		
 		if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(R.drawable.ic_col_sun);
 			Drawable[] layers = {weatherBackgroundDrawable, resizeDrawable(sunDrawable)};
@@ -1061,7 +1062,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         Bitmap d = ((BitmapDrawable)image).getBitmap();
         final float scale = getResources().getDisplayMetrics().density;
         int p = (int) (GESTURE_THRESHOLD_DP * scale + 0.5f);
-        Bitmap bitmapOrig = Bitmap.createScaledBitmap(d, p*3, p*3, false);
+        Bitmap bitmapOrig = Bitmap.createScaledBitmap(d, p*4, p*4, false);
         return new BitmapDrawable(bitmapOrig);
     }
     
@@ -1074,34 +1075,40 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	Drawable drawable = this.getResources().getDrawable(R.drawable.ic_marker);
     	mapOverlays.clear();
     	
-    	ArrayList<CurrentCondition> singletonConditions = new ArrayList<CurrentCondition>();
-    	
     	try {
     		// Add Barometer Readings and associated current Conditions
     		for(BarometerReading br : readingsList) {
 	    		MapOverlay overlay;
+	    		
+	    		String snippet = br.getAndroidId();
 	    		
 	    		// Pick an overlay icon depending on the reading and 
 	    		// the current conditions. reading alone? reading with tendency?
 	    		// current condition alone? current condition with tendency?
 	    		
 	    		// is there a current condition from the same user as this reading?
+	    		Drawable pressureBackgroundDrawable = resizeDrawable(this.getResources().getDrawable(R.drawable.bg_pre_rect));
+	        	boolean onlyPressure = true;
 	    		overlay = new MapOverlay(drawable, this, mapFontSize);
 	    		for(CurrentCondition condition: conditionsList) {
 	    			if(condition.getUser_id().equals(br.getAndroidId())) {
 	    				// pick and hold the overlay
 	    				overlay = getCurrentConditionOverlay(condition, drawable);
-
 	    				// remove this condition from the list and break out of the loop
 	    				// this leaves all non-barometer device conditions in the list
 	    				// for processing just after.
 	    				conditionsList.remove(condition);
+	    				onlyPressure = false;
 	    				break;
 	    			} 
 	    		}
 	    		
+	    		if(onlyPressure ) {
+	       			//overlay = new MapOverlay(pressureBackgroundDrawable, this, mapFontSize);
+	    		}
+	    		
 	        	GeoPoint point = new GeoPoint((int)((br.getLatitude()) * 1E6), (int)((br.getLongitude()) * 1E6));
-	        	String snippet = br.getAndroidId();
+	        	
 	        	String textForTitle = convertfromMillibarTo(br.getReading()) + " " + mUnit.getAbbreviation();
 	        	OverlayItem overlayitem = new OverlayItem(point, textForTitle, snippet);
 	        	overlay.addOverlay(overlayitem);
@@ -1124,7 +1131,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		
 	    		
 	        	GeoPoint point = new GeoPoint((int)((condition.getLatitude()) * 1E6), (int)((condition.getLongitude()) * 1E6));
-	        	String snippet = condition.getUser_id();
+	        	String snippet = "singleton_condition"; //condition.getUser_id();
 	        	String textForTitle = "";
 	        	OverlayItem overlayitem = new OverlayItem(point, textForTitle, snippet);
 	        	overlay.addOverlay(overlayitem);
@@ -1319,7 +1326,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	
 	    	
 	    	
-	    	DefaultHttpClient client = new DefaultHttpClient();
+	    	SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// keep a history of readings on the user's device
 	    	addToLocalDatabase(br);
@@ -1360,7 +1367,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
-	    		DefaultHttpClient client = new DefaultHttpClient();
+	    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		
@@ -1637,7 +1644,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 }

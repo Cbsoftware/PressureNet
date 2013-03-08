@@ -11,7 +11,8 @@
 	        android:id="@+id/layoutGeneral"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:gravity="center" >
+	        android:gravity="center"
+	        android:paddingTop="10dip" >
 	
 	    <ImageButton
 	        android:id="@+id/buttonSunny"
@@ -412,26 +413,28 @@
 	    android:visibility="gone"/>
 	
 	<LinearLayout
-	        android:id="@+id/layoutFinish"
-	        android:layout_width="match_parent"
+	    android:id="@+id/layoutFinish"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center" >
+
+	    <Button
+	        android:id="@+id/buttonCancelCondition"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:gravity="center" >
-		
-		<Button
-		    android:id="@+id/buttonCancelCondition"
-		    style="?android:attr/buttonBarButtonStyle"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/cancel_condition"
-		     />
-		<Button
-		    android:id="@+id/buttonSendCondition"
-		    style="?android:attr/buttonBarButtonStyle"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/send_condition"
-		    android:enabled="false"
-		     />
-		
+	        android:layout_weight="0.5"
+	        android:text="@string/cancel_condition" />
+
+	    <Button
+	        android:id="@+id/buttonSendCondition"
+	        style="?android:attr/buttonBarButtonStyle"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.5"
+	        android:enabled="false"
+	        android:text="@string/send_condition" />
+
 	</LinearLayout>
+
 </LinearLayout>

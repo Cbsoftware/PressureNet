@@ -122,9 +122,9 @@ public class CurrentConditionsActivity extends Activity {
 			}
 			
 			log("app sending " + condition.getGeneral_condition());
+			//Toast.makeText(getApplicationContext(), "Sending...", Toast.LENGTH_SHORT).show();
 			
-			
-	    	DefaultHttpClient client = new DefaultHttpClient();
+			SecureHttpClient client = new SecureHttpClient(getApplicationContext());
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// TODO: keep a history of readings on the user's device
 	    	// addToLocalDatabase(cc);
@@ -222,6 +222,8 @@ public class CurrentConditionsActivity extends Activity {
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
+    		
+    		this.condition.setGeneral_condition(getString(R.string.sunny));
     	} else if(condition.equals(getString(R.string.foggy))) {
     		buttonFoggy.setImageResource(R.drawable.ic_on_fog3);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -239,6 +241,9 @@ public class CurrentConditionsActivity extends Activity {
     		textFoggyDescription.setVisibility(View.VISIBLE);
     		imageHrFoggy.setVisibility(View.VISIBLE);
     		imageHrCloudy.setVisibility(View.GONE);
+    		
+    		this.condition.setGeneral_condition(getString(R.string.foggy));
+    		this.condition.setFog_thickness(getString(R.string.light_fog));
     	} else if(condition.equals(getString(R.string.cloudy))) {
     		buttonCloudy.setImageResource(R.drawable.ic_on_cloudy);
     		scrollPrecipitation.setVisibility(View.GONE);
@@ -256,6 +261,9 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
+    		
+    		this.condition.setGeneral_condition(getString(R.string.cloudy));
+    		this.condition.setCloud_type(getString(R.string.mostly_cloudy));
     	} else if(condition.equals(getString(R.string.precipitation))) {
     		// Visibility of other rows
     		scrollPrecipitation.setVisibility(View.VISIBLE);
@@ -274,6 +282,10 @@ public class CurrentConditionsActivity extends Activity {
     		// textPrecipitationDescription.setText(getString(R.string.rain));
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
+    		
+    		this.condition.setGeneral_condition(getString(R.string.precipitation));
+    		this.condition.setPrecipitation_type(getString(R.string.rain));
+    		this.condition.setPrecipitation_amount(0);
     	} else if(condition.equals(getString(R.string.thunderstorm))) {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
@@ -285,6 +297,9 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
+    		
+    		this.condition.setGeneral_condition(getString(R.string.thunderstorm));
+    		this.condition.setThunderstorm_intensity(getString(R.string.infrequentLightning));
     	}
     	
     	// Whichever one is chosen, show windy
@@ -492,7 +507,7 @@ public class CurrentConditionsActivity extends Activity {
     	} else if(value.equals(getString(R.string.frequentLightning))) {
     		buttonFrequentLightning.setImageResource(R.drawable.ic_on_lightning2);
     	} else if(value.equals(getString(R.string.heavyLightning))) {;
-    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning1);
+    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning3);
     	} 
     }
     
@@ -924,8 +939,8 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 	
 	@Override
