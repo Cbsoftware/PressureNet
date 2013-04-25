@@ -1,11 +1,9 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -13,14 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import android.app.ActionBar;
 import android.app.ActivityManager;
@@ -51,9 +41,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.view.Menu;
@@ -88,30 +76,17 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     boolean mExternalStorageWriteable = false;
     
     private String android_id;
-    
-    private String localHistoryFile = "recent.txt";
-    
+   
     private boolean debugMode = true;
     
     private String mTendency = "";
     
     public String statusText = "";
-    private final Handler statusHandler = new Handler();
-    private final Handler mapHandler = new Handler();
-	
-    private String serverURL = PressureNETConfiguration.SERVER_URL;
-    
     private int mapFontSize = 18;
     
-	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
-	
-	private String mUpdateServerFrequency;
-	private boolean mUpdateServerAutomatically;
 	Intent serviceIntent;
 	
 	Unit mUnit = null;
-	
-	private DBAdapter dbAdapter;
 
 	private boolean barometerDetected = true;
 	
@@ -120,38 +95,16 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        migratePreferences(); 
+        //migratePreferences(); 
         startLog();
-        setUpDatabase();
         setUpBarometer();
-        getStoredPreferences();
-        getLocationInformation();
+        //getStoredPreferences();
         setId();
         setUpFiles();
         setUpMap();
         showWelcomeActivity();
-        startSendingData();
         setUpActionBar();
-        findTendency();
-    }
-    
-    public void findTendency() {
-    	try {
-			dbAdapter = new DBAdapter(getApplicationContext());
-			dbAdapter.open();
-			ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
-			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
-			// String tendency = ScienceHandler.findTendency(recents);
-			ScienceHandler science = new ScienceHandler(mAppDir);
-			String tendency = science.findApproximateTendency(recents);
-			mTendency = tendency;
-			if (mTendency.equals("Unknown")) {
-				mTendency = "";
-			}
-			dbAdapter.close();
-		} catch(Exception e) {
-			System.out.println("tendency error " + e.getMessage());
-		}
+        startCbService();
     }
     
     public void startLog() {
@@ -184,52 +137,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		return "--";
     	}
 	}
-	
-	/**
-	 * Tell the server the user wants to delete his/her data
-	 *
-	 */
-    private class SendDeleteRequest extends AsyncTask<String, String, String> {
-    	String responseText= "";
-    	
-    	@Override
-		protected String doInBackground(String... arg0) {
-    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
-        	HttpPost httppost = new HttpPost(serverURL);
-        	String id = getID();
-        	try {
-        		List<NameValuePair> nvp = new ArrayList<NameValuePair>();
-        		nvp.add(new BasicNameValuePair("download","full_delete_request"));
-        		nvp.add(new BasicNameValuePair("userid",id));
-        
-        		httppost.setEntity(new UrlEncodedFormEntity(nvp));
-        		HttpResponse response = client.execute(httppost);
-        		HttpEntity responseEntity = response.getEntity();
-        		
-        		BufferedReader r = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-        		
-        		StringBuilder total = new StringBuilder();
-        		
-        		String line;
-        		if(r!=null) {
-    	    		while((line = r.readLine()) != null) {
-    	    			total.append(line);
-    	    		}
-    	    		responseText = total.toString();
-        		}
-        		return responseText;
-        		
-        	}catch(Exception e) {
-        		
-        	}
-	    	return responseText;
-		}
-		protected void onPostExecute(String result) {
-			
-			Toast.makeText(getApplicationContext(), "Data deleted.", Toast.LENGTH_SHORT).show();
-		}
-    }
-	
 	public void deleteUserData() {
 		// show a dialog, listen for its response.
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -242,7 +149,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    public void onClick(DialogInterface dialog, int which) {
 	        switch (which){
 	        case DialogInterface.BUTTON_POSITIVE:
-	        	new SendDeleteRequest().execute("");
+	        	// TODO: Implement
 	        	break;
 
 	        case DialogInterface.BUTTON_NEGATIVE:
@@ -295,16 +202,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
      */
     public void showWelcomeActivity() {
     	// has this been shown yet?
+    	// TODO: store in preferences
+    	int firstRun = 0;
+    	
     	if(barometerDetected) {
-	    	SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	    	int firstRun = settings.getInt("first_run", 0);
 	    	if(firstRun==0) {
 	    		Intent intent = new Intent(this, ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
 	    		startActivityForResult(intent, 0);
-	    		firstRun++;
-	    		SharedPreferences.Editor editor = settings.edit();
-	    		editor.putInt("first_run", firstRun);
-	  	      	editor.commit();
 	    	}
     	}
     }
@@ -331,47 +235,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	}
     }
     
-    public void setUpDatabase() {
-    	try {
-    		dbAdapter = new DBAdapter(this);
-    		dbAdapter.open();
-    	} catch(Exception e) {
-    		Toast.makeText(getApplicationContext(), "Unable to open local database. No problem (no local history.)", Toast.LENGTH_LONG).show();
-    	}
-    }
-    
-
-	// Add a new barometer reading to the local database
-	// Having this allows user to view trends but keeps 
-    // the data offline (no server visibility to the data.)
-	public void addToLocalDatabase(CbObservation br) {
-		try {
-			dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy(), br.getLocationAccuracy(), br.getReadingAccuracy());
-		} catch(RuntimeException re) {
-			// :(
-		}
-	}
-	
-	public double convertfromMillibarTo(double read) {
-		String abbrev = mUnit.getAbbreviation();
-		if(abbrev.contains("mbar")) {
-			// No change. reading comes to us in mbar.
-			return read;
-		} else if(abbrev.contains("hPa")) {
-			// mbar = hpa.
-			return read;
-		} else if(abbrev.contains("kPa")) {
-			return read * 0.1;
-		} else if(abbrev.contains("atm")) {
-			return read * 0.000986923;
-		} else if(abbrev.contains("mmHg")) {
-			return read * 0.75006;
-		} else if(abbrev.contains("inHg")) {
-			return read * 0.02961;
-		}
-		return 0.0;
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -391,20 +254,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     		Intent i = new Intent(this, PreferencesActivity.class);
     		i.putExtra("hasBarometer", barometerDetected);
     		startActivityForResult(i, 1);
-    	} else if(item.getItemId() == R.id.menu_check_trend) { 
-    		log("menu check trend " + mLatitude + " " + mLongitude);
-    		ScienceHandler science = new ScienceHandler(mAppDir, getApplicationContext());
-    		science.checkForTrends(getApplicationContext(), dbAdapter, mLatitude, mLongitude, true);
-    		
     	} else if(item.getItemId()==R.id.menu_my_info) {
-    		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
-    		intent.putExtra("userid", android_id);
-    		intent.putExtra("selfstats", "yes");
-    		intent.putExtra("appdir", mAppDir);
-    		startActivityForResult(intent, 0);
+    		// TODO: Implement
     	} else if(item.getItemId()==R.id.menu_submit_reading) {
-			getLocationInformation();
-			submitDataToServer();
+			// TODO: Implement
     	} else if(item.getItemId()==R.id.menu_log_viewer) {
     		showRecentHistory();
     	} else if(item.getItemId()==R.id.send_debug_log) {
@@ -591,16 +444,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		String log = "";
 		ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 		try {
-			dbAdapter.open();
-			recents = dbAdapter.fetchRecentReadings(24); // the last few hours
-			dbAdapter.close();
-			for (CbObservation r : recents) {
-				String d = new Date((long)r.getTime()).toLocaleString();
-				DecimalFormat df = new DecimalFormat("####.00");
-				String unit = fullUnitToRealAbbrev(mUnit.getAbbreviation());
-				double reading = convertfromMillibarTo(r.getReading());
-				log += d + ": " + df.format(reading) + " " + unit + "\n";
-			}
+			// TODO: Implement with CbService
 			Intent intent = new Intent(this, LogViewerActivity.class);
 			intent.putExtra("log", log);
 			startActivity(intent);
@@ -622,20 +466,18 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	protected void onRestart() {
 		super.onRestart();
 		setUpBarometer();
-		getStoredPreferences();
-		getLocationInformation();
 	}
     
 	// Periodically send barometer readings if allowed by Preferences
     // pref check done inside the service; start the service even if no 
     // data is sent to allow the widget to use the service
     // probably should rename away from startSendingData
-    private void startSendingData() {
+    private void startCbService() {
     	log("start sending data");
 		try {
 			// only start the service if it's not already running
 			if(!isPressureNETServiceRunning()) {
-				serviceIntent = new Intent(this, SubmitReadingService.class);
+				serviceIntent = new Intent(this, CbService.class);
 				//serviceIntent.putExtra("appdir", mAppDir);
 				startService(serviceIntent);
 			} else {
@@ -647,26 +489,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		}
 
     }
-    
-    // Get the user preferences
-    private void getStoredPreferences() {
-    	try {
-    		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-    		mUpdateServerAutomatically = settings.getBoolean("autoupdate", true);
-    		mUpdateServerFrequency = settings.getString("autofrequency", "10 minutes");
-    		//log("shared prefs: " + mUpdateServerFrequency + " " + mUpdateServerAutomatically);
-    		
-    		// Units
-    		String abbrev = settings.getString("units", "mbar"); 
-    		mUnit = new Unit(abbrev);
-    		//log("abbrev: "  + abbrev);
-    		
-    	} catch(Exception e) {
-    		log(e.getMessage() + "");
-    		mUpdateServerAutomatically = false;
-    	}
-    }
-    
     // Set a unique identifier so that updates from the same user are 
     // seen as updates and not new data. MD5 to minimize privacy problems. (?)
     public void setId() {
@@ -750,61 +572,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
        
     }
     
-    LocationManager mLocationManager;
-    LocationListener locationListener;
-    
-    // Get the user's location from the location service, preferably GPS.
-    public void getLocationInformation() {
-    	log("getting location information");
-    	// get the location
-    	// Acquire a reference to the system Location Manager
-    	mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-    	// Define a listener that responds to location updates
-    	locationListener = new LocationListener() {
-    	    public void onLocationChanged(Location location) {
-    	        // Called when a new location is found by the network location provider.
-    	    	try {
-	    	    	boolean first = false;
-	    	    	if(mLatitude==0.0) {
-	    	    		log("latitude is 0");
-	    	    		first = true;
-	    	    	}
-	    	    	double latitude = location.getLatitude();
-	    	    	double longitude = location.getLongitude();
-	    	    	mLatitude = latitude;
-	    	    	mLongitude = longitude;
-	    	    	mLocationAccuracy = location.getAccuracy();
-	    	    	if(first) {
-	    	    		//log("first location start");
-	    	    		setUpMap();
-	    	    		loadAndShowData();
-	    	    		//log("end");
-	    	    	}
-    	    	} catch(Exception e) {
-    	    		log("On Location change failed.");
-    	    	}
-    	    }
-    	    
-    	    
-
-    	    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    	    public void onProviderEnabled(String provider) {}
-
-    	    public void onProviderDisabled(String provider) {}
-    	  };
-
-    	// Register the listener with the Location Manager to receive location updates
-    	try {
-    		mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-    		
-    	} catch(Exception e) {
-    		log(e.getMessage() + "");
-    	}
-
-    }
-
+   
     // Custom map overlays for barometer readings
     public class MapOverlay extends ItemizedOverlay<OverlayItem> {
 
@@ -814,15 +582,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 
     	@Override
     	protected boolean onTap(int index) {
-    		// Open the chart view
-    		OverlayItem item = mOverlays.get(index);
-    		String snippet = item.getSnippet();
-    		if(!snippet.equals("singleton_condition")) {
-        		Intent intent = new Intent(getApplication(), SingleUserChartActivity.class);
-        		intent.putExtra("userid", snippet);
-        		intent.putExtra("appdir", mAppDir);
-        		startActivityForResult(intent, 0);    			
-    		}
+    		// TODO: Implement
 
     		return true;
     	}
@@ -913,8 +673,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     }
     
     // Assume that matching latitude and longitude can only be you. 
-    public boolean brIsMe(CbObservation br) {
-    	return ((br.getAndroidId().equals(android_id)));
+    public boolean obsIsMe(CbObservation ob) {
+    	return ((ob.getUser_id().equals(android_id)));
     }
     
     public MapOverlay getCurrentConditionOverlay(CurrentCondition condition, Drawable drawable) {
@@ -1077,10 +837,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	try {
     		// Add Barometer Readings and associated current Conditions
-    		for(CbObservation br : readingsList) {
+    		for(CbObservation ob : readingsList) {
 	    		MapOverlay overlay;
 	    		
-	    		String snippet = br.getAndroidId();
+	    		String snippet = ob.getUser_id();
 	    		
 	    		// Pick an overlay icon depending on the reading and 
 	    		// the current conditions. reading alone? reading with tendency?
@@ -1091,7 +851,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	        	boolean onlyPressure = true;
 	    		overlay = new MapOverlay(drawable, this, mapFontSize);
 	    		for(CurrentCondition condition: conditionsList) {
-	    			if(condition.getUser_id().equals(br.getAndroidId())) {
+	    			if(condition.getUser_id().equals(ob.getUser_id())) {
 	    				// pick and hold the overlay
 	    				overlay = getCurrentConditionOverlay(condition, drawable);
 	    				// remove this condition from the list and break out of the loop
@@ -1107,9 +867,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	       			//overlay = new MapOverlay(pressureBackgroundDrawable, this, mapFontSize);
 	    		}
 	    		
-	        	GeoPoint point = new GeoPoint((int)((br.getLatitude()) * 1E6), (int)((br.getLongitude()) * 1E6));
+	        	GeoPoint point = new GeoPoint((int)((ob.getLocation().getLatitude()) * 1E6), (int)((ob.getLocation().getLongitude()) * 1E6));
 	        	
-	        	String textForTitle = convertfromMillibarTo(br.getReading()) + " " + mUnit.getAbbreviation();
+	        	String textForTitle = ob.getObservationValue() + " " + ob.getObservationUnit();
 	        	OverlayItem overlayitem = new OverlayItem(point, textForTitle, snippet);
 	        	overlay.addOverlay(overlayitem);
 	        	mapOverlays.add(overlay);
@@ -1154,234 +914,21 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         }
     };
     
-    // Assemble a list of CbObservations. This is the opposite of function CbObservationToWeb in the servlet.
-    public ArrayList<CbObservation> csvToCbObservations(String[] readings) {
-    	ArrayList<CbObservation> readingsList = new ArrayList<CbObservation>();
-    	for(int i = 0; i<readings.length; i++) {
-    		try {
-	    		String[] values = readings[i].split("\\|");
-	    		CbObservation br = new CbObservation();
-	    		br.setLatitude(Double.parseDouble(values[0]));
-	    		br.setLongitude(Double.parseDouble(values[1]));
-	    		br.setReading(Double.parseDouble(values[2]));
-	    		br.setTime(Double.parseDouble(values[3]));
-	    		br.setTimeZoneOffset(Integer.parseInt(values[4]));
-	    		br.setAndroidId(values[5]);
-	    		br.setSharingPrivacy(values[6]);
-	    		// client_key
-	    		br.setLocationAccuracy(Float.parseFloat(values[8]));
-	    		br.setReadingAccuracy(Float.parseFloat(values[9]));
-	    		readingsList.add(br);
-    		} catch(NumberFormatException nfe) {
-    			// Likely, tomcat returned an error.
-    			log("Server error? " + nfe.getMessage());
-    		} catch(ArrayIndexOutOfBoundsException aioobe) {
-    			aioobe.printStackTrace();
-    			log("array index error");
-    		}
-    	}
-    	
-    	return readingsList;
-    }
-    
-    // Assemble a HashMap of userIDs and tendencies. //This is the opposite of function CbObservationToWeb in the servlet.
-    public HashMap<String, String> csvToBarometerTendencies(String[] readings) {
-    	//log("csv to barometer tendencies : " + readings[0] + ", " + readings.length);
-    	HashMap<String, String> tendencies = new HashMap<String, String>();
-    	for(int i = 0; i<readings.length; i++) {
-    		try {
-	    		String[] values = readings[i].split(",");
-	    		
-	    		for(String a : values) {
-	    			//log(a);
-	    		}
-	    		//log("tendency check " + values[5]);
-	    		tendencies.put(values[5], values[6]); // userid, tendency
-    		} catch(Exception e) {
-    			// Likely, the server returned an error.
-    			log("Server error tendencies? " + e.getMessage());
-    		}
-    	}
-    	
-    	return tendencies;
-    }
-    
-    // When we get a download, split up the data into barometer readings
-    // or tendency information and display it on the map.
-    public void processDownloadResult(String result) {
-    	log("process download result");
-    	if(!result.equals("")) {
-    		if(result.contains("local_data return;")) {
-    			// local_data return now contains both pressure readings
-    			// and current conditions
-    			
-    			// get the result
-    			result = result.substring("local_data return;".length());
-	    		
-    			// split into barometer data and weather data
-    			String[] bothDataSets = result.split("----------");
-    			log("both data sets " + result);
-    			
-    			try {
-	    			String[] csvReading = bothDataSets[0].split(";");
-	    			ArrayList<CurrentCondition> conditions = new ArrayList<CurrentCondition>();
-	    			try {
-		    			if(bothDataSets[1].contains(";")) {
-		    				String[] csvConditions = bothDataSets[1].split(";");
-		    				conditions = csvToCurrentConditions(csvConditions);
-		    			}
-	    			} catch(ArrayIndexOutOfBoundsException aiooe) {
-	    				// no problem. there aren't any conditions.
-	    			}
-	    			ArrayList<CbObservation> readings = csvToCbObservations(csvReading);
-	    			addDataToMap(readings, conditions, false, null);
-	    		} catch(Exception e) {
-	    			e.printStackTrace();
-	    			log("error in add data : " + e.getMessage());
-	    		}
-	    		
-    		} 
-    	} else {
-    		log("failed to process download result.");
-    		
-    	}
-    }
-    
-    // Preparation for sending a barometer reading through the network. 
-    // Take the object and NVP it.
-    public List<NameValuePair> CbObservationToNVP(CbObservation br) {
-    	List<NameValuePair> nvp = new ArrayList<NameValuePair>();
-    	nvp.add(new BasicNameValuePair("latitude",br.getLatitude() + ""));
-    	nvp.add(new BasicNameValuePair("longitude",br.getLongitude() + ""));
-    	nvp.add(new BasicNameValuePair("reading",br.getReading() + ""));
-    	nvp.add(new BasicNameValuePair("time",br.getTime() + ""));
-    	nvp.add(new BasicNameValuePair("tzoffset",br.getTimeZoneOffset() + ""));
-    	nvp.add(new BasicNameValuePair("text",br.getAndroidId() + ""));
-    	nvp.add(new BasicNameValuePair("share",br.getSharingPrivacy() + ""));
-    	nvp.add(new BasicNameValuePair("client_key", getApplicationContext().getPackageName()));
-    	nvp.add(new BasicNameValuePair("location_accuracy",br.getLocationAccuracy() + ""));
-    	nvp.add(new BasicNameValuePair("reading_accuracy", br.getReadingAccuracy() + ""));
-    	return nvp;
-    }
-    
-    public void submitDataToServer() {
-    	new ReadingSender().execute("");
-    }
-    
-    public void loadAndShowData() {
-    	new DataDownload().execute("");
-    }
-    
     private BroadcastReceiver receiveForMap = 
     	new BroadcastReceiver() {
         	@Override
         	public void onReceive(Context context, Intent intent) {
         		if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
-        			loadAndShowData();
+        			// TODO: load and show data
         		}
         	}
     	};
-    
-    // Download data from the server in the background
-    private class DataDownload extends AsyncTask<String, String, String> {
-    	@Override
-		protected String doInBackground(String... arg0) {
-			log("DataDownload doInBackground start");
-			
-	    	String responseText = "";
-	    	
-	    	try {
-	    		//log("DataDownload doInBackground start try block");
-	    		
-	    		// Instantiate the custom HttpClient
-	    		DefaultHttpClient client = new DefaultHttpClient();
-	    	
-	    		HttpPost post = new HttpPost(serverURL);
-	    		
-	    		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-
-	    		String type = "local_current_data";
-	    		
-	    		if(type.equals("all_data")) {
-	    			nvps.add(new BasicNameValuePair("download","all_data"));
-	    		} else if(type.equals("recent_data")) {
-	    			nvps.add(new BasicNameValuePair("download","recent_data"));
-	    			nvps.add(new BasicNameValuePair("days","1"));
-	    		} else if(type.equals("local_data")) {
-	    			// PRESSURENET DEFAULT v. 1.0 to 3.0.1
-	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		    		GeoPoint center = mv.getMapCenter();
-		    		int latSpan = mv.getLatitudeSpan();
-		    		int longSpan = mv.getLongitudeSpan();
-		    		
-		    		nvps.add(new BasicNameValuePair("download", "local_data"));
-		    		nvps.add(new BasicNameValuePair("centerlat", center.getLatitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("centerlon", center.getLongitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("latspan", latSpan + ""));
-		    		nvps.add(new BasicNameValuePair("longspan", longSpan + ""));
-	    		} else if(type.equals("local_current_data")) {
-	    			// Same base as local_data but with Current Conditions added
-	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		    		GeoPoint center = mv.getMapCenter();
-		    		int latSpan = mv.getLatitudeSpan();
-		    		int longSpan = mv.getLongitudeSpan();
-		    		
-		    		// masquerading as local_data might break the local_data else if above
-		    		nvps.add(new BasicNameValuePair("download", "local_data")); 
-		    		nvps.add(new BasicNameValuePair("centerlat", center.getLatitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("centerlon", center.getLongitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("latspan", latSpan + ""));
-		    		nvps.add(new BasicNameValuePair("longspan", longSpan + ""));
-		    		
-	    		} else if(type.equals("local_tendency_data")) {
-	    			BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		    		GeoPoint center = mv.getMapCenter();
-		    		int latSpan = mv.getLatitudeSpan();
-		    		int longSpan = mv.getLongitudeSpan();
-		    		nvps.add(new BasicNameValuePair("download", "local_tendency_data"));
-		    		nvps.add(new BasicNameValuePair("centerlat", center.getLatitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("centerlon", center.getLongitudeE6() + ""));
-		    		nvps.add(new BasicNameValuePair("latspan", latSpan + ""));
-		    		nvps.add(new BasicNameValuePair("longspan", longSpan + ""));
-	    		}
-	    		
-	    		post.setEntity(new UrlEncodedFormEntity(nvps));
-	    		
-	    		
-	    		// Execute the GET call and obtain the response
-	    		HttpResponse getResponse = client.execute(post);
-	    		HttpEntity responseEntity = getResponse.getEntity();
-	    		
-	    		
-	    		BufferedReader r = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-	    		
-	    		StringBuilder total = new StringBuilder();
-	    		String line;
-	    		if(r!=null) {
-		    		while((line = r.readLine()) != null) {
-		    			total.append(line);
-		    		}
-		    		responseText = total.toString();
-	    		}
-	    	} catch(Exception e) {
-	    		log(e.getMessage() + "");
-	    	}
-	    	return responseText;
-		}
-		protected void onPostExecute(String result) {
-			log("datadownload post execute: '" + result + "'");
-			processDownloadResult(result);
-		
-			mapHandler.postDelayed(refreshMap, 100);
-		}
-    }
     
 	// Stop listening to the barometer when our app is paused.
 	@Override
 	protected void onPause() {
         super.onPause();
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mLocationManager.removeUpdates(locationListener);
         sm.unregisterListener(this);
         unregisterReceiver(receiveForMap);
 	}
@@ -1391,39 +938,10 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	protected void onResume() {
 		super.onResume();
 		registerReceiver(receiveForMap, new IntentFilter(BarometerMapView.CUSTOM_INTENT));
-		// Check for auto-send settings change.
-		getStoredPreferences();
-		getLocationInformation();
-		if(mUpdateServerAutomatically) {
-			// Start the update service.
-			try {
-				if(!isPressureNETServiceRunning()) {
-					log("on resume restarting the update service");
-					serviceIntent = new Intent(this, CbService.class);
-					serviceIntent.putExtra("appdir", mAppDir);
-					stopService(serviceIntent);
-					startService(serviceIntent);
-				} else {
-					log("on resume not starting service, already running");
-				}
-			} catch(Exception e) {
-				log(e.getMessage());
-			}
-		} else {
-			// Stop the update service.
-			try {
-				stopService(serviceIntent);
-			} catch(Exception e) {
-				serviceIntent = new Intent(this, CbService.class);
-				serviceIntent.putExtra("appdir", mAppDir);
-				stopService(serviceIntent);
-				log(e.getMessage());
-			}
-		}
+		
 		setUpBarometer();
 		updateVisibleReading();
-        loadAndShowData();
-        setUpDatabase();
+     
 	}
 	
 	// Must exist for the MapView.
@@ -1439,7 +957,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			sm.unregisterListener(this);
-			mLocationManager.removeUpdates(locationListener);
 			unregisterReceiver(receiveForMap);
 		} catch(Exception e) {
 			
@@ -1471,10 +988,9 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		TextView textView = (TextView) findViewById(R.id.textReading); 
 		if(value!=0.0) {
 			textView.setVisibility(View.VISIBLE);
-			String abbrev = mUnit.getAbbreviation();
 	    	DecimalFormat df = new DecimalFormat("####.00");
 	        String toPrint = df.format(value);
-	    	textView.setText(toPrint + " " + abbrev + " " + mTendency + " ");
+	    	textView.setText(toPrint + " " + " " + mTendency + " ");
 		} else {
 			textView.setText("No barometer detected.");
 			// textView.setVisibility(View.GONE);
