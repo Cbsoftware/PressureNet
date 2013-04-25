@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -64,6 +62,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbService;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -139,7 +139,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	try {
 			dbAdapter = new DBAdapter(getApplicationContext());
 			dbAdapter.open();
-			ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
+			ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 			recents = dbAdapter.fetchRecentReadings(1); // the last little while (in hours)
 			// String tendency = ScienceHandler.findTendency(recents);
 			ScienceHandler science = new ScienceHandler(mAppDir);
@@ -344,7 +344,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	// Add a new barometer reading to the local database
 	// Having this allows user to view trends but keeps 
     // the data offline (no server visibility to the data.)
-	public void addToLocalDatabase(BarometerReading br) {
+	public void addToLocalDatabase(CbObservation br) {
 		try {
 			dbAdapter.addReading(br.getReading(), br.getLatitude(), br.getLongitude(), br.getTime(), br.getSharingPrivacy(), br.getLocationAccuracy(), br.getReadingAccuracy());
 		} catch(RuntimeException re) {
@@ -589,12 +589,12 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	// submissions
 	public void showRecentHistory() {
 		String log = "";
-		ArrayList<BarometerReading> recents = new ArrayList<BarometerReading>();
+		ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 		try {
 			dbAdapter.open();
 			recents = dbAdapter.fetchRecentReadings(24); // the last few hours
 			dbAdapter.close();
-			for (BarometerReading r : recents) {
+			for (CbObservation r : recents) {
 				String d = new Date((long)r.getTime()).toLocaleString();
 				DecimalFormat df = new DecimalFormat("####.00");
 				String unit = fullUnitToRealAbbrev(mUnit.getAbbreviation());
@@ -913,7 +913,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     }
     
     // Assume that matching latitude and longitude can only be you. 
-    public boolean brIsMe(BarometerReading br) {
+    public boolean brIsMe(CbObservation br) {
     	return ((br.getAndroidId().equals(android_id)));
     }
     
@@ -1067,7 +1067,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     }
     
     // Put a bunch of barometer readings and current conditions on the map.
-    public void addDataToMap(ArrayList<BarometerReading> readingsList, ArrayList<CurrentCondition> conditionsList, boolean showTendencies, HashMap<String, String> tendencies) {
+    public void addDataToMap(ArrayList<CbObservation> readingsList, ArrayList<CurrentCondition> conditionsList, boolean showTendencies, HashMap<String, String> tendencies) {
     	log("add data to map " + readingsList.size());
     	BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
     	List<Overlay> mapOverlays = mv.getOverlays();
@@ -1077,7 +1077,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	
     	try {
     		// Add Barometer Readings and associated current Conditions
-    		for(BarometerReading br : readingsList) {
+    		for(CbObservation br : readingsList) {
 	    		MapOverlay overlay;
 	    		
 	    		String snippet = br.getAndroidId();
@@ -1154,13 +1154,13 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         }
     };
     
-    // Assemble a list of BarometerReadings. This is the opposite of function barometerReadingToWeb in the servlet.
-    public ArrayList<BarometerReading> csvToBarometerReadings(String[] readings) {
-    	ArrayList<BarometerReading> readingsList = new ArrayList<BarometerReading>();
+    // Assemble a list of CbObservations. This is the opposite of function CbObservationToWeb in the servlet.
+    public ArrayList<CbObservation> csvToCbObservations(String[] readings) {
+    	ArrayList<CbObservation> readingsList = new ArrayList<CbObservation>();
     	for(int i = 0; i<readings.length; i++) {
     		try {
 	    		String[] values = readings[i].split("\\|");
-	    		BarometerReading br = new BarometerReading();
+	    		CbObservation br = new CbObservation();
 	    		br.setLatitude(Double.parseDouble(values[0]));
 	    		br.setLongitude(Double.parseDouble(values[1]));
 	    		br.setReading(Double.parseDouble(values[2]));
@@ -1184,7 +1184,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     	return readingsList;
     }
     
-    // Assemble a HashMap of userIDs and tendencies. //This is the opposite of function barometerReadingToWeb in the servlet.
+    // Assemble a HashMap of userIDs and tendencies. //This is the opposite of function CbObservationToWeb in the servlet.
     public HashMap<String, String> csvToBarometerTendencies(String[] readings) {
     	//log("csv to barometer tendencies : " + readings[0] + ", " + readings.length);
     	HashMap<String, String> tendencies = new HashMap<String, String>();
@@ -1233,7 +1233,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    			} catch(ArrayIndexOutOfBoundsException aiooe) {
 	    				// no problem. there aren't any conditions.
 	    			}
-	    			ArrayList<BarometerReading> readings = csvToBarometerReadings(csvReading);
+	    			ArrayList<CbObservation> readings = csvToCbObservations(csvReading);
 	    			addDataToMap(readings, conditions, false, null);
 	    		} catch(Exception e) {
 	    			e.printStackTrace();
@@ -1249,7 +1249,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     
     // Preparation for sending a barometer reading through the network. 
     // Take the object and NVP it.
-    public List<NameValuePair> barometerReadingToNVP(BarometerReading br) {
+    public List<NameValuePair> CbObservationToNVP(CbObservation br) {
     	List<NameValuePair> nvp = new ArrayList<NameValuePair>();
     	nvp.add(new BasicNameValuePair("latitude",br.getLatitude() + ""));
     	nvp.add(new BasicNameValuePair("longitude",br.getLongitude() + ""));
@@ -1282,79 +1282,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         	}
     	};
     
-    // Send data to the server in the background.
-    private class ReadingSender extends AsyncTask<String, Integer, Long> {
-		@Override
-		protected Long doInBackground(String... arg0) {
-			
-			if(mLatitude == 0.0) {
-				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        		double latitude = loc.getLatitude();
-        		double longitude = loc.getLongitude();
-        		mLatitude = latitude;
-        		mLongitude = longitude;
-        		mLocationAccuracy = loc.getAccuracy();
-			}
-			
-			if((mLatitude == 0.0) || (mLongitude == 0.0) || (mReading == 0.0)) {
-				//don't submit
-				return null;
-			}
-			
-			// get sharing preference
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String share = settings.getString("sharing_preference", "Us and Researchers");
-		    
-			// if sharing is None, don't send anything anywhere.
-			if (share.equals("Nobody")) {
-				return null;
-			}
-			
-			log("app sending " + mReading);
-			
-	    	BarometerReading br = new BarometerReading();
-	    	br.setLatitude(mLatitude);
-	    	br.setLongitude(mLongitude);
-	    	br.setTime(Calendar.getInstance().getTimeInMillis());
-	    	br.setTimeZoneOffset(Calendar.getInstance().getTimeZone().getOffset((long)br.getTime()));
-	    	br.setReading(mReading);
-	    	br.setAndroidId(android_id);
-	    	br.setSharingPrivacy(share);
-	    	br.setLocationAccuracy(mLocationAccuracy);
-	    	br.setReadingAccuracy(mReadingAccuracy);
-	    	
-	    	
-	    	
-	    	SecureHttpClient client = new SecureHttpClient(getApplicationContext());
-	    	HttpPost httppost = new HttpPost(serverURL);
-	    	// keep a history of readings on the user's device
-	    	addToLocalDatabase(br);
-	    	
-	    	try {
-	    		List<NameValuePair> nvps = barometerReadingToNVP(br);
-	    		httppost.setEntity(new UrlEncodedFormEntity(nvps));
-	    		HttpResponse response = client.execute(httppost);
-	    	} catch(ClientProtocolException cpe) {
-	    		// BROKEN HERE
-	    		cpe.printStackTrace();
-	    		// log(cpe.getMessage());
-	    		// TODO: alert of failed submit
-	    	} catch(IOException ioe) {
-	    		ioe.printStackTrace();
-	    		// log(ioe.getMessage());
-	    		// TODO: alert of failed submit
-	    	}
-			return null;
-		}
-    	
-		protected void onPostExecute(Long result) {
-			
-			Toast.makeText(getApplicationContext(), "Submitted Reading", Toast.LENGTH_SHORT).show();
-			loadAndShowData();
-		}
-    }
-
     // Download data from the server in the background
     private class DataDownload extends AsyncTask<String, String, String> {
     	@Override
@@ -1367,7 +1294,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    		//log("DataDownload doInBackground start try block");
 	    		
 	    		// Instantiate the custom HttpClient
-	    		SecureHttpClient client = new SecureHttpClient(getApplicationContext());
+	    		DefaultHttpClient client = new DefaultHttpClient();
 	    	
 	    		HttpPost post = new HttpPost(serverURL);
 	    		
@@ -1449,67 +1376,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		}
     }
     
-	/*
-	 * TODO: remove in favour of externalized Unit class
-	 */
-	public class Unit {
-		double value;
-		String abbrev;
-		
-		// Conversion factors from http://www.csgnetwork.com/meteorologyconvtbl.html
-		public void convertToPreferredUnit(String unit) {
-			//log("converting " + mReading + " to " + unit);
-			try {
-				if(abbrev.contains("mbar")) {
-					// No change. reading comes to us in mbar.
-					this.value = mReading;
-				} else if(abbrev.contains("hPa")) {
-					// mbar = hpa.
-					this.value = mReading;
-				} else if(abbrev.contains("atm")) {
-					this.value = mReading * 0.000986923;
-				} else if(abbrev.contains("kPa")) {
-					this.value = mReading * 0.1;
-				} else if(abbrev.contains("mmHg")) {
-					this.value = mReading * 0.75006;
-				} else if(abbrev.contains("inHg")) {
-					this.value = mReading* 0.02961; 
-				} else {
-					// default to mb
-					this.value = mReading;
-				}
-			} catch(Exception e) {
-				// Probably no barometer reading.
-				log(e.getMessage() + "");				
-			}
-		}
-		
-		public void updateReadingFromOutside() {
-			convertToPreferredUnit(this.abbrev);
-		}
-		
-		public String getDisplayText() {
-			return value + " " + abbrev;
-		}
-		
-		public Unit(String abbrev) {
-			convertToPreferredUnit(abbrev);
-			this.abbrev = abbrev;
-		}
-		public double getValue() {
-			return value;
-		}
-		public void setValue(double value) {
-			this.value = value;
-		}
-		public String getAbbreviation() {
-			return abbrev;
-		}
-		public void setAbbreviation(String abbreviation) {
-			this.abbrev = abbreviation;
-		}
-	}
-    
 	// Stop listening to the barometer when our app is paused.
 	@Override
 	protected void onPause() {
@@ -1518,7 +1384,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         mLocationManager.removeUpdates(locationListener);
         sm.unregisterListener(this);
         unregisterReceiver(receiveForMap);
-        dbAdapter.close();
 	}
 	
 	// Register a broadcast listener
@@ -1534,7 +1399,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			try {
 				if(!isPressureNETServiceRunning()) {
 					log("on resume restarting the update service");
-					serviceIntent = new Intent(this, SubmitReadingService.class);
+					serviceIntent = new Intent(this, CbService.class);
 					serviceIntent.putExtra("appdir", mAppDir);
 					stopService(serviceIntent);
 					startService(serviceIntent);
@@ -1549,7 +1414,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 			try {
 				stopService(serviceIntent);
 			} catch(Exception e) {
-				serviceIntent = new Intent(this, SubmitReadingService.class);
+				serviceIntent = new Intent(this, CbService.class);
 				serviceIntent.putExtra("appdir", mAppDir);
 				stopService(serviceIntent);
 				log(e.getMessage());
@@ -1571,7 +1436,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		try {
-			dbAdapter.close();
+			
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			sm.unregisterListener(this);
 			mLocationManager.removeUpdates(locationListener);
@@ -1594,7 +1459,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	private boolean isPressureNETServiceRunning() {
 	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (SubmitReadingService.class.getName().equals(service.service.getClassName())) {
+	        if (CbService.class.getName().equals(service.service.getClassName())) {
 	            return true;
 	        }
 	    }
@@ -1602,8 +1467,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	}
 	
 	public void updateVisibleReading() {
-		mUnit.updateReadingFromOutside();
-		double value = mUnit.getValue();
+		double value = -1.0;
 		TextView textView = (TextView) findViewById(R.id.textReading); 
 		if(value!=0.0) {
 			textView.setVisibility(View.VISIBLE);

@@ -124,7 +124,7 @@ public class CurrentConditionsActivity extends Activity {
 			log("app sending " + condition.getGeneral_condition());
 			//Toast.makeText(getApplicationContext(), "Sending...", Toast.LENGTH_SHORT).show();
 			
-			SecureHttpClient client = new SecureHttpClient(getApplicationContext());
+			DefaultHttpClient client = new DefaultHttpClient();
 	    	HttpPost httppost = new HttpPost(serverURL);
 	    	// TODO: keep a history of readings on the user's device
 	    	// addToLocalDatabase(cc);
