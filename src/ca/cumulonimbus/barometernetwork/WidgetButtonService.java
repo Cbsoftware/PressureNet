@@ -2,7 +2,6 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 import android.app.Service;
@@ -24,13 +22,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.opengl.Visibility;
 import android.os.IBinder;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import ca.cumulonimbus.barometernetwork.Unit;
 
 public class WidgetButtonService extends Service implements SensorEventListener {
 	
