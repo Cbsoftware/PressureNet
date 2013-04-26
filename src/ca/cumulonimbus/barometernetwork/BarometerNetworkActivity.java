@@ -135,6 +135,40 @@ public class BarometerNetworkActivity extends MapActivity  {
 
     }
     
+
+	private void askForBestPressure() {
+		if (mBound) {
+			log("asking for best pressure");
+			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_PRESSURE,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+				updateVisibleReading();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+	
+	private void askForBestLocation() {
+		if (mBound) {
+			log("asking for best location");
+			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_LOCATION,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+    
     public void unBindCbService() {
     	if (mBound) {
 			unbindService(mConnection);
@@ -147,7 +181,10 @@ public class BarometerNetworkActivity extends MapActivity  {
 		bindService(
 				new Intent(getApplicationContext(), CbService.class),
 				mConnection, Context.BIND_AUTO_CREATE);
+		
     }
+    
+    
     
 
 	class IncomingHandler extends Handler {
@@ -202,6 +239,10 @@ public class BarometerNetworkActivity extends MapActivity  {
 			Message msg = Message.obtain(null, CbService.MSG_BEST_LOCATION);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			
+			
+
+	        // UI
+	        askForBestPressure();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1001,7 +1042,6 @@ public class BarometerNetworkActivity extends MapActivity  {
 		
 		registerReceiver(receiveForMap, new IntentFilter(BarometerMapView.CUSTOM_INTENT));
 		
-		updateVisibleReading();
      
 	}
 	
@@ -1020,20 +1060,20 @@ public class BarometerNetworkActivity extends MapActivity  {
 	}
 
 	public void updateVisibleReading() {
-		double value = -1.0;
-		TextView textView = (TextView) findViewById(R.id.textReading); 
-		if(value!=0.0) {
-			textView.setVisibility(View.VISIBLE);
-	    	DecimalFormat df = new DecimalFormat("####.00");
-	        String toPrint = df.format(value);
-	    	textView.setText(toPrint + " " + " " + mTendency + " ");
-		} else {
-			textView.setText("No barometer detected.");
-			// textView.setVisibility(View.GONE);
+		if(bestPressure!=null) {
+			double value = bestPressure.getObservationValue();
+			TextView textView = (TextView) findViewById(R.id.textReading); 
+			if(bestPressure.getObservationValue()!=0.0) {
+				textView.setVisibility(View.VISIBLE);
+		    	DecimalFormat df = new DecimalFormat("####.00");
+		        String toPrint = df.format(value);
+		    	textView.setText(toPrint + " " + bestPressure.getObservationUnit() + " " + mTendency + " ");
+			} else {
+				textView.setText("No barometer detected.");
+			}
 		}
 	}
 	
-
 	// Log data to SD card for debug purposes.
 	// To enable logging, ensure the Manifest allows writing to SD card.
 	public void logToFile(String text) {

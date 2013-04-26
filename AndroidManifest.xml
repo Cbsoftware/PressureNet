@@ -18,6 +18,12 @@
                   android:excludeFromRecents="true"> 
         </activity>
         
+        
+         <service
+            android:name="ca.cumulonimbus.pressurenetsdk.CbService"
+            android:enabled="true" />
+        
+        
         <activity android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity" 
             	  android:label="@string/current_conditions" 
             	  android:excludeFromRecents="true"
