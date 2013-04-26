@@ -17,10 +17,12 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -33,15 +35,16 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.view.Menu;
@@ -52,6 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
+import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -85,10 +89,20 @@ public class BarometerNetworkActivity extends MapActivity  {
     private int mapFontSize = 18;
     
 	Intent serviceIntent;
-	
-	Unit mUnit = null;
 
-	private boolean barometerDetected = true;
+	// pressureNET 4.0 
+	// SDK communication
+	
+	boolean mBound;
+	private Messenger mMessenger = new Messenger(new IncomingHandler());
+	Messenger mService = null;
+	
+	Location bestLocation;
+	CbObservation bestPressure;
+	CbSettingsHandler activeSettings;
+	
+	ArrayList <CbObservation> recents = new ArrayList<CbObservation>();
+
 	
 	/** Called when the activity is first created. */
     @Override
@@ -104,7 +118,95 @@ public class BarometerNetworkActivity extends MapActivity  {
         showWelcomeActivity();
         setUpActionBar();
         startCbService();
+        bindCbService();
     }
+    
+    private void startCbService() {
+    	log("start cbservice");
+		try {
+			startService(serviceIntent);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+    }
+    
+    public void unBindCbService() {
+    	if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+		}
+    }
+    
+    public void bindCbService() {
+    	log("bind cbservice");
+		bindService(
+				new Intent(getApplicationContext(), CbService.class),
+				mConnection, Context.BIND_AUTO_CREATE);
+    }
+    
+
+	class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case CbService.MSG_BEST_LOCATION:
+				bestLocation = (Location) msg.obj;
+				if(bestLocation!=null) {
+					log("Client Received from service " + bestLocation.getLatitude());
+				} else {
+					log("location null");
+				}
+				break;
+			case CbService.MSG_BEST_PRESSURE:
+				bestPressure = (CbObservation) msg.obj;
+				if(bestPressure!=null) {
+					log("Client Received from service " + bestPressure.getObservationValue());
+				} else {
+					log("pressure null");
+				}
+				break;
+			case CbService.MSG_SETTINGS:
+				activeSettings = (CbSettingsHandler) msg.obj;
+				if(activeSettings!=null) {
+					log("Client Received from service " + activeSettings.getServerURL());
+				} else {
+					log("settings null");
+				}
+				break;
+			case CbService.MSG_RECENTS:
+				recents = (ArrayList<CbObservation>) msg.obj;
+				if(recents!=null) {
+					log("received "  + recents.size() + " recent observations in buffer.");
+					for(CbObservation ob : recents) {
+						log(ob.toString());
+					}
+				}
+				break;
+			default:
+				log("received default message");
+				super.handleMessage(msg);
+			}
+		}
+	}
+    
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			log("client says : service connected");
+			mService = new Messenger(service);
+			mBound = true;
+			Message msg = Message.obtain(null, CbService.MSG_BEST_LOCATION);
+			log("client received " + msg.arg1 + " " + msg.arg2);
+			
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			log("client: service disconnected");
+			mMessenger = null;
+			mBound = false;
+		}
+	};
     
     public void startLog() {
     	// Log
@@ -204,12 +306,11 @@ public class BarometerNetworkActivity extends MapActivity  {
     	// TODO: store in preferences
     	int firstRun = 0;
     	
-    	if(barometerDetected) {
-	    	if(firstRun==0) {
-	    		Intent intent = new Intent(this, ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
-	    		startActivityForResult(intent, 0);
-	    	}
+		if(firstRun==0) {
+    		Intent intent = new Intent(this, ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
+    		startActivityForResult(intent, 0);
     	}
+	
     }
 
     /**
@@ -217,7 +318,7 @@ public class BarometerNetworkActivity extends MapActivity  {
      * a bit so that most useful elements show for the right users
      */
     public void cleanUI(Menu menu) {
-    	if(barometerDetected) {
+    	if(false) { // TODO: Fix: was barometerdetected
     		// keep the UI as-is. default assumes barometer exists :) 
     		// ensure the right items are always visible, though, in case of detection error
     	} else {
@@ -251,7 +352,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 	public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId()==R.id.menu_settings) {
     		Intent i = new Intent(this, PreferencesActivity.class);
-    		i.putExtra("hasBarometer", barometerDetected);
+    		i.putExtra("hasBarometer", false); // TODO: fix, was barometerdetected
     		startActivityForResult(i, 1);
     	} else if(item.getItemId()==R.id.menu_my_info) {
     		// TODO: Implement
@@ -467,27 +568,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 		
 	}
     
-	// Periodically send barometer readings if allowed by Preferences
-    // pref check done inside the service; start the service even if no 
-    // data is sent to allow the widget to use the service
-    // probably should rename away from startSendingData
-    private void startCbService() {
-    	log("start sending data");
-		try {
-			// only start the service if it's not already running
-			if(!isPressureNETServiceRunning()) {
-				serviceIntent = new Intent(this, CbService.class);
-				//serviceIntent.putExtra("appdir", mAppDir);
-				startService(serviceIntent);
-			} else {
-				log("not starting service, already running");
-			}
-			
-		} catch(Exception e) {
-			log(e.getMessage() + "");
-		}
-
-    }
+    
     // Set a unique identifier so that updates from the same user are 
     // seen as updates and not new data. MD5 to minimize privacy problems. (?)
     public void setId() {
@@ -906,6 +987,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 	@Override
 	protected void onPause() {
         super.onPause();
+        
         unregisterReceiver(receiveForMap);
 	}
 	
@@ -913,11 +995,14 @@ public class BarometerNetworkActivity extends MapActivity  {
 	@Override 
 	protected void onResume() {
 		super.onResume();
+		
 		registerReceiver(receiveForMap, new IntentFilter(BarometerMapView.CUSTOM_INTENT));
 		
 		updateVisibleReading();
      
 	}
+	
+	
 	
 	// Must exist for the MapView.
 	@Override
@@ -927,20 +1012,10 @@ public class BarometerNetworkActivity extends MapActivity  {
 
 	@Override
 	protected void onDestroy() {
-
+		unBindCbService();
 		super.onDestroy();
 	}
 
-	private boolean isPressureNETServiceRunning() {
-	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (CbService.class.getName().equals(service.service.getClassName())) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
-	
 	public void updateVisibleReading() {
 		double value = -1.0;
 		TextView textView = (TextView) findViewById(R.id.textReading); 
@@ -965,14 +1040,14 @@ public class BarometerNetworkActivity extends MapActivity  {
 			output.write(logString.getBytes());
 			output.close();
 		} catch(FileNotFoundException e) {
-			
+			e.printStackTrace();
 		} catch(IOException ioe) {
-			
+			ioe.printStackTrace();
 		}
 	}
 	
     public void log(String text) {
-    	//logToFile(text);
+    	logToFile(text);
     	System.out.println(text);
     }
 }
