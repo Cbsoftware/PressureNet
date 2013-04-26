@@ -124,6 +124,9 @@ public class BarometerNetworkActivity extends MapActivity  {
     private void startCbService() {
     	log("start cbservice");
 		try {
+			serviceIntent = new Intent(this, CbService.class);
+			serviceIntent.putExtra("serverURL", "http://localhost:8000/");
+
 			startService(serviceIntent);
 			
 		} catch(Exception e) {
