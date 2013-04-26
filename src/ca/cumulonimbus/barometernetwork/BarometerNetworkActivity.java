@@ -206,6 +206,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 				} else {
 					log("pressure null");
 				}
+				updateVisibleReading();
 				break;
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
@@ -216,10 +217,13 @@ public class BarometerNetworkActivity extends MapActivity  {
 				}
 				break;
 			case CbService.MSG_DATA_STREAM:
-				CbObservation newObservation = (CbObservation) msg.obj;
-				if(newObservation!=null) {
-					log("received "  + newObservation.getObservationValue());
+				bestPressure = (CbObservation) msg.obj;
+				if(bestPressure!=null) {
+					//log("received "  + bestPressure.getObservationValue());
+				} else {
+					//log("received null observation");
 				}
+				updateVisibleReading();
 				break;
 			case CbService.MSG_RECENTS:
 				recents = (ArrayList<CbObservation>) msg.obj;
@@ -1068,7 +1072,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 	@Override
 	protected void onPause() {
         super.onPause();
-        
+        stopDataStream();
         unregisterReceiver(receiveForMap);
 	}
 	
@@ -1096,8 +1100,11 @@ public class BarometerNetworkActivity extends MapActivity  {
 		unBindCbService();
 		super.onDestroy();
 	}
+	
+	
 
 	public void updateVisibleReading() {
+		
 		if(bestPressure!=null) {
 			double value = bestPressure.getObservationValue();
 			TextView textView = (TextView) findViewById(R.id.textReading); 
