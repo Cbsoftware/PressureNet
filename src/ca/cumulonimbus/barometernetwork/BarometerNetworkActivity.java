@@ -61,7 +61,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-public class BarometerNetworkActivity extends MapActivity implements SensorEventListener {
+public class BarometerNetworkActivity extends MapActivity  {
 	
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
@@ -97,7 +97,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
         setContentView(R.layout.main);
         //migratePreferences(); 
         startLog();
-        setUpBarometer();
         //getStoredPreferences();
         setId();
         setUpFiles();
@@ -465,7 +464,7 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
     @Override
 	protected void onRestart() {
 		super.onRestart();
-		setUpBarometer();
+		
 	}
     
 	// Periodically send barometer readings if allowed by Preferences
@@ -518,27 +517,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	    	}
     	} catch (Exception e) {
     		log(e.getMessage());
-    	}
-    }
-    
-    // Start getting barometer readings.
-    public void setUpBarometer() {
-    	log("set up barometer");
-    	try {
-	    	sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
-	    	
-	    	if(bar!=null) {
-	        	boolean running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
-	        	//log(running + "");
-	        	barometerDetected = true;
-	    	} else {
-	    		barometerDetected = false;
-	    		//Toast.makeText(getApplicationContext(), "No barometer detected.", Toast.LENGTH_SHORT).show();
-	    	}
-	    	invalidateOptionsMenu(); // ensure right right menus are showing, given barometer detection status
-    	} catch(Exception e) {
-    		log(e.getMessage() + "");
     	}
     }
     
@@ -928,8 +906,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	@Override
 	protected void onPause() {
         super.onPause();
-        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sm.unregisterListener(this);
         unregisterReceiver(receiveForMap);
 	}
 	
@@ -939,7 +915,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		super.onResume();
 		registerReceiver(receiveForMap, new IntentFilter(BarometerMapView.CUSTOM_INTENT));
 		
-		setUpBarometer();
 		updateVisibleReading();
      
 	}
@@ -952,25 +927,8 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		try {
-			
-			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-			sm.unregisterListener(this);
-			unregisterReceiver(receiveForMap);
-		} catch(Exception e) {
-			
-		}
-		super.onDestroy();
-	}
 
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		switch (sensor.getType()) {
-		case Sensor.TYPE_PRESSURE: 
-			mReading = accuracy;
-		    break;
-	    }
+		super.onDestroy();
 	}
 
 	private boolean isPressureNETServiceRunning() {
@@ -997,16 +955,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 		}
 	}
 	
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		switch (event.sensor.getType()) {
-		case Sensor.TYPE_PRESSURE: 
-			mReading = event.values[0];
-	    	updateVisibleReading();
-		    break;
-	    }
-	}
-
 
 	// Log data to SD card for debug purposes.
 	// To enable logging, ensure the Manifest allows writing to SD card.
@@ -1025,6 +973,6 @@ public class BarometerNetworkActivity extends MapActivity implements SensorEvent
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	System.out.println(text);
     }
 }
