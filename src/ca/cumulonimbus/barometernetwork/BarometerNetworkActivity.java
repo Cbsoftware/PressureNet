@@ -215,6 +215,12 @@ public class BarometerNetworkActivity extends MapActivity  {
 					log("settings null");
 				}
 				break;
+			case CbService.MSG_DATA_STREAM:
+				CbObservation newObservation = (CbObservation) msg.obj;
+				if(newObservation!=null) {
+					log("received "  + newObservation.getObservationValue());
+				}
+				break;
 			case CbService.MSG_RECENTS:
 				recents = (ArrayList<CbObservation>) msg.obj;
 				if(recents!=null) {
@@ -236,13 +242,12 @@ public class BarometerNetworkActivity extends MapActivity  {
 			log("client says : service connected");
 			mService = new Messenger(service);
 			mBound = true;
-			Message msg = Message.obtain(null, CbService.MSG_BEST_LOCATION);
+			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
-			
 			
 
 	        // UI
-	        askForBestPressure();
+	        startDataStream();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -251,7 +256,39 @@ public class BarometerNetworkActivity extends MapActivity  {
 			mBound = false;
 		}
 	};
-    
+	
+	public void startDataStream() {
+		if (mBound) {
+			log("pN-4 starting data stream");
+			Message msg = Message.obtain(null, CbService.MSG_START_DATA_STREAM,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+   
+	public void stopDataStream() {
+		if (mBound) {
+			log("pN-4 stopping data stream");
+			Message msg = Message.obtain(null, CbService.MSG_STOP_DATA_STREAM,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+	
     public void startLog() {
     	// Log
     	String version = "";
@@ -1055,6 +1092,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 
 	@Override
 	protected void onDestroy() {
+		stopDataStream();
 		unBindCbService();
 		super.onDestroy();
 	}
