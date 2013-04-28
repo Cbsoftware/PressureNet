@@ -1073,6 +1073,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 	protected void onPause() {
         super.onPause();
         stopDataStream();
+        unBindCbService();
         unregisterReceiver(receiveForMap);
 	}
 	
@@ -1080,7 +1081,7 @@ public class BarometerNetworkActivity extends MapActivity  {
 	@Override 
 	protected void onResume() {
 		super.onResume();
-		
+		bindCbService();
 		registerReceiver(receiveForMap, new IntentFilter(BarometerMapView.CUSTOM_INTENT));
 		
      
