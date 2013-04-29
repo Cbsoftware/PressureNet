@@ -11,14 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
-
-import org.achartengine.ChartFactory;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -174,6 +166,22 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("error: not bound");
 		}
 	}
+	
+	private void askForRecents() {
+		if (mBound) {
+			log("asking for recents");
+			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
 
 	public void unBindCbService() {
 		if (mBound) {
@@ -234,12 +242,20 @@ public class BarometerNetworkActivity extends MapActivity {
 			case CbService.MSG_RECENTS:
 				recents = (ArrayList<CbObservation>) msg.obj;
 				if (recents != null) {
-					log("received " + recents.size()
-							+ " recent observations in buffer.");
+					log("received " + recents.size() + 
+						" recent observations in buffer.");
 					for (CbObservation ob : recents) {
 						log(ob.toString());
 					}
+				} else {
+					log("received recents: NULL");
 				}
+				
+				// draw chart
+				log("plotting...");
+				Chart chart = new Chart(getApplicationContext());
+				// startActivity(chart.drawChart(recents));
+				
 				break;
 			default:
 				log("received default message");
@@ -247,6 +263,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			}
 		}
 	}
+	
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
@@ -259,10 +276,8 @@ public class BarometerNetworkActivity extends MapActivity {
 			// UI
 			startDataStream();
 			
-			// draw chart
-			Chart chart = new Chart(getApplicationContext());
-			//startActivity(chart.drawChart());
-
+			askForRecents();
+		
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1205,6 +1220,20 @@ public class BarometerNetworkActivity extends MapActivity {
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
+	}
+
+	
+	
+	@Override
+	protected void onStart() {
+		//startDataStream();
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		stopDataStream();
+		super.onStop();
 	}
 
 	@Override

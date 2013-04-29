@@ -11,6 +11,8 @@ import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -56,36 +58,56 @@ public class Chart {
 		return renderer;
 	}
 
-	public Intent drawChart() {
-		String[] titles = new String[] { "Series 1", "Series 2", "Series 3",
-				"Series 4", "Series 5" };
+	public Intent drawChart(ArrayList<CbObservation> obsList) {
+		System.out.println("drawing chart " + obsList.size() + " data points");
+		String[] titles = new String[] { "Pressure over Time" };
 		List<double[]> x = new ArrayList<double[]>();
 		List<double[]> values = new ArrayList<double[]>();
-		int count = 20;
 		int length = titles.length;
-		Random r = new Random();
-		for (int i = 0; i < length; i++) {
-			double[] xValues = new double[count];
-			double[] yValues = new double[count];
-			for (int k = 0; k < count; k++) {
-				xValues[k] = k + r.nextInt() % 10;
-				yValues[k] = k * 2 + r.nextInt() % 10;
+		int count = obsList.size();
+		
+		double[] xValues = new double[count];
+		double[] yValues = new double[count];
+		
+		// TODO: Expand to multiple observations
+		// currently only pressure
+		double minObservation = 1200;
+		double maxObservation = 0;
+		double minTime = System.currentTimeMillis();
+		double maxTime = 0;
+		
+		int i = 0;
+		for(CbObservation obs : obsList) {
+			if(obs.getObservationValue() < minObservation) {
+				minObservation = obs.getObservationValue();
 			}
-			x.add(xValues);
-			values.add(yValues);
+			if(obs.getObservationValue() > maxObservation) {
+				maxObservation = obs.getObservationValue();
+			}
+			if(obs.getTime() < minTime) {
+				minTime = obs.getTime();
+			}
+			if(obs.getTime() > maxTime) {
+				maxTime = obs.getTime();
+			}
+			
+			xValues[i] = obs.getTime();
+			yValues[i] = obs.getObservationValue();
+			i++;
 		}
-		int[] colors = new int[] { Color.BLUE, Color.CYAN, Color.MAGENTA,
-				Color.LTGRAY, Color.GREEN };
-		PointStyle[] styles = new PointStyle[] { PointStyle.X,
-				PointStyle.DIAMOND, PointStyle.TRIANGLE, PointStyle.SQUARE,
-				PointStyle.CIRCLE };
+	
+		x.add(xValues);
+		values.add(yValues);
+	
+		int[] colors = new int[] { Color.BLUE };
+		PointStyle[] styles = new PointStyle[] { PointStyle.X };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
-		setChartSettings(renderer, "Scatter chart", "X", "Y", -10, 30, -10, 51,
+		setChartSettings(renderer, "Local Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
 				Color.GRAY, Color.LTGRAY);
 		renderer.setXLabels(10);
 		renderer.setYLabels(10);
 		length = renderer.getSeriesRendererCount();
-		for (int i = 0; i < length; i++) {
+		for (i = 0; i < length; i++) {
 			((XYSeriesRenderer) renderer.getSeriesRendererAt(i))
 					.setFillPoints(true);
 		}
