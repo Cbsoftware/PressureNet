@@ -1,9 +1,11 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -11,6 +13,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -37,6 +49,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -112,7 +125,131 @@ public class BarometerNetworkActivity extends MapActivity {
 	boolean dataReceivedTopPlot = false;
 
 	Button buttonChart;
+	Button buttonCallAPI;
 
+	// API call parameters. 
+	private double apiLatitude = 0.0;
+	private double apiLongitude = 0.0;
+	private long apiStartTime = 0;
+	private long apiEndTime = 0;
+	private String apiFormat = "json";
+	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
+
+	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
+	
+	public void makeAPICall() {
+		APIDataDownload api = new APIDataDownload();
+		api.execute("");
+	}
+
+	private class APIDataDownload extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... arg0) {
+			String responseText = "";
+			try {
+				DefaultHttpClient client = new DefaultHttpClient();
+
+				LocationManager tempLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+				Location loc = tempLM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				apiLongitude = loc.getLongitude();
+				apiLatitude = loc.getLatitude();
+				apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60);
+				apiEndTime = System.currentTimeMillis();
+				
+				System.out.println("contacting api...");
+				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("min_lat", (apiLatitude - 0.05)
+						+ ""));
+				nvps.add(new BasicNameValuePair("max_lat", (apiLatitude + 0.05)
+						+ ""));
+				nvps.add(new BasicNameValuePair("min_lon", (apiLongitude - 0.05)
+						+ ""));
+				nvps.add(new BasicNameValuePair("max_lon", (apiLongitude + 0.05)
+						+ ""));
+				nvps.add(new BasicNameValuePair("start_time", apiStartTime + ""));
+				nvps.add(new BasicNameValuePair("end_time", apiEndTime + ""));
+				nvps.add(new BasicNameValuePair("api_key",
+						PressureNETConfiguration.API_KEY));
+				nvps.add(new BasicNameValuePair("format", apiFormat));
+
+				String paramString = URLEncodedUtils.format(nvps, "utf-8");
+
+				apiServerURL = apiServerURL + paramString;
+				System.out.println(apiServerURL);
+				HttpGet get = new HttpGet(apiServerURL);
+
+				// Execute the GET call and obtain the response
+				HttpResponse getResponse = client.execute(get);
+				HttpEntity responseEntity = getResponse.getEntity();
+
+				BufferedReader r = new BufferedReader(new InputStreamReader(
+						responseEntity.getContent()));
+
+				StringBuilder total = new StringBuilder();
+				String line;
+				if (r != null) {
+					while ((line = r.readLine()) != null) {
+						total.append(line);
+					}
+					responseText = total.toString();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return responseText;
+		}
+
+		protected void onPostExecute(String result) {
+			processJSONResult(result);
+		}
+	}
+
+	/**
+	 * Take a JSON string and return the data in a useful structure
+	 * 
+	 * @param resultJSON
+	 */
+	void processJSONResult(String resultJSON) {
+		try {
+			JSONArray jsonArray = new JSONArray(resultJSON);
+			apiCbObservationResults.clear();
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+				CbObservation singleObs = new CbObservation();
+				try {
+					Location location = new Location("network");
+					location.setLatitude(jsonObject.getDouble("latitude"));
+					location.setLongitude(jsonObject.getDouble("longitude"));
+					location.setAccuracy((float) jsonObject
+							.getDouble("location_accuracy"));
+					singleObs.setLocation(location);
+					singleObs.setTime(jsonObject.getLong("daterecorded"));
+					singleObs.setTimeZoneOffset(jsonObject
+							.getDouble("tzoffset"));
+					singleObs.setSharing(jsonObject.getString("sharing"));
+					singleObs.setUser_id(jsonObject.getString("user_id"));
+					singleObs.setObservationValue(jsonObject
+							.getDouble("reading"));
+					apiCbObservationResults.add(singleObs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			// TODO: Add dates and trends prior to graphing.
+			//ArrayList<CbObservation> detailedList = CbObservation.addDatesAndTrends(apiCbObservationResults);
+			recents = CbObservation.addDatesAndTrends(apiCbObservationResults);
+			
+			
+			createAndShowChart();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,13 +272,21 @@ public class BarometerNetworkActivity extends MapActivity {
 	private void setUpUIListeners() {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
-		
+		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
 		buttonChart = (Button) findViewById(R.id.buttonDrawChart);
 		buttonChart.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				createAndShowChart();
+			}
+		});
+		
+		buttonCallAPI.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				makeAPICall();
 			}
 		});
 	}

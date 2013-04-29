@@ -24,6 +24,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Draw Chart"/>
+            
+            <Button 
+                android:id="@+id/buttonCallAPI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Call API"/>
             <TextView
                 android:id="@+id/textReading"
                 android:layout_width="fill_parent"
@@ -44,7 +50,7 @@
                 android:id="@+id/mapview"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:apiKey="0NZZtIxvqC4ErHtP1pwbsvl-JYxUlOKYEhS4aWg"
+                android:apiKey="0TTXlD0TEfWDjnR7s3E8h5-W0a6LaNTmx5oNkzw"
                 android:clickable="true" />
         </LinearLayout>
     </LinearLayout>

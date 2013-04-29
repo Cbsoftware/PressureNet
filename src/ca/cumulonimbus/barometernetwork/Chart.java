@@ -98,7 +98,7 @@ public class Chart {
 		values.add(yValues);
 	
 		int[] colors = new int[] { Color.BLUE };
-		PointStyle[] styles = new PointStyle[] { PointStyle.X };
+		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
 		setChartSettings(renderer, "Local Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
 				Color.GRAY, Color.LTGRAY);
