@@ -154,7 +154,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				Location loc = tempLM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				apiLongitude = loc.getLongitude();
 				apiLatitude = loc.getLatitude();
-				apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60);
+				apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60* 6);
 				apiEndTime = System.currentTimeMillis();
 				
 				System.out.println("contacting api...");
