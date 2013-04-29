@@ -45,12 +45,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -103,10 +103,15 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 
+	boolean dataReceivedTopPlot = false;
+	
+	Button buttonChart;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		dataReceivedTopPlot = false;
 		setContentView(R.layout.main);
 		// migratePreferences();
 		startLog();
@@ -118,8 +123,20 @@ public class BarometerNetworkActivity extends MapActivity {
 		setUpActionBar();
 		startCbService();
 		bindCbService();
+		setUpUIListeners();
 	}
 
+	private void setUpUIListeners() {
+		buttonChart = (Button) findViewById(R.id.buttonDrawChart);
+		buttonChart.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				createAndShowChart();
+			}
+		});
+	}
+	
 	private void startCbService() {
 		log("start cbservice");
 		try {
@@ -244,18 +261,11 @@ public class BarometerNetworkActivity extends MapActivity {
 				if (recents != null) {
 					log("received " + recents.size() + 
 						" recent observations in buffer.");
-					for (CbObservation ob : recents) {
-						log(ob.toString());
-					}
+					
 				} else {
 					log("received recents: NULL");
 				}
-				
-				// draw chart
-				log("plotting...");
-				Chart chart = new Chart(getApplicationContext());
-				// startActivity(chart.drawChart(recents));
-				
+				dataReceivedTopPlot = true;
 				break;
 			default:
 				log("received default message");
@@ -265,6 +275,15 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 	
 
+	public void createAndShowChart() {
+		if(dataReceivedTopPlot) {
+			// draw chart
+			log("plotting...");
+			Chart chart = new Chart(getApplicationContext());
+			startActivity(chart.drawChart(recents));
+		}
+	}
+	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			log("client says : service connected");
@@ -1226,18 +1245,22 @@ public class BarometerNetworkActivity extends MapActivity {
 	
 	@Override
 	protected void onStart() {
-		//startDataStream();
+		dataReceivedTopPlot = false;
+		bindCbService();
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
+		dataReceivedTopPlot = false;
 		stopDataStream();
+		unBindCbService();
 		super.onStop();
 	}
 
 	@Override
 	protected void onDestroy() {
+		dataReceivedTopPlot = false;
 		stopDataStream();
 		unBindCbService();
 		super.onDestroy();
