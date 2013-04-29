@@ -45,12 +45,15 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -75,6 +78,9 @@ public class BarometerNetworkActivity extends MapActivity {
 	float mLocationAccuracy = 0.0f;
 	SensorManager sm;
 
+	
+	LayoutInflater mInflater;
+	
 	private String mAppDir = "";
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
@@ -104,9 +110,9 @@ public class BarometerNetworkActivity extends MapActivity {
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 
 	boolean dataReceivedTopPlot = false;
-	
+
 	Button buttonChart;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -127,16 +133,19 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	private void setUpUIListeners() {
+		Context context=getApplicationContext();
+		mInflater = LayoutInflater.from(context);
+		
 		buttonChart = (Button) findViewById(R.id.buttonDrawChart);
 		buttonChart.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				createAndShowChart();
 			}
 		});
 	}
-	
+
 	private void startCbService() {
 		log("start cbservice");
 		try {
@@ -183,12 +192,11 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("error: not bound");
 		}
 	}
-	
+
 	private void askForRecents() {
 		if (mBound) {
 			log("asking for recents");
-			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS,
-					0, 0);
+			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS, 0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -214,7 +222,6 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	}
 
-	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -259,9 +266,9 @@ public class BarometerNetworkActivity extends MapActivity {
 			case CbService.MSG_RECENTS:
 				recents = (ArrayList<CbObservation>) msg.obj;
 				if (recents != null) {
-					log("received " + recents.size() + 
-						" recent observations in buffer.");
-					
+					log("received " + recents.size()
+							+ " recent observations in buffer.");
+
 				} else {
 					log("received recents: NULL");
 				}
@@ -273,17 +280,39 @@ public class BarometerNetworkActivity extends MapActivity {
 			}
 		}
 	}
-	
 
 	public void createAndShowChart() {
-		if(dataReceivedTopPlot) {
+		if (dataReceivedTopPlot) {
 			// draw chart
 			log("plotting...");
 			Chart chart = new Chart(getApplicationContext());
-			startActivity(chart.drawChart(recents));
+			View chartView = chart.drawChart(recents);
+			
+			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainParentLayout);
+			
+			
+			try {
+				View testChartView = findViewById(100); // TODO: ...
+				mainLayout.removeView(testChartView);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			chartView.setId(100); // TODO: what's safe?
+			
+			// add to layout
+			LayoutParams lparams = new LayoutParams(LayoutParams.FILL_PARENT,
+					500);
+			
+			chartView.setLayoutParams(lparams);
+			if(mainLayout == null ) {
+				log("chartlayout null");
+				return;
+			}
+			mainLayout.addView(chartView);
 		}
 	}
-	
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			log("client says : service connected");
@@ -293,10 +322,10 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
 			// UI
-			startDataStream();
-			
+			// startDataStream();
+
 			askForRecents();
-		
+
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1241,8 +1270,6 @@ public class BarometerNetworkActivity extends MapActivity {
 		return false;
 	}
 
-	
-	
 	@Override
 	protected void onStart() {
 		dataReceivedTopPlot = false;

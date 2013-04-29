@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/mainParentLayout" >
 
     <LinearLayout
         android:id="@+id/fullLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight=".5"
         android:orientation="vertical"
         android:weightSum="1" >
@@ -36,7 +37,7 @@
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="200dp" >
 
             <ca.cumulonimbus.barometernetwork.BarometerMapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -47,12 +48,4 @@
                 android:clickable="true" />
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/chart"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight=".5"
-        android:orientation="horizontal" />
-
 </LinearLayout>
