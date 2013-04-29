@@ -239,8 +239,8 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			// TODO: Add dates and trends prior to graphing.
 			//ArrayList<CbObservation> detailedList = CbObservation.addDatesAndTrends(apiCbObservationResults);
-			recents = CbObservation.addDatesAndTrends(apiCbObservationResults);
-			
+			//recents = CbObservation.addDatesAndTrends(apiCbObservationResults);
+			recents = apiCbObservationResults;
 			
 			createAndShowChart();
 		} catch (Exception e) {
