@@ -1,83 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="ca.cumulonimbus.barometernetwork"
-      android:versionCode="400"
-      android:versionName="4.0">
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="17" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	
-    <application android:icon="@drawable/ic_launcher" 
-        		 android:label="@string/app_name">
-        <activity android:name="ca.cumulonimbus.barometernetwork.SettingsActivity"
-                  android:label="@string/settings"
-                  android:theme="@style/CustomThemeDialog"
-                  android:excludeFromRecents="true"> 
+    package="ca.cumulonimbus.barometernetwork"
+    android:versionCode="400"
+    android:versionName="4.0" >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.SettingsActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/settings"
+            android:theme="@style/CustomThemeDialog" >
         </activity>
-        
-        
-         <service
+
+        <service
             android:name="ca.cumulonimbus.pressurenetsdk.CbService"
             android:enabled="true" />
+
+        <activity android:name="org.achartengine.chartdemo.demo.chart.XYChartBuilder" />
         
-        
-        <activity android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity" 
-            	  android:label="@string/current_conditions" 
-            	  android:excludeFromRecents="true"
-            	  android:theme="@style/CustomThemeDialogDark"></activity>
-        <activity android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity" 
-            	  android:label="@string/settings" 
-            	  android:excludeFromRecents="true"></activity>
-        <activity android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity" 
-            	  android:label="@string/logViewer" 
-            	  android:excludeFromRecents="true" 
-            	  android:theme="@style/CustomTheme"></activity>
-        <activity android:name="ca.cumulonimbus.barometernetwork.SingleUserChartActivity" 
-            	  android:label="@string/chartView" 
-            	  android:excludeFromRecents="true" 
-            	  android:theme="@style/CustomTheme"></activity>
-        <activity android:name="ca.cumulonimbus.barometernetwork.PNDVActivity" 
-            	  android:label="@string/pndv" 
-            	  android:excludeFromRecents="true" 
-            	  android:theme="@style/CustomTheme"></activity>
- 		<activity android:name="ca.cumulonimbus.barometernetwork.WelcomeActivity" 
-            	  android:label="@string/welcomeToPressureNET" 
-            	  android:excludeFromRecents="true" 
-            	  android:theme="@style/CustomThemeDialog"></activity>
-        
-        <activity android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
-            	  android:label="@string/app_name"
-            	  android:theme="@style/CustomTheme"
-            	  android:logo="@drawable/ic_launcher">
+        <activity android:name="org.achartengine.GraphicalActivity" />
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/current_conditions"
+            android:theme="@style/CustomThemeDialogDark" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/settings" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/logViewer"
+            android:theme="@style/CustomTheme" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.SingleUserChartActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/chartView"
+            android:theme="@style/CustomTheme" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.PNDVActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/pndv"
+            android:theme="@style/CustomTheme" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.WelcomeActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/welcomeToPressureNET"
+            android:theme="@style/CustomThemeDialog" >
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:label="@string/app_name"
+            android:logo="@drawable/ic_launcher"
+            android:theme="@style/CustomTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver android:name="ca.cumulonimbus.barometernetwork.WidgetProvider" >
-	    	<intent-filter>
-		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-		        <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_AND_UPDATE"/>
-		        <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI"/>
-	    	</intent-filter>
-	    	<meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info" />
-		</receiver>
-		<receiver android:name="ca.cumulonimbus.barometernetwork.GeneralBroadcastReceiver">
-		    <intent-filter>  
-		        <action android:name="android.intent.action.BOOT_COMPLETED" />  
-		    </intent-filter>  
-		</receiver>
-		<service android:enabled="true" android:name="ca.cumulonimbus.barometernetwork.SubmitReadingService">
-		   <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_SINGLE"/>
-		</service> 
-		<service android:enabled="true" android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService">
             <intent-filter>
-                <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_AND_UPDATE" />
+                <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
             </intent-filter>
-		</service>
-		<uses-library android:name="com.google.android.maps" />
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+        <receiver android:name="ca.cumulonimbus.barometernetwork.GeneralBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="ca.cumulonimbus.barometernetwork.SubmitReadingService"
+            android:enabled="true" >
+            <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_SINGLE" />
+        </service>
+        <service
+            android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
+            </intent-filter>
+        </service>
+
+        <uses-library android:name="com.google.android.maps" />
     </application>
+
 </manifest>

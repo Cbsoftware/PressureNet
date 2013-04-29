@@ -8,15 +8,15 @@
         android:id="@+id/fullLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight=".5"
         android:orientation="vertical"
-        android:weightSum="1"
-        android:layout_weight=".5" >
+        android:weightSum="1" >
 
         <LinearLayout
             android:id="@+id/topButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal" >
 
             <TextView
                 android:id="@+id/textReading"
@@ -38,12 +38,16 @@
                 android:id="@+id/mapview"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:apiKey=""
+                android:apiKey="0NZZtIxvqC4ErHtP1pwbsvl-JYxUlOKYEhS4aWg"
                 android:clickable="true" />
         </LinearLayout>
     </LinearLayout>
-	<ImageView android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
-				android:layout_weight=".5"
-	    		android:src="@drawable/marker"/>
+
+    <LinearLayout
+        android:id="@+id/chart"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight=".5"
+        android:orientation="horizontal" />
+
 </LinearLayout>
