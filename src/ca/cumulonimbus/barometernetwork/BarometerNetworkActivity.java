@@ -130,6 +130,9 @@ public class BarometerNetworkActivity extends MapActivity {
 	// API call parameters. 
 	private double apiLatitude = 0.0;
 	private double apiLongitude = 0.0;
+	private double apiLatitudeSpan = 0.0;
+	private double apiLongitudeSpan = 0.0;
+
 	private long apiStartTime = 0;
 	private long apiEndTime = 0;
 	private String apiFormat = "json";
@@ -152,26 +155,31 @@ public class BarometerNetworkActivity extends MapActivity {
 
 				LocationManager tempLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 				Location loc = tempLM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				apiLongitude = loc.getLongitude();
-				apiLatitude = loc.getLatitude();
-				apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60* 6);
-				apiEndTime = System.currentTimeMillis();
+				if(apiLongitude == 0.0) {
+					apiLongitude = loc.getLongitude();
+					apiLatitude = loc.getLatitude();
+					apiLatitudeSpan = 0.05;
+					apiLongitudeSpan = 0.05;
+					apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60* 6);
+					apiEndTime = System.currentTimeMillis();
+				}
 				
 				System.out.println("contacting api...");
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("min_lat", (apiLatitude - 0.05)
+				nvps.add(new BasicNameValuePair("min_lat", (apiLatitude - apiLatitudeSpan)
 						+ ""));
-				nvps.add(new BasicNameValuePair("max_lat", (apiLatitude + 0.05)
+				nvps.add(new BasicNameValuePair("max_lat", (apiLatitude + apiLatitudeSpan)
 						+ ""));
-				nvps.add(new BasicNameValuePair("min_lon", (apiLongitude - 0.05)
+				nvps.add(new BasicNameValuePair("min_lon", (apiLongitude - apiLongitudeSpan)
 						+ ""));
-				nvps.add(new BasicNameValuePair("max_lon", (apiLongitude + 0.05)
+				nvps.add(new BasicNameValuePair("max_lon", (apiLongitude + apiLongitudeSpan)
 						+ ""));
 				nvps.add(new BasicNameValuePair("start_time", apiStartTime + ""));
 				nvps.add(new BasicNameValuePair("end_time", apiEndTime + ""));
 				nvps.add(new BasicNameValuePair("api_key",
 						PressureNETConfiguration.API_KEY));
 				nvps.add(new BasicNameValuePair("format", apiFormat));
+				nvps.add(new BasicNameValuePair("limit", "2000")); // TODO: User preference
 
 				String paramString = URLEncodedUtils.format(nvps, "utf-8");
 
@@ -941,7 +949,7 @@ public class BarometerNetworkActivity extends MapActivity {
 					.getSystemService(Context.LOCATION_SERVICE);
 			Location loc = lm
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			mc.setZoom(8);
+			mc.setZoom(15);
 			if (loc.getLatitude() != 0) {
 				// log("setting center " + loc.getLatitude() + " " +
 				// loc.getLongitude());
@@ -1385,7 +1393,19 @@ public class BarometerNetworkActivity extends MapActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
-				// TODO: load and show data
+				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
+				GeoPoint gp = mapView.getMapCenter();
+				int latE6 = gp.getLatitudeE6();
+				int lonE6 = gp.getLongitudeE6();
+				apiLatitude = latE6 / 1E6;
+				apiLongitude = lonE6 / 1E6;
+				apiLatitudeSpan = mapView.getLatitudeSpan();
+				apiLongitudeSpan = mapView.getLongitudeSpan();
+				apiFormat = "json";
+				apiStartTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
+				apiEndTime = System.currentTimeMillis();
+				
+				makeAPICall();
 			}
 		}
 	};
