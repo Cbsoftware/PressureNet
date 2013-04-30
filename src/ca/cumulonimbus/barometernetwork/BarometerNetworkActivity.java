@@ -122,6 +122,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	CbSettingsHandler activeSettings;
 
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
+	ArrayList<CbObservation> apiCache = new ArrayList<CbObservation>();
 
 	boolean dataReceivedToPlot = false;
 
@@ -141,127 +142,6 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
 	
-	public void makeAPICall() {
-		APIDataDownload api = new APIDataDownload();
-		api.execute("");
-	}
-
-	private class APIDataDownload extends AsyncTask<String, String, String> {
-
-		@Override
-		protected String doInBackground(String... arg0) {
-			String responseText = "";
-			try {
-				DefaultHttpClient client = new DefaultHttpClient();
-
-				LocationManager tempLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				Location loc = tempLM.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				if(apiLongitude == 0.0) {
-					apiLongitude = loc.getLongitude();
-					apiLatitude = loc.getLatitude();
-					apiLatitudeSpan = 0.05;
-					apiLongitudeSpan = 0.05;
-					apiStartTime = System.currentTimeMillis() - (1000 * 60 * 60* 6);
-					apiEndTime = System.currentTimeMillis();
-				}
-				
-				System.out.println("contacting api...");
-				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("min_lat", (apiLatitude - apiLatitudeSpan)
-						+ ""));
-				nvps.add(new BasicNameValuePair("max_lat", (apiLatitude + apiLatitudeSpan)
-						+ ""));
-				nvps.add(new BasicNameValuePair("min_lon", (apiLongitude - apiLongitudeSpan)
-						+ ""));
-				nvps.add(new BasicNameValuePair("max_lon", (apiLongitude + apiLongitudeSpan)
-						+ ""));
-				nvps.add(new BasicNameValuePair("start_time", apiStartTime + ""));
-				nvps.add(new BasicNameValuePair("end_time", apiEndTime + ""));
-				nvps.add(new BasicNameValuePair("api_key",
-						PressureNETConfiguration.API_KEY));
-				nvps.add(new BasicNameValuePair("format", apiFormat));
-				nvps.add(new BasicNameValuePair("limit", "2000")); // TODO: User preference
-
-				String paramString = URLEncodedUtils.format(nvps, "utf-8");
-
-				apiServerURL = apiServerURL + paramString;
-				System.out.println(apiServerURL);
-				HttpGet get = new HttpGet(apiServerURL);
-
-				// Execute the GET call and obtain the response
-				HttpResponse getResponse = client.execute(get);
-				HttpEntity responseEntity = getResponse.getEntity();
-
-				BufferedReader r = new BufferedReader(new InputStreamReader(
-						responseEntity.getContent()));
-
-				StringBuilder total = new StringBuilder();
-				String line;
-				if (r != null) {
-					while ((line = r.readLine()) != null) {
-						total.append(line);
-					}
-					responseText = total.toString();
-				}
-			} catch (Exception e) {
-				System.out.println("api error");
-				e.printStackTrace();
-			}
-			return responseText;
-		}
-
-		protected void onPostExecute(String result) {
-			processJSONResult(result);
-		}
-	}
-
-	/**
-	 * Take a JSON string and return the data in a useful structure
-	 * 
-	 * @param resultJSON
-	 */
-	void processJSONResult(String resultJSON) {
-		try {
-			JSONArray jsonArray = new JSONArray(resultJSON);
-			apiCbObservationResults.clear();
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				CbObservation singleObs = new CbObservation();
-				try {
-					Location location = new Location("network");
-					location.setLatitude(jsonObject.getDouble("latitude"));
-					location.setLongitude(jsonObject.getDouble("longitude"));
-					location.setAccuracy((float) jsonObject
-							.getDouble("location_accuracy"));
-					singleObs.setLocation(location);
-					singleObs.setTime(jsonObject.getLong("daterecorded"));
-					singleObs.setTimeZoneOffset(jsonObject
-							.getDouble("tzoffset"));
-					singleObs.setSharing(jsonObject.getString("sharing"));
-					singleObs.setUser_id(jsonObject.getString("user_id"));
-					singleObs.setObservationValue(jsonObject
-							.getDouble("reading"));
-					apiCbObservationResults.add(singleObs);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-			// TODO: Add dates and trends prior to graphing.
-			//ArrayList<CbObservation> detailedList = CbObservation.addDatesAndTrends(apiCbObservationResults);
-			//recents = CbObservation.addDatesAndTrends(apiCbObservationResults);
-			recents = apiCbObservationResults;
-			System.out.println("api results: " + recents.size());
-			
-			createAndShowChart();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -279,7 +159,22 @@ public class BarometerNetworkActivity extends MapActivity {
 		startCbService();
 		bindCbService();
 		setUpUIListeners();
-		makeAPICall();
+	}
+	
+	private void makeAPICall(CbApiCall apiCall) {
+		if (mBound) {
+			log("making Live API Call");
+			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL, apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+				updateVisibleReading();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
 	}
 
 	private void setUpUIListeners() {
@@ -292,6 +187,8 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			@Override
 			public void onClick(View v) {
+				CbApiCall apiCall = buildMapAPICall();
+				askForRecents(apiCall);
 				createAndShowChart();
 			}
 		});
@@ -300,9 +197,11 @@ public class BarometerNetworkActivity extends MapActivity {
 			
 			@Override
 			public void onClick(View v) {
-				// makeAPICall();
-				CbApiCall api = buildMapAPICall();
-				askForRecents(api);
+				// CbApiCall api = buildMapAPICall();
+				// askForRecents(api);
+				
+				CbApiCall apiCall = buildMapAPICall();
+				makeAPICall(apiCall);
 			}
 		});
 	}
@@ -359,7 +258,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("asking for recents");
 			
 			
-			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS, apiCall);
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS, apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -426,9 +325,9 @@ public class BarometerNetworkActivity extends MapActivity {
 				}
 				updateVisibleReading();
 				break;
-			case CbService.MSG_RECENTS:
-				
-				recents = (ArrayList<CbObservation>) msg.obj;
+			case CbService.MSG_API_RECENTS:
+				apiCache.clear();
+				apiCache = (ArrayList<CbObservation>) msg.obj;
 				if (recents != null) {
 					log("received " + recents.size()
 							+ " recent observations in buffer.");
@@ -437,6 +336,7 @@ public class BarometerNetworkActivity extends MapActivity {
 					log("received recents: NULL");
 				}
 				dataReceivedToPlot = true;
+				recents = apiCache;
 				createAndShowChart();
 				break;
 			default:
@@ -486,11 +386,6 @@ public class BarometerNetworkActivity extends MapActivity {
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
-
-			// UI
-			// startDataStream();
-
-			//askForRecents();
 
 		}
 
@@ -1420,6 +1315,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		api.setMaxLon(longitude + (longitudeSpan/1E6));
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
+		api.setApiKey(PressureNETConfiguration.API_KEY);
 		return api;
 	}
 	
