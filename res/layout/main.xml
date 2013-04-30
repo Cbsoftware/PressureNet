@@ -1,32 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-    <LinearLayout android:layout_width="match_parent" android:orientation="vertical" android:layout_height="match_parent" android:id="@+id/fullLayout" android:weightSum="1">
+    android:orientation="vertical"
+    android:id="@+id/mainParentLayout" >
+
+    <LinearLayout
+        android:id="@+id/fullLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".5"
+        android:orientation="vertical"
+        android:weightSum="1" >
+
         <LinearLayout
             android:id="@+id/topButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal" >
-			<TextView android:layout_height="wrap_content" 
-			    	  android:layout_width="fill_parent" 
-			    	  android:textAppearance="?android:attr/textAppearanceSmall" 
-			    	  android:id="@+id/textReading" 
-			    	  android:text="@string/empty" 
-			    	  android:gravity="right"></TextView>
-        </LinearLayout>        
-        <LinearLayout android:layout_width="match_parent" android:id="@+id/layoutMapContainer" android:layout_height="match_parent">
-			    	<ca.cumulonimbus.barometernetwork.BarometerMapView
-					    xmlns:android="http://schemas.android.com/apk/res/android"
-					    android:id="@+id/mapview"
-					    android:layout_width="fill_parent"
-					    android:clickable="true"
-					    android:apiKey="" 
-					    android:layout_height="fill_parent"
-					/>
-			
+
+            <Button 
+                android:id="@+id/buttonDrawChart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Draw Chart"/>
+            
+            <Button 
+                android:id="@+id/buttonCallAPI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Call API"/>
+            <TextView
+                android:id="@+id/textReading"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="@string/empty"
+                android:textAppearance="?android:attr/textAppearanceSmall" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMapContainer"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" >
+
+            <ca.cumulonimbus.barometernetwork.BarometerMapView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/mapview"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:apiKey="0TTXlD0TEfWDjnR7s3E8h5-W0a6LaNTmx5oNkzw"
+                android:clickable="true" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

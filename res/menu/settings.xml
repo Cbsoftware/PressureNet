@@ -53,7 +53,7 @@
       android:title="@string/send_debug_log"
       android:enabled="true"
       android:showAsAction="never" 
-      android:visible="false"/>
+      android:visible="true"/>
     
     <item android:id="@+id/menu_check_trend"
       android:title="notify [debug]"
