@@ -69,6 +69,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
@@ -122,7 +123,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 
-	boolean dataReceivedTopPlot = false;
+	boolean dataReceivedToPlot = false;
 
 	Button buttonChart;
 	Button buttonCallAPI;
@@ -203,6 +204,7 @@ public class BarometerNetworkActivity extends MapActivity {
 					responseText = total.toString();
 				}
 			} catch (Exception e) {
+				System.out.println("api error");
 				e.printStackTrace();
 			}
 			return responseText;
@@ -249,8 +251,10 @@ public class BarometerNetworkActivity extends MapActivity {
 			//ArrayList<CbObservation> detailedList = CbObservation.addDatesAndTrends(apiCbObservationResults);
 			//recents = CbObservation.addDatesAndTrends(apiCbObservationResults);
 			recents = apiCbObservationResults;
+			System.out.println("api results: " + recents.size());
 			
 			createAndShowChart();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -262,7 +266,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		dataReceivedTopPlot = false;
+		dataReceivedToPlot = false;
 		setContentView(R.layout.main);
 		// migratePreferences();
 		startLog();
@@ -275,6 +279,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		startCbService();
 		bindCbService();
 		setUpUIListeners();
+		makeAPICall();
 	}
 
 	private void setUpUIListeners() {
@@ -282,6 +287,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		mInflater = LayoutInflater.from(context);
 		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
 		buttonChart = (Button) findViewById(R.id.buttonDrawChart);
+		
 		buttonChart.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -294,7 +300,9 @@ public class BarometerNetworkActivity extends MapActivity {
 			
 			@Override
 			public void onClick(View v) {
-				makeAPICall();
+				// makeAPICall();
+				CbApiCall api = buildMapAPICall();
+				askForRecents(api);
 			}
 		});
 	}
@@ -346,10 +354,12 @@ public class BarometerNetworkActivity extends MapActivity {
 		}
 	}
 
-	private void askForRecents() {
+	private void askForRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
-			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS, 0, 0);
+			
+			
+			Message msg = Message.obtain(null, CbService.MSG_GET_RECENTS, apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -417,6 +427,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				updateVisibleReading();
 				break;
 			case CbService.MSG_RECENTS:
+				
 				recents = (ArrayList<CbObservation>) msg.obj;
 				if (recents != null) {
 					log("received " + recents.size()
@@ -425,7 +436,8 @@ public class BarometerNetworkActivity extends MapActivity {
 				} else {
 					log("received recents: NULL");
 				}
-				dataReceivedTopPlot = true;
+				dataReceivedToPlot = true;
+				createAndShowChart();
 				break;
 			default:
 				log("received default message");
@@ -434,8 +446,9 @@ public class BarometerNetworkActivity extends MapActivity {
 		}
 	}
 
+	
 	public void createAndShowChart() {
-		if (dataReceivedTopPlot) {
+		if (dataReceivedToPlot) {
 			// draw chart
 			log("plotting...");
 			Chart chart = new Chart(getApplicationContext());
@@ -477,7 +490,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			// UI
 			// startDataStream();
 
-			askForRecents();
+			//askForRecents();
 
 		}
 
@@ -1389,6 +1402,27 @@ public class BarometerNetworkActivity extends MapActivity {
 		}
 	};
 
+	public CbApiCall buildMapAPICall() {
+		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
+		GeoPoint gp = mapView.getMapCenter();
+		int latE6 = gp.getLatitudeE6();
+		int lonE6 = gp.getLongitudeE6();
+		double latitude = latE6 / 1E6;
+		double longitude = lonE6 / 1E6;
+		double latitudeSpan = mapView.getLatitudeSpan();
+		double longitudeSpan = mapView.getLongitudeSpan();
+		long startTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+		api.setMinLat(latitude - (latitudeSpan/1E6));
+		api.setMaxLat(latitude + (latitudeSpan/1E6));
+		api.setMinLon(longitude - (longitudeSpan/1E6));
+		api.setMaxLon(longitude + (longitudeSpan/1E6));
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		return api;
+	}
+	
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -1397,15 +1431,20 @@ public class BarometerNetworkActivity extends MapActivity {
 				GeoPoint gp = mapView.getMapCenter();
 				int latE6 = gp.getLatitudeE6();
 				int lonE6 = gp.getLongitudeE6();
-				apiLatitude = latE6 / 1E6;
-				apiLongitude = lonE6 / 1E6;
-				apiLatitudeSpan = mapView.getLatitudeSpan();
-				apiLongitudeSpan = mapView.getLongitudeSpan();
-				apiFormat = "json";
-				apiStartTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
-				apiEndTime = System.currentTimeMillis();
-				
-				makeAPICall();
+				double latitude = latE6 / 1E6;
+				double longitude = lonE6 / 1E6;
+				double latitudeSpan = mapView.getLatitudeSpan();
+				double longitudeSpan = mapView.getLongitudeSpan();
+				long startTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
+				long endTime = System.currentTimeMillis();
+				CbApiCall api = new CbApiCall();
+				api.setMinLat(latitude - (latitudeSpan/1E6));
+				api.setMaxLat(latitude + (latitudeSpan/1E6));
+				api.setMinLon(longitude - (longitudeSpan/1E6));
+				api.setMaxLon(longitude + (longitudeSpan/1E6));
+				api.setStartTime(startTime);
+				api.setEndTime(endTime);
+				askForRecents(api);
 			}
 		}
 	};
@@ -1437,14 +1476,14 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	@Override
 	protected void onStart() {
-		dataReceivedTopPlot = false;
+		dataReceivedToPlot = false;
 		bindCbService();
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
-		dataReceivedTopPlot = false;
+		dataReceivedToPlot = false;
 		stopDataStream();
 		unBindCbService();
 		super.onStop();
@@ -1452,7 +1491,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	@Override
 	protected void onDestroy() {
-		dataReceivedTopPlot = false;
+		dataReceivedToPlot = false;
 		stopDataStream();
 		unBindCbService();
 		super.onDestroy();
