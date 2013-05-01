@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <string name="app_name">pressureNET</string>
     <string name="currentReading">Current Reading:</string>
     <string name="empty"></string>
@@ -16,6 +17,13 @@
     <string name="chartView">Chart View (millibars over days)</string>
     <string name="refreshFrequency">Auto-Submit</string>
     <string name="submitEvery">Submit Every:</string>
+	<string name="chartTimeDisplay">Chart Time Display</string>
+    <string-array name="display_time_chart">
+        <item name="1 hour">1 hour</item>
+        <item name="3 hours">3 hours</item>
+        <item name="6 hours ">6 hours</item>
+        <item name="1 day">1 day</item>
+    </string-array>
     <string-array name="refresh_frequency">
         <item name="1 minute">1 minute</item>
         <item name="5 minutes">5 minutes</item>
@@ -42,6 +50,7 @@
         <item>Millimeteres of Mercury (mmHg)</item>
         <item>Inches of Mercury (inHg)</item>
     </string-array>
+
     <string name="units">Units: </string>
     <string name="close">Close</string>
     <string name="showLocalGraph">Show Local Graph</string>
@@ -55,6 +64,7 @@
     <string name="pndv">pressureNET Data Visualization</string>
     <string name="loadInBrowser">Load in Browser</string>
     <string name="shareWith">Share with</string>
+
     <string-array name="privacy_settings">
         <item>Nobody</item>
         <item>Cumulonimbus (Us)</item>
@@ -62,6 +72,7 @@
         <item>Us, Researchers and Forecasters</item>
         <item>Public</item>
     </string-array>
+
     <string name="welcomeToPressureNET">Welcome to pressureNET</string>
     <string name="appAndSharingDescritption">pressureNET is an open source global barometer network. 
         We intend to improve weather forecasting by increasing inputs into weather models. 
@@ -69,8 +80,7 @@
         of your device, the time, and your atmospheric pressure. We will share this data only according to your wishes,
         but remember that limiting your sharing  will limit our ability to help scientists improve 
         weather forecasting. You can change your prefence below or at any time through Settings. 
-        We are currently building a system to let you access this data yourself, since you contribute. Thank you!
-    </string>
+        We are currently building a system to let you access this data yourself, since you contribute. Thank you!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
     <string name="sunny">Sunny</string>
@@ -102,9 +112,5 @@
     <string name="light_fog">Light Fog</string>
     <string name="moderate_fog">Moderate Fog</string>
     <string name="heavy_fog">Heavy Fog</string>
+
 </resources>
-
-
-
-
-

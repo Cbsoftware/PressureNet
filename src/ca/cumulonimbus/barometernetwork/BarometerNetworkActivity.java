@@ -52,8 +52,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
@@ -116,6 +120,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	Button buttonChart;
 	Button buttonCallAPI;
+	Spinner spinnerTime;
 
 	// API call parameters. 
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
@@ -162,7 +167,40 @@ public class BarometerNetworkActivity extends MapActivity {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
+		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
+
+	    ArrayAdapter<CharSequence> adapterTime= ArrayAdapter.createFromResource(
+	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
+	    adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    spinnerTime.setAdapter(adapterTime);
 		
+	    spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				String selected = arg0.getSelectedItem().toString();
+				// TODO: Fix hack
+				CbApiCall apiCall = new CbApiCall();
+				if(selected.equals("1 hour")) {
+					apiCall = buildMapAPICall(1);
+				} else if(selected.equals("3 hours")) {
+					apiCall = buildMapAPICall(3);
+				} else if(selected.equals("6 hours")) {
+					apiCall = buildMapAPICall(6);
+				} else if(selected.equals("1 day")) {
+					apiCall = buildMapAPICall(24);
+				} 
+				askForRecents(apiCall);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+			
+			}
+	    	
+	    });
+	    
 		buttonCallAPI.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -171,28 +209,17 @@ public class BarometerNetworkActivity extends MapActivity {
 				Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				double minLatitude = -90;
-				double maxLatitude = 90;
-				double minLongitude = -180;
-				double maxLongitude = 180;
-				if(latitude < 0) {
-					minLatitude = -90;
-					maxLatitude = 0;
-				} else if(latitude > 0) {
-					minLatitude = 0;
-					maxLatitude = 90;
-				}
-				if(minLongitude < 0) {
-					minLongitude = -180;
-					maxLongitude = 0;
-				} else if (longitude > 0) {
-					minLongitude = 0;
-					maxLongitude = 180;
-				}
-				CbApiCall apiCall = buildAPICall(2, minLatitude, maxLatitude, minLongitude, maxLongitude);
+				// TODO: Fix local-only 
+				double minLatitude = latitude - 15;
+				double maxLatitude = latitude + 15;
+				double minLongitude = longitude - 15;
+				double maxLongitude = longitude + 15;
+				CbApiCall apiCall = buildAPICall(24, minLatitude, maxLatitude, minLongitude, maxLongitude);
 				makeAPICall(apiCall);
 			}
 		});
+		
+		
 	}
 
 	private void startCbService() {
@@ -531,7 +558,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		if (firstRun == 0) {
 			Intent intent = new Intent(this,
 					ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
-			startActivityForResult(intent, 0);
+			// startActivityForResult(intent, 0);
 		}
 
 	}
@@ -1305,16 +1332,16 @@ public class BarometerNetworkActivity extends MapActivity {
 		return api;
 	}
 
-	public CbApiCall buildMapAPICall(int scale) {
+	public CbApiCall buildMapAPICall(int hoursAgo) {
 		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
 		GeoPoint gp = mapView.getMapCenter();
 		int latE6 = gp.getLatitudeE6();
 		int lonE6 = gp.getLongitudeE6();
 		double latitude = latE6 / 1E6;
 		double longitude = lonE6 / 1E6;
-		double latitudeSpan = mapView.getLatitudeSpan() * scale;
-		double longitudeSpan = mapView.getLongitudeSpan() * scale;
-		long startTime = System.currentTimeMillis() - (6 * 60 * 60 * 1000);
+		double latitudeSpan = mapView.getLatitudeSpan();
+		double longitudeSpan = mapView.getLongitudeSpan();
+		long startTime = System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000);
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		api.setMinLat(latitude - (latitudeSpan/1E6));
