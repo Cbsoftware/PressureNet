@@ -142,6 +142,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 	
 	private void makeAPICall(CbApiCall apiCall) {
+		Toast.makeText(getApplicationContext(), "Starting API call", Toast.LENGTH_SHORT).show();
 		if (mBound) {
 			log("making Live API Call");
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL, apiCall);
@@ -326,6 +327,11 @@ public class BarometerNetworkActivity extends MapActivity {
 				dataReceivedToPlot = true;
 				recents = apiCache;
 				createAndShowChart();
+				break;
+			case CbService.MSG_API_RESULT_COUNT: 
+				int count = msg.arg1;
+				Toast.makeText(getApplicationContext(), count + " API results cached", Toast.LENGTH_SHORT).show();
+				
 				break;
 			default:
 				log("received default message");
