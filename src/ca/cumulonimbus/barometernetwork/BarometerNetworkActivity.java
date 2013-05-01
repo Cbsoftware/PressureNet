@@ -1,11 +1,9 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -13,16 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -49,7 +37,6 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -123,6 +110,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 	ArrayList<CbObservation> apiCache = new ArrayList<CbObservation>();
+	ArrayList<CbObservation> graphContents = new ArrayList<CbObservation>();
 
 	boolean dataReceivedToPlot = false;
 
@@ -130,14 +118,6 @@ public class BarometerNetworkActivity extends MapActivity {
 	Button buttonCallAPI;
 
 	// API call parameters. 
-	private double apiLatitude = 0.0;
-	private double apiLongitude = 0.0;
-	private double apiLatitudeSpan = 0.0;
-	private double apiLongitudeSpan = 0.0;
-
-	private long apiStartTime = 0;
-	private long apiEndTime = 0;
-	private String apiFormat = "json";
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
 
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
@@ -181,26 +161,34 @@ public class BarometerNetworkActivity extends MapActivity {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
-		buttonChart = (Button) findViewById(R.id.buttonDrawChart);
-		
-		buttonChart.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				CbApiCall apiCall = buildMapAPICall();
-				askForRecents(apiCall);
-				createAndShowChart();
-			}
-		});
 		
 		buttonCallAPI.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// CbApiCall api = buildMapAPICall();
-				// askForRecents(api);
-				
-				CbApiCall apiCall = buildMapAPICall();
+				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				double latitude = loc.getLatitude();
+				double longitude = loc.getLongitude();
+				double minLatitude = -90;
+				double maxLatitude = 90;
+				double minLongitude = -180;
+				double maxLongitude = 180;
+				if(latitude < 0) {
+					minLatitude = -90;
+					maxLatitude = 0;
+				} else if(latitude > 0) {
+					minLatitude = 0;
+					maxLatitude = 90;
+				}
+				if(minLongitude < 0) {
+					minLongitude = -180;
+					maxLongitude = 0;
+				} else if (longitude > 0) {
+					minLongitude = 0;
+					maxLongitude = 180;
+				}
+				CbApiCall apiCall = buildAPICall(2, minLatitude, maxLatitude, minLongitude, maxLongitude);
 				makeAPICall(apiCall);
 			}
 		});
@@ -1296,17 +1284,31 @@ public class BarometerNetworkActivity extends MapActivity {
 			mapView.refreshDrawableState();
 		}
 	};
+	
+	public CbApiCall buildAPICall(int hoursAgo, double minLat, double maxLat, double minLon, double maxLon ) {
+		long startTime = System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000);
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setApiKey(PressureNETConfiguration.API_KEY);
+		return api;
+	}
 
-	public CbApiCall buildMapAPICall() {
+	public CbApiCall buildMapAPICall(int scale) {
 		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
 		GeoPoint gp = mapView.getMapCenter();
 		int latE6 = gp.getLatitudeE6();
 		int lonE6 = gp.getLongitudeE6();
 		double latitude = latE6 / 1E6;
 		double longitude = lonE6 / 1E6;
-		double latitudeSpan = mapView.getLatitudeSpan();
-		double longitudeSpan = mapView.getLongitudeSpan();
-		long startTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
+		double latitudeSpan = mapView.getLatitudeSpan() * scale;
+		double longitudeSpan = mapView.getLongitudeSpan() * scale;
+		long startTime = System.currentTimeMillis() - (6 * 60 * 60 * 1000);
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		api.setMinLat(latitude - (latitudeSpan/1E6));
@@ -1324,22 +1326,8 @@ public class BarometerNetworkActivity extends MapActivity {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
 				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-				GeoPoint gp = mapView.getMapCenter();
-				int latE6 = gp.getLatitudeE6();
-				int lonE6 = gp.getLongitudeE6();
-				double latitude = latE6 / 1E6;
-				double longitude = lonE6 / 1E6;
-				double latitudeSpan = mapView.getLatitudeSpan();
-				double longitudeSpan = mapView.getLongitudeSpan();
-				long startTime = System.currentTimeMillis() - (3 * 60 * 60 * 1000);
-				long endTime = System.currentTimeMillis();
-				CbApiCall api = new CbApiCall();
-				api.setMinLat(latitude - (latitudeSpan/1E6));
-				api.setMaxLat(latitude + (latitudeSpan/1E6));
-				api.setMinLon(longitude - (longitudeSpan/1E6));
-				api.setMaxLon(longitude + (longitudeSpan/1E6));
-				api.setStartTime(startTime);
-				api.setEndTime(endTime);
+
+				CbApiCall api = buildMapAPICall(1);
 				askForRecents(api);
 			}
 		}
