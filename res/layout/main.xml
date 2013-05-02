@@ -21,10 +21,10 @@
             android:orientation="horizontal" >
 
             <Button 
-                android:id="@+id/buttonCallAPI"
+                android:id="@+id/buttonDataManagement"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Call API"/>
+                android:text="Manage Data"/>
 
             <Spinner
                 android:id="@+id/spinnerChartTime"

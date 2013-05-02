@@ -17,6 +17,7 @@
     <string name="chartView">Chart View (millibars over days)</string>
     <string name="refreshFrequency">Auto-Submit</string>
     <string name="submitEvery">Submit Every:</string>
+	<string name="data">Data</string>
 	<string name="chartTimeDisplay">Chart Time Display</string>
     <string-array name="display_time_chart">
         <item name="1 hour">1 hour</item>

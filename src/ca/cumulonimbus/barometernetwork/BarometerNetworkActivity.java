@@ -117,9 +117,10 @@ public class BarometerNetworkActivity extends MapActivity {
 	ArrayList<CbObservation> graphContents = new ArrayList<CbObservation>();
 
 	boolean dataReceivedToPlot = false;
+	
+	private Button buttonDataManagement;
 
 	Button buttonChart;
-	Button buttonCallAPI;
 	Spinner spinnerTime;
 	int hoursAgoSelected = 2;
 
@@ -147,34 +148,27 @@ public class BarometerNetworkActivity extends MapActivity {
 		setUpUIListeners();
 	}
 	
-	private void makeAPICall(CbApiCall apiCall) {
-		Toast.makeText(getApplicationContext(), "Starting API call", Toast.LENGTH_SHORT).show();
-		if (mBound) {
-			log("making Live API Call");
-			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL, apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-				updateVisibleReading();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			log("error: not bound");
-		}
-	}
 
 	private void setUpUIListeners() {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
-		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
-
+		buttonDataManagement = (Button) findViewById(R.id.buttonDataManagement);
+		
 	    ArrayAdapter<CharSequence> adapterTime= ArrayAdapter.createFromResource(
 	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
 	    adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    spinnerTime.setAdapter(adapterTime);
-		
+	    
+	    buttonDataManagement.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), DataManagementActivity.class);
+				startActivity(intent);
+			}
+		});
+	    
 	    spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -204,27 +198,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			
 			}
 	    	
-	    });
-	    
-		buttonCallAPI.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				double latitude = loc.getLatitude();
-				double longitude = loc.getLongitude();
-				// TODO: Fix local-only 
-				double minLatitude = latitude - 15;
-				double maxLatitude = latitude + 15;
-				double minLongitude = longitude - 15;
-				double maxLongitude = longitude + 15;
-				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 24, minLatitude, maxLatitude, minLongitude, maxLongitude, "json", PressureNETConfiguration.API_KEY);
-				makeAPICall(apiCall);
-			}
-		});
-		
-		
+	    });	
 	}
 
 	private void startCbService() {
