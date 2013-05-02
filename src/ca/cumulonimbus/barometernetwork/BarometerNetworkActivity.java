@@ -219,7 +219,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				double maxLatitude = latitude + 15;
 				double minLongitude = longitude - 15;
 				double maxLongitude = longitude + 15;
-				CbApiCall apiCall = buildAPICall(true, false, 24, minLatitude, maxLatitude, minLongitude, maxLongitude);
+				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 24, minLatitude, maxLatitude, minLongitude, maxLongitude, "json", PressureNETConfiguration.API_KEY);
 				makeAPICall(apiCall);
 			}
 		});
@@ -1322,28 +1322,6 @@ public class BarometerNetworkActivity extends MapActivity {
 			mapView.refreshDrawableState();
 		}
 	};
-	
-	public CbApiCall buildAPICall(boolean global, boolean sinceLastCall, int hoursAgo, double minLat, double maxLat, double minLon, double maxLon) {
-		long startTime = System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000);
-		long endTime = System.currentTimeMillis();
-		CbApiCall api = new CbApiCall();
-		if(global) {
-			api.setGlobal(true);
-		} else {
-			api.setMinLat(minLat);
-			api.setMaxLat(maxLat);
-			api.setMinLon(minLon);
-			api.setMaxLon(maxLon);
-		}
-		if(sinceLastCall) {
-			api.setSinceLastCall(true);
-		} else {
-			api.setStartTime(startTime);
-			api.setEndTime(endTime);
-		}
-		api.setApiKey(PressureNETConfiguration.API_KEY);
-		return api;
-	}
 
 	public CbApiCall buildMapAPICall(int hoursAgo) {
 		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
