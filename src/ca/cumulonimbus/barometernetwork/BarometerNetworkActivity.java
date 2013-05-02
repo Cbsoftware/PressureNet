@@ -121,6 +121,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	Button buttonChart;
 	Button buttonCallAPI;
 	Spinner spinnerTime;
+	int hoursAgoSelected = 2;
 
 	// API call parameters. 
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
@@ -184,12 +185,16 @@ public class BarometerNetworkActivity extends MapActivity {
 				CbApiCall apiCall = new CbApiCall();
 				if(selected.equals("1 hour")) {
 					apiCall = buildMapAPICall(1);
+					hoursAgoSelected = 1;
 				} else if(selected.equals("3 hours")) {
 					apiCall = buildMapAPICall(3);
+					hoursAgoSelected = 3;
 				} else if(selected.equals("6 hours")) {
 					apiCall = buildMapAPICall(6);
+					hoursAgoSelected = 6;
 				} else if(selected.equals("1 day")) {
 					apiCall = buildMapAPICall(24);
+					hoursAgoSelected = 14;
 				} 
 				askForRecents(apiCall);
 			}
@@ -226,7 +231,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		log("start cbservice");
 		try {
 			serviceIntent = new Intent(this, CbService.class);
-			serviceIntent.putExtra("serverURL", "http://localhost:8000/");
+			serviceIntent.putExtra("serverURL", "https://pressurenet.cumulonimbus.ca/add/");
 
 			startService(serviceIntent);
 
@@ -1359,8 +1364,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
 				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-
-				CbApiCall api = buildMapAPICall(1);
+				CbApiCall api = buildMapAPICall(hoursAgoSelected);
 				askForRecents(api);
 			}
 		}
