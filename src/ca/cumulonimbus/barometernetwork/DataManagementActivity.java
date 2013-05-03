@@ -27,7 +27,8 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class DataManagementActivity extends Activity {
 
-	Button buttonCallAPI;
+	Button buttonCallAPIGlobal3Hours;
+	Button buttonCallAPILocal1Day;
 	boolean mBound;
 	Messenger mService = null;
 
@@ -85,9 +86,26 @@ public class DataManagementActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
 
-		buttonCallAPI = (Button) findViewById(R.id.buttonCallAPI);
+		buttonCallAPIGlobal3Hours = (Button) findViewById(R.id.buttonCallAPIGlobal3hours);
+		buttonCallAPILocal1Day = (Button) findViewById(R.id.buttonCallAPILocal1Day);
 
-		buttonCallAPI.setOnClickListener(new OnClickListener() {
+		
+		buttonCallAPIGlobal3Hours.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				double minLatitude = 0;
+				double maxLatitude = 0;
+				double minLongitude = 0;
+				double maxLongitude = 0;
+				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 3,
+						minLatitude, maxLatitude, minLongitude, maxLongitude,
+						"json", PressureNETConfiguration.API_KEY);
+				makeAPICall(apiCall);
+			}
+		});
+		
+		buttonCallAPILocal1Day.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -96,12 +114,11 @@ public class DataManagementActivity extends Activity {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				// TODO: Fix local-only
-				double minLatitude = latitude - 15;
-				double maxLatitude = latitude + 15;
-				double minLongitude = longitude - 15;
-				double maxLongitude = longitude + 15;
-				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 3,
+				double minLatitude = latitude - 10;
+				double maxLatitude = latitude + 10;
+				double minLongitude = longitude - 10;
+				double maxLongitude = longitude + 10;
+				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
 						"json", PressureNETConfiguration.API_KEY);
 				makeAPICall(apiCall);

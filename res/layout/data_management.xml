@@ -4,9 +4,16 @@
     android:orientation="vertical" >
 
        <Button 
-                android:id="@+id/buttonCallAPI"
+                android:id="@+id/buttonCallAPIGlobal3hours"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Call API"/>
+                android:text="Download Global (3 hours)"/>
     
+          <Button 
+                android:id="@+id/buttonCallAPILocal1Day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download Local (1 day)"/>
+    
+       
 </LinearLayout>
