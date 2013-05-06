@@ -29,10 +29,46 @@ public class DataManagementActivity extends Activity {
 
 	Button buttonCallAPIGlobal3Hours;
 	Button buttonCallAPILocal1Day;
+
+	Button buttonClearLocalCache;
+	Button buttonClearAPICache;
+	
 	boolean mBound;
 	Messenger mService = null;
 
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
+	
+	private void clearLocalCache() {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("error: not bound");
+		}
+	}
+
+
+	private void clearAPICache() {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_CLEAR_API_CACHE,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("error: not bound");
+		}
+	}
+
 	
 	private void makeAPICall(CbApiCall apiCall) {
 		Toast.makeText(getApplicationContext(), "Starting API call",
@@ -88,7 +124,26 @@ public class DataManagementActivity extends Activity {
 
 		buttonCallAPIGlobal3Hours = (Button) findViewById(R.id.buttonCallAPIGlobal3hours);
 		buttonCallAPILocal1Day = (Button) findViewById(R.id.buttonCallAPILocal1Day);
+		buttonClearAPICache = (Button) findViewById(R.id.buttonClearAPICache);
+		buttonClearLocalCache = (Button) findViewById(R.id.buttonClearMyContributionsCache);
 
+		buttonClearAPICache.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				clearAPICache();
+			}
+		});
+
+		
+
+		buttonClearLocalCache.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				clearLocalCache();
+			}
+		});
 		
 		buttonCallAPIGlobal3Hours.setOnClickListener(new OnClickListener() {
 
