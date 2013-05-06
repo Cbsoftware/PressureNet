@@ -3,17 +3,61 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-       <Button 
-                android:id="@+id/buttonCallAPIGlobal3hours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download Global (3 hours)"/>
+    <TextView
+        android:id="@+id/textMyContributions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/myContributions"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textMyLocalStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recorded and stored X pressure, Y temperature, Z humidity measurements between A and B" />
+
+    <Button
+        android:id="@+id/buttonClearMyContributionsCache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear local cache" />
+
+    <Button
+        android:id="@+id/buttonRemoveMeFromPressureNET"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove from pressureNET" />
+
+    <TextView
+        android:id="@+id/textPressureNETCommunity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressureNETCommunity"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+ 	
+ 	<TextView
+        android:id="@+id/textAPICacheStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cached X measurements between A and B and  (L1, L2, L3, L4)" />
     
-          <Button 
-                android:id="@+id/buttonCallAPILocal1Day"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download Local (1 day)"/>
+    <Button
+        android:id="@+id/buttonCallAPILocal1Day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download Local (1 day)" />
+
+    <Button
+        android:id="@+id/buttonCallAPIGlobal3hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download Global (3 hours)" />
+
+    <Button
+        android:id="@+id/buttonClearAPICache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear Cache" />
     
-       
+    
 </LinearLayout>

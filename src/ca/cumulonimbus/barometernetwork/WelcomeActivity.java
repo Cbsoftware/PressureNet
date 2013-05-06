@@ -35,7 +35,7 @@ public class WelcomeActivity extends Activity {
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerWelcomeSharing.setAdapter(adapterSharing);
 
-		final Spinner spinnerSharing = (Spinner) findViewById(R.id.spinnerSharing);
+		final Spinner spinnerSharing = (Spinner) findViewById(R.id.spinnerWelcomeSharing);
 		String[] sharingArray = getResources().getStringArray(
 				R.array.privacy_settings);
 		String share = settings.getString("sharing_preference",

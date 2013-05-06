@@ -113,5 +113,8 @@
     <string name="light_fog">Light Fog</string>
     <string name="moderate_fog">Moderate Fog</string>
     <string name="heavy_fog">Heavy Fog</string>
+    <string name="localData">Local Data</string>
+    <string name="pressureNETCommunity">pressureNET Data</string>
+    <string name="myContributions">My Data</string>
 
 </resources>
