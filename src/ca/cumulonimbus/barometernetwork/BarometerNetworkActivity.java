@@ -61,6 +61,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
@@ -148,7 +149,6 @@ public class BarometerNetworkActivity extends MapActivity {
 		setUpUIListeners();
 	}
 	
-
 	private void setUpUIListeners() {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
@@ -215,6 +215,24 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	}
 
+
+	private void askForCurrentConditions() {
+		CbApiCall api = buildMapAPICall(24);
+		
+		if (mBound) {
+			log("asking for current conditions");
+			Message msg = Message.obtain(null, CbService.MSG_GET_CURRENT_CONDITIONS,api);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+	
 	private void askForBestPressure() {
 		if (mBound) {
 			log("asking for best pressure");
@@ -339,6 +357,16 @@ public class BarometerNetworkActivity extends MapActivity {
 				Toast.makeText(getApplicationContext(), count + " API results cached", Toast.LENGTH_SHORT).show();
 				
 				break;
+			case CbService.MSG_CURRENT_CONDITIONS:
+				log("receiving current conditions");
+				ArrayList<CbCurrentCondition> conditions = (ArrayList<CbCurrentCondition>) msg.obj;
+				if(conditions!=null) {
+					log(" size " + conditions.size());
+				} else {
+					log("conditions ARE NuLL");
+				}
+				
+				break;
 			default:
 				log("received default message");
 				super.handleMessage(msg);
@@ -387,6 +415,8 @@ public class BarometerNetworkActivity extends MapActivity {
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
+			// bound; populate data
+			askForCurrentConditions();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {

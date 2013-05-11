@@ -10,19 +10,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +32,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
+import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class CurrentConditionsActivity extends Activity {
 
@@ -89,7 +91,7 @@ public class CurrentConditionsActivity extends Activity {
 	
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
-	private CurrentCondition condition;
+	private CbCurrentCondition condition;
 	
     private String serverURL = PressureNETConfiguration.SERVER_URL;
 
@@ -97,62 +99,33 @@ public class CurrentConditionsActivity extends Activity {
 	
 	public String mAppDir = "";
 	
-    // Send data to the server in the background.
-    private class ConditionSender extends AsyncTask<String, Integer, String> {
-		@Override
-		protected String doInBackground(String... arg0) {
-			
-			// Display condition information;
-			String displayInfo = condition.toString();
-			// Toast.makeText(getApplicationContext(), displayInfo, Toast.LENGTH_LONG).show();
-			log("sending " + displayInfo);
-			
-			if((mLatitude == 0.0) || (mLongitude == 0.0)) {
-				//don't submit
-				return "conditionsender bailing. no location.";
-			}
-			
-			// get sharing preference
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String share = settings.getString("sharing_preference", "Us and Researchers");
-		    
-			// if sharing is None, don't send anything anywhere.
-			if (share.equals("Nobody")) {
-				return "conditionsender bailing. no permission to share.";
-			}
-			
-			log("app sending " + condition.getGeneral_condition());
-			//Toast.makeText(getApplicationContext(), "Sending...", Toast.LENGTH_SHORT).show();
-			
-			DefaultHttpClient client = new DefaultHttpClient();
-	    	HttpPost httppost = new HttpPost(serverURL);
-	    	// TODO: keep a history of readings on the user's device
-	    	// addToLocalDatabase(cc);
-	    	
-	    	try {
-	    		List<NameValuePair> nvps = currentConditionToNVP(condition);
-	    		nvps.add(new BasicNameValuePair("current_condition", "add"));
-	    		httppost.setEntity(new UrlEncodedFormEntity(nvps));
-	    		HttpResponse response = client.execute(httppost);
-	    	} catch(ClientProtocolException cpe) {
-	    		log(cpe.getMessage());
-	    		return cpe.getMessage();
-	    	} catch(IOException ioe) {
-	    		log(ioe.getMessage());
-	    		return ioe.getMessage();
-	    	}
-			return "Success";
+	boolean mBound;
+	Messenger mService = null;
+
+	public void unBindCbService() {
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
 		}
-    	
-		protected void onPostExecute(String result) {	
-			if(!result.equals("Success")) {
-				log("failed to send condition: " + result);
-				Toast.makeText(getApplicationContext(), "Failed to send condition: "+ result, Toast.LENGTH_LONG).show();
-			}
-			Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
-			finish();
+	}
+	
+	public void bindCbService() {
+		bindService(new Intent(getApplicationContext(), CbService.class),
+				mConnection, Context.BIND_AUTO_CREATE);		
+	}
+	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mService = new Messenger(service);
+			mBound = true;
+			Message msg = Message.obtain(null, CbService.MSG_OKAY);
+			System.out.println("dm bound");
 		}
-    }
+
+		public void onServiceDisconnected(ComponentName className) {
+			mBound = false;
+		}
+	};
     
     // Get the phone ID and hash it
 	public String getID() {
@@ -511,12 +484,28 @@ public class CurrentConditionsActivity extends Activity {
     	} 
     }
     
+    private void saveCondition() {
+    	if (mBound) {
+			log("saving current condition");
+			Message msg = Message.obtain(null, CbService.MSG_ADD_CURRENT_CONDITION, condition);
+			try {
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+    }
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_conditions);
-		
-		condition = new CurrentCondition();
+
+		bindCbService();
+
+		condition = new CbCurrentCondition();
 		
 		buttonSunny = (ImageButton) findViewById(R.id.buttonSunny);
 		buttonFoggy = (ImageButton) findViewById(R.id.buttonFoggy);
@@ -574,7 +563,7 @@ public class CurrentConditionsActivity extends Activity {
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new ConditionSender().execute("");
+				saveCondition();
 				finish();
 			}
 		});
@@ -901,8 +890,10 @@ public class CurrentConditionsActivity extends Activity {
 			mAppDir = bundle.getString("appdir");
 			mLatitude = intent.getDoubleExtra("latitude",0.0);
 			mLongitude = intent.getDoubleExtra("longitude",-1.0);
-			condition.setLatitude(mLatitude);
-			condition.setLongitude(mLongitude);
+			Location location = new Location("network");
+			location.setLatitude(mLatitude);
+			location.setLongitude(mLongitude);
+			condition.setLocation(location);
 			condition.setUser_id(getID());
 			condition.setTime(Calendar.getInstance().getTimeInMillis());
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
@@ -945,7 +936,7 @@ public class CurrentConditionsActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
-
+		unBindCbService();
 		super.onPause();
 	}
 }

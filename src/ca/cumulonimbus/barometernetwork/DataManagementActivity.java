@@ -169,10 +169,10 @@ public class DataManagementActivity extends Activity {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				double minLatitude = latitude - 10;
-				double maxLatitude = latitude + 10;
-				double minLongitude = longitude - 10;
-				double maxLongitude = longitude + 10;
+				double minLatitude = latitude - 5;
+				double maxLatitude = latitude + 5;
+				double minLongitude = longitude - 5;
+				double maxLongitude = longitude + 5;
 				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
 						"json", PressureNETConfiguration.API_KEY);
