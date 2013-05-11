@@ -128,6 +128,8 @@ public class BarometerNetworkActivity extends MapActivity {
 	// API call parameters. 
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
 
+	private ArrayList<CbCurrentCondition> currentConditions = new ArrayList<CbCurrentCondition>();
+	
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
 	
 	/** Called when the activity is first created. */
@@ -359,9 +361,10 @@ public class BarometerNetworkActivity extends MapActivity {
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				log("receiving current conditions");
-				ArrayList<CbCurrentCondition> conditions = (ArrayList<CbCurrentCondition>) msg.obj;
-				if(conditions!=null) {
-					log(" size " + conditions.size());
+				currentConditions = (ArrayList<CbCurrentCondition>) msg.obj;
+				if(currentConditions !=null) {
+					log(" size " + currentConditions .size());
+					addDataToMap();
 				} else {
 					log("conditions ARE NuLL");
 				}
@@ -1194,10 +1197,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
-	public void addDataToMap(ArrayList<CbObservation> readingsList,
-			ArrayList<CbCurrentCondition> conditionsList, boolean showTendencies,
-			HashMap<String, String> tendencies) {
-		log("add data to map " + readingsList.size());
+	public void addDataToMap() {
 		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mv.getOverlays();
 
@@ -1207,58 +1207,8 @@ public class BarometerNetworkActivity extends MapActivity {
 
 		try {
 			// Add Barometer Readings and associated current Conditions
-			for (CbObservation ob : readingsList) {
-				MapOverlay overlay;
-
-				String snippet = ob.getUser_id();
-
-				// Pick an overlay icon depending on the reading and
-				// the current conditions. reading alone? reading with tendency?
-				// current condition alone? current condition with tendency?
-
-				// is there a current condition from the same user as this
-				// reading?
-				Drawable pressureBackgroundDrawable = resizeDrawable(this
-						.getResources().getDrawable(R.drawable.bg_pre_rect));
-				boolean onlyPressure = true;
-				overlay = new MapOverlay(drawable, this, mapFontSize);
-				for (CbCurrentCondition condition : conditionsList) {
-					if (condition.getUser_id().equals(ob.getUser_id())) {
-						// pick and hold the overlay
-						overlay = getCurrentConditionOverlay(condition,
-								drawable);
-						// remove this condition from the list and break out of
-						// the loop
-						// this leaves all non-barometer device conditions in
-						// the list
-						// for processing just after.
-						conditionsList.remove(condition);
-						onlyPressure = false;
-						break;
-					}
-				}
-
-				if (onlyPressure) {
-					// overlay = new MapOverlay(pressureBackgroundDrawable,
-					// this, mapFontSize);
-				}
-
-				GeoPoint point = new GeoPoint(
-						(int) ((ob.getLocation().getLatitude()) * 1E6),
-						(int) ((ob.getLocation().getLongitude()) * 1E6));
-
-				String textForTitle = ob.getObservationValue() + " "
-						+ ob.getObservationUnit();
-				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
-						snippet);
-				overlay.addOverlay(overlayitem);
-				mapOverlays.add(overlay);
-
-				mv.invalidate();
-			}
-
 			// Add singleton Current Conditions
-			for (CbCurrentCondition condition : conditionsList) {
+			for (CbCurrentCondition condition : currentConditions) {
 				MapOverlay overlay;
 
 				// Pick an overlay icon depending on the reading and
