@@ -45,12 +45,15 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" >
             </TextView>
         </LinearLayout>
+        
 
+	    
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
             android:layout_height="200dp" >
 
+            
             <ca.cumulonimbus.barometernetwork.BarometerMapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/mapview"
@@ -59,5 +62,12 @@
                 android:apiKey="0TTXlD0TEfWDjnR7s3E8h5-W0a6LaNTmx5oNkzw"
                 android:clickable="true" />
         </LinearLayout>
+
     </LinearLayout>
+    <SeekBar
+            android:id="@+id/seekBarTime"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+    
 </LinearLayout>

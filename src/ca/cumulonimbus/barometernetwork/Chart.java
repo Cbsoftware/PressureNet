@@ -59,20 +59,20 @@ public class Chart {
 	public View drawChart(ArrayList<CbObservation> obsList) {
 		System.out.println("drawing chart " + obsList.size() + " data points");
 		String[] titles = new String[] { "Pressure over Time" };
-		List<double[]> x = new ArrayList<double[]>();
+		List<long[]> x = new ArrayList<long[]>();
 		List<double[]> values = new ArrayList<double[]>();
 		int length = titles.length;
 		int count = obsList.size();
 		
-		double[] xValues = new double[count];
+		long[] xValues = new long[count];
 		double[] yValues = new double[count];
 		
 		// TODO: Expand to multiple observations
 		// currently only pressure
 		double minObservation = 1200;
 		double maxObservation = 0;
-		double minTime = System.currentTimeMillis();
-		double maxTime = 0;
+		long minTime = System.currentTimeMillis();
+		long maxTime = 0;
 		
 		int i = 0;
 		for(CbObservation obs : obsList) {
@@ -126,18 +126,18 @@ public class Chart {
 	 * @return the XY multiple dataset
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
-			List<double[]> xValues, List<double[]> yValues) {
+			List<long[]> xValues, List<double[]> yValues) {
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		addXYSeries(dataset, titles, xValues, yValues, 0);
 		return dataset;
 	}
 
 	public void addXYSeries(XYMultipleSeriesDataset dataset, String[] titles,
-			List<double[]> xValues, List<double[]> yValues, int scale) {
+			List<long[]> xValues, List<double[]> yValues, int scale) {
 		int length = titles.length;
 		for (int i = 0; i < length; i++) {
 			XYSeries series = new XYSeries(titles[i], scale);
-			double[] xV = xValues.get(i);
+			long[] xV = xValues.get(i);
 			double[] yV = yValues.get(i);
 			int seriesLength = xV.length;
 			for (int k = 0; k < seriesLength; k++) {
@@ -172,8 +172,8 @@ public class Chart {
 	 *            the labels color
 	 */
 	protected void setChartSettings(XYMultipleSeriesRenderer renderer,
-			String title, String xTitle, String yTitle, double xMin,
-			double xMax, double yMin, double yMax, int axesColor,
+			String title, String xTitle, String yTitle, long xMin,
+			long xMax, double yMin, double yMax, int axesColor,
 			int labelsColor) {
 		renderer.setChartTitle(title);
 		renderer.setXTitle(xTitle);

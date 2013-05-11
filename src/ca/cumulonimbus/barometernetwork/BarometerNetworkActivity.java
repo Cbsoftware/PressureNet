@@ -1368,7 +1368,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	public void log(String text) {
-		logToFile(text);
+		//logToFile(text);
 		System.out.println(text);
 	}
 }
