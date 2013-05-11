@@ -832,7 +832,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			}
 			android_id = hexString.toString();
 		} catch (Exception e) {
-			log(e.getMessage() + "");
+			e.printStackTrace();
 		}
 	}
 
@@ -845,7 +845,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			}
 		} catch (Exception e) {
-			log(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -877,7 +877,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			mapView.invalidate();
 			mapView.refreshDrawableState();
 		} catch (Exception e) {
-			log(e.getMessage() + "");
+			e.printStackTrace();
 		}
 
 	}
@@ -962,9 +962,9 @@ public class BarometerNetworkActivity extends MapActivity {
 						// String toPrint = item.getTitle().substring(0,
 						// item.getTitle().length() - 5);
 						String toPrint = item.getTitle().split(" ")[0];
-						Double value = Double.parseDouble(toPrint);
-						DecimalFormat df = new DecimalFormat("####.00");
-						toPrint = df.format(value);
+						//Double value = Double.parseDouble(toPrint);
+						//DecimalFormat df = new DecimalFormat("####.00");
+						//toPrint = df.format(value);
 
 						// show text to the right of the icon
 						float textWidth = paint.measureText(toPrint);
@@ -979,7 +979,7 @@ public class BarometerNetworkActivity extends MapActivity {
 						canvas.drawText(toPrint, ptScreenCoord.x,
 								ptScreenCoord.y + mTextSize, paint);
 					} catch (Exception e) {
-						log(e.getMessage() + "");
+						e.printStackTrace();
 					}
 				}
 			}
