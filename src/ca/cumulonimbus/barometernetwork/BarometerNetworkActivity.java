@@ -704,36 +704,6 @@ public class BarometerNetworkActivity extends MapActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	// Assemble a list of CurrentConditions. This is the opposite of function
-	// currentConditionToWeb in the servlet.
-	public ArrayList<CurrentCondition> csvToCurrentConditions(
-			String[] conditions) {
-		ArrayList<CurrentCondition> conditionsList = new ArrayList<CurrentCondition>();
-		for (int i = 0; i < conditions.length; i++) {
-			try {
-				String[] values = conditions[i].split("\\|");
-				CurrentCondition cc = new CurrentCondition();
-				cc.setLatitude(Double.parseDouble(values[0]));
-				cc.setLongitude(Double.parseDouble(values[1]));
-				cc.setGeneral_condition(values[2]);
-				cc.setTime(Double.parseDouble(values[3]));
-				cc.setTzoffset((Integer.parseInt(values[4])));
-				cc.setWindy(values[5]);
-				cc.setPrecipitation_type(values[6]);
-				cc.setPrecipitation_amount(Double.parseDouble(values[7]));
-				cc.setThunderstorm_intensity(values[8]);
-				cc.setCloud_type(values[9]);
-				cc.setFog_thickness(values[10]);
-				cc.setUser_id(values[11]);
-				conditionsList.add(cc);
-			} catch (NumberFormatException nfe) {
-				// Likely, tomcat returned an error.
-				log("Server error? " + nfe.getMessage());
-			}
-		}
-		return conditionsList;
-	}
-
 	/**
 	 * 
 	 * Email debug logs to Cumulonimbus.
@@ -1014,7 +984,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		return ((ob.getUser_id().equals(android_id)));
 	}
 
-	public MapOverlay getCurrentConditionOverlay(CurrentCondition condition,
+	public MapOverlay getCurrentConditionOverlay(CbCurrentCondition condition,
 			Drawable drawable) {
 		MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);
 
@@ -1225,7 +1195,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap(ArrayList<CbObservation> readingsList,
-			ArrayList<CurrentCondition> conditionsList, boolean showTendencies,
+			ArrayList<CbCurrentCondition> conditionsList, boolean showTendencies,
 			HashMap<String, String> tendencies) {
 		log("add data to map " + readingsList.size());
 		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
@@ -1252,7 +1222,7 @@ public class BarometerNetworkActivity extends MapActivity {
 						.getResources().getDrawable(R.drawable.bg_pre_rect));
 				boolean onlyPressure = true;
 				overlay = new MapOverlay(drawable, this, mapFontSize);
-				for (CurrentCondition condition : conditionsList) {
+				for (CbCurrentCondition condition : conditionsList) {
 					if (condition.getUser_id().equals(ob.getUser_id())) {
 						// pick and hold the overlay
 						overlay = getCurrentConditionOverlay(condition,
@@ -1288,7 +1258,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			}
 
 			// Add singleton Current Conditions
-			for (CurrentCondition condition : conditionsList) {
+			for (CbCurrentCondition condition : conditionsList) {
 				MapOverlay overlay;
 
 				// Pick an overlay icon depending on the reading and
@@ -1301,8 +1271,8 @@ public class BarometerNetworkActivity extends MapActivity {
 				overlay = getCurrentConditionOverlay(condition, drawable);
 
 				GeoPoint point = new GeoPoint(
-						(int) ((condition.getLatitude()) * 1E6),
-						(int) ((condition.getLongitude()) * 1E6));
+						(int) ((condition.getLocation().getLatitude()) * 1E6),
+						(int) ((condition.getLocation().getLongitude()) * 1E6));
 				String snippet = "singleton_condition"; // condition.getUser_id();
 				String textForTitle = "";
 				OverlayItem overlayitem = new OverlayItem(point, textForTitle,

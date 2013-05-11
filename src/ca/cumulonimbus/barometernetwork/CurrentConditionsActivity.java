@@ -147,10 +147,10 @@ public class CurrentConditionsActivity extends Activity {
     
     // Preparation for sending a condition through the network. 
     // Take the object and NVP it.
-    public List<NameValuePair> currentConditionToNVP(CurrentCondition cc) {
+    public List<NameValuePair> currentConditionToNVP(CbCurrentCondition cc) {
     	List<NameValuePair> nvp = new ArrayList<NameValuePair>();
-    	nvp.add(new BasicNameValuePair("latitude", cc.getLatitude() + ""));
-    	nvp.add(new BasicNameValuePair("longitude", cc.getLongitude() + ""));
+    	nvp.add(new BasicNameValuePair("latitude", cc.getLocation().getLatitude() + ""));
+    	nvp.add(new BasicNameValuePair("longitude", cc.getLocation().getLongitude() + ""));
     	nvp.add(new BasicNameValuePair("general_condition", cc.getGeneral_condition() + ""));
     	nvp.add(new BasicNameValuePair("user_id", cc.getUser_id() + ""));
     	nvp.add(new BasicNameValuePair("time", cc.getTime() + ""));
