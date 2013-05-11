@@ -16,7 +16,7 @@ public class PNDVActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId()==R.id.menu_inbrowser) {
-    		Uri uri = Uri.parse(PressureNETConfiguration.PRESSURENET_URL);
+    		Uri uri = Uri.parse(PressureNETConfiguration.SERVER_URL);
     		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     		startActivity(intent);
     	}
@@ -53,9 +53,9 @@ public class PNDVActivity extends Activity {
 		// gotta use tomorrow for UTC hack
 		long tomorrow = now + dayInMillis;
 		if(latitude!=0){
-			pndvWebView.loadUrl(PressureNETConfiguration.PRESSURENET_URL + "/?event=true&latitude=" + latitude + "&longitude=" + longitude + "&startTime=" + twoDaysAgo + "&endTime=" + tomorrow + "&zoomLevel=10");
+			pndvWebView.loadUrl(PressureNETConfiguration.SERVER_URL + "/?event=true&latitude=" + latitude + "&longitude=" + longitude + "&startTime=" + twoDaysAgo + "&endTime=" + tomorrow + "&zoomLevel=10");
 		} else {
-			pndvWebView.loadUrl(PressureNETConfiguration.PRESSURENET_URL);
+			pndvWebView.loadUrl(PressureNETConfiguration.SERVER_URL);
 		}
 	}
 

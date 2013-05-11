@@ -141,6 +141,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		// migratePreferences();
 		startLog();
 		// getStoredPreferences();
+		setUpUIListeners();
 		setId();
 		setUpFiles();
 		setUpMap();
@@ -148,7 +149,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		setUpActionBar();
 		startCbService();
 		bindCbService();
-		setUpUIListeners();
+
 	}
 	
 	private void setUpUIListeners() {
@@ -161,6 +162,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
 	    adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    spinnerTime.setAdapter(adapterTime);
+	    spinnerTime.setSelection(spinnerTime.getCount() - 1);
 	    
 	    buttonDataManagement.setOnClickListener(new OnClickListener() {
 			
@@ -207,7 +209,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		log("start cbservice");
 		try {
 			serviceIntent = new Intent(this, CbService.class);
-			serviceIntent.putExtra("serverURL", "https://pressurenet.cumulonimbus.ca/add/");
+			serviceIntent.putExtra("serverURL", PressureNETConfiguration.SERVER_URL);
 
 			startService(serviceIntent);
 
@@ -218,8 +220,8 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 
-	private void askForCurrentConditions() {
-		CbApiCall api = buildMapAPICall(24);
+	private void askForCurrentConditions(CbApiCall api) {
+		
 		
 		if (mBound) {
 			log("asking for current conditions");
@@ -419,7 +421,9 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
 			// bound; populate data
-			askForCurrentConditions();
+			CbApiCall api = buildMapAPICall(24);
+			askForCurrentConditions(api);
+			
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1276,6 +1280,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
 				askForRecents(api);
+				askForCurrentConditions(api);
 			}
 		}
 	};
