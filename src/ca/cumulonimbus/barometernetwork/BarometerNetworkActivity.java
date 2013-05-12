@@ -55,7 +55,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -118,10 +117,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	ArrayList<CbObservation> graphContents = new ArrayList<CbObservation>();
 
 	boolean dataReceivedToPlot = false;
-	
-	private Button buttonDataManagement;
 
-	Button buttonChart;
 	Spinner spinnerTime;
 	int hoursAgoSelected = 2;
 
@@ -156,7 +152,6 @@ public class BarometerNetworkActivity extends MapActivity {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
-		buttonDataManagement = (Button) findViewById(R.id.buttonDataManagement);
 		
 	    ArrayAdapter<CharSequence> adapterTime= ArrayAdapter.createFromResource(
 	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
@@ -164,15 +159,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	    spinnerTime.setAdapter(adapterTime);
 	    spinnerTime.setSelection(2);
 	    
-	    buttonDataManagement.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(), DataManagementActivity.class);
-				startActivity(intent);
-			}
-		});
-	    
+    
 	    spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -586,7 +573,6 @@ public class BarometerNetworkActivity extends MapActivity {
 			menu.removeItem(R.id.menu_my_info);
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
-			menu.removeItem(R.id.menu_delete_data);
 		}
 
 		if (!debugMode) {
@@ -680,8 +666,10 @@ public class BarometerNetworkActivity extends MapActivity {
 					startActivity(intent);
 				}
 			}
-		} else if (item.getItemId() == R.id.menu_delete_data) {
-			deleteUserData();
+		}  else if (item.getItemId() == R.id.menu_data_management) {
+			Intent intent = new Intent(getApplicationContext(), DataManagementActivity.class);
+			startActivity(intent);
+
 		}
 
 		/*
