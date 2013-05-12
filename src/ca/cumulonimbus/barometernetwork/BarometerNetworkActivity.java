@@ -182,19 +182,16 @@ public class BarometerNetworkActivity extends MapActivity {
 				// TODO: Fix hack
 				CbApiCall apiCall = new CbApiCall();
 				if(selected.equals("1 hour")) {
-					apiCall = buildMapAPICall(1);
 					hoursAgoSelected = 1;
 				} else if(selected.equals("3 hours")) {
-					apiCall = buildMapAPICall(3);
 					hoursAgoSelected = 3;
 				} else if(selected.equals("6 hours")) {
-					apiCall = buildMapAPICall(6);
 					hoursAgoSelected = 6;
 				} else if(selected.equals("1 day")) {
-					apiCall = buildMapAPICall(24);
+					
 					hoursAgoSelected = 14;
 				} 
-				askForRecents(apiCall);
+				makeMapApiCallAndLoadRecents();
 			}
 
 			@Override
@@ -420,10 +417,6 @@ public class BarometerNetworkActivity extends MapActivity {
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			// bound; populate data
-			CbApiCall api = buildMapAPICall(24);
-			askForCurrentConditions(api);
-			
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1273,14 +1266,36 @@ public class BarometerNetworkActivity extends MapActivity {
 		return api;
 	}
 	
+	private void makeAPICall(CbApiCall apiCall) {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
+					apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("data management error: not bound");
+		}
+	}
+
+	public void makeMapApiCallAndLoadRecents() {
+		CbApiCall api = buildMapAPICall(hoursAgoSelected);
+		makeAPICall(api);
+		askForRecents(api);
+		askForCurrentConditions(api);
+	}
+	
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
 				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-				CbApiCall api = buildMapAPICall(hoursAgoSelected);
-				askForRecents(api);
-				askForCurrentConditions(api);
+
+				makeMapApiCallAndLoadRecents();
+
 			}
 		}
 	};
