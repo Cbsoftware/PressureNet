@@ -30,12 +30,11 @@
       android:icon="@drawable/ic_menu_settings"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_delete_data"
-      android:title="@string/delete"
+     <item android:id="@+id/menu_data_management"
+      android:title="Data Cache"
       android:enabled="true"
-      android:showAsAction="never" />
-    
-    
+      android:showAsAction="never"
+      android:visible="true" />    
         <!-- 
     <item android:id="@+id/menu_reload"
       android:title="@string/load"
@@ -60,4 +59,5 @@
       android:enabled="true"
       android:showAsAction="never"
       android:visible="false" />
+
 </menu>

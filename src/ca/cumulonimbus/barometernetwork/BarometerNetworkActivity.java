@@ -193,8 +193,6 @@ public class BarometerNetworkActivity extends MapActivity {
 		log("start cbservice");
 		try {
 			serviceIntent = new Intent(this, CbService.class);
-			serviceIntent.putExtra("serverURL", PressureNETConfiguration.SERVER_URL);
-
 			startService(serviceIntent);
 
 		} catch (Exception e) {
@@ -574,7 +572,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
 		}
-
+		
 		if (!debugMode) {
 			// hide menu item
 			menu.removeItem(R.id.send_debug_log);
