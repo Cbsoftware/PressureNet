@@ -162,7 +162,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
 	    adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    spinnerTime.setAdapter(adapterTime);
-	    spinnerTime.setSelection(spinnerTime.getCount() - 1);
+	    spinnerTime.setSelection(2);
 	    
 	    buttonDataManagement.setOnClickListener(new OnClickListener() {
 			
@@ -968,7 +968,10 @@ public class BarometerNetworkActivity extends MapActivity {
 								- (textWidth / 2) - 2), ptScreenCoord.y,
 								(int) (ptScreenCoord.x + (textWidth / 2) + 2),
 								ptScreenCoord.y + mTextSize + 5);
-						canvas.drawRoundRect(new RectF(rect), 6, 6, bgPaint);
+						
+						if(toPrint.length() == 0) {
+							canvas.drawRoundRect(new RectF(rect), 6, 6, bgPaint);
+						}
 						canvas.drawText(toPrint, ptScreenCoord.x,
 								ptScreenCoord.y + mTextSize, paint);
 					} catch (Exception e) {
@@ -1263,6 +1266,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
+		api.setLimit(500);
 		return api;
 	}
 	
@@ -1283,9 +1287,15 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	public void makeMapApiCallAndLoadRecents() {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
-		makeAPICall(api);
 		askForRecents(api);
 		askForCurrentConditions(api);
+		
+		// make a fresh call with extra nearby data
+		api.setMinLat(api.getMinLat() - .5);
+		api.setMaxLat(api.getMaxLat() + .5);
+		api.setMinLon(api.getMinLon() - .5);
+		api.setMaxLon(api.getMaxLon() + .5);
+		makeAPICall(api);
 	}
 	
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
