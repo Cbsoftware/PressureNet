@@ -484,6 +484,21 @@ public class CurrentConditionsActivity extends Activity {
     	} 
     }
     
+
+    private void sendCondition() {
+    	if (mBound) {
+			log("sending current condition");
+			Message msg = Message.obtain(null, CbService.MSG_SEND_CURRENT_CONDITION, condition);
+			try {
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+    }
+    
     private void saveCondition() {
     	if (mBound) {
 			log("saving current condition");
@@ -564,6 +579,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				saveCondition();
+				sendCondition();
 				finish();
 			}
 		});
