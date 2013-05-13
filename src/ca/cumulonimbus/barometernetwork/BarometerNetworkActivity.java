@@ -85,7 +85,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	SensorManager sm;
 
 	LayoutInflater mInflater;
-	
+
 	private String mAppDir = "";
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
@@ -123,13 +123,17 @@ public class BarometerNetworkActivity extends MapActivity {
 	private Spinner spinnerTime;
 	private int hoursAgoSelected = 2;
 
-	// API call parameters. 
+	Handler timeHandler = new Handler();
+
+	// API call parameters.
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
 
 	private ArrayList<CbCurrentCondition> currentConditions = new ArrayList<CbCurrentCondition>();
-	
+
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
-	
+
+	private int currentTimeProgress = 0;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -149,30 +153,46 @@ public class BarometerNetworkActivity extends MapActivity {
 		bindCbService();
 
 	}
-	
+
+	Runnable animate = new Runnable() {
+		@Override
+		public void run() {
+			if (currentTimeProgress < 100) {
+				currentTimeProgress++;
+				seekTime.setProgress(currentTimeProgress);
+				timeHandler.postDelayed(animate, 10);
+			}
+
+		}
+	};
+
 	private void setUpUIListeners() {
-		Context context=getApplicationContext();
+		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
 		buttonPlay = (Button) findViewById(R.id.buttonPlay);
-		
-	    ArrayAdapter<CharSequence> adapterTime= ArrayAdapter.createFromResource(
-	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
-	    adapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    spinnerTime.setAdapter(adapterTime);
-	    spinnerTime.setSelection(2);
-	    
-	    
-	    
-	    buttonPlay.setOnClickListener(new OnClickListener() {
-			
+		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
+
+		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
+				.createFromResource(this, R.array.display_time_chart,
+						android.R.layout.simple_spinner_item);
+		adapterTime
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerTime.setAdapter(adapterTime);
+		spinnerTime.setSelection(2);
+
+		seekTime.setProgress(100);
+
+		buttonPlay.setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
-				
+				seekTime.setProgress(0);
+				timeHandler.postDelayed(animate, 10);
 			}
 		});
-	    
-	    spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+		spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -180,25 +200,25 @@ public class BarometerNetworkActivity extends MapActivity {
 				String selected = arg0.getSelectedItem().toString();
 				// TODO: Fix hack
 				CbApiCall apiCall = new CbApiCall();
-				if(selected.equals("1 hour")) {
+				if (selected.equals("1 hour")) {
 					hoursAgoSelected = 1;
-				} else if(selected.equals("3 hours")) {
+				} else if (selected.equals("3 hours")) {
 					hoursAgoSelected = 3;
-				} else if(selected.equals("6 hours")) {
+				} else if (selected.equals("6 hours")) {
 					hoursAgoSelected = 6;
-				} else if(selected.equals("1 day")) {
-					
+				} else if (selected.equals("1 day")) {
+
 					hoursAgoSelected = 14;
-				} 
+				}
 				makeMapApiCallAndLoadRecents();
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-			
+
 			}
-	    	
-	    });	
+
+		});
 	}
 
 	private void startCbService() {
@@ -213,13 +233,12 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	}
 
-
 	private void askForCurrentConditions(CbApiCall api) {
-		
-		
+
 		if (mBound) {
 			log("asking for current conditions");
-			Message msg = Message.obtain(null, CbService.MSG_GET_CURRENT_CONDITIONS,api);
+			Message msg = Message.obtain(null,
+					CbService.MSG_GET_CURRENT_CONDITIONS, api);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -230,7 +249,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			log("error: not bound");
 		}
 	}
-	
+
 	private void askForBestPressure() {
 		if (mBound) {
 			log("asking for best pressure");
@@ -267,9 +286,9 @@ public class BarometerNetworkActivity extends MapActivity {
 	private void askForRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
-			
-			
-			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS, apiCall);
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS,
+					apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -350,21 +369,23 @@ public class BarometerNetworkActivity extends MapActivity {
 				recents = apiCache;
 				createAndShowChart();
 				break;
-			case CbService.MSG_API_RESULT_COUNT: 
+			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
-				Toast.makeText(getApplicationContext(), count + " API results cached", Toast.LENGTH_SHORT).show();
-				
+				Toast.makeText(getApplicationContext(),
+						count + " API results cached", Toast.LENGTH_SHORT)
+						.show();
+
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				log("receiving current conditions");
 				currentConditions = (ArrayList<CbCurrentCondition>) msg.obj;
-				if(currentConditions !=null) {
-					log(" size " + currentConditions .size());
+				if (currentConditions != null) {
+					log(" size " + currentConditions.size());
 					addDataToMap();
 				} else {
 					log("conditions ARE NuLL");
 				}
-				
+
 				break;
 			default:
 				log("received default message");
@@ -373,32 +394,30 @@ public class BarometerNetworkActivity extends MapActivity {
 		}
 	}
 
-	
 	public void createAndShowChart() {
 		if (dataReceivedToPlot) {
 			// draw chart
 			log("plotting...");
 			Chart chart = new Chart(getApplicationContext());
 			View chartView = chart.drawChart(recents);
-			
+
 			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainParentLayout);
-			
-			
+
 			try {
 				View testChartView = findViewById(100); // TODO: ...
 				mainLayout.removeView(testChartView);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			chartView.setId(100); // TODO: what's safe?
-			
+
 			// add to layout
 			LayoutParams lparams = new LayoutParams(LayoutParams.FILL_PARENT,
 					500);
-			
+
 			chartView.setLayoutParams(lparams);
-			if(mainLayout == null ) {
+			if (mainLayout == null) {
 				log("chartlayout null");
 				return;
 			}
@@ -584,7 +603,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
 		}
-		
+
 		if (!debugMode) {
 			// hide menu item
 			menu.removeItem(R.id.send_debug_log);
@@ -676,8 +695,9 @@ public class BarometerNetworkActivity extends MapActivity {
 					startActivity(intent);
 				}
 			}
-		}  else if (item.getItemId() == R.id.menu_data_management) {
-			Intent intent = new Intent(getApplicationContext(), DataManagementActivity.class);
+		} else if (item.getItemId() == R.id.menu_data_management) {
+			Intent intent = new Intent(getApplicationContext(),
+					DataManagementActivity.class);
 			startActivity(intent);
 
 		}
@@ -953,9 +973,9 @@ public class BarometerNetworkActivity extends MapActivity {
 						// String toPrint = item.getTitle().substring(0,
 						// item.getTitle().length() - 5);
 						String toPrint = item.getTitle().split(" ")[0];
-						//Double value = Double.parseDouble(toPrint);
-						//DecimalFormat df = new DecimalFormat("####.00");
-						//toPrint = df.format(value);
+						// Double value = Double.parseDouble(toPrint);
+						// DecimalFormat df = new DecimalFormat("####.00");
+						// toPrint = df.format(value);
 
 						// show text to the right of the icon
 						float textWidth = paint.measureText(toPrint);
@@ -966,8 +986,8 @@ public class BarometerNetworkActivity extends MapActivity {
 								- (textWidth / 2) - 2), ptScreenCoord.y,
 								(int) (ptScreenCoord.x + (textWidth / 2) + 2),
 								ptScreenCoord.y + mTextSize + 5);
-						
-						if(toPrint.length() == 0) {
+
+						if (toPrint.length() == 0) {
 							canvas.drawRoundRect(new RectF(rect), 6, 6, bgPaint);
 						}
 						canvas.drawText(toPrint, ptScreenCoord.x,
@@ -1254,20 +1274,21 @@ public class BarometerNetworkActivity extends MapActivity {
 		double longitude = lonE6 / 1E6;
 		double latitudeSpan = mapView.getLatitudeSpan();
 		double longitudeSpan = mapView.getLongitudeSpan();
-		long startTime = System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000);
+		long startTime = System.currentTimeMillis()
+				- (hoursAgo * 60 * 60 * 1000);
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		api.setMinLat(latitude - (latitudeSpan/1E6));
-		api.setMaxLat(latitude + (latitudeSpan/1E6));
-		api.setMinLon(longitude - (longitudeSpan/1E6));
-		api.setMaxLon(longitude + (longitudeSpan/1E6));
+		api.setMinLat(latitude - (latitudeSpan / 1E6));
+		api.setMaxLat(latitude + (latitudeSpan / 1E6));
+		api.setMinLon(longitude - (longitudeSpan / 1E6));
+		api.setMaxLon(longitude + (longitudeSpan / 1E6));
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
 		return api;
 	}
-	
+
 	private void makeAPICall(CbApiCall apiCall) {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
@@ -1287,7 +1308,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
 		askForRecents(api);
 		askForCurrentConditions(api);
-		
+
 		// make a fresh call with extra nearby data
 		api.setMinLat(api.getMinLat() - .5);
 		api.setMaxLat(api.getMaxLat() + .5);
@@ -1295,7 +1316,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		api.setMaxLon(api.getMaxLon() + .5);
 		makeAPICall(api);
 	}
-	
+
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -1391,7 +1412,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	public void log(String text) {
-		//logToFile(text);
+		// logToFile(text);
 		System.out.println(text);
 	}
 }
