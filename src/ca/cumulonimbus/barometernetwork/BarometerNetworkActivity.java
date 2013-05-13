@@ -9,7 +9,6 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -55,8 +54,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
@@ -83,7 +84,6 @@ public class BarometerNetworkActivity extends MapActivity {
 	float mLocationAccuracy = 0.0f;
 	SensorManager sm;
 
-	
 	LayoutInflater mInflater;
 	
 	private String mAppDir = "";
@@ -118,8 +118,10 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	boolean dataReceivedToPlot = false;
 
-	Spinner spinnerTime;
-	int hoursAgoSelected = 2;
+	private SeekBar seekTime;
+	private Button buttonPlay;
+	private Spinner spinnerTime;
+	private int hoursAgoSelected = 2;
 
 	// API call parameters. 
 	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
@@ -152,6 +154,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		Context context=getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
+		buttonPlay = (Button) findViewById(R.id.buttonPlay);
 		
 	    ArrayAdapter<CharSequence> adapterTime= ArrayAdapter.createFromResource(
 	            this, R.array.display_time_chart, android.R.layout.simple_spinner_item);
@@ -159,7 +162,16 @@ public class BarometerNetworkActivity extends MapActivity {
 	    spinnerTime.setAdapter(adapterTime);
 	    spinnerTime.setSelection(2);
 	    
-    
+	    
+	    
+	    buttonPlay.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+	    
 	    spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override

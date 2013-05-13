@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:id="@+id/mainParentLayout" >
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/fullLayout"
@@ -19,15 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal" >
-            <Spinner
-                android:id="@+id/spinnerChartTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@array/display_time_chart"
-                android:prompt="@string/chartTimeDisplay"
-                
-                
-                 />
 
             <TextView
                 android:id="@+id/textReading"
@@ -38,15 +29,12 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" >
             </TextView>
         </LinearLayout>
-        
 
-	    
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
             android:layout_height="200dp" >
 
-            
             <ca.cumulonimbus.barometernetwork.BarometerMapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/mapview"
@@ -55,12 +43,32 @@
                 android:apiKey="0TTXlD0TEfWDjnR7s3E8h5-W0a6LaNTmx5oNkzw"
                 android:clickable="true" />
         </LinearLayout>
-
     </LinearLayout>
-    <SeekBar
+
+    <LinearLayout
+        android:id="@+id/layoutTimeControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Spinner
+            android:id="@+id/spinnerChartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/display_time_chart"
+            android:prompt="@string/chartTimeDisplay" />
+        <Button 
+            android:id="@+id/buttonPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play"
+            />
+
+        <SeekBar
             android:id="@+id/seekBarTime"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-        
-    
+            android:layout_height="wrap_content"
+            android:max="100" />
+    </LinearLayout>
+
 </LinearLayout>
