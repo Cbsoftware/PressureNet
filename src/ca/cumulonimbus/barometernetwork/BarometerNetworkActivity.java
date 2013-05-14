@@ -61,6 +61,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbWeather;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
@@ -77,7 +78,6 @@ import com.google.android.maps.OverlayItem;
 
 import java.util.Collections;
 import java.util.Comparator;
-
 
 public class BarometerNetworkActivity extends MapActivity {
 
@@ -167,13 +167,20 @@ public class BarometerNetworkActivity extends MapActivity {
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
 				timeHandler.postDelayed(animate, 10);
-			} 
+			}
 
 		}
 	};
-	
+
 	public void updateMapWithSeekTimeData() {
-		
+		// TODO: Display these on the map
+		ArrayList<CbWeather> thisFrame = new ArrayList<CbWeather>();
+		for(CbCurrentCondition c : currentConditions) {
+			if(c.getAnimateGroupNumber() == currentTimeProgress) {
+				thisFrame.add(c);
+			}
+		}
+		addDataFrameToMap(thisFrame);
 	}
 
 	private void setUpUIListeners() {
@@ -197,27 +204,32 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			@Override
 			public void onClick(View v) {
-				if(currentConditions.size() == 0) {
+				if (currentConditions.size() == 0) {
 					return;
 				}
 				currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
-				
-				Collections.sort(currentConditions, new CbScience.ConditionTimeComparator());
-				
+
+				Collections.sort(currentConditions,
+						new CbScience.ConditionTimeComparator());
+
 				long msAgoSelected = hoursAgoSelected * 60 * 60 * 1000;
 				long singleTimeSpan = msAgoSelected / 100;
 				long startTime = currentConditions.get(0).getTime();
-				
+
 				ArrayList<ArrayList<CbCurrentCondition>> collectionConditions = new ArrayList<ArrayList<CbCurrentCondition>>();
-				
-				log(currentConditions.size() + " current conditions over " + hoursAgoSelected);
-				for(CbCurrentCondition c : currentConditions) {
+
+				log(currentConditions.size() + " current conditions over "
+						+ hoursAgoSelected);
+				for (CbCurrentCondition c : currentConditions) {
 					long time = c.getTime();
-					int group = (int)((time - startTime) / singleTimeSpan);
+					int group = (int) ((time - startTime) / singleTimeSpan);
+					c.setAnimateGroupNumber(group);
+					
+
 					log("group " + group);
 				}
-				
+
 				timeHandler.postDelayed(animate, 0);
 			}
 		});
@@ -250,7 +262,6 @@ public class BarometerNetworkActivity extends MapActivity {
 
 		});
 	}
-
 
 	private void startCbService() {
 		log("start cbservice");
@@ -1243,6 +1254,48 @@ public class BarometerNetworkActivity extends MapActivity {
 		int p = (int) (GESTURE_THRESHOLD_DP * scale + 0.5f);
 		Bitmap bitmapOrig = Bitmap.createScaledBitmap(d, p * 4, p * 4, false);
 		return new BitmapDrawable(bitmapOrig);
+	}
+
+	// Put a bunch of barometer readings and current conditions on the map.
+	public void addDataFrameToMap(ArrayList<CbWeather> frame) {
+		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
+		List<Overlay> mapOverlays = mv.getOverlays();
+
+		Drawable drawable = this.getResources().getDrawable(
+				R.drawable.ic_marker);
+		mapOverlays.clear();
+
+		try {
+			// Add Barometer Readings and associated current Conditions
+			// Add singleton Current Conditions
+			for (CbWeather weather: frame) {
+				MapOverlay overlay;
+				CbCurrentCondition condition = (CbCurrentCondition) weather;
+
+				// Pick an overlay icon depending on the reading and
+				// the current conditions. reading alone? reading with tendency?
+				// current condition alone? current condition with tendency?
+
+				// is there a current condition from the same user as this
+				// reading?
+				overlay = new MapOverlay(drawable, this, mapFontSize);
+				overlay = getCurrentConditionOverlay(condition, drawable);
+
+				GeoPoint point = new GeoPoint(
+						(int) ((condition.getLocation().getLatitude()) * 1E6),
+						(int) ((condition.getLocation().getLongitude()) * 1E6));
+				String snippet = "singleton_condition"; // condition.getUser_id();
+				String textForTitle = "";
+				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
+						snippet);
+				overlay.addOverlay(overlayitem);
+				mapOverlays.add(overlay);
+
+				mv.invalidate();
+			}
+		} catch (Exception e) {
+			log("add data error: " + e.getMessage());
+		}
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
