@@ -1345,7 +1345,33 @@ public class BarometerNetworkActivity extends MapActivity {
 		mapOverlays.clear();
 
 		try {
+
 			// Add Barometer Readings and associated current Conditions
+			for(CbObservation obs : recents) {
+				MapOverlay overlay;
+
+				// Pick an overlay icon depending on the reading and
+				// the current conditions. reading alone? reading with tendency?
+				// current condition alone? current condition with tendency?
+
+				// is there a current condition from the same user as this
+				// reading?
+				overlay = new MapOverlay(drawable, this, mapFontSize);
+				
+
+				GeoPoint point = new GeoPoint(
+						(int) ((obs.getLocation().getLatitude()) * 1E6),
+						(int) ((obs.getLocation().getLongitude()) * 1E6));
+				String snippet = "s"; // condition.getUser_id();
+				String textForTitle = obs.getTrend();
+				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
+						snippet);
+				overlay.addOverlay(overlayitem);
+				mapOverlays.add(overlay);
+
+				mv.invalidate();
+			}
+			
 			// Add singleton Current Conditions
 			for (CbCurrentCondition condition : currentConditions) {
 				MapOverlay overlay;
