@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -57,16 +58,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbWeather;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
+import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -75,9 +77,6 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-
-import java.util.Collections;
-import java.util.Comparator;
 
 public class BarometerNetworkActivity extends MapActivity {
 
@@ -163,6 +162,8 @@ public class BarometerNetworkActivity extends MapActivity {
 		@Override
 		public void run() {
 			if (currentTimeProgress < 100) {
+			
+				
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
@@ -172,13 +173,26 @@ public class BarometerNetworkActivity extends MapActivity {
 		}
 	};
 
+	public boolean isCloseToFrame(int a, int b) {
+		return Math.abs( a - b) < 3;
+	}
+	
 	public void updateMapWithSeekTimeData() {
-		// TODO: Display these on the map
+		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
+		List<Overlay> mapOverlays = mv.getOverlays();
+
+		
+		
 		ArrayList<CbWeather> thisFrame = new ArrayList<CbWeather>();
 		for(CbCurrentCondition c : currentConditions) {
-			if(c.getAnimateGroupNumber() == currentTimeProgress) {
+			if(isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrame.add(c);
+			} else {
+				
 			}
+		}
+		if(thisFrame.size() == 0 ) {
+			mapOverlays.clear();
 		}
 		addDataFrameToMap(thisFrame);
 	}
@@ -199,7 +213,30 @@ public class BarometerNetworkActivity extends MapActivity {
 		spinnerTime.setSelection(2);
 
 		seekTime.setProgress(100);
-
+		
+		seekTime.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				if(fromUser) {
+					currentTimeProgress = progress;
+					updateMapWithSeekTimeData();
+				}
+				
+			}
+		});
+		
 		buttonPlay.setOnClickListener(new OnClickListener() {
 
 			@Override
