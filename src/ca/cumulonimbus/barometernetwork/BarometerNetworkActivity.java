@@ -160,11 +160,16 @@ public class BarometerNetworkActivity extends MapActivity {
 			if (currentTimeProgress < 100) {
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
+				updateMapWithSeekTimeData();
 				timeHandler.postDelayed(animate, 10);
-			}
+			} 
 
 		}
 	};
+	
+	public void updateMapWithSeekTimeData() {
+		
+	}
 
 	private void setUpUIListeners() {
 		Context context = getApplicationContext();
@@ -187,8 +192,9 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			@Override
 			public void onClick(View v) {
-				seekTime.setProgress(0);
-				timeHandler.postDelayed(animate, 10);
+				currentTimeProgress = 0;
+				seekTime.setProgress(currentTimeProgress);
+				timeHandler.postDelayed(animate, 0);
 			}
 		});
 
