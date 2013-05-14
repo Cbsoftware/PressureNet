@@ -69,6 +69,24 @@ public class DataManagementActivity extends Activity {
 		}
 	}
 
+	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
+		apiCall.setCallType("Conditions");
+		Toast.makeText(getApplicationContext(), "Starting Conditions API call",
+				Toast.LENGTH_SHORT).show();
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL,
+					apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("data management error: not bound for condition api");
+		}
+	}
+	
 	
 	private void makeAPICall(CbApiCall apiCall) {
 		Toast.makeText(getApplicationContext(), "Starting API call",
@@ -83,7 +101,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("data management error: not bound");
+			System.out.println("data management error: not bound for API");
 		}
 	}
 	
@@ -116,7 +134,6 @@ public class DataManagementActivity extends Activity {
 		
 	}
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -157,6 +174,8 @@ public class DataManagementActivity extends Activity {
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
 						"json", PressureNETConfiguration.API_KEY);
 				makeAPICall(apiCall);
+				apiCall.setCallType("Conditions");
+				makeCurrentConditionsAPICall(apiCall);
 			}
 		});
 		
@@ -169,14 +188,16 @@ public class DataManagementActivity extends Activity {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				double minLatitude = latitude - 5;
-				double maxLatitude = latitude + 5;
-				double minLongitude = longitude - 5;
-				double maxLongitude = longitude + 5;
+				double minLatitude = latitude - 1;
+				double maxLatitude = latitude + 1;
+				double minLongitude = longitude - 1;
+				double maxLongitude = longitude + 1;
 				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
 						"json", PressureNETConfiguration.API_KEY);
 				makeAPICall(apiCall);
+				apiCall.setCallType("Conditions");
+				makeCurrentConditionsAPICall(apiCall);
 			}
 		});
 		

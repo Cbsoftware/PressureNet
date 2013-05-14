@@ -56,13 +56,14 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
@@ -73,6 +74,10 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class BarometerNetworkActivity extends MapActivity {
 
@@ -192,8 +197,27 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			@Override
 			public void onClick(View v) {
+				if(currentConditions.size() == 0) {
+					return;
+				}
 				currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
+				
+				Collections.sort(currentConditions, new CbScience.ConditionTimeComparator());
+				
+				long msAgoSelected = hoursAgoSelected * 60 * 60 * 1000;
+				long singleTimeSpan = msAgoSelected / 100;
+				long startTime = currentConditions.get(0).getTime();
+				
+				ArrayList<ArrayList<CbCurrentCondition>> collectionConditions = new ArrayList<ArrayList<CbCurrentCondition>>();
+				
+				log(currentConditions.size() + " current conditions over " + hoursAgoSelected);
+				for(CbCurrentCondition c : currentConditions) {
+					long time = c.getTime();
+					int group = (int)((time - startTime) / singleTimeSpan);
+					log("group " + group);
+				}
+				
 				timeHandler.postDelayed(animate, 0);
 			}
 		});
@@ -226,6 +250,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 		});
 	}
+
 
 	private void startCbService() {
 		log("start cbservice");
