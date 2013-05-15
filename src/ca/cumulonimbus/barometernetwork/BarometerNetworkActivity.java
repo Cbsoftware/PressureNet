@@ -167,7 +167,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 10);
+				timeHandler.postDelayed(animate, 50);
 			}
 
 		}
@@ -180,21 +180,26 @@ public class BarometerNetworkActivity extends MapActivity {
 	public void updateMapWithSeekTimeData() {
 		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mv.getOverlays();
-
-		
-		
-		ArrayList<CbWeather> thisFrame = new ArrayList<CbWeather>();
+				
+		ArrayList<CbWeather> thisFrameCondition = new ArrayList<CbWeather>();
 		for(CbCurrentCondition c : currentConditions) {
 			if(isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
-				thisFrame.add(c);
+				thisFrameCondition.add(c);
 			} else {
 				
 			}
 		}
-		if(thisFrame.size() == 0 ) {
-			mapOverlays.clear();
+		
+		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
+		for(CbObservation r : recents) {
+			if(isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
+				thisFrameObservation.add(r);
+			} else {
+				
+			}
 		}
-		addDataFrameToMap(thisFrame);
+		
+		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
 
 	private void setUpUIListeners() {
@@ -249,7 +254,9 @@ public class BarometerNetworkActivity extends MapActivity {
 
 				Collections.sort(currentConditions,
 						new CbScience.ConditionTimeComparator());
-
+				Collections.sort(recents,
+						new CbScience.TimeComparator());
+				
 				long msAgoSelected = hoursAgoSelected * 60 * 60 * 1000;
 				long singleTimeSpan = msAgoSelected / 100;
 				long startTime = currentConditions.get(0).getTime();
@@ -265,6 +272,15 @@ public class BarometerNetworkActivity extends MapActivity {
 					
 
 					log("group " + group);
+				}
+
+				for (CbObservation o : recents) {
+					long time = o.getTime();
+					int group = (int) ((time - startTime) / singleTimeSpan);
+					o.setAnimateGroupNumber(group);
+					
+
+					log("o group " + group);
 				}
 
 				timeHandler.postDelayed(animate, 0);
@@ -1294,7 +1310,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
-	public void addDataFrameToMap(ArrayList<CbWeather> frame) {
+	public void addDataFrameToMap(ArrayList<CbWeather> frameConditions, ArrayList<CbWeather> frameObservations) {
 		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mv.getOverlays();
 
@@ -1304,8 +1320,36 @@ public class BarometerNetworkActivity extends MapActivity {
 
 		try {
 			// Add Barometer Readings and associated current Conditions
+			// Add Barometer Readings and associated current Conditions
+			for(CbWeather weatherObs : frameObservations) {
+				CbObservation obs = (CbObservation) weatherObs;
+				
+				MapOverlay overlay;
+
+				// Pick an overlay icon depending on the reading and
+				// the current conditions. reading alone? reading with tendency?
+				// current condition alone? current condition with tendency?
+
+				// is there a current condition from the same user as this
+				// reading?
+				overlay = new MapOverlay(drawable, this, mapFontSize);
+				
+
+				GeoPoint point = new GeoPoint(
+						(int) ((obs.getLocation().getLatitude()) * 1E6),
+						(int) ((obs.getLocation().getLongitude()) * 1E6));
+				String snippet = "s"; // condition.getUser_id();
+				String textForTitle = obs.getTrend();
+				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
+						snippet);
+				overlay.addOverlay(overlayitem);
+				mapOverlays.add(overlay);
+
+				mv.invalidate();
+			}
+
 			// Add singleton Current Conditions
-			for (CbWeather weather: frame) {
+			for (CbWeather weather: frameConditions) {
 				MapOverlay overlay;
 				CbCurrentCondition condition = (CbCurrentCondition) weather;
 
