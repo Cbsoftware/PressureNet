@@ -27,7 +27,7 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class DataManagementActivity extends Activity {
 
-	Button buttonCallAPIGlobal3Hours;
+	Button buttonCallAPILocal3Hours;
 	Button buttonCallAPILocal1Day;
 
 	Button buttonClearLocalCache;
@@ -139,7 +139,7 @@ public class DataManagementActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
 
-		buttonCallAPIGlobal3Hours = (Button) findViewById(R.id.buttonCallAPIGlobal3hours);
+		buttonCallAPILocal3Hours = (Button) findViewById(R.id.buttonCallAPILocal3hours);
 		buttonCallAPILocal1Day = (Button) findViewById(R.id.buttonCallAPILocal1Day);
 		buttonClearAPICache = (Button) findViewById(R.id.buttonClearAPICache);
 		buttonClearLocalCache = (Button) findViewById(R.id.buttonClearMyContributionsCache);
@@ -162,19 +162,23 @@ public class DataManagementActivity extends Activity {
 			}
 		});
 		
-		buttonCallAPIGlobal3Hours.setOnClickListener(new OnClickListener() {
+		buttonCallAPILocal3Hours.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				double minLatitude = 0;
-				double maxLatitude = 0;
-				double minLongitude = 0;
-				double maxLongitude = 0;
+				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				double latitude = loc.getLatitude();
+				double longitude = loc.getLongitude();
+				double minLatitude = latitude - 1;
+				double maxLatitude = latitude + 1;
+				double minLongitude = longitude - 1;
+				double maxLongitude = longitude + 1;
 				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 3,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY);
+						"json", PressureNETConfiguration.API_KEY, 5000);
 				makeAPICall(apiCall);
-				apiCall.setCallType("Conditions");
 				makeCurrentConditionsAPICall(apiCall);
 			}
 		});
@@ -194,9 +198,9 @@ public class DataManagementActivity extends Activity {
 				double maxLongitude = longitude + 1;
 				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY);
+						"json", PressureNETConfiguration.API_KEY, 5000);
 				makeAPICall(apiCall);
-				apiCall.setCallType("Conditions");
+
 				makeCurrentConditionsAPICall(apiCall);
 			}
 		});

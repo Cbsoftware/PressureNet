@@ -48,10 +48,10 @@
         android:text="Download Local (1 day)" />
 
     <Button
-        android:id="@+id/buttonCallAPIGlobal3hours"
+        android:id="@+id/buttonCallAPILocal3hours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Download Global (3 hours)" />
+        android:text="Download Local (3 hours)" />
 
     <Button
         android:id="@+id/buttonClearAPICache"

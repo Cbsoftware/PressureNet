@@ -125,6 +125,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	private SeekBar seekTime;
 	private Button buttonPlay;
 	private Spinner spinnerTime;
+	private TextView textCallLog;
 	private int hoursAgoSelected = 2;
 
 	Handler timeHandler = new Handler();
@@ -208,7 +209,8 @@ public class BarometerNetworkActivity extends MapActivity {
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
 		buttonPlay = (Button) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
-
+		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
+		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
 						android.R.layout.simple_spinner_item);
@@ -466,9 +468,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
-				Toast.makeText(getApplicationContext(),
-						count + " API results cached", Toast.LENGTH_SHORT)
-						.show();
+				textCallLog.setText( count + " API results cached");
 
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
