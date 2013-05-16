@@ -124,7 +124,7 @@ public class Chart {
 					.setFillPoints(true);
 		}
 		return ChartFactory.getTimeChartView(context,
-				buildDataset(titles, x, values), renderer, "yyyy/mm/dd");
+				buildDataset(titles, x, values), renderer, "yyyy/MM/dd");
 		
 	}
 
