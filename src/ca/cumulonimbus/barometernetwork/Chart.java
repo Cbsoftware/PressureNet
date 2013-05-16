@@ -1,10 +1,13 @@
 package ca.cumulonimbus.barometernetwork;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -23,6 +26,7 @@ public class Chart {
 		context = ctx;
 	}
 
+	
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors,
 			PointStyle[] styles) {
 		renderer.setAxisTitleTextSize(16);
@@ -34,6 +38,7 @@ public class Chart {
 		int length = colors.length;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
+			
 			r.setColor(colors[i]);
 			r.setPointStyle(styles[i]);
 			renderer.addSeriesRenderer(r);
@@ -59,20 +64,25 @@ public class Chart {
 	public View drawChart(ArrayList<CbObservation> obsList) {
 		System.out.println("drawing chart " + obsList.size() + " data points");
 		String[] titles = new String[] { "Pressure over Time" };
-		List<long[]> x = new ArrayList<long[]>();
+		List<Date[]> x = new ArrayList<Date[]>();
 		List<double[]> values = new ArrayList<double[]>();
 		int length = titles.length;
 		int count = obsList.size();
 		
-		long[] xValues = new long[count];
+		Date[] xValues = new Date[count];
 		double[] yValues = new double[count];
 		
 		// TODO: Expand to multiple observations
 		// currently only pressure
 		double minObservation = 1200;
 		double maxObservation = 0;
-		long minTime = System.currentTimeMillis();
-		long maxTime = 0;
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		
+		Date minTime = c.getTime();
+		
+		c.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24)); // TODO: fix max 1-day-ago support
+		Date maxTime = c.getTime();
 		
 		int i = 0;
 		for(CbObservation obs : obsList) {
@@ -82,16 +92,20 @@ public class Chart {
 			if(obs.getObservationValue() > maxObservation) {
 				maxObservation = obs.getObservationValue();
 			}
-			if(obs.getTime() < minTime) {
-				minTime = obs.getTime();
+			if(obs.getTime() < minTime.getTime()) {
+				minTime = new Date(obs.getTime());
 			}
-			if(obs.getTime() > maxTime) {
-				maxTime = obs.getTime();
+			if(obs.getTime() > maxTime.getTime()) {
+				maxTime = new Date(obs.getTime());
 			}
 			
-			xValues[i] = obs.getTime();
+			
+			
+			xValues[i] = new Date(obs.getTime());
 			yValues[i] = obs.getObservationValue();
+			
 			i++;
+			
 		}
 	
 		x.add(xValues);
@@ -109,8 +123,8 @@ public class Chart {
 			((XYSeriesRenderer) renderer.getSeriesRendererAt(i))
 					.setFillPoints(true);
 		}
-		return ChartFactory.getScatterChartView(context,
-				buildDataset(titles, x, values), renderer);
+		return ChartFactory.getTimeChartView(context,
+				buildDataset(titles, x, values), renderer, "yyyy/mm/dd");
 		
 	}
 
@@ -126,21 +140,22 @@ public class Chart {
 	 * @return the XY multiple dataset
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
-			List<long[]> xValues, List<double[]> yValues) {
+			List<Date[]> xValues, List<double[]> yValues) {
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		addXYSeries(dataset, titles, xValues, yValues, 0);
 		return dataset;
 	}
 
 	public void addXYSeries(XYMultipleSeriesDataset dataset, String[] titles,
-			List<long[]> xValues, List<double[]> yValues, int scale) {
+			List<Date[]> xValues, List<double[]> yValues, int scale) {
 		int length = titles.length;
 		for (int i = 0; i < length; i++) {
-			XYSeries series = new XYSeries(titles[i], scale);
-			long[] xV = xValues.get(i);
+			TimeSeries series = new TimeSeries(titles[i]);
+			Date[] xV = xValues.get(i);
 			double[] yV = yValues.get(i);
 			int seriesLength = xV.length;
 			for (int k = 0; k < seriesLength; k++) {
+				System.out.println("ctest " + xV[k]);
 				series.add(xV[k], yV[k]);
 			}
 			dataset.addSeries(series);
@@ -172,14 +187,15 @@ public class Chart {
 	 *            the labels color
 	 */
 	protected void setChartSettings(XYMultipleSeriesRenderer renderer,
-			String title, String xTitle, String yTitle, long xMin,
-			long xMax, double yMin, double yMax, int axesColor,
+			String title, String xTitle, String yTitle, Date xMin,
+			Date xMax, double yMin, double yMax, int axesColor,
 			int labelsColor) {
 		renderer.setChartTitle(title);
 		renderer.setXTitle(xTitle);
 		renderer.setYTitle(yTitle);
-		renderer.setXAxisMin(xMin);
-		renderer.setXAxisMax(xMax);
+		
+		//renderer.setXAxisMin(xMin);
+		//renderer.setXAxisMax(xMax);
 		renderer.setYAxisMin(yMin);
 		renderer.setYAxisMax(yMax);
 		renderer.setAxesColor(axesColor);

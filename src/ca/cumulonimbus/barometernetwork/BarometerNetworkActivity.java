@@ -278,7 +278,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 				for (CbObservation o : recents) {
 					long time = o.getTime();
-					int group = (int) ((time - startTime) / singleTimeSpan);
+					int group = (int) (Math.abs((time - startTime)) / singleTimeSpan);
 					o.setAnimateGroupNumber(group);
 					
 
