@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
@@ -10,8 +9,7 @@
         android:id="@+id/fullLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight=".5" >
+        android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/topButtonLayout"
@@ -26,16 +24,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="@string/empty"
-                android:textAppearance="?android:attr/textAppearanceSmall" 
-                android:visibility="gone">
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="gone" >
             </TextView>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-             >
+            android:layout_height="wrap_content" >
 
             <ca.cumulonimbus.barometernetwork.BarometerMapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,8 +40,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="400dp"
                 android:apiKey="0NZZtIxvqC4ErHtP1pwbsvl-JYxUlOKYEhS4aWg"
-                android:clickable="true"
-             />
+                android:clickable="true" />
         </LinearLayout>
     </LinearLayout>
 
@@ -79,14 +75,37 @@
                 android:id="@+id/seekBarTime"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:max="100" />
+                android:max="100"
+                android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textViewCallLog"
+  
+    </LinearLayout>
+      <LinearLayout
+            android:id="@+id/layoutDataDisplayControls"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="test" />
-    </LinearLayout>
+            android:orientation="horizontal" >
 
+            <TextView
+                android:id="@+id/textViewCallLog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:text="" />
+
+            <ImageView
+                android:id="@+id/imageBarometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_barometer" />
+
+            <ImageButton
+                android:id="@+id/buttonStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_stats"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_gravity="right" />
+        </LinearLayout>
 </LinearLayout>

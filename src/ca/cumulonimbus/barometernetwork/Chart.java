@@ -144,7 +144,6 @@ public class Chart {
 		
 		int[] colors = new int[count];
 		for(i = 0; i<count; i++ ) {
-//			System.out.println("color " + i);
 			colors[i] = Color.rgb(0, 192-(i*2), 255-(i*2));
 		}
 		

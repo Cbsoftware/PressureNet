@@ -125,6 +125,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	private SeekBar seekTime;
 	private ImageButton buttonPlay;
+	private ImageButton buttonStats;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
 	private int hoursAgoSelected = 1;
@@ -171,7 +172,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 50);
+				timeHandler.postDelayed(animate, 100);
 			} else {
 				Drawable play = getResources().getDrawable(R.drawable.ic_menu_play);
 				buttonPlay.setImageDrawable(play);
@@ -220,6 +221,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
+		buttonStats = (ImageButton) findViewById(R.id.buttonStats);
 		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
@@ -230,6 +232,19 @@ public class BarometerNetworkActivity extends MapActivity {
 		spinnerTime.setSelection(2);
 
 		seekTime.setProgress(100);
+		
+		buttonStats.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+
+				LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
+				LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
+				params.height = 300;
+				mainLayout.setLayoutParams(params);
+				createAndShowChart();
+			}
+		});
 		
 		seekTime.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
