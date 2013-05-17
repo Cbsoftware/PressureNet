@@ -48,7 +48,7 @@ public class Chart {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colors[i]);
-			System.out.println("setting renderer color " + colors[i] );
+	//		System.out.println("setting renderer color " + colors[i] );
 			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
@@ -144,7 +144,7 @@ public class Chart {
 		
 		int[] colors = new int[count];
 		for(i = 0; i<count; i++ ) {
-			System.out.println("color " + i);
+//			System.out.println("color " + i);
 			colors[i] = Color.rgb(0, 192-(i*2), 255-(i*2));
 		}
 		

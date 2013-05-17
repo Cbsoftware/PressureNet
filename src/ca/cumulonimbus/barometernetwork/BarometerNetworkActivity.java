@@ -56,6 +56,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -123,7 +124,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	boolean dataReceivedToPlot = false;
 
 	private SeekBar seekTime;
-	private Button buttonPlay;
+	private ImageButton buttonPlay;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
 	private int hoursAgoSelected = 1;
@@ -138,7 +139,9 @@ public class BarometerNetworkActivity extends MapActivity {
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
 
 	private int currentTimeProgress = 0;
-
+	private boolean animateState = false;
+	
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -169,6 +172,13 @@ public class BarometerNetworkActivity extends MapActivity {
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
 				timeHandler.postDelayed(animate, 50);
+			} else {
+				Drawable play = getResources().getDrawable(R.drawable.ic_menu_play);
+				buttonPlay.setImageDrawable(play);
+				currentTimeProgress = 0;
+				seekTime.setProgress(currentTimeProgress);
+				animateState = false;
+				
 			}
 
 		}
@@ -207,7 +217,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
-		buttonPlay = (Button) findViewById(R.id.buttonPlay);
+		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
 		
@@ -248,10 +258,22 @@ public class BarometerNetworkActivity extends MapActivity {
 
 			@Override
 			public void onClick(View v) {
+				animateState = !animateState;
+				if(animateState== true) {
+					Drawable pause = getResources().getDrawable(R.drawable.ic_menu_pause);
+					buttonPlay.setImageDrawable(pause);
+				} else {
+					timeHandler.removeCallbacks(animate);
+					Drawable play = getResources().getDrawable(R.drawable.ic_menu_play);
+					buttonPlay.setImageDrawable(play);
+					return;
+				}
+
+				
 				if (currentConditions.size() == 0) {
 					return;
 				}
-				currentTimeProgress = 0;
+				// currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
 
 				Collections.sort(currentConditions,

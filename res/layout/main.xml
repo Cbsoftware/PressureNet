@@ -67,12 +67,12 @@
                 android:entries="@array/display_time_chart"
                 android:prompt="@string/chartTimeDisplay" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/buttonPlay"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Play"
+                android:src="@drawable/ic_menu_play"
                 android:textColor="@android:color/black" />
 
             <SeekBar
