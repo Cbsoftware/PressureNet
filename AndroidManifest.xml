@@ -36,6 +36,12 @@
             android:label="@string/data"
             android:theme="@style/CustomTheme" >
         </activity>
+         <activity
+            android:name="ca.cumulonimbus.barometernetwork.About"
+            android:excludeFromRecents="true"
+            android:label="@string/about"
+            android:theme="@style/CustomTheme" >
+        </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
             android:excludeFromRecents="true"

@@ -848,6 +848,11 @@ public class BarometerNetworkActivity extends MapActivity {
 					DataManagementActivity.class);
 			startActivity(intent);
 
+		} else if (item.getItemId() == R.id.menu_about) {
+			Intent intent = new Intent(getApplicationContext(),
+					About.class);
+			startActivity(intent);
+
 		}
 
 		/*

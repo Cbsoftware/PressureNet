@@ -59,5 +59,10 @@
       android:enabled="true"
       android:showAsAction="never"
       android:visible="false" />
+    
+   <item android:id="@+id/menu_about"
+      android:title="@string/about"
+      android:enabled="true"
+      android:showAsAction="never" /> 
 
 </menu>
