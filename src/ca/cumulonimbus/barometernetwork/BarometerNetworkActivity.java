@@ -141,7 +141,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	private int currentTimeProgress = 0;
 	private boolean animateState = false;
-	
+	private boolean graphVisible = false;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -237,12 +237,21 @@ public class BarometerNetworkActivity extends MapActivity {
 			
 			@Override
 			public void onClick(View arg0) {
-
-				LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
-				LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
-				params.height = 300;
-				mainLayout.setLayoutParams(params);
-				createAndShowChart();
+				if(graphVisible == false ){
+					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
+					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
+					params.height = 300;
+					mainLayout.setLayoutParams(params);
+					createAndShowChart();
+					buttonStats.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_close));
+				} else {
+					buttonStats.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_stats));	
+					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
+					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
+					params.height = 400;
+					mainLayout.setLayoutParams(params);
+				}
+				graphVisible = !graphVisible;
 			}
 		});
 		
