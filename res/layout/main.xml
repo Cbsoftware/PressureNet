@@ -75,37 +75,38 @@
                 android:id="@+id/seekBarTime"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:max="100"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:max="100" />
         </LinearLayout>
-
-  
     </LinearLayout>
-      <LinearLayout
-            android:id="@+id/layoutDataDisplayControls"
-            android:layout_width="fill_parent"
+
+    <LinearLayout
+        android:id="@+id/layoutDataDisplayControls"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/textViewCallLog"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_weight=".5"
+            android:text="" />
 
-            <TextView
-                android:id="@+id/textViewCallLog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:text="" />
+        <ImageButton
+            android:id="@+id/imageBarometer"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_barometer" />
 
-            <ImageView
-                android:id="@+id/imageBarometer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_barometer" />
+        <ImageButton
+            android:id="@+id/buttonStats"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_menu_stats" />
+    </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/buttonStats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_stats"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_gravity="right" />
-        </LinearLayout>
 </LinearLayout>

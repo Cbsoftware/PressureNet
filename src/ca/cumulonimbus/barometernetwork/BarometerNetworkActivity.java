@@ -238,7 +238,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			@Override
 			public void onClick(View arg0) {
 				if(graphVisible == false ){
-					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
+					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
 					params.height = 300;
 					mainLayout.setLayoutParams(params);
@@ -246,9 +246,9 @@ public class BarometerNetworkActivity extends MapActivity {
 					buttonStats.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_close));
 				} else {
 					buttonStats.setImageDrawable(getResources().getDrawable(R.drawable.ic_menu_stats));	
-					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.fullLayout);
+					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout.getLayoutParams();
-					params.height = 400;
+					params.height = LayoutParams.MATCH_PARENT;
 					mainLayout.setLayoutParams(params);
 				}
 				graphVisible = !graphVisible;

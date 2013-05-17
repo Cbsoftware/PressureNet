@@ -27,9 +27,6 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class DataManagementActivity extends Activity {
 
-	Button buttonCallAPILocal3Hours;
-	Button buttonCallAPILocal1Day;
-
 	Button buttonClearLocalCache;
 	Button buttonClearAPICache;
 	
@@ -140,8 +137,6 @@ public class DataManagementActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
 
-		buttonCallAPILocal3Hours = (Button) findViewById(R.id.buttonCallAPILocal3hours);
-		buttonCallAPILocal1Day = (Button) findViewById(R.id.buttonCallAPILocal1Day);
 		buttonClearAPICache = (Button) findViewById(R.id.buttonClearAPICache);
 		buttonClearLocalCache = (Button) findViewById(R.id.buttonClearMyContributionsCache);
 
@@ -163,48 +158,8 @@ public class DataManagementActivity extends Activity {
 			}
 		});
 		
-		buttonCallAPILocal3Hours.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				double latitude = loc.getLatitude();
-				double longitude = loc.getLongitude();
-				double minLatitude = latitude - .5;
-				double maxLatitude = latitude + .5;
-				double minLongitude = longitude - .5;
-				double maxLongitude = longitude + .5;
-				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 3,
-						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY, 1000);
-				makeAPICall(apiCall);
-				//makeCurrentConditionsAPICall(apiCall);
-			}
-		});
-		
-		buttonCallAPILocal1Day.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				double latitude = loc.getLatitude();
-				double longitude = loc.getLongitude();
-				double minLatitude = latitude - .5;
-				double maxLatitude = latitude + .5;
-				double minLongitude = longitude - .5;
-				double maxLongitude = longitude + .5;
-				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
-						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY, 1000);
-				makeAPICall(apiCall);
-
-				//makeCurrentConditionsAPICall(apiCall);
-			}
-		});
+	
+	
 		
 		bindCbService();
 	}
