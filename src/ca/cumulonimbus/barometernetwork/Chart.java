@@ -36,7 +36,7 @@ public class Chart {
 		renderer.setLabelsTextSize(20);
 		renderer.setLegendTextSize(20);
 		renderer.setPointSize(5f);
-		renderer.setMargins(new int[] { 100, 30, 15, 20 });
+		renderer.setMargins(new int[] { 20, 50, 15, 20 });
 		
 		int uniq = userMap.size();
 		System.out.println("renderer adding " + uniq);
@@ -92,7 +92,7 @@ public class Chart {
 	public View drawChart(ArrayList<CbObservation> obsList) {
 		HashMap<String, ArrayList<CbObservation>> userMap =  mixedDataToUserMap(obsList);
 		System.out.println("drawing chart " + obsList.size() + " data points from " + userMap.size() + " users");
-		String[] titles = new String[] { "Pressure over Time" };
+		String[] titles = new String[] { "" };
 		List<Date[]> x = new ArrayList<Date[]>();
 		List<double[]> values = new ArrayList<double[]>();
 		int length = titles.length;
@@ -243,10 +243,10 @@ public class Chart {
 			String title, String xTitle, String yTitle, Date xMin,
 			Date xMax, double yMin, double yMax, int axesColor,
 			int labelsColor) {
-		renderer.setChartTitle(title);
+		//renderer.setChartTitle(title);
 		renderer.setXTitle(xTitle);
 		renderer.setYTitle(yTitle);
-		
+		renderer.setShowLegend(false);
 		//renderer.setXAxisMin(xMin);
 		//renderer.setXAxisMax(xMax);
 		renderer.setYAxisMin(yMin);
