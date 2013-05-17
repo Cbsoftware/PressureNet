@@ -40,14 +40,15 @@ public class Chart {
 		renderer.setMargins(new int[] { 20, 50, 15, 20 });
 		
 		int uniq = userMap.size();
-		System.out.println("renderer adding " + uniq);
+	//	System.out.println("renderer adding " + uniq);
 		
 
 		
 		for ( int i = 0; i< uniq; i++) {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
-			r.setColor(colors[0]);
+			r.setColor(colors[i]);
+			System.out.println("setting renderer color " + colors[i] );
 			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
@@ -144,7 +145,7 @@ public class Chart {
 		int[] colors = new int[count];
 		for(i = 0; i<count; i++ ) {
 			System.out.println("color " + i);
-			colors[i] = Color.rgb(0, 0, i);
+			colors[i] = Color.rgb(0, 192-(i*2), 255-(i*2));
 		}
 		
 		
