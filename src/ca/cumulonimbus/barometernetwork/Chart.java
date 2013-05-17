@@ -43,7 +43,7 @@ public class Chart {
 		for ( int i = 0; i< uniq; i++) {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
-			r.setColor(colors[0] + i);
+			r.setColor(colors[0]);
 			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
@@ -139,10 +139,10 @@ public class Chart {
 		int[] colors = new int[] { Color.BLUE };
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, userMap);
-		setChartSettings(renderer, "Local Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
+		setChartSettings(renderer, "Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
 				Color.GRAY, Color.LTGRAY);
 		renderer.setXLabels(5);
-		renderer.setYLabels(10);
+		renderer.setYLabels(5);
 		length = renderer.getSeriesRendererCount();
 		for (i = 0; i < length; i++) {
 			((XYSeriesRenderer) renderer.getSeriesRendererAt(i))
@@ -150,6 +150,11 @@ public class Chart {
 		}
 		XYMultipleSeriesDataset dataset = buildDataset(titles, userMap);
 		System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", " + renderer.getSeriesRendererCount());
+		int total = dataset.getSeriesCount();
+		for(i = 0; i<total;i++) {
+			//System.out.println(i + " min ys " + dataset.getSeriesAt(i).getMinY());
+		}
+		
 		return ChartFactory.getTimeChartView(context, dataset, renderer, "yyyy/MM/dd");
 		
 	}
@@ -167,17 +172,20 @@ public class Chart {
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
 			HashMap<String, ArrayList<CbObservation>> userMap) {
+		System.out.println("build dataset");
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		// add each component to the dataset
 		Iterator it = userMap.entrySet().iterator();
-		List<Date[]> xValues = new ArrayList<Date[]> ();
-		List<double[]> yValues = new ArrayList<double[]>();
 		while (it.hasNext()) {
+			List<Date[]> xValues = new ArrayList<Date[]> ();
+			List<double[]> yValues = new ArrayList<double[]>();
+			System.out.println("next it");
 			Map.Entry<String,ArrayList<CbObservation>> pairs = (Map.Entry<String,ArrayList<CbObservation>>)it.next();
 			ArrayList<CbObservation> singleUserObsList = pairs.getValue();
 			Date[] dates = new Date[singleUserObsList.size()];
 			double[] values = new double[singleUserObsList.size()];
 			int x = 0;
+			System.out.println("looping over single user size " + singleUserObsList.size());
 			for(CbObservation obs : singleUserObsList ) {
 				dates[x] = new Date(obs.getTime());
 				values[x]= obs.getObservationValue();
