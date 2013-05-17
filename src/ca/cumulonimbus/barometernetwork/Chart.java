@@ -3,13 +3,15 @@ package ca.cumulonimbus.barometernetwork;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
@@ -28,22 +30,48 @@ public class Chart {
 
 	
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors,
-			PointStyle[] styles) {
-		renderer.setAxisTitleTextSize(16);
+			PointStyle[] styles, HashMap<String, ArrayList<CbObservation>> userMap) {
+		renderer.setAxisTitleTextSize(20);
 		renderer.setChartTitleTextSize(20);
-		renderer.setLabelsTextSize(15);
-		renderer.setLegendTextSize(15);
+		renderer.setLabelsTextSize(20);
+		renderer.setLegendTextSize(20);
 		renderer.setPointSize(5f);
-		renderer.setMargins(new int[] { 20, 30, 15, 20 });
-		int length = colors.length;
-		for (int i = 0; i < length; i++) {
+		renderer.setMargins(new int[] { 100, 30, 15, 20 });
+		
+		int uniq = userMap.size();
+		System.out.println("renderer adding " + uniq);
+		for ( int i = 0; i< uniq; i++) {
+			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
-			
-			r.setColor(colors[i]);
-			r.setPointStyle(styles[i]);
+			r.setColor(colors[0] + i);
+			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
 	}
+	
+/**
+ * Take a raw list of arbitrary observations and organize them by user id
+ * @param rawListWeather
+ * @return
+ */
+	public HashMap<String, ArrayList<CbObservation>> mixedDataToUserMap(ArrayList<CbObservation> rawList) {
+		HashMap<String, ArrayList<CbObservation>> userMap = new HashMap<String, ArrayList<CbObservation>>();
+
+		System.out.println("making user map raw size " + rawList.size());
+		for (CbObservation currentWeather : rawList) {
+			CbObservation current = (CbObservation) currentWeather;
+			if (userMap.containsKey(current.getUser_id())) {
+				userMap.get(current.getUser_id()).add(current);
+			} else {
+				ArrayList<CbObservation> newList = new ArrayList<CbObservation>();
+				newList.add(current);
+				userMap.put(current.getUser_id(), newList);
+			}
+		}
+		System.out.println("returning user map size" + userMap.size());
+		return userMap;
+	}
+
 
 	/**
 	 * Builds an XY multiple series renderer.
@@ -55,14 +83,15 @@ public class Chart {
 	 * @return the XY multiple series renderers
 	 */
 	protected XYMultipleSeriesRenderer buildRenderer(int[] colors,
-			PointStyle[] styles) {
+			PointStyle[] styles, HashMap<String, ArrayList<CbObservation>> userMap) {
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		setRenderer(renderer, colors, styles);
+		setRenderer(renderer, colors, styles, userMap);
 		return renderer;
 	}
 
 	public View drawChart(ArrayList<CbObservation> obsList) {
-		System.out.println("drawing chart " + obsList.size() + " data points");
+		HashMap<String, ArrayList<CbObservation>> userMap =  mixedDataToUserMap(obsList);
+		System.out.println("drawing chart " + obsList.size() + " data points from " + userMap.size() + " users");
 		String[] titles = new String[] { "Pressure over Time" };
 		List<Date[]> x = new ArrayList<Date[]>();
 		List<double[]> values = new ArrayList<double[]>();
@@ -97,13 +126,9 @@ public class Chart {
 			}
 			if(obs.getTime() > maxTime.getTime()) {
 				maxTime = new Date(obs.getTime());
-			}
-			
-			
-			
+			}	
 			xValues[i] = new Date(obs.getTime());
 			yValues[i] = obs.getObservationValue();
-			
 			i++;
 			
 		}
@@ -113,7 +138,7 @@ public class Chart {
 	
 		int[] colors = new int[] { Color.BLUE };
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
-		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
+		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, userMap);
 		setChartSettings(renderer, "Local Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
 				Color.GRAY, Color.LTGRAY);
 		renderer.setXLabels(5);
@@ -123,8 +148,9 @@ public class Chart {
 			((XYSeriesRenderer) renderer.getSeriesRendererAt(i))
 					.setFillPoints(true);
 		}
-		return ChartFactory.getTimeChartView(context,
-				buildDataset(titles, x, values), renderer, "yyyy/MM/dd");
+		XYMultipleSeriesDataset dataset = buildDataset(titles, userMap);
+		System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", " + renderer.getSeriesRendererCount());
+		return ChartFactory.getTimeChartView(context, dataset, renderer, "yyyy/MM/dd");
 		
 	}
 
@@ -140,13 +166,32 @@ public class Chart {
 	 * @return the XY multiple dataset
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
-			List<Date[]> xValues, List<double[]> yValues) {
+			HashMap<String, ArrayList<CbObservation>> userMap) {
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-		addXYSeries(dataset, titles, xValues, yValues, 0);
+		// add each component to the dataset
+		Iterator it = userMap.entrySet().iterator();
+		List<Date[]> xValues = new ArrayList<Date[]> ();
+		List<double[]> yValues = new ArrayList<double[]>();
+		while (it.hasNext()) {
+			Map.Entry<String,ArrayList<CbObservation>> pairs = (Map.Entry<String,ArrayList<CbObservation>>)it.next();
+			ArrayList<CbObservation> singleUserObsList = pairs.getValue();
+			Date[] dates = new Date[singleUserObsList.size()];
+			double[] values = new double[singleUserObsList.size()];
+			int x = 0;
+			for(CbObservation obs : singleUserObsList ) {
+				dates[x] = new Date(obs.getTime());
+				values[x]= obs.getObservationValue();
+				x++;
+			}
+			xValues.add(dates);
+			yValues.add(values);
+			dataset = addXYSeries(dataset, titles, xValues, yValues, 0);
+			///it.remove();
+		}
 		return dataset;
 	}
 
-	public void addXYSeries(XYMultipleSeriesDataset dataset, String[] titles,
+	public XYMultipleSeriesDataset addXYSeries(XYMultipleSeriesDataset dataset, String[] titles,
 			List<Date[]> xValues, List<double[]> yValues, int scale) {
 		int length = titles.length;
 		for (int i = 0; i < length; i++) {
@@ -155,11 +200,11 @@ public class Chart {
 			double[] yV = yValues.get(i);
 			int seriesLength = xV.length;
 			for (int k = 0; k < seriesLength; k++) {
-				System.out.println("ctest " + xV[k]);
 				series.add(xV[k], yV[k]);
 			}
 			dataset.addSeries(series);
 		}
+		return dataset;
 	}
 
 	/**

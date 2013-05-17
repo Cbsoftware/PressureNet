@@ -126,7 +126,7 @@ public class BarometerNetworkActivity extends MapActivity {
 	private Button buttonPlay;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
-	private int hoursAgoSelected = 2;
+	private int hoursAgoSelected = 1;
 
 	Handler timeHandler = new Handler();
 
@@ -305,7 +305,7 @@ public class BarometerNetworkActivity extends MapActivity {
 					hoursAgoSelected = 6;
 				} else if (selected.equals("1 day")) {
 
-					hoursAgoSelected = 14;
+					hoursAgoSelected = 24;
 				}
 				makeMapApiCallAndLoadRecents();
 			}
@@ -490,9 +490,16 @@ public class BarometerNetworkActivity extends MapActivity {
 	}
 
 	public void createAndShowChart() {
+		if(recents == null ) {
+			log("recents null RETURNING");
+			return;
+		} else if ( recents.size() == 0) {
+			log("recents 0, RETURNING");
+			return;
+		}
 		if (dataReceivedToPlot) {
 			// draw chart
-			log("plotting...");
+			log("plotting... " + recents.size());
 			Chart chart = new Chart(getApplicationContext());
 			View chartView = chart.drawChart(recents);
 
@@ -508,8 +515,8 @@ public class BarometerNetworkActivity extends MapActivity {
 			chartView.setId(100); // TODO: what's safe?
 
 			// add to layout
-			LayoutParams lparams = new LayoutParams(LayoutParams.FILL_PARENT,
-					500);
+			LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
+					400);
 
 			chartView.setLayoutParams(lparams);
 			if (mainLayout == null) {
@@ -1317,7 +1324,10 @@ public class BarometerNetworkActivity extends MapActivity {
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_marker);
 		mapOverlays.clear();
-
+		
+		int totalEachAllowed = 30;
+		int currentObs = 0;
+		int currentCur = 0;
 		try {
 			// Add Barometer Readings and associated current Conditions
 			// Add Barometer Readings and associated current Conditions
@@ -1346,6 +1356,10 @@ public class BarometerNetworkActivity extends MapActivity {
 				mapOverlays.add(overlay);
 
 				mv.invalidate();
+				currentObs++;
+				if(currentObs > totalEachAllowed) {
+					break;
+				}
 			}
 
 			// Add singleton Current Conditions
@@ -1373,6 +1387,10 @@ public class BarometerNetworkActivity extends MapActivity {
 				mapOverlays.add(overlay);
 
 				mv.invalidate();
+				currentCur++;
+				if(currentCur > totalEachAllowed) {
+					break;
+				}
 			}
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
@@ -1381,6 +1399,9 @@ public class BarometerNetworkActivity extends MapActivity {
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap() {
+		int totalEachAllowed = 30;
+		int currentObs = 0;
+		int currentCur = 0;
 		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
 		List<Overlay> mapOverlays = mv.getOverlays();
 
@@ -1414,6 +1435,10 @@ public class BarometerNetworkActivity extends MapActivity {
 				mapOverlays.add(overlay);
 
 				mv.invalidate();
+				currentObs++;
+				if(currentObs > totalEachAllowed) {
+					break;
+				}
 			}
 			
 			// Add singleton Current Conditions
@@ -1440,6 +1465,10 @@ public class BarometerNetworkActivity extends MapActivity {
 				mapOverlays.add(overlay);
 
 				mv.invalidate();
+				currentCur++;
+				if(currentCur > totalEachAllowed) {
+					break;
+				}
 			}
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
@@ -1506,6 +1535,7 @@ public class BarometerNetworkActivity extends MapActivity {
 		api.setMinLon(api.getMinLon() - .5);
 		api.setMaxLon(api.getMaxLon() + .5);
 		makeAPICall(api);
+		createAndShowChart();
 	}
 
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {

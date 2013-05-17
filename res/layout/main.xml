@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/mainScrollLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    
+<LinearLayout 
     android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -9,7 +15,6 @@
         android:id="@+id/fullLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight=".7"
         android:orientation="vertical"
         android:weightSum="1" >
 
@@ -33,16 +38,17 @@
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
              >
 
             <ca.cumulonimbus.barometernetwork.BarometerMapView
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/mapview"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_height="400dp"
                 android:apiKey="0NZZtIxvqC4ErHtP1pwbsvl-JYxUlOKYEhS4aWg"
-                android:clickable="true" />
+                android:clickable="true"
+             />
         </LinearLayout>
     </LinearLayout>
 
@@ -88,3 +94,4 @@
     </LinearLayout>
 
 </LinearLayout>
+</ScrollView>

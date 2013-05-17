@@ -89,6 +89,7 @@ public class DataManagementActivity extends Activity {
 	
 	
 	private void makeAPICall(CbApiCall apiCall) {
+		apiCall.setCallType("Readings");
 		Toast.makeText(getApplicationContext(), "Starting API call",
 				Toast.LENGTH_SHORT).show();
 		if (mBound) {
@@ -171,15 +172,15 @@ public class DataManagementActivity extends Activity {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				double minLatitude = latitude - 1;
-				double maxLatitude = latitude + 1;
-				double minLongitude = longitude - 1;
-				double maxLongitude = longitude + 1;
+				double minLatitude = latitude - .5;
+				double maxLatitude = latitude + .5;
+				double minLongitude = longitude - .5;
+				double maxLongitude = longitude + .5;
 				CbApiCall apiCall = CbApiCall.buildAPICall(true, false, 3,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY, 5000);
+						"json", PressureNETConfiguration.API_KEY, 1000);
 				makeAPICall(apiCall);
-				makeCurrentConditionsAPICall(apiCall);
+				//makeCurrentConditionsAPICall(apiCall);
 			}
 		});
 		
@@ -192,16 +193,16 @@ public class DataManagementActivity extends Activity {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				double latitude = loc.getLatitude();
 				double longitude = loc.getLongitude();
-				double minLatitude = latitude - 1;
-				double maxLatitude = latitude + 1;
-				double minLongitude = longitude - 1;
-				double maxLongitude = longitude + 1;
+				double minLatitude = latitude - .5;
+				double maxLatitude = latitude + .5;
+				double minLongitude = longitude - .5;
+				double maxLongitude = longitude + .5;
 				CbApiCall apiCall = CbApiCall.buildAPICall(false, false, 24,
 						minLatitude, maxLatitude, minLongitude, maxLongitude,
-						"json", PressureNETConfiguration.API_KEY, 5000);
+						"json", PressureNETConfiguration.API_KEY, 1000);
 				makeAPICall(apiCall);
 
-				makeCurrentConditionsAPICall(apiCall);
+				//makeCurrentConditionsAPICall(apiCall);
 			}
 		});
 		
