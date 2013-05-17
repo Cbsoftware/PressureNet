@@ -170,16 +170,16 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchActiveGeneral(String condition) {
     	// Turn everything off
-    	buttonSunny.setImageResource(R.drawable.ic_sun);
-    	buttonFoggy.setImageResource(R.drawable.ic_fog3);
-    	buttonCloudy.setImageResource(R.drawable.ic_cloudy);
-    	buttonPrecipitation.setImageResource(R.drawable.ic_precip);
+    	buttonSunny.setImageResource(R.drawable.ic_wea_sun);
+    	buttonFoggy.setImageResource(R.drawable.ic_wea_fog3);
+    	buttonCloudy.setImageResource(R.drawable.ic_wea_cloud);
+    	buttonPrecipitation.setImageResource(R.drawable.ic_wea_precip);
     	buttonThunderstorm.setImageResource(R.drawable.ic_wea_r_l0);
     	
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.sunny))) {
-    		buttonSunny.setImageResource(R.drawable.ic_on_sun);
+    		buttonSunny.setImageResource(R.drawable.ic_wea_on_sun);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
@@ -198,7 +198,7 @@ public class CurrentConditionsActivity extends Activity {
     		
     		this.condition.setGeneral_condition(getString(R.string.sunny));
     	} else if(condition.equals(getString(R.string.foggy))) {
-    		buttonFoggy.setImageResource(R.drawable.ic_on_fog3);
+    		buttonFoggy.setImageResource(R.drawable.ic_wea_on_fog3);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
@@ -218,7 +218,7 @@ public class CurrentConditionsActivity extends Activity {
     		this.condition.setGeneral_condition(getString(R.string.foggy));
     		this.condition.setFog_thickness(getString(R.string.light_fog));
     	} else if(condition.equals(getString(R.string.cloudy))) {
-    		buttonCloudy.setImageResource(R.drawable.ic_on_cloudy);
+    		buttonCloudy.setImageResource(R.drawable.ic_wea_on_cloud);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
@@ -245,7 +245,7 @@ public class CurrentConditionsActivity extends Activity {
     		textCloudyDescription.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
-    		buttonPrecipitation.setImageResource(R.drawable.ic_on_precip);
+    		buttonPrecipitation.setImageResource(R.drawable.ic_wea_on_precip);
     		textLightningDescription.setVisibility(View.GONE);
     		imageHrLightning.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
@@ -263,7 +263,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollLightning.setVisibility(View.VISIBLE);
     		textLightningDescription.setVisibility(View.VISIBLE);
     		imageHrLightning.setVisibility(View.VISIBLE);
-    		buttonThunderstorm.setImageResource(R.drawable.ic_on_r_l0);
+    		buttonThunderstorm.setImageResource(R.drawable.ic_wea_on_r_l0);
     		textCloudyDescription.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
@@ -288,18 +288,18 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchActiveFoggy(String foggy) {
     	// Turn everything off
-    	buttonLightFog.setImageResource(R.drawable.ic_fog1);
-    	buttonModerateFog.setImageResource(R.drawable.ic_fog2);
-    	buttonHeavyFog.setImageResource(R.drawable.ic_fog3);
+    	buttonLightFog.setImageResource(R.drawable.ic_wea_fog1);
+    	buttonModerateFog.setImageResource(R.drawable.ic_wea_fog2);
+    	buttonHeavyFog.setImageResource(R.drawable.ic_wea_fog3);
     	
     	// Turn the new one on
     	
     	if(foggy.equals(getString(R.string.light_fog))) {
-    		buttonLightFog.setImageResource(R.drawable.ic_on_fog1);
+    		buttonLightFog.setImageResource(R.drawable.ic_wea_on_fog1);
     	} else if(foggy.equals(getString(R.string.moderate_fog))) {
-    		buttonModerateFog.setImageResource(R.drawable.ic_on_fog2);
+    		buttonModerateFog.setImageResource(R.drawable.ic_wea_on_fog2);
     	} else if(foggy.equals(getString(R.string.heavy_fog))) {
-    		buttonHeavyFog.setImageResource(R.drawable.ic_on_fog3);
+    		buttonHeavyFog.setImageResource(R.drawable.ic_wea_on_fog3);
     	} 
     }
     
@@ -309,22 +309,22 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchActiveWindy(String condition) {
     	// Turn everything off
-    	buttonIsCalm.setImageResource(R.drawable.ic_wind0);
-    	buttonIsWindy1.setImageResource(R.drawable.ic_wind1);
-    	buttonIsWindy2.setImageResource(R.drawable.ic_wind2);
-    	buttonIsWindy3.setImageResource(R.drawable.ic_wind3);
+    	buttonIsCalm.setImageResource(R.drawable.ic_wea_wind0);
+    	buttonIsWindy1.setImageResource(R.drawable.ic_wea_wind1);
+    	buttonIsWindy2.setImageResource(R.drawable.ic_wea_wind2);
+    	buttonIsWindy3.setImageResource(R.drawable.ic_wea_wind3);
     	
     	
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.calm))) {
-    		buttonIsCalm.setImageResource(R.drawable.ic_on_wind0);
+    		buttonIsCalm.setImageResource(R.drawable.ic_wea_on_wind0);
     	} else if(condition.equals(getString(R.string.windyOne))) {
-    		buttonIsWindy1.setImageResource(R.drawable.ic_on_wind1);
+    		buttonIsWindy1.setImageResource(R.drawable.ic_wea_on_wind1);
     	} else if(condition.equals(getString(R.string.windyTwo))) {
-    		buttonIsWindy2.setImageResource(R.drawable.ic_on_wind2);
+    		buttonIsWindy2.setImageResource(R.drawable.ic_wea_on_wind2);
     	} else if(condition.equals(getString(R.string.windyThree))) {
-    		buttonIsWindy3.setImageResource(R.drawable.ic_on_wind3);
+    		buttonIsWindy3.setImageResource(R.drawable.ic_wea_on_wind3);
     	} 
     }
     
@@ -335,17 +335,17 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchVisiblePrecipitations(String precipCondition) {
     	if(precipCondition.equals(getString(R.string.rain))) {
-    		buttonLowPrecip.setImageResource(R.drawable.ic_on_rain1);
-    		buttonModeratePrecip.setImageResource(R.drawable.ic_rain2);
-    		buttonHeavyPrecip.setImageResource(R.drawable.ic_rain3);
+    		buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_rain1);
+    		buttonModeratePrecip.setImageResource(R.drawable.ic_wea_rain2);
+    		buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_rain3);
     	} else if(precipCondition.equals(getString(R.string.snow))) {
-    		buttonLowPrecip.setImageResource(R.drawable.ic_on_snow1);
-    		buttonModeratePrecip.setImageResource(R.drawable.ic_snow2);
-    		buttonHeavyPrecip.setImageResource(R.drawable.ic_snow3);
+    		buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_snow1);
+    		buttonModeratePrecip.setImageResource(R.drawable.ic_wea_snow2);
+    		buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_snow3);
     	} else if(precipCondition.equals(getString(R.string.hail))) {
-    		buttonLowPrecip.setImageResource(R.drawable.ic_on_hail1);
-    		buttonModeratePrecip.setImageResource(R.drawable.ic_hail2);
-    		buttonHeavyPrecip.setImageResource(R.drawable.ic_hail3);
+    		buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_hail1);
+    		buttonModeratePrecip.setImageResource(R.drawable.ic_wea_hail2);
+    		buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_hail3);
     	}
     	
     	double value = 0.0;
@@ -361,21 +361,21 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchActiveCloudy(String cloudyCondition) {
     	// Turn everything off
-    	buttonPartlyCloudy.setImageResource(R.drawable.ic_cloudy1);
-    	buttonMostlyCloudy.setImageResource(R.drawable.ic_cloudy2);
-    	buttonVeryCloudy.setImageResource(R.drawable.ic_cloudy);
+    	buttonPartlyCloudy.setImageResource(R.drawable.ic_wea_cloud1);
+    	buttonMostlyCloudy.setImageResource(R.drawable.ic_wea_cloud2);
+    	buttonVeryCloudy.setImageResource(R.drawable.ic_wea_cloud);
     	
     	
     	// Turn the new one on
     	if(cloudyCondition.equals(getString(R.string.partly_cloudy))) {
     		switchVisiblePrecipitations(getString(R.string.partly_cloudy));
-    		buttonPartlyCloudy.setImageResource(R.drawable.ic_on_cloudy1);
+    		buttonPartlyCloudy.setImageResource(R.drawable.ic_wea_on_cloud1);
     	} else if(cloudyCondition.equals(getString(R.string.mostly_cloudy))) {
     		switchVisiblePrecipitations(getString(R.string.mostly_cloudy));
-    		buttonMostlyCloudy.setImageResource(R.drawable.ic_on_cloudy2);
+    		buttonMostlyCloudy.setImageResource(R.drawable.ic_wea_on_cloud2);
     	} else if(cloudyCondition.equals(getString(R.string.very_cloudy))) {
     		switchVisiblePrecipitations(getString(R.string.very_cloudy));
-    		buttonVeryCloudy.setImageResource(R.drawable.ic_on_cloudy);
+    		buttonVeryCloudy.setImageResource(R.drawable.ic_wea_on_cloud);
     	} 
     	
     }
@@ -386,22 +386,22 @@ public class CurrentConditionsActivity extends Activity {
      */
     private void switchActivePrecipitation(String precipCondition) {
     	// Turn everything off
-    	buttonRain.setImageResource(R.drawable.ic_rain3);
-    	buttonSnow.setImageResource(R.drawable.ic_snow3);
-    	buttonHail.setImageResource(R.drawable.ic_hail3);
+    	buttonRain.setImageResource(R.drawable.ic_wea_rain3);
+    	buttonSnow.setImageResource(R.drawable.ic_wea_snow3);
+    	buttonHail.setImageResource(R.drawable.ic_wea_hail3);
     	
     	
     	
     	// Turn the new one on
     	if(precipCondition.equals(getString(R.string.rain))) {
     		switchVisiblePrecipitations(getString(R.string.rain));
-    		buttonRain.setImageResource(R.drawable.ic_on_rain3);
+    		buttonRain.setImageResource(R.drawable.ic_wea_on_rain3);
     	} else if(precipCondition.equals(getString(R.string.snow))) {
     		switchVisiblePrecipitations(getString(R.string.snow));
-    		buttonSnow.setImageResource(R.drawable.ic_on_snow3);
+    		buttonSnow.setImageResource(R.drawable.ic_wea_on_snow3);
     	} else if(precipCondition.equals(getString(R.string.hail))) {
     		switchVisiblePrecipitations(getString(R.string.hail));
-    		buttonHail.setImageResource(R.drawable.ic_on_hail3);
+    		buttonHail.setImageResource(R.drawable.ic_wea_on_hail3);
     	} 
     	
     	
@@ -421,45 +421,45 @@ public class CurrentConditionsActivity extends Activity {
     	try {
 	    	if (condition.getPrecipitation_type().equals(getString(R.string.rain))) {
 	    		if(amount.equals("low")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_on_rain1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_rain2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_rain3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_rain1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_rain2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_rain3);
 	    		} else if(amount.equals("moderate")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_rain1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_on_rain2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_rain3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_rain1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_on_rain2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_rain3);
 	    		} else if(amount.equals("heavy")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_rain1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_rain2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_on_rain3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_rain1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_rain2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_on_rain3);
 	    		}
 	    	} else if (condition.getPrecipitation_type().equals(getString(R.string.snow))) {
 	    		if(amount.equals("low")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_on_snow1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_snow2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_snow3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_snow1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_snow2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_snow3);
 	    		} else if(amount.equals("moderate")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_snow1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_on_snow2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_snow3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_snow1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_on_snow2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_snow3);
 	    		} else if(amount.equals("heavy")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_snow1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_snow2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_on_snow3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_snow1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_snow2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_on_snow3);
 	    		}
 	    	} else if (condition.getPrecipitation_type().equals(getString(R.string.hail))) {
 	    		if(amount.equals("low")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_on_hail1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_hail2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_hail3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_on_hail1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_hail2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_hail3);
 	    		} else if(amount.equals("moderate")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_hail1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_on_hail2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_hail3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_hail1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_on_hail2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_hail3);
 	    		} else if(amount.equals("heavy")) {
-	    			buttonLowPrecip.setImageResource(R.drawable.ic_hail1);
-	    			buttonModeratePrecip.setImageResource(R.drawable.ic_hail2);
-	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_on_hail3);
+	    			buttonLowPrecip.setImageResource(R.drawable.ic_wea_hail1);
+	    			buttonModeratePrecip.setImageResource(R.drawable.ic_wea_hail2);
+	    			buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_on_hail3);
 	    		}
 	    	}
     	} catch(NullPointerException npe) {
@@ -476,11 +476,11 @@ public class CurrentConditionsActivity extends Activity {
     	
     	// Turn the new one on
     	if(value.equals(getString(R.string.infrequentLightning))) {
-    		buttonInfrequentLightning.setImageResource(R.drawable.ic_on_lightning1);
+    		buttonInfrequentLightning.setImageResource(R.drawable.ic_wea_on_lightning1);
     	} else if(value.equals(getString(R.string.frequentLightning))) {
-    		buttonFrequentLightning.setImageResource(R.drawable.ic_on_lightning2);
+    		buttonFrequentLightning.setImageResource(R.drawable.ic_wea_on_lightning2);
     	} else if(value.equals(getString(R.string.heavyLightning))) {;
-    		buttonHeavyLightning.setImageResource(R.drawable.ic_on_lightning3);
+    		buttonHeavyLightning.setImageResource(R.drawable.ic_wea_on_lightning3);
     	} 
     }
     

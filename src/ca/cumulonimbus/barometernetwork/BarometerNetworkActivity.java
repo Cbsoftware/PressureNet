@@ -1116,7 +1116,7 @@ public class BarometerNetworkActivity extends MapActivity {
 
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
-					R.drawable.ic_col_sun);
+					R.drawable.ic_wea_col_sun);
 			Drawable[] layers = { weatherBackgroundDrawable,
 					resizeDrawable(sunDrawable) };
 			LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1127,21 +1127,21 @@ public class BarometerNetworkActivity extends MapActivity {
 					getString(R.string.rain))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
 					Drawable rainDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_rain1);
+							R.drawable.ic_wea_col_rain1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable rainDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_rain2);
+							R.drawable.ic_wea_col_rain2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable rainDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_rain3);
+							R.drawable.ic_wea_col_rain3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1151,21 +1151,21 @@ public class BarometerNetworkActivity extends MapActivity {
 					getString(R.string.snow))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
 					Drawable snowDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_snow1);
+							R.drawable.ic_wea_col_snow1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable snowDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_snow2);
+							R.drawable.ic_wea_col_snow2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable snowDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_snow3);
+							R.drawable.ic_wea_col_snow3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1175,21 +1175,21 @@ public class BarometerNetworkActivity extends MapActivity {
 					getString(R.string.hail))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
 					Drawable hailDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_hail1);
+							R.drawable.ic_wea_col_hail1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable hailDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_hail2);
+							R.drawable.ic_wea_col_hail2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable hailDrawable = this.getResources().getDrawable(
-							R.drawable.ic_col_hail3);
+							R.drawable.ic_wea_col_hail3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1201,7 +1201,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			if (condition.getCloud_type().equals(
 					getString(R.string.partly_cloudy))) {
 				Drawable cloudDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_cloudy1);
+						R.drawable.ic_wea_col_cloud1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1209,7 +1209,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (condition.getCloud_type().equals(
 					getString(R.string.mostly_cloudy))) {
 				Drawable cloudDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_cloudy2);
+						R.drawable.ic_wea_col_cloud2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1217,14 +1217,14 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (condition.getCloud_type().equals(
 					getString(R.string.very_cloudy))) {
 				Drawable cloudDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_cloudy);
+						R.drawable.ic_wea_col_cloud);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 			} else {
 				Drawable cloudDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_cloudy);
+						R.drawable.ic_wea_col_cloud);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1235,7 +1235,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			if (condition.getFog_thickness().equals(
 					getString(R.string.light_fog))) {
 				Drawable fogDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_fog1);
+						R.drawable.ic_wea_col_fog1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1243,7 +1243,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (condition.getFog_thickness().equals(
 					getString(R.string.moderate_fog))) {
 				Drawable fogDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_fog2);
+						R.drawable.ic_wea_col_fog2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1251,14 +1251,14 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (condition.getFog_thickness().equals(
 					getString(R.string.heavy_fog))) {
 				Drawable fogDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_fog3);
+						R.drawable.ic_wea_col_fog3);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
 			} else {
 				Drawable fogDrawable = this.getResources().getDrawable(
-						R.drawable.ic_col_fog2);
+						R.drawable.ic_wea_col_fog2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1268,7 +1268,7 @@ public class BarometerNetworkActivity extends MapActivity {
 				getString(R.string.thunderstorm))) {
 			if (Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) {
 				Drawable thunderstormDrawable = this.getResources()
-						.getDrawable(R.drawable.ic_col_r_l1);
+						.getDrawable(R.drawable.ic_wea_col_r_l1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1276,7 +1276,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 1.0) {
 				Drawable thunderstormDrawable = this.getResources()
-						.getDrawable(R.drawable.ic_col_r_l2);
+						.getDrawable(R.drawable.ic_wea_col_r_l2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -1284,7 +1284,7 @@ public class BarometerNetworkActivity extends MapActivity {
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 2.0) {
 				Drawable thunderstormDrawable = this.getResources()
-						.getDrawable(R.drawable.ic_col_r_l3);
+						.getDrawable(R.drawable.ic_wea_col_r_l3);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);

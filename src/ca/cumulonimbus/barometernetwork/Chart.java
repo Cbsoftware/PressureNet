@@ -29,6 +29,7 @@ public class Chart {
 	}
 
 	
+	
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors,
 			PointStyle[] styles, HashMap<String, ArrayList<CbObservation>> userMap) {
 		renderer.setAxisTitleTextSize(20);
@@ -40,6 +41,9 @@ public class Chart {
 		
 		int uniq = userMap.size();
 		System.out.println("renderer adding " + uniq);
+		
+
+		
 		for ( int i = 0; i< uniq; i++) {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
@@ -136,7 +140,14 @@ public class Chart {
 		x.add(xValues);
 		values.add(yValues);
 	
-		int[] colors = new int[] { Color.BLUE };
+		
+		int[] colors = new int[count];
+		for(i = 0; i<count; i++ ) {
+			System.out.println("color " + i);
+			colors[i] = Color.rgb(0, 0, i);
+		}
+		
+		
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles, userMap);
 		setChartSettings(renderer, "Pressure", "Time", "Pressure (mb)", minTime, maxTime, minObservation, maxObservation,
@@ -179,13 +190,11 @@ public class Chart {
 		while (it.hasNext()) {
 			List<Date[]> xValues = new ArrayList<Date[]> ();
 			List<double[]> yValues = new ArrayList<double[]>();
-			System.out.println("next it");
 			Map.Entry<String,ArrayList<CbObservation>> pairs = (Map.Entry<String,ArrayList<CbObservation>>)it.next();
 			ArrayList<CbObservation> singleUserObsList = pairs.getValue();
 			Date[] dates = new Date[singleUserObsList.size()];
 			double[] values = new double[singleUserObsList.size()];
 			int x = 0;
-			System.out.println("looping over single user size " + singleUserObsList.size());
 			for(CbObservation obs : singleUserObsList ) {
 				dates[x] = new Date(obs.getTime());
 				values[x]= obs.getObservationValue();

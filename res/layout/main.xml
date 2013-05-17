@@ -26,7 +26,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:text="@string/empty"
-                android:textAppearance="?android:attr/textAppearanceSmall" >
+                android:textAppearance="?android:attr/textAppearanceSmall" 
+                android:visibility="gone">
             </TextView>
         </LinearLayout>
 

@@ -20,7 +20,7 @@
 	        android:layout_height="wrap_content"
 			style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/sunny"
-	        android:src="@drawable/ic_sun" />
+	        android:src="@drawable/ic_wea_sun" />
 	
 	    <ImageButton
 	        android:id="@+id/buttonFoggy"
@@ -28,7 +28,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/foggy"
-	        android:src="@drawable/ic_fog3" />
+	        android:src="@drawable/ic_wea_fog3" />
 	
 	    <ImageButton
 	        android:id="@+id/buttonCloudy"
@@ -36,15 +36,14 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/cloudy" 
-	        android:src="@drawable/ic_cloudy"/>
-	
+	        android:src="@drawable/ic_wea_cloud"/> 
 	    <ImageButton
 	        android:id="@+id/buttonPrecipitation"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/precipitation"
-	        android:src="@drawable/ic_precip" />
+	        android:src="@drawable/ic_wea_precip" />
 	    
 	    <ImageButton
 	        android:id="@+id/buttonThunderstorm"
@@ -89,7 +88,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/rain"
-	        android:src="@drawable/ic_rain3"  />
+	        android:src="@drawable/ic_wea_rain3"  />
 	    
 	    <ImageButton
 	        android:id="@+id/buttonSnow"
@@ -97,14 +96,14 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/snow"
-	        android:src="@drawable/ic_snow3"  />
+	        android:src="@drawable/ic_wea_snow3"  />
 	    <ImageButton
 	        android:id="@+id/buttonHail"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/hail"
-	        android:src="@drawable/ic_hail3"  />
+	        android:src="@drawable/ic_wea_hail3"  />
 	    </LinearLayout>
 	</ScrollView>
 	
@@ -146,7 +145,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/light_fog"
-	        android:src="@drawable/ic_fog1"  />
+	        android:src="@drawable/ic_wea_fog1"  />
 	    
 	    <ImageButton
 	        android:id="@+id/buttonFoggy2"
@@ -154,14 +153,14 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/moderate_fog"
-	        android:src="@drawable/ic_fog2"  />
+	        android:src="@drawable/ic_wea_fog2"  />
 	    <ImageButton
 	        android:id="@+id/buttonFoggy3"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/heavy_fog"
-	        android:src="@drawable/ic_fog3"  />
+	        android:src="@drawable/ic_wea_fog3"  />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -200,7 +199,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/partly_cloudy"
-	        android:src="@drawable/ic_cloudy1"  />
+	        android:src="@drawable/ic_wea_cloud1"  />
 	    
 	    <ImageButton
 	        android:id="@+id/buttonCloudy2"
@@ -208,14 +207,14 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/mostly_cloudy"
-	        android:src="@drawable/ic_cloudy2"  />
+	        android:src="@drawable/ic_wea_cloud2"  />
 	    <ImageButton
 	        android:id="@+id/buttonCloudy3"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/very_cloudy"
-	        android:src="@drawable/ic_cloudy"  />
+	        android:src="@drawable/ic_wea_cloud"  />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -254,7 +253,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/low_precip" 
-	        android:src="@drawable/ic_rain1"/>
+	        android:src="@drawable/ic_wea_rain1"/>
 	    
 	    <ImageButton
 	        android:id="@+id/buttonModeratePrecip"
@@ -262,7 +261,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/moderate_precip"
-	        android:src="@drawable/ic_rain2"/>
+	        android:src="@drawable/ic_wea_rain2"/>
 	    
 	    <ImageButton
 	        android:id="@+id/buttonHeavyPrecip"
@@ -270,7 +269,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/heavy_precip"
-	        android:src="@drawable/ic_rain3" />
+	        android:src="@drawable/ic_wea_rain3" />
 	    </LinearLayout>
 	</ScrollView>
 	<TextView 
@@ -363,7 +362,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/calm"
-	       	android:src="@drawable/ic_wind0" />
+	       	android:src="@drawable/ic_wea_wind0" />
 	        
 	    <ImageButton
 	        android:id="@+id/buttonIsWindy1"
@@ -371,7 +370,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/windyOne" 
-	        android:src="@drawable/ic_wind1"
+	        android:src="@drawable/ic_wea_wind1"
 	        />
 
 	   	<ImageButton
@@ -380,7 +379,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/windyTwo" 
-	        android:src="@drawable/ic_wind2"
+	        android:src="@drawable/ic_wea_wind2"
 	        />
 	    	    
 	   	
@@ -390,7 +389,7 @@
 	        android:layout_height="wrap_content"
 	        style="?android:attr/buttonBarButtonStyle"
 	        android:text="@string/windyThree" 
-	        android:src="@drawable/ic_wind3"
+	        android:src="@drawable/ic_wea_wind3"
 	        />
 	    </LinearLayout>
 	</ScrollView>
