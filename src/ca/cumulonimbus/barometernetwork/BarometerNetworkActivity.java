@@ -586,6 +586,20 @@ public class BarometerNetworkActivity extends MapActivity implements
 		}
 	}
 
+	public void openMyInfo() {
+		if (recents == null) {
+			log("recents null RETURNING");
+			return;
+		} else if (recents.size() == 0) {
+			log("recents 0, RETURNING");
+			return;
+		}
+		Chart chart = new Chart(getApplicationContext());
+		Intent myInfoIntent = chart.getChartIntent(recents);
+		startActivity(myInfoIntent);
+
+	}
+	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			log("client says : service connected");
@@ -787,9 +801,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 												// barometerdetected
 			startActivityForResult(i, 1);
 		} else if (item.getItemId() == R.id.menu_my_info) {
-			// TODO: Implement
-		} else if (item.getItemId() == R.id.menu_submit_reading) {
-			// TODO: Implement
+			openMyInfo();
 		} else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
 		} else if (item.getItemId() == R.id.send_debug_log) {

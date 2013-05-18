@@ -15,11 +15,6 @@
       android:icon="@drawable/ic_menu_stats"
       android:enabled="true"
       android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_submit_reading"
-      android:title="@string/submitReading"
-      android:icon="@drawable/ic_menu_update"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
     <item android:id="@+id/menu_log_viewer"
       android:title="@string/view_log"
       android:icon="@drawable/ic_menu_log"
