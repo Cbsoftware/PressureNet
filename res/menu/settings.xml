@@ -24,7 +24,8 @@
       android:title="@string/view_log"
       android:icon="@drawable/ic_menu_log"
       android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
+      android:visible="true"
+      android:showAsAction="never" />
     <item android:id="@+id/menu_settings"
       android:title="@string/settings"
       android:icon="@drawable/ic_menu_settings"
@@ -35,30 +36,13 @@
       android:enabled="true"
       android:showAsAction="never"
       android:visible="true" />    
-        <!-- 
-    <item android:id="@+id/menu_reload"
-      android:title="@string/load"
-      android:icon="@drawable/ic_menu_refresh"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
-     -->      
-    <!-- <item android:id="@+id/menu_about"
-      android:title="@string/about"
-      android:icon="@drawable/ic_menu_settings"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" /> --> 
-    
+
 <item android:id="@+id/send_debug_log"
       android:title="@string/send_debug_log"
       android:enabled="true"
       android:showAsAction="never" 
-      android:visible="true"/>
+      android:visible="false"/>
     
-    <item android:id="@+id/menu_check_trend"
-      android:title="notify [debug]"
-      android:enabled="true"
-      android:showAsAction="never"
-      android:visible="false" />
     
    <item android:id="@+id/menu_about"
       android:title="@string/about"
