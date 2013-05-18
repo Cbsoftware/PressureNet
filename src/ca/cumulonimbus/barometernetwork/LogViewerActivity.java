@@ -1,6 +1,8 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -76,8 +78,13 @@ public class LogViewerActivity extends Activity {
 					
 					String rawLog = "";
 					for (CbObservation obs : recents) {
-						rawLog += obs.getTime() + ": " + obs.getObservationValue()
-								+ "\n";
+						Calendar c = Calendar.getInstance();
+						c.setTimeInMillis(obs.getTime());
+						String dateString = c.getTime().toLocaleString();
+						DecimalFormat df = new DecimalFormat("####.00");
+						String valueString = df.format(obs.getObservationValue());
+
+						rawLog += dateString + ": " + valueString + "\n";
 					}
 					logText = (TextView) findViewById(R.id.editLog);
 					logText.setText(rawLog);
