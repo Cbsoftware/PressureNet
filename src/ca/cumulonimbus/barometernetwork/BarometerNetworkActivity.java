@@ -754,16 +754,11 @@ public class BarometerNetworkActivity extends MapActivity implements
 	 * most useful elements show for the right users
 	 */
 	public void cleanUI(Menu menu) {
-		if (false) { // TODO: Fix: was barometerdetected
-			// keep the UI as-is. default assumes barometer exists :)
-			// ensure the right items are always visible, though, in case of
-			// detection error
-		} else {
-			// hide some menu items that are barometer-specific
-			menu.removeItem(R.id.menu_my_info);
-			menu.removeItem(R.id.menu_submit_reading);
-			menu.removeItem(R.id.menu_log_viewer);
-		}
+		// TODO: implement
+		// hide some menu items that are barometer-specific
+		//menu.removeItem(R.id.menu_my_info);
+		//menu.removeItem(R.id.menu_submit_reading);
+		//menu.removeItem(R.id.menu_log_viewer);
 
 		if (!debugMode) {
 			// hide menu item
@@ -796,7 +791,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// TODO: Implement
 		} else if (item.getItemId() == R.id.menu_log_viewer) {
-			showRecentHistory();
+			viewLog();
 		} else if (item.getItemId() == R.id.send_debug_log) {
 			// send logs to Cumulonimbus
 			emailLogs();
@@ -947,16 +942,12 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	// Give a quick overview of recent
 	// submissions
-	public void showRecentHistory() {
-		String log = "";
-		ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
+	public void viewLog() {
 		try {
-			// TODO: Implement with CbService
 			Intent intent = new Intent(this, LogViewerActivity.class);
-			intent.putExtra("log", log);
 			startActivity(intent);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		}
 	}
 
@@ -1648,8 +1639,6 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void updateVisibleReading() {
-		System.out.println("update visible reading " + bestPressure);
-
 		TextView textView = (TextView) findViewById(R.id.textReading);
 		if (recentPressureReading != 0.0) {
 			textView.setVisibility(View.VISIBLE);
@@ -1723,7 +1712,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
-			System.out.println("new app pressure reading " + event.values[0]);
+			//  System.out.println("new app pressure reading " + event.values[0]);
 			recentPressureReading = event.values[0];
 			updateVisibleReading();
 		}

@@ -155,7 +155,7 @@ public class Chart {
 			if(red<0) {
 				red = 0;
 			}
-			System.out.println("rgb " + red + ", " + green + "," + blue);
+//			System.out.println("rgb " + red + ", " + green + "," + blue);
 			colors[i] = Color.rgb(red, green, blue);
 		}
 		
