@@ -27,8 +27,7 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class DataManagementActivity extends Activity {
 
-	Button buttonClearLocalCache;
-	Button buttonClearAPICache;
+	Button buttonClearCache;
 	
 	boolean mBound;
 	Messenger mService = null;
@@ -137,30 +136,18 @@ public class DataManagementActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
 
-		buttonClearAPICache = (Button) findViewById(R.id.buttonClearAPICache);
-		buttonClearLocalCache = (Button) findViewById(R.id.buttonClearMyContributionsCache);
-
-		buttonClearAPICache.setOnClickListener(new OnClickListener() {
+		buttonClearCache = (Button) findViewById(R.id.buttonClearCache);
+		buttonClearCache.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				clearAPICache();
-			}
-		});
-
-		
-
-		buttonClearLocalCache.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
 				clearLocalCache();
+
 			}
 		});
-		
-	
-	
-		
+
+			
 		bindCbService();
 	}
 	
