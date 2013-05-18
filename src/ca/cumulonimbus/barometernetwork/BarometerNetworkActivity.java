@@ -185,7 +185,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	public void getStoredPreferences() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		preferenceUnit =  sharedPreferences.getString("units_prefs", "millibars");
+		preferenceUnit =  sharedPreferences.getString("units", "millibars");
 	}
 	
 	Runnable animate = new Runnable() {
@@ -1606,14 +1606,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 		textCallLog.setText("Refreshing...");
 		askForRecents(api);
 		askForCurrentConditions(api);
-
-		// make a fresh call with extra nearby data
-		//api.setMinLat(api.getMinLat() - .5);
-		//api.setMaxLat(api.getMaxLat() + .5);
-		//api.setMinLon(api.getMinLon() - .5);
-		//api.setMaxLon(api.getMaxLon() + .5);
 		makeAPICall(api);
-		makeCurrentConditionsAPICall(api);
+		//makeCurrentConditionsAPICall(api);
 	}
 
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
