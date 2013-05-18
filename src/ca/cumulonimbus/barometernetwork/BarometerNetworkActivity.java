@@ -133,7 +133,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
-	private int hoursAgoSelected = 1;
+	private double hoursAgoSelected = .1;
 
 	Handler timeHandler = new Handler();
 
@@ -183,7 +183,9 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void getStoredPreferences() {
-		
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		preferenceUnit =  sharedPreferences.getString("units_prefs", "millibars");
 	}
 	
 	Runnable animate = new Runnable() {
@@ -253,8 +255,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		adapterTime
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerTime.setAdapter(adapterTime);
-		spinnerTime.setSelection(2);
-
+		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
 		buttonStats.setOnClickListener(new OnClickListener() {
@@ -323,39 +324,37 @@ public class BarometerNetworkActivity extends MapActivity implements
 					return;
 				}
 
-				if (currentConditions.size() == 0) {
-					return;
-				}
 				// currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
 
-				Collections.sort(currentConditions,
-						new CbScience.ConditionTimeComparator());
-				Collections.sort(recents, new CbScience.TimeComparator());
-
-				long msAgoSelected = hoursAgoSelected * 60 * 60 * 1000;
+				long msAgoSelected = (int)(hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
-				long startTime = currentConditions.get(0).getTime();
+				
+				
+				if(currentConditions.size() > 0) {
+					Collections.sort(currentConditions,
+						new CbScience.ConditionTimeComparator());
+					long startTimeConditions = currentConditions.get(0).getTime();
 
-				ArrayList<ArrayList<CbCurrentCondition>> collectionConditions = new ArrayList<ArrayList<CbCurrentCondition>>();
-
-				log(currentConditions.size() + " current conditions over "
-						+ hoursAgoSelected);
-				for (CbCurrentCondition c : currentConditions) {
-					long time = c.getTime();
-					int group = (int) ((time - startTime) / singleTimeSpan);
-					c.setAnimateGroupNumber(group);
-
-					log("group " + group);
+					for (CbCurrentCondition c : currentConditions) {
+						long time = c.getTime();
+						int group = (int) ((time - startTimeConditions) / singleTimeSpan);
+						c.setAnimateGroupNumber(group);					}
+	
 				}
-
-				for (CbObservation o : recents) {
-					long time = o.getTime();
-					int group = (int) (Math.abs((time - startTime)) / singleTimeSpan);
-					o.setAnimateGroupNumber(group);
-
-					log("o group " + group);
+				if(recents.size()> 0) {
+					Collections.sort(recents, new CbScience.TimeComparator());
+					long startTimeReadings = recents.get(0).getTime();
+					
+					
+					for (CbObservation o : recents) {
+						long time = o.getTime();
+						int group = (int) (Math.abs((time - startTimeReadings)) / singleTimeSpan);
+						o.setAnimateGroupNumber(group);
+					}
+				
 				}
+				
 
 				timeHandler.postDelayed(animate, 0);
 			}
@@ -552,7 +551,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				} else {
 					log("conditions ARE NuLL");
 				}
-
+				createAndShowChart();
 				break;
 			default:
 				log("received default message");
@@ -1545,7 +1544,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		}
 	};
 
-	public CbApiCall buildMapAPICall(int hoursAgo) {
+	public CbApiCall buildMapAPICall(double hoursAgo) {
 		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
 		GeoPoint gp = mapView.getMapCenter();
 		int latE6 = gp.getLatitudeE6();
@@ -1555,7 +1554,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		double latitudeSpan = mapView.getLatitudeSpan();
 		double longitudeSpan = mapView.getLongitudeSpan();
 		long startTime = System.currentTimeMillis()
-				- (hoursAgo * 60 * 60 * 1000);
+				-  (int)((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		api.setMinLat(latitude - (latitudeSpan / 1E6));
@@ -1565,7 +1564,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(500);
+		api.setLimit(1000);
 		return api;
 	}
 
@@ -1586,24 +1585,22 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	public void makeMapApiCallAndLoadRecents() {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
+		textCallLog.setText("Refreshing...");
 		askForRecents(api);
 		askForCurrentConditions(api);
 
 		// make a fresh call with extra nearby data
-		api.setMinLat(api.getMinLat() - .5);
-		api.setMaxLat(api.getMaxLat() + .5);
-		api.setMinLon(api.getMinLon() - .5);
-		api.setMaxLon(api.getMaxLon() + .5);
+		//api.setMinLat(api.getMinLat() - .5);
+		//api.setMaxLat(api.getMaxLat() + .5);
+		//api.setMinLon(api.getMinLon() - .5);
+		//api.setMaxLon(api.getMaxLon() + .5);
 		makeAPICall(api);
-		createAndShowChart();
 	}
 
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
-				BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-
 				makeMapApiCallAndLoadRecents();
 
 			}
@@ -1664,10 +1661,12 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void updateVisibleReading() {
+		getStoredPreferences();
+		
 		if (recentPressureReading != 0.0) {
 			DecimalFormat df = new DecimalFormat("####.00");
 			String toPrint = df.format(recentPressureReading);
-			buttonBarometer.setText(toPrint + " UNIT");
+			buttonBarometer.setText(toPrint + " " + preferenceUnit);
 		} else {
 			buttonBarometer.setText("No barometer detected.");
 		}
