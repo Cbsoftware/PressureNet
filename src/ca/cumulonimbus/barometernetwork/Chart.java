@@ -93,7 +93,11 @@ public class Chart {
 		setRenderer(renderer, colors, styles, userMap);
 		return renderer;
 	}
-
+	
+	public int random128()  {
+		return 1 + (int)(Math.random() * ((128 - 1) + 1));
+	}
+	
 	public View drawChart(ArrayList<CbObservation> obsList) {
 		HashMap<String, ArrayList<CbObservation>> userMap =  mixedDataToUserMap(obsList);
 		System.out.println("drawing chart " + obsList.size() + " data points from " + userMap.size() + " users");
@@ -143,8 +147,16 @@ public class Chart {
 	
 		
 		int[] colors = new int[count];
+		int colorVal = 16;
 		for(i = 0; i<count; i++ ) {
-			colors[i] = Color.rgb(0, 192-(i*2), 255-(i*2));
+			int blue = 128 + random128();
+			int green = blue - (3*colorVal);
+			int red = blue - (11*colorVal);
+			if(red<0) {
+				red = 0;
+			}
+			System.out.println("rgb " + red + ", " + green + "," + blue);
+			colors[i] = Color.rgb(red, green, blue);
 		}
 		
 		
