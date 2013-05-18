@@ -64,25 +64,6 @@ public class DataManagementActivity extends Activity {
 			System.out.println("error: not bound");
 		}
 	}
-
-	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
-		apiCall.setCallType("Conditions");
-		Toast.makeText(getApplicationContext(), "Starting Conditions API call",
-				Toast.LENGTH_SHORT).show();
-		if (mBound) {
-			Message msg = Message.obtain(null, CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL,
-					apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("data management error: not bound for condition api");
-		}
-	}
-	
 	
 	private void makeAPICall(CbApiCall apiCall) {
 		apiCall.setCallType("Readings");

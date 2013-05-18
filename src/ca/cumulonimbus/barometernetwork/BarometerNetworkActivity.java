@@ -133,7 +133,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
-	private double hoursAgoSelected = .1;
+	private double hoursAgoSelected = 1/6;
 
 	Handler timeHandler = new Handler();
 
@@ -368,7 +368,9 @@ public class BarometerNetworkActivity extends MapActivity implements
 				String selected = arg0.getSelectedItem().toString();
 				// TODO: Fix hack
 				CbApiCall apiCall = new CbApiCall();
-				if (selected.equals("1 hour")) {
+				if (selected.equals("10 minutes")) {
+					hoursAgoSelected = 1 / 6;
+				} else if (selected.equals("1 hour")) {
 					hoursAgoSelected = 1;
 				} else if (selected.equals("3 hours")) {
 					hoursAgoSelected = 3;
@@ -401,6 +403,22 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	}
 
+	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
+		apiCall.setCallType("Conditions");
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL,
+					apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("data management error: not bound for condition api");
+		}
+	}
+	
 	private void askForCurrentConditions(CbApiCall api) {
 
 		if (mBound) {
@@ -1595,6 +1613,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		//api.setMinLon(api.getMinLon() - .5);
 		//api.setMaxLon(api.getMaxLon() + .5);
 		makeAPICall(api);
+		makeCurrentConditionsAPICall(api);
 	}
 
 	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {

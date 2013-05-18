@@ -20,6 +20,7 @@
 	<string name="data">Data</string>
 	<string name="chartTimeDisplay">Chart Time Display</string>
     <string-array name="display_time_chart">
+        <item name="1 hour">10 minutes</item>
         <item name="1 hour">1 hour</item>
         <item name="3 hours">3 hours</item>
         <item name="6 hours ">6 hours</item>
