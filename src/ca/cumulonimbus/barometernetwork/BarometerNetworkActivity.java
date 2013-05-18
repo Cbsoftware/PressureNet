@@ -58,6 +58,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -83,7 +84,7 @@ import com.google.android.maps.OverlayItem;
 
 public class BarometerNetworkActivity extends MapActivity implements
 		SensorEventListener {
-
+	
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
 	double mReading = 0.0;
@@ -129,6 +130,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private SeekBar seekTime;
 	private ImageButton buttonPlay;
 	private ImageButton buttonStats;
+	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
 	private int hoursAgoSelected = 1;
@@ -154,6 +156,12 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private boolean humidityReadingsActive = false;
 	private boolean temperatureReadingsActive = false;
 
+	/**
+	 * preferences
+	 */
+	private String preferenceUnit = "";
+	
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -162,7 +170,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		setContentView(R.layout.main);
 		// migratePreferences();
 		startLog();
-		// getStoredPreferences();
+		getStoredPreferences();
 		setUpUIListeners();
 		setId();
 		setUpFiles();
@@ -174,6 +182,10 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	}
 
+	public void getStoredPreferences() {
+		
+	}
+	
 	Runnable animate = new Runnable() {
 		@Override
 		public void run() {
@@ -233,6 +245,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
 		buttonStats = (ImageButton) findViewById(R.id.buttonStats);
+		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
@@ -1651,14 +1664,12 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void updateVisibleReading() {
-		TextView textView = (TextView) findViewById(R.id.textReading);
 		if (recentPressureReading != 0.0) {
-			textView.setVisibility(View.VISIBLE);
 			DecimalFormat df = new DecimalFormat("####.00");
 			String toPrint = df.format(recentPressureReading);
-			textView.setText(toPrint + " UNIT");
+			buttonBarometer.setText(toPrint + " UNIT");
 		} else {
-			textView.setText("No barometer detected.");
+			buttonBarometer.setText("No barometer detected.");
 		}
 	}
 

@@ -84,12 +84,13 @@
             android:layout_weight=".5"
             android:text="" />
 
-        <ImageButton
-            android:id="@+id/imageBarometer"
+        <Button
+            android:id="@+id/imageButtonBarometer"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_barometer" />
+            android:drawableLeft="@drawable/ic_menu_barometer"
+            android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/textReading"
