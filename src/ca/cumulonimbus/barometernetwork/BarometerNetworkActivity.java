@@ -159,7 +159,11 @@ public class BarometerNetworkActivity extends MapActivity implements
 	/**
 	 * preferences
 	 */
-	private String preferenceUnit = "";
+	private String 	preferenceUnit;
+	private String 	preferenceCollectionFrequency;
+	private boolean preferenceShareData;
+	private String 	preferenceShareLevel;
+	
 	
 	
 	/** Called when the activity is first created. */
@@ -182,10 +186,35 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	}
 
+	/**
+	 * Check the Android SharedPreferences for important values.
+	 * Save relevant ones to CbSettings for easy access in submitting readings
+	 */
 	public void getStoredPreferences() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		preferenceUnit =  sharedPreferences.getString("units", "millibars");
+		preferenceCollectionFrequency = sharedPreferences.getString("autofrequency", "10 minutes");
+		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
+		preferenceShareLevel = sharedPreferences.getString("sharing_preference", "Us, Researchers and Forecasters");
+		
+		CbSettingsHandler settings = new CbSettingsHandler(getApplicationContext());
+		settings.setSharingData(preferenceShareData);
+		settings.setDataCollectionFrequency(1000 * 60 * 1); // TODO: fix hack for preferenceCollectionFrequency
+		settings.setShareLevel(preferenceShareLevel);
+		settings.saveSettings();
+		log("saved new settings; sharing " + preferenceShareLevel);
+		
+	}
+	
+	/**
+	 * Check the Android SharedPreferences for important values.
+	 * Save relevant ones to CbSettings for easy access in submitting readings
+	 */
+	public String getUnitPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		return sharedPreferences.getString("units", "millibars");
 	}
 	
 	Runnable animate = new Runnable() {
@@ -196,7 +225,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 100);
+				timeHandler.postDelayed(animate, 80);
 			} else {
 				Drawable play = getResources().getDrawable(
 						R.drawable.ic_menu_play);
@@ -500,6 +529,22 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	}
 
+	public void askForSettings() {
+		if (mBound) {
+			log("asking for settings");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS,0,0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
+	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -525,6 +570,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				break;
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
+				System.out.println("got settings, share level " + activeSettings.getShareLevel());
 				if (activeSettings != null) {
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
@@ -1639,7 +1685,9 @@ public class BarometerNetworkActivity extends MapActivity implements
 		startDataStream();
 		registerReceiver(receiveForMap, new IntentFilter(
 				BarometerMapView.CUSTOM_INTENT));
-
+		
+		getStoredPreferences();
+		
 		// for UI, not data collection
 		startSensorListeners();
 	}
@@ -1674,7 +1722,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void updateVisibleReading() {
-		getStoredPreferences();
+		preferenceUnit = getUnitPreference();
 		
 		if (recentPressureReading != 0.0) {
 			DecimalFormat df = new DecimalFormat("####.00");
