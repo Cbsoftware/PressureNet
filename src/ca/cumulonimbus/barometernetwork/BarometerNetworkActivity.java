@@ -10,26 +10,19 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -74,17 +67,11 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
+import com.google.android.gms.maps.GoogleMap;
 
-public class BarometerNetworkActivity extends MapActivity implements
+public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
-	
+
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
 	double mReading = 0.0;
@@ -133,7 +120,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
-	private double hoursAgoSelected = 1/6;
+	private double hoursAgoSelected = 1 / 6;
 
 	Handler timeHandler = new Handler();
 
@@ -159,12 +146,14 @@ public class BarometerNetworkActivity extends MapActivity implements
 	/**
 	 * preferences
 	 */
-	private String 	preferenceUnit;
-	private String 	preferenceCollectionFrequency;
+	private String preferenceUnit;
+	private String preferenceCollectionFrequency;
 	private boolean preferenceShareData;
-	private String 	preferenceShareLevel;
-	
-	
+	private String preferenceShareLevel;
+
+
+	private GoogleMap mMap;
+
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -178,45 +167,50 @@ public class BarometerNetworkActivity extends MapActivity implements
 		setUpUIListeners();
 		setId();
 		setUpFiles();
-		setUpMap();
 		showWelcomeActivity();
 		setUpActionBar();
 		startCbService();
 		bindCbService();
-
+		//setUpMap();
 	}
-
+	
+	
 	/**
-	 * Check the Android SharedPreferences for important values.
-	 * Save relevant ones to CbSettings for easy access in submitting readings
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
 	 */
 	public void getStoredPreferences() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		preferenceUnit =  sharedPreferences.getString("units", "millibars");
-		preferenceCollectionFrequency = sharedPreferences.getString("autofrequency", "10 minutes");
+		preferenceUnit = sharedPreferences.getString("units", "millibars");
+		preferenceCollectionFrequency = sharedPreferences.getString(
+				"autofrequency", "10 minutes");
 		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
-		preferenceShareLevel = sharedPreferences.getString("sharing_preference", "Us, Researchers and Forecasters");
-		
-		CbSettingsHandler settings = new CbSettingsHandler(getApplicationContext());
+		preferenceShareLevel = sharedPreferences.getString(
+				"sharing_preference", "Us, Researchers and Forecasters");
+
+		CbSettingsHandler settings = new CbSettingsHandler(
+				getApplicationContext());
 		settings.setSharingData(preferenceShareData);
-		settings.setDataCollectionFrequency(1000 * 60 * 1); // TODO: fix hack for preferenceCollectionFrequency
+		settings.setDataCollectionFrequency(1000 * 60 * 1); // TODO: fix hack
+															// for
+															// preferenceCollectionFrequency
 		settings.setShareLevel(preferenceShareLevel);
 		settings.saveSettings();
 		log("saved new settings; sharing " + preferenceShareLevel);
-		
+
 	}
-	
+
 	/**
-	 * Check the Android SharedPreferences for important values.
-	 * Save relevant ones to CbSettings for easy access in submitting readings
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
 	 */
 	public String getUnitPreference() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		return sharedPreferences.getString("units", "millibars");
 	}
-	
+
 	Runnable animate = new Runnable() {
 		@Override
 		public void run() {
@@ -244,8 +238,6 @@ public class BarometerNetworkActivity extends MapActivity implements
 	}
 
 	public void updateMapWithSeekTimeData() {
-		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		List<Overlay> mapOverlays = mv.getOverlays();
 
 		ArrayList<CbWeather> thisFrameCondition = new ArrayList<CbWeather>();
 		for (CbCurrentCondition c : currentConditions) {
@@ -256,6 +248,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 			}
 		}
 
+		// TODO: Local recents only
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
 		for (CbObservation r : recents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
@@ -356,34 +349,33 @@ public class BarometerNetworkActivity extends MapActivity implements
 				// currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
 
-				long msAgoSelected = (int)(hoursAgoSelected * 60 * 60 * 1000);
+				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
-				
-				
-				if(currentConditions.size() > 0) {
+
+				if (currentConditions.size() > 0) {
 					Collections.sort(currentConditions,
-						new CbScience.ConditionTimeComparator());
-					long startTimeConditions = currentConditions.get(0).getTime();
+							new CbScience.ConditionTimeComparator());
+					long startTimeConditions = currentConditions.get(0)
+							.getTime();
 
 					for (CbCurrentCondition c : currentConditions) {
 						long time = c.getTime();
 						int group = (int) ((time - startTimeConditions) / singleTimeSpan);
-						c.setAnimateGroupNumber(group);					}
-	
+						c.setAnimateGroupNumber(group);
+					}
+
 				}
-				if(recents.size()> 0) {
+				if (recents.size() > 0) {
 					Collections.sort(recents, new CbScience.TimeComparator());
 					long startTimeReadings = recents.get(0).getTime();
-					
-					
+
 					for (CbObservation o : recents) {
 						long time = o.getTime();
 						int group = (int) (Math.abs((time - startTimeReadings)) / singleTimeSpan);
 						o.setAnimateGroupNumber(group);
 					}
-				
+
 				}
-				
 
 				timeHandler.postDelayed(animate, 0);
 			}
@@ -435,8 +427,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
 		apiCall.setCallType("Conditions");
 		if (mBound) {
-			Message msg = Message.obtain(null, CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL,
-					apiCall);
+			Message msg = Message.obtain(null,
+					CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL, apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -444,10 +436,11 @@ public class BarometerNetworkActivity extends MapActivity implements
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("data management error: not bound for condition api");
+			System.out
+					.println("data management error: not bound for condition api");
 		}
 	}
-	
+
 	private void askForCurrentConditions(CbApiCall api) {
 
 		if (mBound) {
@@ -533,7 +526,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 		if (mBound) {
 			log("asking for settings");
 
-			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS,0,0);
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS,
+					0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -544,7 +538,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 			log("error: not bound");
 		}
 	}
-	
+
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -570,7 +564,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 				break;
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
-				System.out.println("got settings, share level " + activeSettings.getShareLevel());
+				System.out.println("got settings, share level "
+						+ activeSettings.getShareLevel());
 				if (activeSettings != null) {
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
@@ -675,7 +670,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 		startActivity(myInfoIntent);
 
 	}
-	
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			log("client says : service connected");
@@ -846,9 +841,9 @@ public class BarometerNetworkActivity extends MapActivity implements
 	public void cleanUI(Menu menu) {
 		// TODO: implement
 		// hide some menu items that are barometer-specific
-		//menu.removeItem(R.id.menu_my_info);
-		//menu.removeItem(R.id.menu_submit_reading);
-		//menu.removeItem(R.id.menu_log_viewer);
+		// menu.removeItem(R.id.menu_my_info);
+		// menu.removeItem(R.id.menu_submit_reading);
+		// menu.removeItem(R.id.menu_log_viewer);
 
 		if (!debugMode) {
 			// hide menu item
@@ -1086,154 +1081,84 @@ public class BarometerNetworkActivity extends MapActivity implements
 		}
 	}
 
-	// Zoom into the user's location, add pinch zoom controls
-	public void setUpMap() {
-		log("setting up map");
-		// Add zoom
-		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
-
-		// Set default coordinates (centered around the user's location)
-
-		try {
-			MapController mc = mapView.getController();
-			LocationManager lm = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			mc.setZoom(15);
-			if (loc.getLatitude() != 0) {
-				// log("setting center " + loc.getLatitude() + " " +
-				// loc.getLongitude());
-				mc.animateTo(new GeoPoint((int) (loc.getLatitude() * 1E6),
-						(int) (loc.getLongitude() * 1E6)));
-			} else {
-				log("no known last location");
-			}
-
-			mapView.invalidate();
-			mapView.refreshDrawableState();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	// Custom map overlays for barometer readings
-	public class MapOverlay extends ItemizedOverlay<OverlayItem> {
-
-		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-		Context mContext;
-		private int mTextSize;
-
-		@Override
-		protected boolean onTap(int index) {
-			// TODO: Implement
-
-			return true;
-		}
-
-		public MapOverlay(Drawable defaultMarker, Context context, int textSize) {
-			super(boundCenterBottom(defaultMarker));
-			mContext = context;
-			mTextSize = textSize;
-		}
-
-		public MapOverlay(Drawable defaultMarker, Context context) {
-			super(defaultMarker);
-			mContext = context;
-		}
-
-		public MapOverlay(Drawable defaultMarker) {
-			super(boundCenterBottom(defaultMarker));
-		}
-
-		public void addOverlay(OverlayItem overlay) {
-			mOverlays.add(overlay);
-			populate();
-		}
-
-		public void removeOverlay(OverlayItem overlay) {
-			mOverlays.remove(overlay);
-			populate();
-		}
-
-		@Override
-		protected OverlayItem createItem(int i) {
-			return mOverlays.get(i);
-		}
-
-		@Override
-		public int size() {
-			return mOverlays.size();
-		}
-
-		// Draw all the overlay data points onto the map. Include an icon as
-		// well as
-		@Override
-		public void draw(android.graphics.Canvas canvas, MapView mapView,
-				boolean shadow) {
-			shadow = false;
-			super.draw(canvas, mapView, shadow);
-
-			if (shadow == false) {
-				// cycle through all overlays
-				for (int index = 0; index < mOverlays.size(); index++) {
-					try {
-						OverlayItem item = mOverlays.get(index);
-
-						// Converts lat/lng-Point to coordinates on the screen
-						GeoPoint point = item.getPoint();
-						Point ptScreenCoord = new Point();
-						mapView.getProjection().toPixels(point, ptScreenCoord);
-
-						// Paint
-						Paint paint = new Paint();
-						paint.setTextAlign(Paint.Align.CENTER);
-						paint.setTextSize(mTextSize);
-						paint.setShadowLayer(15, 5, 5, 0);
-						paint.setARGB(255, 0, 0, 0); // alpha, r, g, b (Black,
-														// semi see-through)
-						paint.setAntiAlias(true);
-
-						// String toPrint = item.getTitle().substring(0,
-						// item.getTitle().length() - 5);
-						String toPrint = item.getTitle().split(" ")[0];
-						// Double value = Double.parseDouble(toPrint);
-						// DecimalFormat df = new DecimalFormat("####.00");
-						// toPrint = df.format(value);
-
-						// show text to the right of the icon
-						float textWidth = paint.measureText(toPrint);
-						Paint bgPaint = new Paint();
-						bgPaint.setColor(Color.WHITE);
-
-						Rect rect = new Rect((int) (ptScreenCoord.x
-								- (textWidth / 2) - 2), ptScreenCoord.y,
-								(int) (ptScreenCoord.x + (textWidth / 2) + 2),
-								ptScreenCoord.y + mTextSize + 5);
-
-						if (toPrint.length() == 0) {
-							canvas.drawRoundRect(new RectF(rect), 6, 6, bgPaint);
-						}
-						canvas.drawText(toPrint, ptScreenCoord.x,
-								ptScreenCoord.y + mTextSize, paint);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
+	/*
+	 * // Custom map overlays for barometer readings public class MapOverlay
+	 * extends ItemizedOverlay<OverlayItem> {
+	 * 
+	 * private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	 * Context mContext; private int mTextSize;
+	 * 
+	 * @Override protected boolean onTap(int index) { // TODO: Implement
+	 * 
+	 * return true; }
+	 * 
+	 * public MapOverlay(Drawable defaultMarker, Context context, int textSize)
+	 * { super(boundCenterBottom(defaultMarker)); mContext = context; mTextSize
+	 * = textSize; }
+	 * 
+	 * public MapOverlay(Drawable defaultMarker, Context context) {
+	 * super(defaultMarker); mContext = context; }
+	 * 
+	 * public MapOverlay(Drawable defaultMarker) {
+	 * super(boundCenterBottom(defaultMarker)); }
+	 * 
+	 * public void addOverlay(OverlayItem overlay) { mOverlays.add(overlay);
+	 * populate(); }
+	 * 
+	 * public void removeOverlay(OverlayItem overlay) {
+	 * mOverlays.remove(overlay); populate(); }
+	 * 
+	 * @Override protected OverlayItem createItem(int i) { return
+	 * mOverlays.get(i); }
+	 * 
+	 * @Override public int size() { return mOverlays.size(); }
+	 * 
+	 * // Draw all the overlay data points onto the map. Include an icon as //
+	 * well as
+	 * 
+	 * @Override public void draw(android.graphics.Canvas canvas, MapView
+	 * mapView, boolean shadow) { shadow = false; super.draw(canvas, mapView,
+	 * shadow);
+	 * 
+	 * if (shadow == false) { // cycle through all overlays for (int index = 0;
+	 * index < mOverlays.size(); index++) { try { OverlayItem item =
+	 * mOverlays.get(index);
+	 * 
+	 * // Converts lat/lng-Point to coordinates on the screen GeoPoint point =
+	 * item.getPoint(); Point ptScreenCoord = new Point();
+	 * mapView.getProjection().toPixels(point, ptScreenCoord);
+	 * 
+	 * // Paint Paint paint = new Paint();
+	 * paint.setTextAlign(Paint.Align.CENTER); paint.setTextSize(mTextSize);
+	 * paint.setShadowLayer(15, 5, 5, 0); paint.setARGB(255, 0, 0, 0); // alpha,
+	 * r, g, b (Black, // semi see-through) paint.setAntiAlias(true);
+	 * 
+	 * // String toPrint = item.getTitle().substring(0, //
+	 * item.getTitle().length() - 5); String toPrint =
+	 * item.getTitle().split(" ")[0]; // Double value =
+	 * Double.parseDouble(toPrint); // DecimalFormat df = new
+	 * DecimalFormat("####.00"); // toPrint = df.format(value);
+	 * 
+	 * // show text to the right of the icon float textWidth =
+	 * paint.measureText(toPrint); Paint bgPaint = new Paint();
+	 * bgPaint.setColor(Color.WHITE);
+	 * 
+	 * Rect rect = new Rect((int) (ptScreenCoord.x - (textWidth / 2) - 2),
+	 * ptScreenCoord.y, (int) (ptScreenCoord.x + (textWidth / 2) + 2),
+	 * ptScreenCoord.y + mTextSize + 5);
+	 * 
+	 * if (toPrint.length() == 0) { canvas.drawRoundRect(new RectF(rect), 6, 6,
+	 * bgPaint); } canvas.drawText(toPrint, ptScreenCoord.x, ptScreenCoord.y +
+	 * mTextSize, paint); } catch (Exception e) { e.printStackTrace(); } } } } }
+	 */
 
 	// Assume that matching latitude and longitude can only be you.
 	public boolean obsIsMe(CbObservation ob) {
 		return ((ob.getUser_id().equals(android_id)));
 	}
 
-	public MapOverlay getCurrentConditionOverlay(CbCurrentCondition condition,
-			Drawable drawable) {
-		MapOverlay overlay = new MapOverlay(drawable, this, mapFontSize);
+	public LayerDrawable getCurrentConditionDrawable(
+			CbCurrentCondition condition, Drawable drawable) {
 
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources()
 				.getDrawable(R.drawable.bg_wea_square));
@@ -1244,7 +1169,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 			Drawable[] layers = { weatherBackgroundDrawable,
 					resizeDrawable(sunDrawable) };
 			LayerDrawable layerDrawable = new LayerDrawable(layers);
-			overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+			return layerDrawable;
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.precipitation))) {
 			if (condition.getPrecipitation_type().equals(
@@ -1255,21 +1180,21 @@ public class BarometerNetworkActivity extends MapActivity implements
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable rainDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable rainDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				}
 			} else if (condition.getPrecipitation_type().equals(
 					getString(R.string.snow))) {
@@ -1279,21 +1204,21 @@ public class BarometerNetworkActivity extends MapActivity implements
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable snowDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_snow2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable snowDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_snow3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				}
 			} else if (condition.getPrecipitation_type().equals(
 					getString(R.string.hail))) {
@@ -1303,21 +1228,21 @@ public class BarometerNetworkActivity extends MapActivity implements
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
 					Drawable hailDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_hail2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
 					Drawable hailDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_hail3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
-					overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+					return layerDrawable;
 				}
 			}
 		} else if (condition.getGeneral_condition().equals(
@@ -1329,7 +1254,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (condition.getCloud_type().equals(
 					getString(R.string.mostly_cloudy))) {
 				Drawable cloudDrawable = this.getResources().getDrawable(
@@ -1337,7 +1262,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (condition.getCloud_type().equals(
 					getString(R.string.very_cloudy))) {
 				Drawable cloudDrawable = this.getResources().getDrawable(
@@ -1345,14 +1270,14 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else {
 				Drawable cloudDrawable = this.getResources().getDrawable(
 						R.drawable.ic_wea_col_cloud);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			}
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.foggy))) {
@@ -1363,7 +1288,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (condition.getFog_thickness().equals(
 					getString(R.string.moderate_fog))) {
 				Drawable fogDrawable = this.getResources().getDrawable(
@@ -1371,7 +1296,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (condition.getFog_thickness().equals(
 					getString(R.string.heavy_fog))) {
 				Drawable fogDrawable = this.getResources().getDrawable(
@@ -1379,14 +1304,14 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else {
 				Drawable fogDrawable = this.getResources().getDrawable(
 						R.drawable.ic_wea_col_fog2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			}
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.thunderstorm))) {
@@ -1396,7 +1321,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 1.0) {
 				Drawable thunderstormDrawable = this.getResources()
@@ -1404,7 +1329,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 2.0) {
 				Drawable thunderstormDrawable = this.getResources()
@@ -1412,18 +1337,13 @@ public class BarometerNetworkActivity extends MapActivity implements
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
-				overlay = new MapOverlay(layerDrawable, this, mapFontSize);
+				return layerDrawable;
 			}
 		} else {
-			// there is no current condition. show just the barometer icon
-			// perhaps with a tendency arrow
-			// log("No condition found, default: " +
-			// getString(R.string.precipitation) + " " +
-			// condition.getGeneral_condition());
 
 		}
 
-		return overlay;
+		return null;
 	}
 
 	// The gesture threshold expressed in dp
@@ -1443,12 +1363,6 @@ public class BarometerNetworkActivity extends MapActivity implements
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataFrameToMap(ArrayList<CbWeather> frameConditions,
 			ArrayList<CbWeather> frameObservations) {
-		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		List<Overlay> mapOverlays = mv.getOverlays();
-
-		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.ic_marker);
-		mapOverlays.clear();
 
 		int totalEachAllowed = 30;
 		int currentObs = 0;
@@ -1459,27 +1373,9 @@ public class BarometerNetworkActivity extends MapActivity implements
 			for (CbWeather weatherObs : frameObservations) {
 				CbObservation obs = (CbObservation) weatherObs;
 
-				MapOverlay overlay;
+			
+				// TODO: add to map
 
-				// Pick an overlay icon depending on the reading and
-				// the current conditions. reading alone? reading with tendency?
-				// current condition alone? current condition with tendency?
-
-				// is there a current condition from the same user as this
-				// reading?
-				overlay = new MapOverlay(drawable, this, mapFontSize);
-
-				GeoPoint point = new GeoPoint(
-						(int) ((obs.getLocation().getLatitude()) * 1E6),
-						(int) ((obs.getLocation().getLongitude()) * 1E6));
-				String snippet = "s"; // condition.getUser_id();
-				String textForTitle = obs.getTrend();
-				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
-						snippet);
-				overlay.addOverlay(overlayitem);
-				mapOverlays.add(overlay);
-
-				mv.invalidate();
 				currentObs++;
 				if (currentObs > totalEachAllowed) {
 					break;
@@ -1488,29 +1384,14 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 			// Add singleton Current Conditions
 			for (CbWeather weather : frameConditions) {
-				MapOverlay overlay;
 				CbCurrentCondition condition = (CbCurrentCondition) weather;
 
-				// Pick an overlay icon depending on the reading and
-				// the current conditions. reading alone? reading with tendency?
-				// current condition alone? current condition with tendency?
+				LayerDrawable dr = getCurrentConditionDrawable(condition,
+						null);
 
-				// is there a current condition from the same user as this
-				// reading?
-				overlay = new MapOverlay(drawable, this, mapFontSize);
-				overlay = getCurrentConditionOverlay(condition, drawable);
+				
+				// TODO: add to map
 
-				GeoPoint point = new GeoPoint(
-						(int) ((condition.getLocation().getLatitude()) * 1E6),
-						(int) ((condition.getLocation().getLongitude()) * 1E6));
-				String snippet = "singleton_condition"; // condition.getUser_id();
-				String textForTitle = "";
-				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
-						snippet);
-				overlay.addOverlay(overlayitem);
-				mapOverlays.add(overlay);
-
-				mv.invalidate();
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
 					break;
@@ -1526,68 +1407,20 @@ public class BarometerNetworkActivity extends MapActivity implements
 		int totalEachAllowed = 30;
 		int currentObs = 0;
 		int currentCur = 0;
-		BarometerMapView mv = (BarometerMapView) findViewById(R.id.mapview);
-		List<Overlay> mapOverlays = mv.getOverlays();
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_marker);
-		mapOverlays.clear();
 
 		try {
 
-			// Add Barometer Readings and associated current Conditions
-			for (CbObservation obs : recents) {
-				MapOverlay overlay;
-
-				// Pick an overlay icon depending on the reading and
-				// the current conditions. reading alone? reading with tendency?
-				// current condition alone? current condition with tendency?
-
-				// is there a current condition from the same user as this
-				// reading?
-				overlay = new MapOverlay(drawable, this, mapFontSize);
-
-				GeoPoint point = new GeoPoint(
-						(int) ((obs.getLocation().getLatitude()) * 1E6),
-						(int) ((obs.getLocation().getLongitude()) * 1E6));
-				String snippet = "s"; // condition.getUser_id();
-				String textForTitle = obs.getTrend();
-				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
-						snippet);
-				overlay.addOverlay(overlayitem);
-				mapOverlays.add(overlay);
-
-				mv.invalidate();
-				currentObs++;
-				if (currentObs > totalEachAllowed) {
-					break;
-				}
-			}
-
-			// Add singleton Current Conditions
+			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditions) {
-				MapOverlay overlay;
 
-				// Pick an overlay icon depending on the reading and
-				// the current conditions. reading alone? reading with tendency?
-				// current condition alone? current condition with tendency?
+				LayerDrawable dr = getCurrentConditionDrawable(condition,
+						drawable);
 
-				// is there a current condition from the same user as this
-				// reading?
-				overlay = new MapOverlay(drawable, this, mapFontSize);
-				overlay = getCurrentConditionOverlay(condition, drawable);
+				// TODO: Add dr
 
-				GeoPoint point = new GeoPoint(
-						(int) ((condition.getLocation().getLatitude()) * 1E6),
-						(int) ((condition.getLocation().getLongitude()) * 1E6));
-				String snippet = "singleton_condition"; // condition.getUser_id();
-				String textForTitle = "";
-				OverlayItem overlayitem = new OverlayItem(point, textForTitle,
-						snippet);
-				overlay.addOverlay(overlayitem);
-				mapOverlays.add(overlay);
-
-				mv.invalidate();
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
 					break;
@@ -1597,34 +1430,17 @@ public class BarometerNetworkActivity extends MapActivity implements
 			log("add data error: " + e.getMessage());
 		}
 	}
-
-	// Runnable to refresh the map. Can be called when another
-	// thread wishes to refresh the view.
-	private final Runnable refreshMap = new Runnable() {
-		public void run() {
-			BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-			mapView.invalidate();
-			mapView.refreshDrawableState();
-		}
-	};
-
 	public CbApiCall buildMapAPICall(double hoursAgo) {
-		BarometerMapView mapView = (BarometerMapView) findViewById(R.id.mapview);
-		GeoPoint gp = mapView.getMapCenter();
-		int latE6 = gp.getLatitudeE6();
-		int lonE6 = gp.getLongitudeE6();
-		double latitude = latE6 / 1E6;
-		double longitude = lonE6 / 1E6;
-		double latitudeSpan = mapView.getLatitudeSpan();
-		double longitudeSpan = mapView.getLongitudeSpan();
+		// TODO: implement map edge fetch
+		log("GET MAP DATA ERROR CRITICAL");
 		long startTime = System.currentTimeMillis()
-				-  (int)((hoursAgo * 60 * 60 * 1000));
+				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		api.setMinLat(latitude - (latitudeSpan / 1E6));
-		api.setMaxLat(latitude + (latitudeSpan / 1E6));
-		api.setMinLon(longitude - (longitudeSpan / 1E6));
-		api.setMaxLon(longitude + (longitudeSpan / 1E6));
+		api.setMinLat(0);
+		api.setMaxLat(0);
+		api.setMinLon(0);
+		api.setMaxLon(0);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
@@ -1653,18 +1469,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 		askForRecents(api);
 		askForCurrentConditions(api);
 		makeAPICall(api);
-		//makeCurrentConditionsAPICall(api);
+		// makeCurrentConditionsAPICall(api);
 	}
-
-	private BroadcastReceiver receiveForMap = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(BarometerMapView.CUSTOM_INTENT)) {
-				makeMapApiCallAndLoadRecents();
-
-			}
-		}
-	};
 
 	// Stop listening to the barometer when our app is paused.
 	@Override
@@ -1672,7 +1478,6 @@ public class BarometerNetworkActivity extends MapActivity implements
 		super.onPause();
 		stopDataStream();
 		unBindCbService();
-		unregisterReceiver(receiveForMap);
 
 		stopSensorListeners();
 	}
@@ -1683,19 +1488,11 @@ public class BarometerNetworkActivity extends MapActivity implements
 		super.onResume();
 		bindCbService();
 		startDataStream();
-		registerReceiver(receiveForMap, new IntentFilter(
-				BarometerMapView.CUSTOM_INTENT));
-		
+
 		getStoredPreferences();
-		
+
 		// for UI, not data collection
 		startSensorListeners();
-	}
-
-	// Must exist for the MapView.
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
 	}
 
 	@Override
@@ -1723,7 +1520,7 @@ public class BarometerNetworkActivity extends MapActivity implements
 
 	public void updateVisibleReading() {
 		preferenceUnit = getUnitPreference();
-		
+
 		if (recentPressureReading != 0.0) {
 			DecimalFormat df = new DecimalFormat("####.00");
 			String toPrint = df.format(recentPressureReading);
@@ -1795,7 +1592,8 @@ public class BarometerNetworkActivity extends MapActivity implements
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
-			//  System.out.println("new app pressure reading " + event.values[0]);
+			// System.out.println("new app pressure reading " +
+			// event.values[0]);
 			recentPressureReading = event.values[0];
 			updateVisibleReading();
 		}

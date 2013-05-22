@@ -20,18 +20,18 @@
 
         </LinearLayout>
 
+      
         <LinearLayout
             android:id="@+id/layoutMapContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" >
 
-            <ca.cumulonimbus.barometernetwork.BarometerMapView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/mapview"
-                android:layout_width="fill_parent"
-                android:layout_height="400dp"
-                android:apiKey="0NZZtIxvqC4ErHtP1pwbsvl-JYxUlOKYEhS4aWg"
-                android:clickable="true" />
+           <fragment 
+          android:id="@+id/map"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="com.google.android.gms.maps.MapFragment"/>
+        
         </LinearLayout>
     </LinearLayout>
 
