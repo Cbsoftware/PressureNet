@@ -20,10 +20,12 @@
 	<string name="data">Data</string>
 	<string name="chartTimeDisplay">Chart Time Display</string>
     <string-array name="display_time_chart">
-        <item name="1 hour">10 minutes</item>
         <item name="1 hour">1 hour</item>
-        <item name="3 hours">3 hours</item>
         <item name="6 hours ">6 hours</item>
+        <item name="12 hours ">12 hours</item>
+        <item name="1 day">1 day</item>
+        <item name="2 days">2 days</item>
+        <item name="1 week">1 week</item>
     </string-array>
     <string-array name="refresh_frequency">
         <item name="1 minute">1 minute</item>

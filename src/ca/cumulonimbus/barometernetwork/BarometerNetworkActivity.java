@@ -67,7 +67,13 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
@@ -153,7 +159,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 
 	private GoogleMap mMap;
-
+	private LatLngBounds visibleBound;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -171,8 +177,57 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		startCbService();
 		bindCbService();
-		//setUpMap();
+		setUpMap();
 	}
+	
+
+	private void setUpMapIfNeeded() {
+	    // Do a null check to confirm that we have not already instantiated the map.
+	    if (mMap == null) {
+	        mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+	                            .getMap();
+	        
+	        mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+	            @Override
+	            public void onCameraChange(CameraPosition position) {
+	                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+	                visibleBound = bounds;
+	                makeMapApiCallAndLoadRecents();
+	                
+	            }
+	        });
+	        
+	        // Check if we were successful in obtaining the map.
+	        if (mMap != null) {
+	            // The Map is verified. It is now safe to manipulate the map.
+	        }
+	    }
+	    
+	}
+	
+	 // Zoom into the user's location, add pinch zoom controls
+    public void setUpMap() {
+    	setUpMapIfNeeded();
+    	
+    	mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+    	
+        // Set default coordinates (centered around the user's location)
+
+        try {
+        	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        	if(loc.getLatitude()!=0) {
+        		mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        		mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
+        	} else {
+        		
+        	}
+
+        } catch(Exception e) {
+        	
+        }
+      
+    }
 	
 	
 	/**
@@ -299,7 +354,7 @@ public class BarometerNetworkActivity extends Activity implements
 					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
 							.getLayoutParams();
-					params.height = LayoutParams.MATCH_PARENT;
+					params.height = 0;
 					mainLayout.setLayoutParams(params);
 				}
 				graphVisible = !graphVisible;
@@ -389,18 +444,20 @@ public class BarometerNetworkActivity extends Activity implements
 				String selected = arg0.getSelectedItem().toString();
 				// TODO: Fix hack
 				CbApiCall apiCall = new CbApiCall();
-				if (selected.equals("10 minutes")) {
-					hoursAgoSelected = 1 / 6;
-				} else if (selected.equals("1 hour")) {
+				if (selected.equals("1 hour")) {
 					hoursAgoSelected = 1;
-				} else if (selected.equals("3 hours")) {
-					hoursAgoSelected = 3;
 				} else if (selected.equals("6 hours")) {
 					hoursAgoSelected = 6;
+				} else if (selected.equals("12 hours")) {
+					hoursAgoSelected = 12;
 				} else if (selected.equals("1 day")) {
-
 					hoursAgoSelected = 24;
+				} else if (selected.equals("2 days")) {
+					hoursAgoSelected = 24*2;
+				} else if (selected.equals("1 week")) {
+					hoursAgoSelected = 24*7;
 				}
+				
 				makeMapApiCallAndLoadRecents();
 			}
 
@@ -1430,17 +1487,37 @@ public class BarometerNetworkActivity extends Activity implements
 			log("add data error: " + e.getMessage());
 		}
 	}
+	
+	
+	
 	public CbApiCall buildMapAPICall(double hoursAgo) {
 		// TODO: implement map edge fetch
-		log("GET MAP DATA ERROR CRITICAL");
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		api.setMinLat(0);
-		api.setMaxLat(0);
-		api.setMinLon(0);
-		api.setMaxLon(0);
+		
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+		
+		if(visibleBound != null) { 
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+			log("NEWMAP" + minLat + ", " + maxLat + ", " + minLon + "," + maxLon);
+		} else {
+			log("no map center, bailing on condition api");
+		}
+
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
@@ -1466,10 +1543,10 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeMapApiCallAndLoadRecents() {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
 		textCallLog.setText("Refreshing...");
-		askForRecents(api);
+		//askForRecents(api);
 		askForCurrentConditions(api);
-		makeAPICall(api);
-		// makeCurrentConditionsAPICall(api);
+		//makeAPICall(api);
+		makeCurrentConditionsAPICall(api);
 	}
 
 	// Stop listening to the barometer when our app is paused.
