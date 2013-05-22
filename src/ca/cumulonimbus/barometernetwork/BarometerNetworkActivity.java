@@ -23,6 +23,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -71,9 +74,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
@@ -217,8 +222,7 @@ public class BarometerNetworkActivity extends Activity implements
         	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	if(loc.getLatitude()!=0) {
-        		mMap.animateCamera(CameraUpdateFactory.zoomTo(16));
-        		mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(loc.getLatitude(), loc.getLongitude())));
+        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()),10));
         	} else {
         		
         	}
@@ -312,7 +316,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		}
-
+		
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
 
@@ -407,9 +411,9 @@ public class BarometerNetworkActivity extends Activity implements
 				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
 
-				if (currentConditions.size() > 0) {
-					Collections.sort(currentConditions,
-							new CbScience.ConditionTimeComparator());
+				if (currentConditions.size() > 1) {
+					//Collections.sort(currentConditions,
+						//	new CbScience.ConditionTimeComparator());
 					long startTimeConditions = currentConditions.get(0)
 							.getTime();
 
@@ -420,7 +424,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 
 				}
-				if (recents.size() > 0) {
+				if (recents.size() > 1) {
 					Collections.sort(recents, new CbScience.TimeComparator());
 					long startTimeReadings = recents.get(0).getTime();
 
@@ -1426,28 +1430,21 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentCur = 0;
 		try {
 			// Add Barometer Readings and associated current Conditions
-			// Add Barometer Readings and associated current Conditions
-			for (CbWeather weatherObs : frameObservations) {
-				CbObservation obs = (CbObservation) weatherObs;
-
-			
-				// TODO: add to map
-
-				currentObs++;
-				if (currentObs > totalEachAllowed) {
-					break;
-				}
-			}
 
 			// Add singleton Current Conditions
 			for (CbWeather weather : frameConditions) {
 				CbCurrentCondition condition = (CbCurrentCondition) weather;
-
-				LayerDrawable dr = getCurrentConditionDrawable(condition,
+				LatLng point = new LatLng(condition.getLocation().getLatitude(), condition.getLocation().getLongitude());
+				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
-
+		
+				Drawable draw = getSingleDrawable(drLayer);
 				
-				// TODO: add to map
+				Bitmap image = drawableToBitmap(draw);
+				
+				mMap.addMarker(new MarkerOptions()
+	            .position(point)
+	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
@@ -1458,6 +1455,44 @@ public class BarometerNetworkActivity extends Activity implements
 			log("add data error: " + e.getMessage());
 		}
 	}
+	
+	public static Bitmap drawableToBitmap (Drawable drawable) {
+	    if (drawable instanceof BitmapDrawable) {
+	        return ((BitmapDrawable)drawable).getBitmap();
+	    }
+
+	    Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
+	    Canvas canvas = new Canvas(bitmap); 
+	    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+	    drawable.draw(canvas);
+
+	    return bitmap;
+	}
+	
+	public Drawable getSingleDrawable(LayerDrawable layerDrawable){
+
+        int resourceBitmapHeight = layerDrawable.getMinimumHeight(), resourceBitmapWidth = layerDrawable.getMinimumWidth();
+
+        float widthInInches = 0.2f;
+
+        int widthInPixels = (int)(widthInInches * getResources().getDisplayMetrics().densityDpi);
+        int heightInPixels = (int)(widthInPixels * resourceBitmapHeight / resourceBitmapWidth);
+
+        int insetLeft = 10, insetTop = 10, insetRight = 10, insetBottom = 10;
+
+        layerDrawable.setLayerInset(1, insetLeft, insetTop, insetRight, insetBottom);     
+
+        Bitmap bitmap = Bitmap.createBitmap(widthInPixels, heightInPixels, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        layerDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
+        layerDrawable.draw(canvas);
+
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
+        bitmapDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
+
+        return bitmapDrawable;
+}
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap() {
