@@ -65,24 +65,6 @@ public class DataManagementActivity extends Activity {
 		}
 	}
 	
-	private void makeAPICall(CbApiCall apiCall) {
-		apiCall.setCallType("Readings");
-		Toast.makeText(getApplicationContext(), "Starting API call",
-				Toast.LENGTH_SHORT).show();
-		if (mBound) {
-			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
-					apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("data management error: not bound for API");
-		}
-	}
-	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);

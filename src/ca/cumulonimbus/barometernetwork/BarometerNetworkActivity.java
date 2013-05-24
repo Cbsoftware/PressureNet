@@ -1509,8 +1509,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	
-	
 	public CbApiCall buildMapAPICall(double hoursAgo) {
 		// TODO: implement map edge fetch
 		long startTime = System.currentTimeMillis()
@@ -1530,7 +1528,7 @@ public class BarometerNetworkActivity extends Activity implements
 			maxLat = ne.latitude;
 			minLon = sw.longitude;
 			maxLon = ne.longitude;
-			log("NEWMAP" + minLat + ", " + maxLat + ", " + minLon + "," + maxLon);
+	//		log("NEWMAP" + minLat + ", " + maxLat + ", " + minLon + "," + maxLon);
 		} else {
 			log("no map center, bailing on condition api");
 		}
@@ -1542,12 +1540,12 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(1000);
+		api.setLimit(500);
 		return api;
 	}
 
 	private void makeAPICall(CbApiCall apiCall) {
-		log("making observation api call");
+		log("making Readings api call");
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
 					apiCall);
@@ -1563,8 +1561,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
-		apiCall.setCallType("Conditions");
-		log("making conditions api call");
+		log("making Conditions api call");
 		if (mBound) {
 			Message msg = Message.obtain(null,
 					CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL, apiCall);
@@ -1586,8 +1583,10 @@ public class BarometerNetworkActivity extends Activity implements
 		textCallLog.setText("Refreshing...");
 		askForRecents(api);
 		askForCurrentConditions(api);
+		
+		//makeCurrentConditionsAPICall(api);
 		makeAPICall(api);
-		makeCurrentConditionsAPICall(api);
+		
 	}
 
 	// Stop listening to the barometer when our app is paused.
