@@ -24,8 +24,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -44,6 +44,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -140,7 +141,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ArrayList<CbCurrentCondition> currentConditions = new ArrayList<CbCurrentCondition>();
 
-	String apiServerURL = "https://pressurenet.cumulonimbus.ca/live/?";
+	String apiServerURL = "https://pressurenet.cumulonimbus.ca/list/?";
 
 	private int currentTimeProgress = 0;
 	private boolean animateState = false;
@@ -343,11 +344,18 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+				int width = size.x;
+				int height = size.y;
+
+				
 				if (graphVisible == false) {
 					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
 							.getLayoutParams();
-					params.height = 300;
+					params.height = height - 500;
 					mainLayout.setLayoutParams(params);
 					createAndShowChart();
 					buttonStats.setImageDrawable(getResources().getDrawable(
@@ -358,7 +366,7 @@ public class BarometerNetworkActivity extends Activity implements
 					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
 							.getLayoutParams();
-					params.height = 0;
+					params.height = height - 300;
 					mainLayout.setLayoutParams(params);
 				}
 				graphVisible = !graphVisible;
@@ -1578,9 +1586,9 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeMapApiCallAndLoadRecents() {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
 		textCallLog.setText("Refreshing...");
-		//askForRecents(api);
+		askForRecents(api);
 		askForCurrentConditions(api);
-		//makeAPICall(api);
+		makeAPICall(api);
 		makeCurrentConditionsAPICall(api);
 	}
 
