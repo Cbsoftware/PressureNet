@@ -274,13 +274,16 @@ public class BarometerNetworkActivity extends Activity implements
 	Runnable animate = new Runnable() {
 		@Override
 		public void run() {
+			mMap.clear();
 			if (currentTimeProgress < 100) {
 
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 80);
+				timeHandler.postDelayed(animate, 100);
 			} else {
+				// reset to 0
+				
 				Drawable play = getResources().getDrawable(
 						R.drawable.ic_menu_play);
 				buttonPlay.setImageDrawable(play);
@@ -294,7 +297,7 @@ public class BarometerNetworkActivity extends Activity implements
 	};
 
 	public boolean isCloseToFrame(int a, int b) {
-		return Math.abs(a - b) < 3;
+		return Math.abs(a - b) < 10;
 	}
 
 	public void updateMapWithSeekTimeData() {
@@ -304,7 +307,7 @@ public class BarometerNetworkActivity extends Activity implements
 			if (isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrameCondition.add(c);
 			} else {
-
+				
 			}
 		}
 
@@ -312,7 +315,7 @@ public class BarometerNetworkActivity extends Activity implements
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
 		for (CbObservation r : recents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
-				thisFrameObservation.add(r);
+				//thisFrameObservation.add(r);
 			} else {
 
 			}
@@ -355,7 +358,8 @@ public class BarometerNetworkActivity extends Activity implements
 					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
 							.getLayoutParams();
-					params.height = height - 500;
+					params.height = height - (int)(height / 1.5);
+					System.out.println("new height " + params.height);
 					mainLayout.setLayoutParams(params);
 					createAndShowChart();
 					buttonStats.setImageDrawable(getResources().getDrawable(
@@ -366,7 +370,7 @@ public class BarometerNetworkActivity extends Activity implements
 					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
 					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
 							.getLayoutParams();
-					params.height = height - 300;
+					params.height = height - (int)(height / 3);
 					mainLayout.setLayoutParams(params);
 				}
 				graphVisible = !graphVisible;
@@ -389,6 +393,8 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				if (fromUser) {
+					
+					
 					currentTimeProgress = progress;
 					updateMapWithSeekTimeData();
 				}
@@ -428,22 +434,12 @@ public class BarometerNetworkActivity extends Activity implements
 					for (CbCurrentCondition c : currentConditions) {
 						long time = c.getTime();
 						int group = (int) ((time - startTimeConditions) / singleTimeSpan);
+						System.out.println("group " + group + " for time " + time);
 						c.setAnimateGroupNumber(group);
 					}
 
 				}
-				if (recents.size() > 1) {
-					Collections.sort(recents, new CbScience.TimeComparator());
-					long startTimeReadings = recents.get(0).getTime();
-
-					for (CbObservation o : recents) {
-						long time = o.getTime();
-						int group = (int) (Math.abs((time - startTimeReadings)) / singleTimeSpan);
-						o.setAnimateGroupNumber(group);
-					}
-
-				}
-
+			
 				timeHandler.postDelayed(animate, 0);
 			}
 		});
@@ -492,24 +488,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 	}
-
-	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
-		apiCall.setCallType("Conditions");
-		if (mBound) {
-			Message msg = Message.obtain(null,
-					CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL, apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out
-					.println("data management error: not bound for condition api");
-		}
-	}
-
 	private void askForCurrentConditions(CbApiCall api) {
 
 		if (mBound) {
@@ -1569,6 +1547,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void makeAPICall(CbApiCall apiCall) {
+		log("making observation api call");
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
 					apiCall);
@@ -1582,6 +1561,25 @@ public class BarometerNetworkActivity extends Activity implements
 			System.out.println("data management error: not bound");
 		}
 	}
+	
+	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
+		apiCall.setCallType("Conditions");
+		log("making conditions api call");
+		if (mBound) {
+			Message msg = Message.obtain(null,
+					CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL, apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out
+					.println("data management error: not bound for condition api");
+		}
+	}
+
 
 	public void makeMapApiCallAndLoadRecents() {
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
