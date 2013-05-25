@@ -1,22 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:minWidth="350dip"
+    android:orientation="vertical" >
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/linearLayout1"
+    <LinearLayout
+        android:id="@+id/layoutButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonOneHour"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 hour" />
+        
+        <Button
+            android:id="@+id/button6Hours"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6 hours" />
+
+        <Button
+            android:id="@+id/button24Hours"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="24 hours" />
+
+        <Button
+            android:id="@+id/button1Week"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 week" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/editLog"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:minWidth="350dip" 
-        >
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:editable="false"
+        android:gravity="top"
+        android:scrollbars="vertical"
+        android:textSize="8pt" >
+    </EditText>
 
-        <EditText
-            android:id="@+id/editLog"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="top"
-            android:layout_weight="1"
-            android:editable="false"
-            android:gravity="top"
-            android:scrollbars="vertical"
-            android:textSize="8pt" >
-
-        </EditText>
-
-    </LinearLayout>
+</LinearLayout>
