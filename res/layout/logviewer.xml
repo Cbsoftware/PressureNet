@@ -20,7 +20,7 @@
             android:text="1 hour" />
         
         <Button
-            android:id="@+id/button6Hours"
+            android:id="@+id/buttonSixHours"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:textColor="@android:color/black"
             android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
             android:text="6 hours" />
 
         <Button
-            android:id="@+id/button24Hours"
+            android:id="@+id/buttonOneDay"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:textColor="@android:color/black"
             android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
             android:text="24 hours" />
 
         <Button
-            android:id="@+id/button1Week"
+            android:id="@+id/buttonOneWeek"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:textColor="@android:color/black"
             android:layout_width="wrap_content"

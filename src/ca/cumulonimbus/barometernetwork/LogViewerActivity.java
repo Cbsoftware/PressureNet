@@ -15,6 +15,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -29,13 +32,18 @@ public class LogViewerActivity extends Activity {
 
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
 
+	Button oneHour;
+	Button sixHours;
+	Button oneDay;
+	Button oneWeek;
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 
-			getRecents();
+			getRecents(24);
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -44,18 +52,18 @@ public class LogViewerActivity extends Activity {
 		}
 	};
 
-	public void getRecents() {
+	public void getRecents(long hoursAgo) {
 		if (mBound) {
 			CbApiCall api = new CbApiCall();
 			api.setMinLat(-90);
 			api.setMaxLat(90);
 			api.setMinLon(-180);
 			api.setMaxLon(180);
-			api.setStartTime(0);
+			api.setStartTime(System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000));
 			api.setEndTime(System.currentTimeMillis());
-			
-			Message msg = Message.obtain(null,
-					CbService.MSG_GET_LOCAL_RECENTS, api);
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
+					api);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -67,7 +75,6 @@ public class LogViewerActivity extends Activity {
 		}
 	}
 
-	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -75,14 +82,15 @@ public class LogViewerActivity extends Activity {
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 				try {
-					
+
 					String rawLog = "";
 					for (CbObservation obs : recents) {
 						Calendar c = Calendar.getInstance();
 						c.setTimeInMillis(obs.getTime());
 						String dateString = c.getTime().toLocaleString();
 						DecimalFormat df = new DecimalFormat("####.00");
-						String valueString = df.format(obs.getObservationValue());
+						String valueString = df.format(obs
+								.getObservationValue());
 
 						rawLog += dateString + ": " + valueString + "\n";
 					}
@@ -111,19 +119,48 @@ public class LogViewerActivity extends Activity {
 
 	}
 
-	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.logviewer);
 		super.onCreate(savedInstanceState);
-		
-		
+		oneHour = (Button) findViewById(R.id.buttonOneHour);
+		sixHours = (Button) findViewById(R.id.buttonSixHours);
+		oneDay = (Button) findViewById(R.id.buttonOneDay);
+		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
+
+		oneHour.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getRecents(1);
+			}
+		});
+
+		sixHours.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getRecents(6);
+			}
+		});
+		oneDay.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getRecents(24);
+			}
+		});
+		oneWeek.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getRecents(24*7);
+			}
+		});
+
 		bindCbService();
 	}
 
-	
-	
 	@Override
 	protected void onPause() {
 		unBindCbService();
