@@ -631,6 +631,7 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_API_RECENTS:
 				apiCache.clear();
+				recents.clear();
 				apiCache = (ArrayList<CbObservation>) msg.obj;
 				if (recents != null) {
 					log("received " + recents.size()
