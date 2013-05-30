@@ -22,9 +22,9 @@
         <View
             android:layout_width="1dip"
             android:layout_height="fill_parent"
+            android:layout_margin="10dp"
             android:background="#888888"
-            android:padding="10dip"
-            android:layout_margin="10dp" />
+            android:padding="10dip" />
 
         <Button
             android:id="@+id/buttonSixHours"
@@ -37,9 +37,9 @@
         <View
             android:layout_width="1dip"
             android:layout_height="fill_parent"
+            android:layout_margin="10dp"
             android:background="#888888"
-            android:padding="10dip"
-            android:layout_margin="10dp" />
+            android:padding="10dip" />
 
         <Button
             android:id="@+id/buttonOneDay"
@@ -52,9 +52,9 @@
         <View
             android:layout_width="1dip"
             android:layout_height="fill_parent"
+            android:layout_margin="10dp"
             android:background="#888888"
-            android:padding="10dip"
-            android:layout_margin="10dp" />
+            android:padding="10dip" />
 
         <Button
             android:id="@+id/buttonOneWeek"
@@ -65,6 +65,14 @@
             android:textColor="@android:color/black" />
     </LinearLayout>
 
+     <LinearLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+ 
+</LinearLayout>
+    
     <EditText
         android:id="@+id/editLog"
         android:layout_width="fill_parent"
@@ -74,7 +82,8 @@
         android:editable="false"
         android:gravity="top"
         android:scrollbars="vertical"
-        android:textSize="8pt" >
+        android:textSize="8pt"
+        android:visibility="gone" >
     </EditText>
 
 </LinearLayout>

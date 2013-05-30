@@ -4,7 +4,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +23,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -59,7 +64,8 @@ public class LogViewerActivity extends Activity {
 			api.setMaxLat(90);
 			api.setMinLon(-180);
 			api.setMaxLon(180);
-			api.setStartTime(System.currentTimeMillis() - (hoursAgo * 60 * 60 * 1000));
+			api.setStartTime(System.currentTimeMillis()
+					- (hoursAgo * 60 * 60 * 1000));
 			api.setEndTime(System.currentTimeMillis());
 
 			Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
@@ -119,10 +125,56 @@ public class LogViewerActivity extends Activity {
 
 	}
 
+	class DataTabsListener implements ActionBar.TabListener {
+		public Fragment fragment;
+
+		public DataTabsListener(Fragment fragment) {
+			this.fragment = fragment;
+		}
+
+		@Override
+		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			Toast.makeText(getApplicationContext(), "Reselected!",
+					Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			ft.replace(R.id.fragment_container, fragment);
+		}
+
+		@Override
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			ft.remove(fragment);
+		}
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.logviewer);
 		super.onCreate(savedInstanceState);
+
+		// ActionBar gets initiated
+		ActionBar actionbar = getActionBar();
+		// Tell the ActionBar we want to use Tabs.
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		// initiating both tabs and set text to it.
+		ActionBar.Tab chartTab = actionbar.newTab().setText("Chart");
+		ActionBar.Tab logTab = actionbar.newTab().setText("Log");
+
+		// create the two fragments we want to use for display content
+		Fragment chartFragment = new ChartFragment();
+		Fragment logFragment = new LogFragment();
+
+		// set the Tab listener. Now we can listen for clicks.
+		chartTab.setTabListener(new DataTabsListener(chartFragment));
+		logTab.setTabListener(new DataTabsListener(logFragment));
+
+		// add the two tabs to the actionbar
+		actionbar.addTab(chartTab);
+		actionbar.addTab(logTab);
+
 		oneHour = (Button) findViewById(R.id.buttonOneHour);
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
@@ -154,7 +206,7 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				getRecents(24*7);
+				getRecents(24 * 7);
 			}
 		});
 
