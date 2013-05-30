@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 import android.app.ActionBar;
@@ -52,10 +51,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -66,7 +67,6 @@ import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
-import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
@@ -166,6 +166,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
+
+	private ImageButton buttonGoLocation;
+	private EditText editLocation;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -223,7 +226,7 @@ public class BarometerNetworkActivity extends Activity implements
         	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         	if(loc.getLatitude()!=0) {
-        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()),10));
+        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()),13));
         	} else {
         		
         	}
@@ -334,6 +337,9 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonStats = (ImageButton) findViewById(R.id.buttonStats);
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 
+		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
+		editLocation = (EditText) findViewById(R.id.editGoLocation);
+		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
 						android.R.layout.simple_spinner_item);
@@ -343,6 +349,17 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
+		buttonGoLocation.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String location = editLocation.getEditableText().toString();
+				Toast.makeText(getApplicationContext(), "Going to " + location, Toast.LENGTH_SHORT).show();
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+			}
+		});
+		
 		buttonStats.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -1541,7 +1558,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(500);
+		api.setLimit(100);
 		return api;
 	}
 

@@ -6,6 +6,28 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/mainParentLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/editGoLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:layout_weight="1"
+            android:hint="Location" />
+
+        <ImageButton
+            android:id="@+id/buttonGoLocation"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_play"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/fullLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,21 +39,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal" >
-
         </LinearLayout>
 
-      
         <LinearLayout
             android:id="@+id/layoutMapContainer"
-            android:layout_height="400dip"
-            android:layout_width="match_parent" >
+            android:layout_width="match_parent"
+            android:layout_height="400dip" >
 
-           <fragment 
-          android:id="@+id/map"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:name="com.google.android.gms.maps.MapFragment"/>
-        
+            <fragment
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
     </LinearLayout>
 
@@ -92,14 +111,14 @@
             android:drawableLeft="@drawable/ic_menu_barometer"
             android:textColor="@android:color/black" />
 
-            <TextView
-                android:id="@+id/textReading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/empty"
-                android:textAppearance="?android:attr/textAppearanceSmall"
- />
+        <TextView
+            android:id="@+id/textReading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/empty"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
         <ImageButton
             android:id="@+id/buttonStats"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
