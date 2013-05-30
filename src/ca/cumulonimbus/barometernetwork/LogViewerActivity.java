@@ -21,7 +21,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
@@ -80,7 +82,31 @@ public class LogViewerActivity extends Activity {
 			System.out.println("error: not bound");
 		}
 	}
+	
+	public void showChart(View v) {
+		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layout_chart_fragment);
 
+		try {
+			View testChartView = findViewById(100); // TODO: ...
+			mainLayout.removeView(testChartView);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		v.setId(200); // TODO: what's safe?
+
+		// add to layout
+		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT);
+
+		v.setLayoutParams(lparams);
+		if (mainLayout == null) {
+			System.out.println("ERROR layout null, chart");
+			return;
+		}
+		mainLayout.addView(v);
+	}
+	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -100,8 +126,25 @@ public class LogViewerActivity extends Activity {
 
 						rawLog += dateString + ": " + valueString + "\n";
 					}
-					logText = (TextView) findViewById(R.id.editLog);
-					logText.setText(rawLog);
+					
+					// display in text form
+					try {
+						logText = (TextView) findViewById(R.id.editLog);
+						logText.setText(rawLog);
+					} catch (NullPointerException npe) {
+						// TODO; fix hack. 
+						System.out.println("not loading text");
+					}
+					
+					// display in chart form
+					try {
+						Chart chart = new Chart(getApplicationContext());
+						View chartView = chart.drawChart(recents);
+						showChart(chartView);
+					} catch (NullPointerException npe ) {
+						// TODO: fix hack.
+						System.out.println("now drawing chart");
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -215,7 +258,7 @@ public class LogViewerActivity extends Activity {
 
 	@Override
 	protected void onPause() {
-		unBindCbService();
+		//unBindCbService();
 		super.onPause();
 	}
 

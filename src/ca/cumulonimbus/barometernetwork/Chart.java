@@ -104,6 +104,7 @@ public class Chart {
 		double ySum = 0;
 		for (CbObservation obs : obsList) {
 			if(obs.getObservationValue() < 0) {
+				i++;
 				continue; // TODO: fix hack
 			}
 			if (obs.getObservationValue() < minObservation) {
@@ -120,9 +121,9 @@ public class Chart {
 			}
 			xValues[i] = new Date(obs.getTime());
 			yValues[i] = obs.getObservationValue();
-			i++;
+			
 			ySum += yValues[i];
-
+			i++;
 		}
 
 		yMean = ySum / i;
