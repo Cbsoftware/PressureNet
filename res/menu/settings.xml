@@ -9,12 +9,8 @@
       android:title="@string/data_visualization"
       android:icon="@drawable/ic_menu_vis"
       android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
-    <item android:id="@+id/menu_my_info"
-      android:title="@string/my_info"
-      android:icon="@drawable/ic_menu_stats"
-      android:enabled="true"
-      android:showAsAction="ifRoom|withText" />
+      android:showAsAction="never"
+      android:visible="false" />
     <item android:id="@+id/menu_log_viewer"
       android:title="@string/view_log"
       android:icon="@drawable/ic_menu_log"
