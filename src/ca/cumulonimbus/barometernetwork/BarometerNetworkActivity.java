@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -32,6 +33,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -167,8 +170,12 @@ public class BarometerNetworkActivity extends Activity implements
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
 
+	// Search Locations
 	private ImageButton buttonGoLocation;
 	private EditText editLocation;
+	
+	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
+	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -203,6 +210,7 @@ public class BarometerNetworkActivity extends Activity implements
 	                visibleBound = bounds;
 	                makeMapApiCallAndLoadRecents();
 	                
+	                
 	            }
 	        });
 	        
@@ -235,6 +243,18 @@ public class BarometerNetworkActivity extends Activity implements
         	
         }
       
+    }
+    
+    public void moveMapTo(double latitude, double longitude) {
+    	setUpMapIfNeeded();
+    	
+    	mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        try {
+        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude),13));
+
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
     }
 	
 	
@@ -355,6 +375,27 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				String location = editLocation.getEditableText().toString();
 				Toast.makeText(getApplicationContext(), "Going to " + location, Toast.LENGTH_SHORT).show();
+				
+				Geocoder geocode = new Geocoder(getApplicationContext());
+				try {	
+					List<Address> addr = geocode.getFromLocationName(location, 1);
+					if(addr.size()> 0) {
+						Address ad = addr.get(0);
+						double latitude = ad.getLatitude();
+						double longitude = ad.getLongitude();
+						moveMapTo(latitude, longitude);
+						
+						SearchLocation loc = new SearchLocation(location, latitude, longitude);
+						searchedLocations.add(loc);
+						
+						CbApiCall api = buildSearchLocationAPICall(loc);
+						makeAPICall(api);
+						
+					}
+					
+				} catch (IOException ioe)  {
+					ioe.printStackTrace();
+				}
 				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
 			}
@@ -477,13 +518,9 @@ public class BarometerNetworkActivity extends Activity implements
 					hoursAgoSelected = 12;
 				} else if (selected.equals("1 day")) {
 					hoursAgoSelected = 24;
-				} else if (selected.equals("2 days")) {
-					hoursAgoSelected = 24*2;
-				} else if (selected.equals("1 week")) {
-					hoursAgoSelected = 24*7;
-				}
-				
+				} 
 				makeMapApiCallAndLoadRecents();
+				createAndShowChart();
 			}
 
 			@Override
@@ -936,9 +973,7 @@ public class BarometerNetworkActivity extends Activity implements
 			i.putExtra("hasBarometer", false); // TODO: fix, was
 												// barometerdetected
 			startActivityForResult(i, 1);
-		} else if (item.getItemId() == R.id.menu_my_info) {
-			openMyInfo();
-		} else if (item.getItemId() == R.id.menu_log_viewer) {
+		}  else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
 		} else if (item.getItemId() == R.id.send_debug_log) {
 			// send logs to Cumulonimbus
@@ -1527,8 +1562,25 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
+
+	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
+		long startTime = System.currentTimeMillis()
+				- (int) ((24 * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+		
+		api.setMinLat(loc.getLatitude() - .1);
+		api.setMaxLat(loc.getLatitude() + .1);
+		api.setMinLon(loc.getLongitude() - .1);
+		api.setMaxLon(loc.getLongitude() + .1);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setApiKey(PressureNETConfiguration.API_KEY);
+		api.setLimit(5000);
+		return api;
+	}
+	
 	public CbApiCall buildMapAPICall(double hoursAgo) {
-		// TODO: implement map edge fetch
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
