@@ -388,6 +388,11 @@ public class BarometerNetworkActivity extends Activity implements
 						SearchLocation loc = new SearchLocation(location, latitude, longitude);
 						searchedLocations.add(loc);
 						
+						PnDb pn = new PnDb(getApplicationContext());
+						pn.open();
+						pn.addLocation(location, latitude, longitude, System.currentTimeMillis());
+						pn.close();
+						
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
 						
