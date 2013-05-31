@@ -294,6 +294,7 @@ public class Chart {
 		// add each component to the dataset
 		List<Date[]> xValues = new ArrayList<Date[]>();
 		List<double[]> yValues = new ArrayList<double[]>();
+		int count = 0;
 		for(CbObservation obs : obsList) {
 			Date[] dates = new Date[1];
 			double[] values = new double[1];	
@@ -303,6 +304,13 @@ public class Chart {
 
 			xValues.add(dates);
 			yValues.add(values);
+			
+			// bail after a while
+			count++;
+			if(count>500) {
+				System.out.println("CHART 200 BAILING");
+				break;
+			}
 		
 		}
 		
