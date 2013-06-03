@@ -1048,6 +1048,10 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent intent = new Intent(getApplicationContext(), About.class);
 			startActivity(intent);
 
+		} else if (item.getItemId() == R.id.menu_search_locations) {
+			Intent intent = new Intent(getApplicationContext(), SearchLocations.class);
+			startActivity(intent);
+
 		}
 		return super.onOptionsItemSelected(item);
 	}

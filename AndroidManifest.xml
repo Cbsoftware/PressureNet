@@ -77,6 +77,12 @@
             android:label="@string/welcomeToPressureNET"
             android:theme="@style/CustomThemeDialog" >
         </activity>
+                <activity
+            android:name="ca.cumulonimbus.barometernetwork.SearchLocations"
+            android:excludeFromRecents="true"
+            android:label="Search Locations"
+            android:theme="@style/CustomThemeDialog" >
+        </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:label="@string/app_name"
