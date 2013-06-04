@@ -154,6 +154,11 @@ public class BarometerNetworkActivity extends Activity implements
 	private final int TYPE_AMBIENT_TEMPERATURE = 13;
 	private final int TYPE_RELATIVE_HUMIDITY = 12;
 
+
+	private final int REQUEST_SETTINGS = 1;
+	private final int REQUEST_LOCATION_CHOICE = 2;
+	private final int REQUEST_MAILED_LOG = 3;
+	
 	private boolean pressureReadingsActive = false;
 	private boolean humidityReadingsActive = false;
 	private boolean temperatureReadingsActive = false;
@@ -977,7 +982,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent i = new Intent(this, PreferencesActivity.class);
 			i.putExtra("hasBarometer", false); // TODO: fix, was
 												// barometerdetected
-			startActivityForResult(i, 1);
+			startActivityForResult(i, REQUEST_SETTINGS);
 		}  else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
 		} else if (item.getItemId() == R.id.send_debug_log) {
@@ -1050,7 +1055,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		} else if (item.getItemId() == R.id.menu_search_locations) {
 			Intent intent = new Intent(getApplicationContext(), SearchLocations.class);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
 
 		}
 		return super.onOptionsItemSelected(item);
@@ -1094,7 +1099,7 @@ public class BarometerNetworkActivity extends Activity implements
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 			startActivityForResult(
-					Intent.createChooser(emailIntent, "Send mail..."), 105);
+					Intent.createChooser(emailIntent, "Send mail..."), REQUEST_MAILED_LOG);
 
 		} catch (Throwable t) {
 			Toast.makeText(this, "Request failed: " + t.toString(),
@@ -1122,7 +1127,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 105) {
+		if (requestCode == REQUEST_MAILED_LOG) {
 			// Clear the log
 			String strFile = mAppDir + "/log.txt";
 			File file = new File(strFile);
