@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:layout_weight="1"
-            android:hint="Location" />
+            android:hint="Search" />
 
         <ImageButton
             android:id="@+id/buttonGoLocation"

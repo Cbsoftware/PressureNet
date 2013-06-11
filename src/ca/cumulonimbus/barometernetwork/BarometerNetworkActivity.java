@@ -155,9 +155,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private final int TYPE_RELATIVE_HUMIDITY = 12;
 
 
-	private final int REQUEST_SETTINGS = 1;
-	private final int REQUEST_LOCATION_CHOICE = 2;
-	private final int REQUEST_MAILED_LOG = 3;
+	public static final int REQUEST_SETTINGS = 1;
+	public static final int REQUEST_LOCATION_CHOICE = 2;
+	public static final int REQUEST_MAILED_LOG = 3;
 	
 	private boolean pressureReadingsActive = false;
 	private boolean humidityReadingsActive = false;
@@ -1054,7 +1054,7 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivity(intent);
 
 		} else if (item.getItemId() == R.id.menu_search_locations) {
-			Intent intent = new Intent(getApplicationContext(), SearchLocations.class);
+			Intent intent = new Intent(getApplicationContext(), SearchLocationsActivity.class);
 			startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
 
 		}

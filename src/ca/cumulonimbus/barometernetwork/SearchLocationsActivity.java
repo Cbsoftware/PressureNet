@@ -3,13 +3,23 @@ package ca.cumulonimbus.barometernetwork;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class SearchLocations extends ListActivity {
+public class SearchLocationsActivity extends ListActivity {
 
 	PnDb pn;
 	
+	
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		System.out.println("clicked " +  position  + " " + id);
+		finish();
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
