@@ -1,6 +1,8 @@
 package ca.cumulonimbus.barometernetwork;
 
+import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -16,7 +18,10 @@ public class SearchLocationsActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		System.out.println("clicked " +  position  + " " + id);
+		System.out.println("clicked " +  position  + " " + id );
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra("location_id", id);
+		setResult(Activity.RESULT_OK, resultIntent);
 		finish();
 	}
 

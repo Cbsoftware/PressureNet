@@ -22,6 +22,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -1133,6 +1134,30 @@ public class BarometerNetworkActivity extends Activity implements
 			File file = new File(strFile);
 			if (file.exists())
 				file.delete();
+		} else if (requestCode == REQUEST_LOCATION_CHOICE) {
+			if(data!=null ) {
+				long rowId = data.getLongExtra("location_id", -1);
+				if(rowId != -1) {
+					PnDb pn = new PnDb(getApplicationContext());
+					pn.open();
+					Cursor c = pn.fetchLocation(rowId);
+					pn.close();
+					String search = "";
+					double lat = 0;
+					double lon = 0;
+					if(c.moveToFirst()) {
+						search = c.getString(1);
+						lat = c.getDouble(2);
+						lon = c.getDouble(3);
+					}
+					if(!search.equals("")) {
+						editLocation.setText(search);
+					}
+					if(lat != 0) {
+						moveMapTo(lat, lon);
+					}
+				}
+			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
