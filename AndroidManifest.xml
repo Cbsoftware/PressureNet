@@ -78,7 +78,7 @@
             android:theme="@style/CustomThemeDialog" >
         </activity>
                 <activity
-            android:name="ca.cumulonimbus.barometernetwork.SearchLocations"
+            android:name="ca.cumulonimbus.barometernetwork.SearchLocationsActivity"
             android:excludeFromRecents="true"
             android:label="Search Locations"
             android:theme="@style/CustomThemeDialog" >
