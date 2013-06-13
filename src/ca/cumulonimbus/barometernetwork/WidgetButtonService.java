@@ -34,7 +34,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	boolean mIsBound = false;
 	
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
-	Unit mUnit = new Unit("mbar");
+	PressureUnit mUnit = new PressureUnit("mbar");
 	
 	private String localHistoryFile = "recent.txt";
 	
@@ -83,7 +83,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				// This is messy. Fix it.
 				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 	    		String abbrev = settings.getString("units", "mbar"); 
-	    		mUnit = new Unit(abbrev);
+	    		mUnit = new PressureUnit(abbrev);
 	    		double val = Double.valueOf(msg);
 	    		mUnit.setValue(val);
 	    		String toPrint = mUnit.getDisplayText();

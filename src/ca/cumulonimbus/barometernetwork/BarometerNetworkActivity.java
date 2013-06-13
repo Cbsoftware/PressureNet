@@ -1120,24 +1120,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	private String fullUnitToRealAbbrev(String unit) {
-		if (unit.contains("mbar")) {
-			return "mbar";
-		} else if (unit.contains("mmHg")) {
-			return "mmHg";
-		} else if (unit.contains("inHg")) {
-			return "inHg";
-		} else if (unit.contains("hPa")) {
-			return "hPa";
-		} else if (unit.contains("kPa")) {
-			return "kPa";
-		} else if (unit.contains("atm")) {
-			return "atm";
-		} else {
-			return "mbar";
-		}
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_MAILED_LOG) {
@@ -1761,7 +1743,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (recentPressureReading != 0.0) {
 			DecimalFormat df = new DecimalFormat("####.00");
-			String toPrint = df.format(recentPressureReading);
+			PressureUnit unit = new PressureUnit(preferenceUnit);
+			unit.setValue(recentPressureReading);
+			double pressureInPreferredUnit = unit.convertToPreferredUnit(preferenceUnit);
+			String toPrint = df.format(pressureInPreferredUnit);
 			buttonBarometer.setText(toPrint + " " + preferenceUnit);
 		} else {
 			buttonBarometer.setText("No barometer detected.");

@@ -3,17 +3,11 @@ package ca.cumulonimbus.barometernetwork;
 import java.text.DecimalFormat;
 
 /*
- *  Units
- *  Millibars (mbar)
-    Hectopascals (hPa)
-    Standard Atmosphere (atm)
-    Millimeteres of Mercury (mmHg)
+ *  Atmospheric Pressure Units
  */
-public class Unit {
+public class PressureUnit {
 	double valueInMb;
 	String abbrev;
-	
-	String actualAbbrev;
 	
 	private String fullToAbbrev(String full) {
 		if(abbrev.contains("mbar")) {
@@ -67,7 +61,7 @@ public class Unit {
 		return formatted + " " + abb;
 	}
 	
-	public Unit(String abbrev) {
+	public PressureUnit(String abbrev) {
 		this.abbrev = abbrev;
 	}
 	public double getValueInMb() {
