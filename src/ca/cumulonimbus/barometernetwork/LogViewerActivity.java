@@ -179,11 +179,13 @@ public class LogViewerActivity extends Activity {
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
 			Toast.makeText(getApplicationContext(), "Reselected!",
 					Toast.LENGTH_LONG).show();
+			getRecents(1);
 		}
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			ft.replace(R.id.fragment_container, fragment);
+			getRecents(1);
 		}
 
 		@Override
