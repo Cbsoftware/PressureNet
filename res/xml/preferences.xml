@@ -9,6 +9,7 @@
             android:key="autoupdate"
             android:summary="Let pressureNET submit data automatically"
             android:title="Enable Auto-Submit" />
+
         <ListPreference
             android:defaultValue="10 minutes"
             android:dependency="autoupdate"
@@ -24,6 +25,7 @@
             android:key="sharing_preference"
             android:summary="Define data sharing preference"
             android:title="Share with" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="send_notifications"
@@ -38,8 +40,15 @@
             android:entries="@array/default_units"
             android:entryValues="@array/default_units"
             android:key="units"
-            android:summary="Pick your preferred unit"
-            android:title="Unit" />
+            android:summary="Pick your preferred pressure unit"
+            android:title="Pressure Unit" />
+        <ListPreference
+            android:defaultValue="Meters (m)"
+            android:entries="@array/distance_units"
+            android:entryValues="@array/distance_units"
+            android:key="distance_units"
+            android:summary="Pick your preferred distance unit"
+            android:title="Distance Unit" />
     </PreferenceCategory>
 
 </PreferenceScreen>

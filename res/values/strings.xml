@@ -17,8 +17,9 @@
     <string name="chartView">Chart View (millibars over days)</string>
     <string name="refreshFrequency">Auto-Submit</string>
     <string name="submitEvery">Submit Every:</string>
-	<string name="data">Data</string>
-	<string name="chartTimeDisplay">Chart Time Display</string>
+    <string name="data">Data</string>
+    <string name="chartTimeDisplay">Chart Time Display</string>
+
     <string-array name="display_time_chart">
         <item name="1 hour">1 hour</item>
         <item name="6 hours ">6 hours</item>
@@ -50,6 +51,12 @@
         <item>Standard Atmosphere (atm)</item>
         <item>Millimeteres of Mercury (mmHg)</item>
         <item>Inches of Mercury (inHg)</item>
+    </string-array>
+    <string-array name="distance_units">
+        <item>Meters (m)</item>
+        <item>Kilometers (km)</item>
+        <item>Feet (ft)</item>
+        <item>Miles (mi)</item>
     </string-array>
 
     <string name="units">Units: </string>
