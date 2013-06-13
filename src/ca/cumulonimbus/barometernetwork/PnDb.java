@@ -27,10 +27,11 @@ public class PnDb {
 			+ SEARCH_LOCATIONS_TABLE
 			+ " (_id integer primary key autoincrement, " + KEY_SEARCH_TEXT
 			+ " text not null, " + KEY_LATITUDE + " real not null, "
-			+ KEY_LONGITUDE + " text not null, " + KEY_LAST_CALL + " real)";
+			+ KEY_LONGITUDE + " text not null, " + KEY_LAST_CALL + " real, UNIQUE (" + KEY_SEARCH_TEXT
+			+ ") ON CONFLICT REPLACE)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	
 	public PnDb open() throws SQLException {

@@ -372,16 +372,29 @@ public class BarometerNetworkActivity extends Activity implements
 		adapterTime
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerTime.setAdapter(adapterTime);
-		spinnerTime.setSelection(0);
+		spinnerTime.setSelection(1);
 		seekTime.setProgress(100);
 
+		editLocation.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				editLocation.setText("");
+			}
+		});
+		
 		buttonGoLocation.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				String location = editLocation.getEditableText().toString();
+				if(location.equals("")) {
+					return;
+				}
+				location = location.trim();
 				Toast.makeText(getApplicationContext(), "Going to " + location, Toast.LENGTH_SHORT).show();
-				
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
 				Geocoder geocode = new Geocoder(getApplicationContext());
 				try {	
 					List<Address> addr = geocode.getFromLocationName(location, 1);
@@ -407,8 +420,7 @@ public class BarometerNetworkActivity extends Activity implements
 				} catch (IOException ioe)  {
 					ioe.printStackTrace();
 				}
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+
 			}
 		});
 		

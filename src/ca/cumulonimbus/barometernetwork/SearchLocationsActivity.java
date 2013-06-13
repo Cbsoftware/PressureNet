@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class SearchLocationsActivity extends ListActivity {
 
@@ -34,6 +35,10 @@ public class SearchLocationsActivity extends ListActivity {
 		pn.open();
 		Cursor cursor = pn.fetchAllLocations();
 		
+		if(cursor.getCount()==0) {
+			Toast.makeText(getApplicationContext(), "No saved locations", Toast.LENGTH_SHORT).show();
+			finish();
+		}
 		
 		startManagingCursor(cursor);
 		
