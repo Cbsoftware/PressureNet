@@ -65,7 +65,7 @@
     <string name="delete">Delete User Data</string>
     <string name="deleteWarning">Warning: This will delete the data that you have recently submitted to pressureNET. You will disappear from the map, but some offline backups or archives may still contain your data for a while. If you would like to be removed urgently, please email software@cumulonimbus.ca</string>
     <string name="my_info">My Info</string>
-    <string name="logViewer">Log Viewer (last 24h)</string>
+    <string name="logViewer">Log Viewer</string>
     <string name="view_log">View Log</string>
     <string name="data_visualization">Data Visualization</string>
     <string name="about">About</string>

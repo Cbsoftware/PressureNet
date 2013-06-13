@@ -64,6 +64,7 @@
             android:dependency="manual_altitude_calibration"
             android:key="manual_altitude_in_km"
             android:summary="Enter your approximate altitude in kilometers."
-            android:title="Enter approximate altitude" />
+            android:title="Altitude (km)"
+            android:inputType="number" />
         </PreferenceCategory>
 </PreferenceScreen>
