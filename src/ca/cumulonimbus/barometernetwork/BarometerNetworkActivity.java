@@ -1617,8 +1617,10 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	public CbApiCall buildMapAPICall(double hoursAgo) {
-		long startTime = System.currentTimeMillis()
-				- (int) ((hoursAgo * 60 * 60 * 1000));
+		// TODO: Don't override hoursAgo. One method for map overlays
+		// and one for graph generation; map overlays is static 1 hour ago
+		hoursAgo = 1; 
+		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		
@@ -1647,6 +1649,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(100);
+		api.setApiName("live");
 		return api;
 	}
 
