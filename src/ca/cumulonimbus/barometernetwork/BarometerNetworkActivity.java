@@ -212,10 +212,13 @@ public class BarometerNetworkActivity extends Activity implements
 	        mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 	            @Override
 	            public void onCameraChange(CameraPosition position) {
-	                LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+	                // dismiss the keyboard
+	                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+
+	            	LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 	                visibleBound = bounds;
 	                makeMapApiCallAndLoadRecents();
-	                
 	                
 	            }
 	        });
