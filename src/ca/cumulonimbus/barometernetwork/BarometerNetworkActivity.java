@@ -202,6 +202,26 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpMap();
 	}
 	
+	/**
+	 * Get fresh data for each of the user's saved locations
+	 */
+	public void makeLocationAPICalls() {
+		PnDb pn = new PnDb(getApplicationContext());
+		pn.open();
+		Cursor cursor = pn.fetchAllLocations(); 
+		
+		while(cursor.moveToNext()) {
+			String name = cursor.getString(1);
+			double latitude = cursor.getDouble(2);
+			double longitude = cursor.getDouble(3);
+			SearchLocation location = new SearchLocation(name, latitude, longitude);
+			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
+			System.out.println("making api call for " + name + " at " + latitude + " " + longitude);
+			makeAPICall(locationApiCall);
+		}
+		pn.close();
+	}
+	
 
 	private void setUpMapIfNeeded() {
 	    // Do a null check to confirm that we have not already instantiated the map.
@@ -781,7 +801,8 @@ public class BarometerNetworkActivity extends Activity implements
 				log("chartlayout null");
 				return;
 			}
-			mainLayout.addView(chartView);
+			// TODO: bring the chart back
+			//mainLayout.addView(chartView);
 		}
 	}
 
@@ -807,6 +828,9 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
+			
+			makeLocationAPICalls();
+			
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1598,10 +1622,16 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-
+	/**
+	 * 
+	 * Users will save locations and we will cache data for those locations.
+	 * Build a general API call to cache a location. Use /live/
+	 * @param locationRowId
+	 * @return
+	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((24 * 60 * 60 * 1000));
+				- (int) ((30 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		
@@ -1613,6 +1643,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(5000);
+		api.setApiName("live");
 		return api;
 	}
 	
@@ -1636,7 +1667,6 @@ public class BarometerNetworkActivity extends Activity implements
 			maxLat = ne.latitude;
 			minLon = sw.longitude;
 			maxLon = ne.longitude;
-	//		log("NEWMAP" + minLat + ", " + maxLat + ", " + minLon + "," + maxLon);
 		} else {
 			log("no map center, bailing on condition api");
 		}
@@ -1648,8 +1678,8 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(100);
-		api.setApiName("live");
+		api.setLimit(500);
+		api.setApiName("list");
 		return api;
 	}
 
