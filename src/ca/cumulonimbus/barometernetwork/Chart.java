@@ -146,12 +146,15 @@ public class Chart {
 			
 			colors[i] = Color.rgb(red, green, blue);
 		}
+		
+		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
+		// current hack is min/max observation or hardcoded default range
 
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles,
 				obsList);
 		setChartSettings(renderer, "Pressure", "Time", "Pressure (mb)",
-				minTime, maxTime, yMean - 50, yMean + 50, Color.GRAY,
+				minTime, maxTime, minObservation, maxObservation, Color.GRAY,
 				Color.LTGRAY);
 		renderer.setXLabels(5);
 		renderer.setYLabels(5);
@@ -170,108 +173,6 @@ public class Chart {
 		}
 
 		return ChartFactory.getTimeChartView(context, dataset, renderer,
-				"yyyy/MM/dd");
-
-	}
-
-	/**
-	 * Launch the My Info screen TODO: this code is copy+pasted from drawChart.
-	 * fix that.
-	 * 
-	 * @param obsList
-	 * @return
-	 */
-	public Intent getChartIntent(ArrayList<CbObservation> obsList) {
-		String[] titles = new String[] { "" };
-		List<Date[]> x = new ArrayList<Date[]>();
-		List<double[]> values = new ArrayList<double[]>();
-		int length = titles.length;
-		int count = obsList.size();
-
-		Date[] xValues = new Date[count];
-		double[] yValues = new double[count];
-
-		// TODO: Expand to multiple observations
-		// currently only pressure
-		double minObservation = 1200;
-		double maxObservation = 0;
-		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis(System.currentTimeMillis());
-
-		Date minTime = c.getTime();
-
-		c.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24)); // TODO:
-																				// fix
-																				// max
-																				// 1-day-ago
-																				// support
-		Date maxTime = c.getTime();
-
-		int i = 0;
-		double yMean = 1000;
-		double ySum = 0;
-		for (CbObservation obs : obsList) {
-			if (obs.getObservationValue() < minObservation) {
-				minObservation = obs.getObservationValue();
-			}
-			if (obs.getObservationValue() > maxObservation) {
-				maxObservation = obs.getObservationValue();
-			}
-			if (obs.getTime() < minTime.getTime()) {
-				minTime = new Date(obs.getTime());
-			}
-			if (obs.getTime() > maxTime.getTime()) {
-				maxTime = new Date(obs.getTime());
-			}
-			xValues[i] = new Date(obs.getTime());
-			yValues[i] = obs.getObservationValue();
-			i++;
-			ySum += yValues[i];
-		}
-
-		yMean = ySum / i;
-		if(yMean < 500) {
-			yMean = 1000;
-		}
-		
-		x.add(xValues);
-		values.add(yValues);
-
-		int[] colors = new int[count];
-		int colorVal = 16;
-		for (i = 0; i < count; i++) {
-			int blue = 128 + random128();
-			int green = blue - (3 * colorVal);
-			int red = blue - (11 * colorVal);
-			if (red < 0) {
-				red = 0;
-			}
-			colors[i] = Color.rgb(red, green, blue);
-		}
-
-		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
-		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles,
-				obsList);
-		setChartSettings(renderer, "Pressure", "Time", "Pressure (mb)",
-				minTime, maxTime, yMean - 50, yMean + 50, Color.GRAY,
-				Color.LTGRAY);
-		renderer.setXLabels(5);
-		renderer.setYLabels(5);
-		length = renderer.getSeriesRendererCount();
-		for (i = 0; i < length; i++) {
-			((XYSeriesRenderer) renderer.getSeriesRendererAt(i))
-					.setFillPoints(true);
-		}
-		XYMultipleSeriesDataset dataset = buildDataset(titles, obsList);
-		System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", "
-				+ renderer.getSeriesRendererCount());
-		int total = dataset.getSeriesCount();
-		for (i = 0; i < total; i++) {
-			// System.out.println(i + " min ys " +
-			// dataset.getSeriesAt(i).getMinY());
-		}
-
-		return ChartFactory.getTimeChartIntent(context, dataset, renderer,
 				"yyyy/MM/dd");
 
 	}
@@ -308,7 +209,7 @@ public class Chart {
 			// bail after a while
 			count++;
 			if(count>500) {
-				System.out.println("CHART 200 BAILING");
+				System.out.println("CHART 500 BAILING");
 				break;
 			}
 		
