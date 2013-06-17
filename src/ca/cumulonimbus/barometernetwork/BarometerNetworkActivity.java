@@ -124,9 +124,8 @@ public class BarometerNetworkActivity extends Activity implements
 	CbObservation bestPressure;
 	CbSettingsHandler activeSettings;
 
-	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
-	ArrayList<CbObservation> apiCache = new ArrayList<CbObservation>();
-	ArrayList<CbObservation> graphContents = new ArrayList<CbObservation>();
+	ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
+	ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 
 	boolean dataReceivedToPlot = false;
 
@@ -364,14 +363,17 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 		// TODO: Local recents only
+		
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
-		for (CbObservation r : recents) {
+		/*
+		for (CbObservation r : fullRecents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
 				//thisFrameObservation.add(r);
 			} else {
 
 			}
 		}
+		*/
 		
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
@@ -730,18 +732,16 @@ public class BarometerNetworkActivity extends Activity implements
 				updateVisibleReading();
 				break;
 			case CbService.MSG_API_RECENTS:
-				apiCache.clear();
-				recents.clear();
-				apiCache = (ArrayList<CbObservation>) msg.obj;
-				if (recents != null) {
-					log("received " + recents.size()
+				fullRecents.clear();
+				fullRecents = (ArrayList<CbObservation>) msg.obj;
+				if (fullRecents != null) {
+					log("received " + fullRecents.size()
 							+ " recent observations in buffer.");
 
 				} else {
 					log("received recents: NULL");
 				}
 				dataReceivedToPlot = true;
-				recents = apiCache;
 				createAndShowChart();
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
@@ -768,18 +768,18 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void createAndShowChart() {
-		if (recents == null) {
-			log("recents null RETURNING");
+		if (listRecents == null) {
+			log("list recents null RETURNING");
 			return;
-		} else if (recents.size() == 0) {
-			log("recents 0, RETURNING");
+		} else if (listRecents.size() == 0) {
+			log("list recents 0, RETURNING");
 			return;
 		}
 		if (dataReceivedToPlot) {
 			// draw chart
-			log("plotting... " + recents.size());
+			log("plotting... " + listRecents.size());
 			Chart chart = new Chart(getApplicationContext());
-			View chartView = chart.drawChart(recents);
+			View chartView = chart.drawChart(listRecents);
 
 			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainParentLayout);
 
@@ -802,22 +802,8 @@ public class BarometerNetworkActivity extends Activity implements
 				return;
 			}
 			// TODO: bring the chart back
-			//mainLayout.addView(chartView);
+			mainLayout.addView(chartView);
 		}
-	}
-
-	public void openMyInfo() {
-		if (recents == null) {
-			log("recents null RETURNING");
-			return;
-		} else if (recents.size() == 0) {
-			log("recents 0, RETURNING");
-			return;
-		}
-		Chart chart = new Chart(getApplicationContext());
-		Intent myInfoIntent = chart.getChartIntent(recents);
-		startActivity(myInfoIntent);
-
 	}
 
 	private ServiceConnection mConnection = new ServiceConnection() {
