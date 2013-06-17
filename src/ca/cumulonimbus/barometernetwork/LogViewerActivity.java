@@ -3,6 +3,7 @@ package ca.cumulonimbus.barometernetwork;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class LogViewerActivity extends Activity {
@@ -93,7 +95,7 @@ public class LogViewerActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		v.setId(200); // TODO: what's safe?
+		v.setId(100); // TODO: what's safe?
 
 		// add to layout
 		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -113,6 +115,9 @@ public class LogViewerActivity extends Activity {
 			switch (msg.what) {
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
+				Collections.sort(recents,
+						new CbScience.TimeComparator());
+
 				try {
 
 					String rawLog = "";
