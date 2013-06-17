@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -71,6 +72,7 @@ import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
@@ -124,9 +126,11 @@ public class BarometerNetworkActivity extends Activity implements
 	CbObservation bestPressure;
 	CbSettingsHandler activeSettings;
 
-	ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
-	ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
+	private ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
+	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
+	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 
+	
 	boolean dataReceivedToPlot = false;
 
 	private SeekBar seekTime;
@@ -138,11 +142,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private double hoursAgoSelected = 1 / 6;
 
 	Handler timeHandler = new Handler();
-
-	// API call parameters.
-	private ArrayList<CbObservation> apiCbObservationResults = new ArrayList<CbObservation>();
-
-	private ArrayList<CbCurrentCondition> currentConditions = new ArrayList<CbCurrentCondition>();
 
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/list/?";
 
@@ -354,7 +353,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public void updateMapWithSeekTimeData() {
 
 		ArrayList<CbWeather> thisFrameCondition = new ArrayList<CbWeather>();
-		for (CbCurrentCondition c : currentConditions) {
+		for (CbCurrentCondition c : currentConditionRecents) {
 			if (isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrameCondition.add(c);
 			} else {
@@ -531,13 +530,13 @@ public class BarometerNetworkActivity extends Activity implements
 				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
 
-				if (currentConditions.size() > 1) {
-					//Collections.sort(currentConditions,
-						//	new CbScience.ConditionTimeComparator());
-					long startTimeConditions = currentConditions.get(0)
+				if (currentConditionRecents.size() > 1) {
+					Collections.sort(currentConditionRecents,
+							new CbScience.ConditionTimeComparator());
+					long startTimeConditions = currentConditionRecents.get(0)
 							.getTime();
 
-					for (CbCurrentCondition c : currentConditions) {
+					for (CbCurrentCondition c : currentConditionRecents) {
 						long time = c.getTime();
 						int group = (int) ((time - startTimeConditions) / singleTimeSpan);
 						System.out.println("group " + group + " for time " + time);
@@ -751,9 +750,9 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				log("receiving current conditions");
-				currentConditions = (ArrayList<CbCurrentCondition>) msg.obj;
-				if (currentConditions != null) {
-					log(" size " + currentConditions.size());
+				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
+				if (currentConditionRecents != null) {
+					log("currentConditionRecents size " + currentConditionRecents.size());
 					addDataToMap();
 				} else {
 					log("conditions ARE NuLL");
@@ -1591,7 +1590,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 
 			// Add Current Conditions
-			for (CbCurrentCondition condition : currentConditions) {
+			for (CbCurrentCondition condition : currentConditionRecents) {
 
 				LayerDrawable dr = getCurrentConditionDrawable(condition,
 						drawable);
