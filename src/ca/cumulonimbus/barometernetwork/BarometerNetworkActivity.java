@@ -237,7 +237,7 @@ public class BarometerNetworkActivity extends Activity implements
 	            	LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 	                visibleBound = bounds;
 	                makeMapApiCallAndLoadRecents();
-	                
+	                createAndShowChart();
 	            }
 	        });
 	        
@@ -439,6 +439,8 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
 						
+						CbApiCall conditionApi = buildMapCurrentConditionsCall();
+						makeCurrentConditionsAPICall(conditionApi);
 					}
 					
 				} catch (IOException ioe)  {
@@ -589,45 +591,12 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 	}
-	private void askForCurrentConditions(CbApiCall api) {
+	private void askForCurrentConditionRecents(CbApiCall api) {
 
 		if (mBound) {
 			log("asking for current conditions");
 			Message msg = Message.obtain(null,
 					CbService.MSG_GET_CURRENT_CONDITIONS, api);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			log("error: not bound");
-		}
-	}
-
-	private void askForBestPressure() {
-		if (mBound) {
-			log("asking for best pressure");
-			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_PRESSURE,
-					0, 0);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-				updateVisibleReading();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			log("error: not bound");
-		}
-	}
-
-	private void askForBestLocation() {
-		if (mBound) {
-			log("asking for best location");
-			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_LOCATION,
-					0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -1653,7 +1622,7 @@ public class BarometerNetworkActivity extends Activity implements
 			minLon = sw.longitude;
 			maxLon = ne.longitude;
 		} else {
-			log("no map center, bailing on condition api");
+			log("no map center, bailing on map call");
 		}
 
 		api.setMinLat(minLat);
@@ -1668,8 +1637,43 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
+	public CbApiCall buildMapCurrentConditionsCall() {
+		double hoursAgo = 72; 
+		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+		
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+		
+		if(visibleBound != null) { 
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("no map center, bailing on condition api");
+		}
+
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setApiKey(PressureNETConfiguration.API_KEY);
+		api.setLimit(500);
+		api.setCallType("Conditions");
+		System.out.println("made map conditions api call");
+		return api;
+	}
+
+	
 	private void makeAPICall(CbApiCall apiCall) {
-		log("making Readings api call");
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
 					apiCall);
@@ -1685,7 +1689,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
-		log("making Conditions api call");
 		if (mBound) {
 			Message msg = Message.obtain(null,
 					CbService.MSG_MAKE_CURRENT_CONDITIONS_API_CALL, apiCall);
@@ -1703,13 +1706,16 @@ public class BarometerNetworkActivity extends Activity implements
 
 
 	public void makeMapApiCallAndLoadRecents() {
-		CbApiCall api = buildMapAPICall(hoursAgoSelected);
 		textCallLog.setText("Refreshing...");
-		askForRecents(api);
-		askForCurrentConditions(api);
 		
-		//makeCurrentConditionsAPICall(api);
+		CbApiCall api = buildMapAPICall(hoursAgoSelected);
+		askForRecents(api);
 		makeAPICall(api);
+		
+		CbApiCall currentApi = buildMapCurrentConditionsCall();
+		askForCurrentConditionRecents(currentApi);
+		makeCurrentConditionsAPICall(currentApi);
+		
 		
 	}
 
