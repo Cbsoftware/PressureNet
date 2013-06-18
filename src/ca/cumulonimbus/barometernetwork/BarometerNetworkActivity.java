@@ -1620,7 +1620,7 @@ public class BarometerNetworkActivity extends Activity implements
 				Bitmap image = drawableToBitmap(drawable);
 				
 				mMap.addMarker(new MarkerOptions()
-	            .position(point)
+	            .position(point).title(observation.getObservationValue() + "")
 	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 
