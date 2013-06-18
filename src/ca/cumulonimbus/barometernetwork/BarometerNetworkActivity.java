@@ -126,6 +126,7 @@ public class BarometerNetworkActivity extends Activity implements
 	CbObservation bestPressure;
 	CbSettingsHandler activeSettings;
 
+	private ArrayList<CbObservation> uniqueRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
@@ -624,6 +625,23 @@ public class BarometerNetworkActivity extends Activity implements
 			log("error: not bound");
 		}
 	}
+	
+	private void askForUniqueRecents(CbApiCall apiCall) {
+		if (mBound) {
+			log("asking for recents");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_UNIQUE_RECENTS,
+					apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("error: not bound");
+		}
+	}
 
 	public void unBindCbService() {
 		if (mBound) {
@@ -727,6 +745,19 @@ public class BarometerNetworkActivity extends Activity implements
 					log("conditions ARE NuLL");
 				}
 				createAndShowChart();
+				break;
+			case CbService.MSG_API_UNIQUE_RECENTS:
+				uniqueRecents.clear();
+				uniqueRecents = (ArrayList<CbObservation>) msg.obj;
+				if (uniqueRecents != null) {
+					log("received " + uniqueRecents.size()
+							+ " unique recent observations in buffer.");
+
+				} else {
+					log("received unique recents: NULL");
+				}
+				dataReceivedToPlot = true;
+				// TODO: update map
 				break;
 			default:
 				log("received default message");
@@ -1585,7 +1616,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((30 * 60 * 1000));
+				- (int) ((60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		
@@ -1716,7 +1747,7 @@ public class BarometerNetworkActivity extends Activity implements
 		askForCurrentConditionRecents(currentApi);
 		makeCurrentConditionsAPICall(currentApi);
 		
-		
+		askForUniqueRecents(api);		
 	}
 
 	// Stop listening to the barometer when our app is paused.
