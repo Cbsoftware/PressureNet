@@ -239,6 +239,7 @@ public class BarometerNetworkActivity extends Activity implements
 	                visibleBound = bounds;
 	                makeMapApiCallAndLoadRecents();
 	                createAndShowChart();
+	                addDataToMap();
 	            }
 	        });
 	        
@@ -1592,16 +1593,44 @@ public class BarometerNetworkActivity extends Activity implements
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
-				LayerDrawable dr = getCurrentConditionDrawable(condition,
-						drawable);
-
-				// TODO: Add dr
+				LatLng point = new LatLng(condition.getLocation().getLatitude(), condition.getLocation().getLongitude());
+				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+						null);
+		
+				Drawable draw = getSingleDrawable(drLayer);
+				
+				Bitmap image = drawableToBitmap(draw);
+				
+				mMap.addMarker(new MarkerOptions()
+	            .position(point)
+	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
 					break;
 				}
 			}
+			
+
+			// Add Recent Readings
+			int currentRecent = 0;
+			for (CbObservation observation : uniqueRecents) {
+				LatLng point = new LatLng(observation.getLocation().getLatitude(), observation.getLocation().getLongitude());
+		
+				Bitmap image = drawableToBitmap(drawable);
+				
+				mMap.addMarker(new MarkerOptions()
+	            .position(point)
+	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+
+
+				currentRecent++;
+				if (currentRecent > totalEachAllowed) {
+					break;
+				}
+			}
+			
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
 		}
