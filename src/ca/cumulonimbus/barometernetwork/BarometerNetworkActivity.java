@@ -332,7 +332,7 @@ public class BarometerNetworkActivity extends Activity implements
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
 				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 100);
+				timeHandler.postDelayed(animate, 50);
 			} else {
 				// reset to 0
 				
@@ -366,15 +366,15 @@ public class BarometerNetworkActivity extends Activity implements
 		// TODO: Local recents only
 		
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
-		/*
-		for (CbObservation r : fullRecents) {
+		
+		for (CbObservation r : uniqueRecents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
-				//thisFrameObservation.add(r);
+				thisFrameObservation.add(r);
 			} else {
 
 			}
 		}
-		*/
+		
 		
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
@@ -548,6 +548,22 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 
 				}
+				
+				if (uniqueRecents.size() > 1) {
+					Collections.sort(uniqueRecents,
+							new CbScience.TimeComparator());
+					long startTimeRecents = uniqueRecents.get(0)
+							.getTime();
+
+					for (CbObservation ob : uniqueRecents) {
+						long time = ob.getTime();
+						int group = (int) ((time - startTimeRecents) / singleTimeSpan);
+						System.out.println("group " + group + " for time " + time);
+						ob.setAnimateGroupNumber(group);
+					}
+
+				}
+			
 			
 				timeHandler.postDelayed(animate, 0);
 			}
@@ -1536,6 +1552,30 @@ public class BarometerNetworkActivity extends Activity implements
 					break;
 				}
 			}
+			
+			// Add Recent Readings
+			int currentRecent = 0;
+			Drawable drawable = this.getResources().getDrawable(
+					R.drawable.ic_marker);
+
+			for (CbWeather weatherObs : frameObservations) {
+				CbObservation observation = (CbObservation) weatherObs;
+				LatLng point = new LatLng(observation.getLocation().getLatitude(), observation.getLocation().getLongitude());
+		
+				Bitmap image = drawableToBitmap(drawable);
+				
+				mMap.addMarker(new MarkerOptions()
+	            .position(point).title(observation.getObservationValue() + "")
+	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+
+
+				currentRecent++;
+				if (currentRecent > totalEachAllowed) {
+					break;
+				}
+			}
+			
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
 		}
@@ -1645,14 +1685,14 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((60 * 60 * 1000));
+				- (int) ((6 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		
-		api.setMinLat(loc.getLatitude() - .1);
-		api.setMaxLat(loc.getLatitude() + .1);
-		api.setMinLon(loc.getLongitude() - .1);
-		api.setMaxLon(loc.getLongitude() + .1);
+		api.setMinLat(loc.getLatitude() - .05);
+		api.setMaxLat(loc.getLatitude() + .05);
+		api.setMinLon(loc.getLongitude() - .05);
+		api.setMaxLon(loc.getLongitude() + .05);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
