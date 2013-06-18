@@ -140,9 +140,10 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
-	private double hoursAgoSelected = 1 / 6;
+	private double hoursAgoSelected = 1;
 
 	Handler timeHandler = new Handler();
+	Handler mapDelayHandler = new Handler();
 
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/list/?";
 
@@ -181,6 +182,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 	
+	private long lastMapCallTime = System.currentTimeMillis();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -237,7 +239,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	            	LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
 	                visibleBound = bounds;
+	                
 	                makeMapApiCallAndLoadRecents();
+	                
 	                createAndShowChart();
 	                addDataToMap();
 	            }
@@ -323,6 +327,14 @@ public class BarometerNetworkActivity extends Activity implements
 		return sharedPreferences.getString("units", "millibars");
 	}
 
+	Runnable apiCallRunnable = new Runnable() {
+		@Override
+		public void run() {
+			CbApiCall api = buildMapAPICall(hoursAgoSelected);
+			makeAPICall(api);
+		}
+	};
+	
 	Runnable animate = new Runnable() {
 		@Override
 		public void run() {
@@ -398,7 +410,7 @@ public class BarometerNetworkActivity extends Activity implements
 		adapterTime
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerTime.setAdapter(adapterTime);
-		spinnerTime.setSelection(1);
+		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
 		editLocation.setOnClickListener(new OnClickListener() {
@@ -576,7 +588,6 @@ public class BarometerNetworkActivity extends Activity implements
 					int arg2, long arg3) {
 				String selected = arg0.getSelectedItem().toString();
 				// TODO: Fix hack
-				CbApiCall apiCall = new CbApiCall();
 				if (selected.equals("1 hour")) {
 					hoursAgoSelected = 1;
 				} else if (selected.equals("6 hours")) {
@@ -746,6 +757,7 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				dataReceivedToPlot = true;
 				createAndShowChart();
+				addDataToMap();
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
@@ -762,6 +774,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("conditions ARE NuLL");
 				}
 				createAndShowChart();
+				addDataToMap();
 				break;
 			case CbService.MSG_API_UNIQUE_RECENTS:
 				uniqueRecents.clear();
@@ -769,12 +782,12 @@ public class BarometerNetworkActivity extends Activity implements
 				if (uniqueRecents != null) {
 					log("received " + uniqueRecents.size()
 							+ " unique recent observations in buffer.");
-
 				} else {
 					log("received unique recents: NULL");
 				}
 				dataReceivedToPlot = true;
-				// TODO: update map
+				
+				addDataToMap();
 				break;
 			default:
 				log("received default message");
@@ -1653,7 +1666,6 @@ public class BarometerNetworkActivity extends Activity implements
 			
 
 			// Add Recent Readings
-			int currentRecent = 0;
 			for (CbObservation observation : uniqueRecents) {
 				LatLng point = new LatLng(observation.getLocation().getLatitude(), observation.getLocation().getLongitude());
 		
@@ -1665,8 +1677,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 
 
-				currentRecent++;
-				if (currentRecent > totalEachAllowed) {
+				currentObs++;
+				if (currentObs > totalEachAllowed) {
 					break;
 				}
 			}
@@ -1685,7 +1697,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((6 * 60 * 60 * 1000));
+				- (int) ((hoursAgoSelected * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 		
@@ -1733,7 +1745,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
-		api.setApiName("list");
+		api.setApiName("live");
 		return api;
 	}
 
@@ -1810,7 +1822,18 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		CbApiCall api = buildMapAPICall(hoursAgoSelected);
 		askForRecents(api);
-		makeAPICall(api);
+		
+		// limit the calls made when the user is moving around
+		int timeLimit = 1000 * 3;
+		long timeNow = System.currentTimeMillis();
+		if(timeNow - lastMapCallTime < timeLimit) {
+			
+			mapDelayHandler.removeCallbacks(apiCallRunnable);
+			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
+			lastMapCallTime = timeNow;
+		} else {
+			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);			
+		}
 		
 		CbApiCall currentApi = buildMapCurrentConditionsCall();
 		askForCurrentConditionRecents(currentApi);
