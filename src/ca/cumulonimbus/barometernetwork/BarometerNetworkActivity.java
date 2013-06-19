@@ -342,7 +342,7 @@ public class BarometerNetworkActivity extends Activity implements
 		@Override
 		public void run() {
 			mMap.clear();
-			if (currentTimeProgress < 100) {
+			if (currentTimeProgress <= 100) {
 
 				currentTimeProgress++;
 				seekTime.setProgress(currentTimeProgress);
@@ -353,7 +353,7 @@ public class BarometerNetworkActivity extends Activity implements
 						R.drawable.ic_menu_play);
 				buttonPlay.setImageDrawable(play);
 				animateState = false;
-
+				currentTimeProgress = 0;
 				addDataToMap();
 			}
 
@@ -573,16 +573,16 @@ public class BarometerNetworkActivity extends Activity implements
 				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
 
+				long universalStartTime = System.currentTimeMillis() - msAgoSelected;
+				
 				if (currentConditionRecents.size() > 1) {
 					Collections.sort(currentConditionRecents,
 							new CbScience.ConditionTimeComparator());
-					long startTimeConditions = currentConditionRecents.get(0)
-							.getTime();
-
+			
 					for (CbCurrentCondition c : currentConditionRecents) {
 						long time = c.getTime();
-						int group = (int) ((time - startTimeConditions) / singleTimeSpan);
-						System.out.println("group " + group + " for time " + time);
+						int group = (int) ((time - universalStartTime) / singleTimeSpan);
+						System.out.println("cond group " + group + " for time " + time);
 						c.setAnimateGroupNumber(group);
 					}
 
@@ -591,13 +591,11 @@ public class BarometerNetworkActivity extends Activity implements
 				if (uniqueRecents.size() > 1) {
 					Collections.sort(uniqueRecents,
 							new CbScience.TimeComparator());
-					long startTimeRecents = uniqueRecents.get(0)
-							.getTime();
-
+					
 					for (CbObservation ob : uniqueRecents) {
 						long time = ob.getTime();
-						int group = (int) ((time - startTimeRecents) / singleTimeSpan);
-						System.out.println("group " + group + " for time " + time);
+						int group = (int) ((time - universalStartTime) / singleTimeSpan);
+						System.out.println("rec group " + group + " for time " + time);
 						ob.setAnimateGroupNumber(group);
 					}
 
@@ -1848,10 +1846,10 @@ public class BarometerNetworkActivity extends Activity implements
 		askForRecents(api);
 		
 		// limit the calls made when the user is moving around
-		int timeLimit = 1000 * 3;
+		int timeLimit = 1000 * 1;
 		long timeNow = System.currentTimeMillis();
 		if(timeNow - lastMapMove < timeLimit) {
-			System.out.println("map move time too short, delaying another 3 seconds (runnable)");
+			System.out.println("map move time too short, delaying (runnable)");
 			mapDelayHandler.removeCallbacks(apiCallRunnable);
 			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
 			
