@@ -182,7 +182,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 	
-	private long lastMapCallTime = System.currentTimeMillis();
+	private long lastMapMove = System.currentTimeMillis();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -330,10 +330,13 @@ public class BarometerNetworkActivity extends Activity implements
 	Runnable apiCallRunnable = new Runnable() {
 		@Override
 		public void run() {
+			System.out.println("making api call (runnable)");
 			CbApiCall api = buildMapAPICall(1);
+			api = roundApiCallLocations(api);
 			makeAPICall(api);
 		}
 	};
+	
 	
 	Runnable animate = new Runnable() {
 		@Override
@@ -356,6 +359,33 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 	};
+	
+	/**
+	 * Round the api call location values to
+	 * improve performance (caching)
+	 * @param rawApi
+	 * @return
+	 */
+	public CbApiCall roundApiCallLocations(CbApiCall rawApi) {
+		double newMinLat = Math.floor(rawApi.getMinLat() * 10) / 10;
+		double newMaxLat = Math.floor(rawApi.getMaxLat() * 10) / 10;
+		double newMinLon = Math.floor(rawApi.getMinLon() * 10) / 10;
+		double newMaxLon = Math.floor(rawApi.getMaxLon() * 10) / 10;
+		
+		if(newMaxLat == newMinLat) {
+			newMaxLat += .1;
+		}
+		if(newMaxLon == newMinLon) {
+			newMaxLon += .1;
+		}
+		
+		rawApi.setMinLat(newMinLat);
+		rawApi.setMaxLat(newMaxLat);
+		rawApi.setMinLon(newMinLon);
+		rawApi.setMaxLon(newMaxLon);
+		
+		return rawApi;
+	}
 
 	public boolean isCloseToFrame(int a, int b) {
 		return Math.abs(a - b) < 3;
@@ -1775,7 +1805,6 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
 		api.setCallType("Conditions");
-		System.out.println("made map conditions api call");
 		return api;
 	}
 
@@ -1821,14 +1850,17 @@ public class BarometerNetworkActivity extends Activity implements
 		// limit the calls made when the user is moving around
 		int timeLimit = 1000 * 3;
 		long timeNow = System.currentTimeMillis();
-		if(timeNow - lastMapCallTime < timeLimit) {
-			
+		if(timeNow - lastMapMove < timeLimit) {
+			System.out.println("map move time too short, delaying another 3 seconds (runnable)");
 			mapDelayHandler.removeCallbacks(apiCallRunnable);
 			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
-			lastMapCallTime = timeNow;
+			
 		} else {
-			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);			
+			System.out.println("map move initializing wait before call (runnable)");
+			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
 		}
+		
+		lastMapMove = timeNow;
 		
 		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
