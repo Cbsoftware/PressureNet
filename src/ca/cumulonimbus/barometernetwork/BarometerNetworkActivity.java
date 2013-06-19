@@ -330,7 +330,7 @@ public class BarometerNetworkActivity extends Activity implements
 	Runnable apiCallRunnable = new Runnable() {
 		@Override
 		public void run() {
-			CbApiCall api = buildMapAPICall(hoursAgoSelected);
+			CbApiCall api = buildMapAPICall(1);
 			makeAPICall(api);
 		}
 	};
@@ -346,22 +346,19 @@ public class BarometerNetworkActivity extends Activity implements
 				updateMapWithSeekTimeData();
 				timeHandler.postDelayed(animate, 50);
 			} else {
-				// reset to 0
-				
 				Drawable play = getResources().getDrawable(
 						R.drawable.ic_menu_play);
 				buttonPlay.setImageDrawable(play);
-				currentTimeProgress = 0;
-				seekTime.setProgress(currentTimeProgress);
 				animateState = false;
 
+				addDataToMap();
 			}
 
 		}
 	};
 
 	public boolean isCloseToFrame(int a, int b) {
-		return Math.abs(a - b) < 10;
+		return Math.abs(a - b) < 3;
 	}
 
 	public void updateMapWithSeekTimeData() {
@@ -453,7 +450,7 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
 						
-						CbApiCall conditionApi = buildMapCurrentConditionsCall();
+						CbApiCall conditionApi = buildMapCurrentConditionsCall(72);
 						makeCurrentConditionsAPICall(conditionApi);
 					}
 					
@@ -1716,7 +1713,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public CbApiCall buildMapAPICall(double hoursAgo) {
 		// TODO: Don't override hoursAgo. One method for map overlays
 		// and one for graph generation; map overlays is static 1 hour ago
-		hoursAgo = 1; 
 		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
@@ -1749,8 +1745,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	public CbApiCall buildMapCurrentConditionsCall() {
-		double hoursAgo = 72; 
+	public CbApiCall buildMapCurrentConditionsCall(double hoursAgo) { 
 		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
@@ -1820,7 +1815,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeMapApiCallAndLoadRecents() {
 		textCallLog.setText("Refreshing...");
 		
-		CbApiCall api = buildMapAPICall(hoursAgoSelected);
+		CbApiCall api = buildMapAPICall(1);
 		askForRecents(api);
 		
 		// limit the calls made when the user is moving around
@@ -1835,7 +1830,7 @@ public class BarometerNetworkActivity extends Activity implements
 			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);			
 		}
 		
-		CbApiCall currentApi = buildMapCurrentConditionsCall();
+		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
 		makeCurrentConditionsAPICall(currentApi);
 		
