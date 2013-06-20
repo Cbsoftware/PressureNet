@@ -131,17 +131,23 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 
-	
 	boolean dataReceivedToPlot = false;
 
 	private SeekBar seekTime;
 	private ImageButton buttonPlay;
-	private ImageButton buttonStats;
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
 	private TextView textCallLog;
 	private double hoursAgoSelected = 1;
 
+	private Button mapMode;
+	private Button animationMode;
+	private Button graphMode;
+	
+	private LinearLayout layoutAnimationControlContainer;
+	private LinearLayout layoutMapInfo;
+	private LinearLayout layoutGraph;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -155,15 +161,16 @@ public class BarometerNetworkActivity extends Activity implements
 	private final int TYPE_AMBIENT_TEMPERATURE = 13;
 	private final int TYPE_RELATIVE_HUMIDITY = 12;
 
-
 	public static final int REQUEST_SETTINGS = 1;
 	public static final int REQUEST_LOCATION_CHOICE = 2;
 	public static final int REQUEST_MAILED_LOG = 3;
-	
+
+
 	private boolean pressureReadingsActive = false;
 	private boolean humidityReadingsActive = false;
 	private boolean temperatureReadingsActive = false;
 
+	
 	/**
 	 * preferences
 	 */
@@ -172,18 +179,17 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceShareData;
 	private String preferenceShareLevel;
 
-
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
 
 	// Search Locations
 	private ImageButton buttonGoLocation;
 	private EditText editLocation;
-	
+
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
-	
+
 	private long lastMapMove = System.currentTimeMillis();
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -202,95 +208,106 @@ public class BarometerNetworkActivity extends Activity implements
 		bindCbService();
 		setUpMap();
 	}
-	
+
 	/**
 	 * Get fresh data for each of the user's saved locations
 	 */
 	public void makeLocationAPICalls() {
 		PnDb pn = new PnDb(getApplicationContext());
 		pn.open();
-		Cursor cursor = pn.fetchAllLocations(); 
-		
-		while(cursor.moveToNext()) {
+		Cursor cursor = pn.fetchAllLocations();
+
+		while (cursor.moveToNext()) {
 			String name = cursor.getString(1);
 			double latitude = cursor.getDouble(2);
 			double longitude = cursor.getDouble(3);
-			SearchLocation location = new SearchLocation(name, latitude, longitude);
+			SearchLocation location = new SearchLocation(name, latitude,
+					longitude);
 			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-			System.out.println("making api call for " + name + " at " + latitude + " " + longitude);
+			System.out.println("making api call for " + name + " at "
+					+ latitude + " " + longitude);
 			makeAPICall(locationApiCall);
 		}
 		pn.close();
 	}
-	
 
 	private void setUpMapIfNeeded() {
-	    // Do a null check to confirm that we have not already instantiated the map.
-	    if (mMap == null) {
-	        mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-	                            .getMap();
-	        
-	        mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-	            @Override
-	            public void onCameraChange(CameraPosition position) {
-	                // dismiss the keyboard
-	                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+		// Do a null check to confirm that we have not already instantiated the
+		// map.
+		if (mMap == null) {
+			mMap = ((MapFragment) getFragmentManager().findFragmentById(
+					R.id.map)).getMap();
 
-	            	LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
-	                visibleBound = bounds;
-	                
-	                makeMapApiCallAndLoadRecents();
-	                
-	                createAndShowChart();
-	                addDataToMap();
-	            }
-	        });
-	        
-	        // Check if we were successful in obtaining the map.
-	        if (mMap != null) {
-	            // The Map is verified. It is now safe to manipulate the map.
-	        }
-	    }
-	    
+			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+				@Override
+				public void onCameraChange(CameraPosition position) {
+					// dismiss the keyboard
+					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
+							0);
+
+					LatLngBounds bounds = mMap.getProjection()
+							.getVisibleRegion().latLngBounds;
+					visibleBound = bounds;
+
+					makeMapApiCallAndLoadRecents();
+
+					createAndShowChart();
+					addDataToMap();
+				}
+			});
+			
+			
+
+			// Check if we were successful in obtaining the map.
+			if (mMap != null) {
+				// The Map is verified. It is now safe to manipulate the map.
+			}
+		}
+
 	}
-	
-	 // Zoom into the user's location, add pinch zoom controls
-    public void setUpMap() {
-    	setUpMapIfNeeded();
-    	
-    	mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-    	
-        // Set default coordinates (centered around the user's location)
 
-        try {
-        	LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-        	Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        	if(loc.getLatitude()!=0) {
-        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()),13));
-        	} else {
-        		
-        	}
+	// Zoom into the user's location, add pinch zoom controls
+	public void setUpMap() {
+		setUpMapIfNeeded();
 
-        } catch(Exception e) {
-        	
-        }
-      
-    }
-    
-    public void moveMapTo(double latitude, double longitude) {
-    	setUpMapIfNeeded();
-    	
-    	mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-        try {
-        		mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude),13));
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+				.getMap();
 
-        } catch(Exception e) {
-        	e.printStackTrace();
-        }
-    }
-	
-	
+		// Set default coordinates (centered around the user's location)
+
+		try {
+			LocationManager lm = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (loc.getLatitude() != 0) {
+				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+						new LatLng(loc.getLatitude(), loc.getLongitude()), 13));
+			} else {
+
+			}
+
+		} catch (Exception e) {
+
+		}
+
+	}
+
+	public void moveMapTo(double latitude, double longitude) {
+		setUpMapIfNeeded();
+
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+				.getMap();
+		try {
+			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+					latitude, longitude), 13));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Check the Android SharedPreferences for important values. Save relevant
 	 * ones to CbSettings for easy access in submitting readings
@@ -336,8 +353,7 @@ public class BarometerNetworkActivity extends Activity implements
 			makeAPICall(api);
 		}
 	};
-	
-	
+
 	Runnable animate = new Runnable() {
 		@Override
 		public void run() {
@@ -359,10 +375,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 	};
-	
+
 	/**
-	 * Round the api call location values to
-	 * improve performance (caching)
+	 * Round the api call location values to improve performance (caching)
+	 * 
 	 * @param rawApi
 	 * @return
 	 */
@@ -371,19 +387,19 @@ public class BarometerNetworkActivity extends Activity implements
 		double newMaxLat = Math.floor(rawApi.getMaxLat() * 10) / 10;
 		double newMinLon = Math.floor(rawApi.getMinLon() * 10) / 10;
 		double newMaxLon = Math.floor(rawApi.getMaxLon() * 10) / 10;
-		
-		if(newMaxLat == newMinLat) {
+
+		if (newMaxLat == newMinLat) {
 			newMaxLat += .1;
 		}
-		if(newMaxLon == newMinLon) {
+		if (newMaxLon == newMinLon) {
 			newMaxLon += .1;
 		}
-		
+
 		rawApi.setMinLat(newMinLat);
 		rawApi.setMaxLat(newMaxLat);
 		rawApi.setMinLon(newMinLon);
 		rawApi.setMaxLon(newMaxLon);
-		
+
 		return rawApi;
 	}
 
@@ -398,14 +414,14 @@ public class BarometerNetworkActivity extends Activity implements
 			if (isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrameCondition.add(c);
 			} else {
-				
+
 			}
 		}
 
 		// TODO: Local recents only
-		
+
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
-		
+
 		for (CbObservation r : uniqueRecents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrameObservation.add(r);
@@ -413,8 +429,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		}
-		
-		
+
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
 
@@ -425,11 +440,18 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
-		buttonStats = (ImageButton) findViewById(R.id.buttonStats);
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
+
+		mapMode = (Button) findViewById(R.id.buttonMapMode);
+		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
+		graphMode = (Button) findViewById(R.id.buttonGraphMode);
+		
+		layoutAnimationControlContainer = (LinearLayout) findViewById(R.id.layoutAnimationControlContainer);
+		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
+		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
@@ -440,88 +462,93 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
+		mapMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// Clear the animation buffers
+				fullRecents.clear();
+				
+				
+				// UI switch
+				layoutAnimationControlContainer.setVisibility(View.GONE);
+				layoutGraph.setVisibility(View.GONE);
+				layoutMapInfo.setVisibility(View.VISIBLE);
+			}
+		});
+
+		animationMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				layoutAnimationControlContainer.setVisibility(View.VISIBLE);
+				layoutGraph.setVisibility(View.GONE);
+				layoutMapInfo.setVisibility(View.GONE);
+			}
+		});
+
+		graphMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				layoutAnimationControlContainer.setVisibility(View.GONE);
+				layoutGraph.setVisibility(View.VISIBLE);
+				layoutMapInfo.setVisibility(View.GONE);
+			}
+		});
+
 		editLocation.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				editLocation.setText("");
 			}
 		});
-		
+
 		buttonGoLocation.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				String location = editLocation.getEditableText().toString();
-				if(location.equals("")) {
+				if (location.equals("")) {
 					return;
 				}
 				location = location.trim();
-				Toast.makeText(getApplicationContext(), "Going to " + location, Toast.LENGTH_SHORT).show();
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				Toast.makeText(getApplicationContext(), "Going to " + location,
+						Toast.LENGTH_SHORT).show();
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
 				Geocoder geocode = new Geocoder(getApplicationContext());
-				try {	
-					List<Address> addr = geocode.getFromLocationName(location, 1);
-					if(addr.size()> 0) {
+				try {
+					List<Address> addr = geocode.getFromLocationName(location,
+							1);
+					if (addr.size() > 0) {
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
 						double longitude = ad.getLongitude();
 						moveMapTo(latitude, longitude);
-						
-						SearchLocation loc = new SearchLocation(location, latitude, longitude);
+
+						SearchLocation loc = new SearchLocation(location,
+								latitude, longitude);
 						searchedLocations.add(loc);
-						
+
 						PnDb pn = new PnDb(getApplicationContext());
 						pn.open();
-						pn.addLocation(location, latitude, longitude, System.currentTimeMillis());
+						pn.addLocation(location, latitude, longitude,
+								System.currentTimeMillis());
 						pn.close();
-						
+
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
-						
+
 						CbApiCall conditionApi = buildMapCurrentConditionsCall(72);
 						makeCurrentConditionsAPICall(conditionApi);
 					}
-					
-				} catch (IOException ioe)  {
+
+				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}
 
-			}
-		});
-		
-		buttonStats.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Display display = getWindowManager().getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
-				int width = size.x;
-				int height = size.y;
-
-				
-				if (graphVisible == false) {
-					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
-					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
-							.getLayoutParams();
-					params.height = height - (int)(height / 1.5);
-					System.out.println("new height " + params.height);
-					mainLayout.setLayoutParams(params);
-					createAndShowChart();
-					buttonStats.setImageDrawable(getResources().getDrawable(
-							R.drawable.ic_menu_close));
-				} else {
-					buttonStats.setImageDrawable(getResources().getDrawable(
-							R.drawable.ic_menu_stats));
-					LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMapContainer);
-					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mainLayout
-							.getLayoutParams();
-					params.height = height - (int)(height / 3);
-					mainLayout.setLayoutParams(params);
-				}
-				graphVisible = !graphVisible;
 			}
 		});
 
@@ -541,8 +568,7 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				if (fromUser) {
-					
-					
+
 					currentTimeProgress = progress;
 					updateMapWithSeekTimeData();
 				}
@@ -573,35 +599,37 @@ public class BarometerNetworkActivity extends Activity implements
 				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
 
-				long universalStartTime = System.currentTimeMillis() - msAgoSelected;
-				
+				long universalStartTime = System.currentTimeMillis()
+						- msAgoSelected;
+
 				if (currentConditionRecents.size() > 1) {
 					Collections.sort(currentConditionRecents,
 							new CbScience.ConditionTimeComparator());
-			
+
 					for (CbCurrentCondition c : currentConditionRecents) {
 						long time = c.getTime();
 						int group = (int) ((time - universalStartTime) / singleTimeSpan);
-						System.out.println("cond group " + group + " for time " + time);
+						System.out.println("cond group " + group + " for time "
+								+ time);
 						c.setAnimateGroupNumber(group);
 					}
 
 				}
-				
+
 				if (uniqueRecents.size() > 1) {
 					Collections.sort(uniqueRecents,
 							new CbScience.TimeComparator());
-					
+
 					for (CbObservation ob : uniqueRecents) {
 						long time = ob.getTime();
 						int group = (int) ((time - universalStartTime) / singleTimeSpan);
-						System.out.println("rec group " + group + " for time " + time);
+						System.out.println("rec group " + group + " for time "
+								+ time);
 						ob.setAnimateGroupNumber(group);
 					}
 
 				}
-			
-			
+
 				timeHandler.postDelayed(animate, 0);
 			}
 		});
@@ -621,7 +649,7 @@ public class BarometerNetworkActivity extends Activity implements
 					hoursAgoSelected = 12;
 				} else if (selected.equals("1 day")) {
 					hoursAgoSelected = 24;
-				} 
+				}
 				makeMapApiCallAndLoadRecents();
 				createAndShowChart();
 			}
@@ -645,6 +673,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 	}
+
 	private void askForCurrentConditionRecents(CbApiCall api) {
 
 		if (mBound) {
@@ -678,13 +707,13 @@ public class BarometerNetworkActivity extends Activity implements
 			log("error: not bound");
 		}
 	}
-	
+
 	private void askForUniqueRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
 
-			Message msg = Message.obtain(null, CbService.MSG_GET_API_UNIQUE_RECENTS,
-					apiCall);
+			Message msg = Message.obtain(null,
+					CbService.MSG_GET_API_UNIQUE_RECENTS, apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -793,7 +822,8 @@ public class BarometerNetworkActivity extends Activity implements
 				log("receiving current conditions");
 				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
 				if (currentConditionRecents != null) {
-					log("currentConditionRecents size " + currentConditionRecents.size());
+					log("currentConditionRecents size "
+							+ currentConditionRecents.size());
 					addDataToMap();
 				} else {
 					log("conditions ARE NuLL");
@@ -811,7 +841,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("received unique recents: NULL");
 				}
 				dataReceivedToPlot = true;
-				
+
 				addDataToMap();
 				break;
 			default:
@@ -835,7 +865,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Chart chart = new Chart(getApplicationContext());
 			View chartView = chart.drawChart(listRecents);
 
-			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.mainParentLayout);
+			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMap);
 
 			try {
 				View testChartView = findViewById(100); // TODO: ...
@@ -868,9 +898,8 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			
 			makeLocationAPICalls();
-			
+
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1063,7 +1092,7 @@ public class BarometerNetworkActivity extends Activity implements
 			i.putExtra("hasBarometer", false); // TODO: fix, was
 												// barometerdetected
 			startActivityForResult(i, REQUEST_SETTINGS);
-		}  else if (item.getItemId() == R.id.menu_log_viewer) {
+		} else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
 		} else if (item.getItemId() == R.id.send_debug_log) {
 			// send logs to Cumulonimbus
@@ -1134,7 +1163,8 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivity(intent);
 
 		} else if (item.getItemId() == R.id.menu_search_locations) {
-			Intent intent = new Intent(getApplicationContext(), SearchLocationsActivity.class);
+			Intent intent = new Intent(getApplicationContext(),
+					SearchLocationsActivity.class);
 			startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
 
 		}
@@ -1179,7 +1209,8 @@ public class BarometerNetworkActivity extends Activity implements
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 			startActivityForResult(
-					Intent.createChooser(emailIntent, "Send mail..."), REQUEST_MAILED_LOG);
+					Intent.createChooser(emailIntent, "Send mail..."),
+					REQUEST_MAILED_LOG);
 
 		} catch (Throwable t) {
 			Toast.makeText(this, "Request failed: " + t.toString(),
@@ -1196,9 +1227,9 @@ public class BarometerNetworkActivity extends Activity implements
 			if (file.exists())
 				file.delete();
 		} else if (requestCode == REQUEST_LOCATION_CHOICE) {
-			if(data!=null ) {
+			if (data != null) {
 				long rowId = data.getLongExtra("location_id", -1);
-				if(rowId != -1) {
+				if (rowId != -1) {
 					PnDb pn = new PnDb(getApplicationContext());
 					pn.open();
 					Cursor c = pn.fetchLocation(rowId);
@@ -1206,15 +1237,15 @@ public class BarometerNetworkActivity extends Activity implements
 					String search = "";
 					double lat = 0;
 					double lon = 0;
-					if(c.moveToFirst()) {
+					if (c.moveToFirst()) {
 						search = c.getString(1);
 						lat = c.getDouble(2);
 						lon = c.getDouble(3);
 					}
-					if(!search.equals("")) {
+					if (!search.equals("")) {
 						editLocation.setText(search);
 					}
-					if(lat != 0) {
+					if (lat != 0) {
 						moveMapTo(lat, lon);
 					}
 				}
@@ -1573,24 +1604,25 @@ public class BarometerNetworkActivity extends Activity implements
 			// Add singleton Current Conditions
 			for (CbWeather weather : frameConditions) {
 				CbCurrentCondition condition = (CbCurrentCondition) weather;
-				LatLng point = new LatLng(condition.getLocation().getLatitude(), condition.getLocation().getLongitude());
+				LatLng point = new LatLng(
+						condition.getLocation().getLatitude(), condition
+								.getLocation().getLongitude());
 				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
-		
+
 				Drawable draw = getSingleDrawable(drLayer);
-				
+
 				Bitmap image = drawableToBitmap(draw);
-				
-				mMap.addMarker(new MarkerOptions()
-	            .position(point)
-	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+				mMap.addMarker(new MarkerOptions().position(point).icon(
+						BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
 					break;
 				}
 			}
-			
+
 			// Add Recent Readings
 			int currentRecent = 0;
 			Drawable drawable = this.getResources().getDrawable(
@@ -1598,70 +1630,79 @@ public class BarometerNetworkActivity extends Activity implements
 
 			for (CbWeather weatherObs : frameObservations) {
 				CbObservation observation = (CbObservation) weatherObs;
-				LatLng point = new LatLng(observation.getLocation().getLatitude(), observation.getLocation().getLongitude());
-		
+				LatLng point = new LatLng(observation.getLocation()
+						.getLatitude(), observation.getLocation()
+						.getLongitude());
+
 				Bitmap image = drawableToBitmap(drawable);
-				
-				mMap.addMarker(new MarkerOptions()
-	            .position(point).title(observation.getObservationValue() + "")
-	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
 
-
+				mMap.addMarker(new MarkerOptions().position(point)
+						.title(observation.getObservationValue() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentRecent++;
 				if (currentRecent > totalEachAllowed) {
 					break;
 				}
 			}
-			
+
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
 		}
 	}
-	
-	public static Bitmap drawableToBitmap (Drawable drawable) {
-	    if (drawable instanceof BitmapDrawable) {
-	        return ((BitmapDrawable)drawable).getBitmap();
-	    }
 
-	    Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Config.ARGB_8888);
-	    Canvas canvas = new Canvas(bitmap); 
-	    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-	    drawable.draw(canvas);
+	public static Bitmap drawableToBitmap(Drawable drawable) {
+		if (drawable instanceof BitmapDrawable) {
+			return ((BitmapDrawable) drawable).getBitmap();
+		}
 
-	    return bitmap;
+		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+				drawable.getIntrinsicHeight(), Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
+
+		return bitmap;
 	}
-	
-	public Drawable getSingleDrawable(LayerDrawable layerDrawable){
 
-        int resourceBitmapHeight = layerDrawable.getMinimumHeight(), resourceBitmapWidth = layerDrawable.getMinimumWidth();
+	public Drawable getSingleDrawable(LayerDrawable layerDrawable) {
 
-        float widthInInches = 0.2f;
+		int resourceBitmapHeight = layerDrawable.getMinimumHeight(), resourceBitmapWidth = layerDrawable
+				.getMinimumWidth();
 
-        int widthInPixels = (int)(widthInInches * getResources().getDisplayMetrics().densityDpi);
-        int heightInPixels = (int)(widthInPixels * resourceBitmapHeight / resourceBitmapWidth);
+		float widthInInches = 0.2f;
 
-        int insetLeft = 10, insetTop = 10, insetRight = 10, insetBottom = 10;
+		int widthInPixels = (int) (widthInInches * getResources()
+				.getDisplayMetrics().densityDpi);
+		int heightInPixels = (int) (widthInPixels * resourceBitmapHeight / resourceBitmapWidth);
 
-        layerDrawable.setLayerInset(1, insetLeft, insetTop, insetRight, insetBottom);     
+		int insetLeft = 10, insetTop = 10, insetRight = 10, insetBottom = 10;
 
-        Bitmap bitmap = Bitmap.createBitmap(widthInPixels, heightInPixels, Bitmap.Config.ARGB_8888);
+		layerDrawable.setLayerInset(1, insetLeft, insetTop, insetRight,
+				insetBottom);
 
-        Canvas canvas = new Canvas(bitmap);
-        layerDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
-        layerDrawable.draw(canvas);
+		Bitmap bitmap = Bitmap.createBitmap(widthInPixels, heightInPixels,
+				Bitmap.Config.ARGB_8888);
 
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
-        bitmapDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
+		Canvas canvas = new Canvas(bitmap);
+		layerDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
+		layerDrawable.draw(canvas);
 
-        return bitmapDrawable;
-}
+		BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(),
+				bitmap);
+		bitmapDrawable.setBounds(0, 0, widthInPixels, heightInPixels);
+
+		return bitmapDrawable;
+	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap() {
 		int totalEachAllowed = 30;
 		int currentObs = 0;
 		int currentCur = 0;
+		
+		
+		//mMap.clear();
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_marker);
@@ -1671,52 +1712,53 @@ public class BarometerNetworkActivity extends Activity implements
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
-				LatLng point = new LatLng(condition.getLocation().getLatitude(), condition.getLocation().getLongitude());
+				LatLng point = new LatLng(
+						condition.getLocation().getLatitude(), condition
+								.getLocation().getLongitude());
 				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
-		
+
 				Drawable draw = getSingleDrawable(drLayer);
-				
+
 				Bitmap image = drawableToBitmap(draw);
-				
-				mMap.addMarker(new MarkerOptions()
-	            .position(point)
-	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+				mMap.addMarker(new MarkerOptions().position(point).icon(
+						BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
 					break;
 				}
 			}
-			
 
 			// Add Recent Readings
 			for (CbObservation observation : uniqueRecents) {
-				LatLng point = new LatLng(observation.getLocation().getLatitude(), observation.getLocation().getLongitude());
-		
+				LatLng point = new LatLng(observation.getLocation()
+						.getLatitude(), observation.getLocation()
+						.getLongitude());
+
 				Bitmap image = drawableToBitmap(drawable);
-				
-				mMap.addMarker(new MarkerOptions()
-	            .position(point).title(observation.getObservationValue() + "")
-	            .icon(BitmapDescriptorFactory.fromBitmap(image)));
 
-
+				mMap.addMarker(new MarkerOptions().position(point)
+						.title(observation.getObservationValue() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentObs++;
 				if (currentObs > totalEachAllowed) {
 					break;
 				}
 			}
-			
+
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 
 	 * Users will save locations and we will cache data for those locations.
 	 * Build a general API call to cache a location. Use /live/
+	 * 
 	 * @param locationRowId
 	 * @return
 	 */
@@ -1725,7 +1767,7 @@ public class BarometerNetworkActivity extends Activity implements
 				- (int) ((hoursAgoSelected * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		
+
 		api.setMinLat(loc.getLatitude() - .05);
 		api.setMaxLat(loc.getLatitude() + .05);
 		api.setMinLon(loc.getLongitude() - .05);
@@ -1737,20 +1779,21 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setApiName("live");
 		return api;
 	}
-	
+
 	public CbApiCall buildMapAPICall(double hoursAgo) {
 		// TODO: Don't override hoursAgo. One method for map overlays
 		// and one for graph generation; map overlays is static 1 hour ago
-		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		
+
 		double minLat = 0;
 		double maxLat = 0;
 		double minLon = 0;
 		double maxLon = 0;
-		
-		if(visibleBound != null) { 
+
+		if (visibleBound != null) {
 			LatLng ne = visibleBound.northeast;
 			LatLng sw = visibleBound.southwest;
 			minLat = sw.latitude;
@@ -1773,17 +1816,18 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	public CbApiCall buildMapCurrentConditionsCall(double hoursAgo) { 
-		long startTime = System.currentTimeMillis() - (int) ((hoursAgo * 60 * 60 * 1000));
+	public CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
-		
+
 		double minLat = 0;
 		double maxLat = 0;
 		double minLon = 0;
 		double maxLon = 0;
-		
-		if(visibleBound != null) { 
+
+		if (visibleBound != null) {
 			LatLng ne = visibleBound.northeast;
 			LatLng sw = visibleBound.southwest;
 			minLat = sw.latitude;
@@ -1806,7 +1850,6 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	
 	private void makeAPICall(CbApiCall apiCall) {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
@@ -1821,7 +1864,7 @@ public class BarometerNetworkActivity extends Activity implements
 			System.out.println("data management error: not bound");
 		}
 	}
-	
+
 	private void makeCurrentConditionsAPICall(CbApiCall apiCall) {
 		if (mBound) {
 			Message msg = Message.obtain(null,
@@ -1838,33 +1881,33 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-
 	public void makeMapApiCallAndLoadRecents() {
 		textCallLog.setText("Refreshing...");
-		
+
 		CbApiCall api = buildMapAPICall(1);
 		askForRecents(api);
-		
+
 		// limit the calls made when the user is moving around
 		int timeLimit = 1000 * 1;
 		long timeNow = System.currentTimeMillis();
-		if(timeNow - lastMapMove < timeLimit) {
+		if (timeNow - lastMapMove < timeLimit) {
 			System.out.println("map move time too short, delaying (runnable)");
 			mapDelayHandler.removeCallbacks(apiCallRunnable);
 			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
-			
+
 		} else {
-			System.out.println("map move initializing wait before call (runnable)");
+			System.out
+					.println("map move initializing wait before call (runnable)");
 			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
 		}
-		
+
 		lastMapMove = timeNow;
-		
+
 		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
 		makeCurrentConditionsAPICall(currentApi);
-		
-		askForUniqueRecents(api);		
+
+		askForUniqueRecents(api);
 	}
 
 	// Stop listening to the barometer when our app is paused.
@@ -1920,7 +1963,8 @@ public class BarometerNetworkActivity extends Activity implements
 			DecimalFormat df = new DecimalFormat("####.00");
 			PressureUnit unit = new PressureUnit(preferenceUnit);
 			unit.setValue(recentPressureReading);
-			double pressureInPreferredUnit = unit.convertToPreferredUnit(preferenceUnit);
+			double pressureInPreferredUnit = unit
+					.convertToPreferredUnit(preferenceUnit);
 			String toPrint = df.format(pressureInPreferredUnit);
 			buttonBarometer.setText(toPrint + " " + preferenceUnit);
 		} else {

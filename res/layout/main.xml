@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/mainParentLayout"
+        android:id="@+id/layoutSearchControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -28,23 +28,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fullLayout"
+        android:id="@+id/layoutMap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <LinearLayout
-            android:id="@+id/topButtonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal" >
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
-            android:layout_height="400dip" >
+            android:layout_height="300dp" >
 
             <fragment
                 android:id="@+id/map"
@@ -55,23 +47,47 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutControlContainer"
+        android:id="@+id/layoutGraph"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <Spinner
+            android:id="@+id/spinnerChartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/display_time_chart"
+            android:prompt="@string/chartTimeDisplay" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutMapInformation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/textMapInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Map info"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutAnimationControlContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
         <LinearLayout
             android:id="@+id/layoutTimeControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-
-            <Spinner
-                android:id="@+id/spinnerChartTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:entries="@array/display_time_chart"
-                android:prompt="@string/chartTimeDisplay" />
 
             <ImageButton
                 android:id="@+id/buttonPlay"
@@ -92,7 +108,7 @@
 
     <LinearLayout
         android:id="@+id/layoutDataDisplayControls"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
@@ -100,8 +116,8 @@
             android:id="@+id/textViewCallLog"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:text="" />
+            android:text=""
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/imageButtonBarometer"
@@ -110,22 +126,40 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_menu_barometer"
             android:textColor="@android:color/black" />
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/textReading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="@string/empty"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+    <LinearLayout
+        android:id="@+id/modeSelectionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
-        <ImageButton
-            android:id="@+id/buttonStats"
+        <Button
+            android:id="@+id/buttonMapMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:src="@drawable/ic_menu_stats" />
+            android:layout_gravity="left"
+            android:text="Map"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/buttonAnimationMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="Animation"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/buttonGraphMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="Graph"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
 </LinearLayout>
