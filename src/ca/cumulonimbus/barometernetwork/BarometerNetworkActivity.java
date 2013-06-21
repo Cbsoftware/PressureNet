@@ -438,10 +438,10 @@ public class BarometerNetworkActivity extends Activity implements
 		// TODO: Local recents only
 
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
-
-		for (CbObservation r : fullRecents) {
-			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
-				thisFrameObservation.add(r);
+		System.out.println("full recents count " + fullRecents.size());
+		for (CbObservation o : fullRecents) {
+			if (isCloseToFrame(o.getAnimateGroupNumber(), currentTimeProgress)) {
+				thisFrameObservation.add(o);
 			} else {
 
 			}
@@ -498,6 +498,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				CbApiCall api = buildMapAPICall(1);
+				askForRecents(api);
+				
 				layoutAnimationControlContainer.setVisibility(View.VISIBLE);
 				layoutGraph.setVisibility(View.GONE);
 				layoutMapInfo.setVisibility(View.GONE);
@@ -633,11 +636,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 				}
 
-				if (uniqueRecents.size() > 1) {
-					Collections.sort(uniqueRecents,
+				if (fullRecents.size() > 1) {
+					Collections.sort(fullRecents,
 							new CbScience.TimeComparator());
 
-					for (CbObservation ob : uniqueRecents) {
+					for (CbObservation ob : fullRecents) {
 						long time = ob.getTime();
 						int group = (int) ((time - universalStartTime) / singleTimeSpan);
 						System.out.println("rec group " + group + " for time "
@@ -912,7 +915,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			makeLocationAPICalls();
+			//makeLocationAPICalls();
 
 		}
 
@@ -1638,10 +1641,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 			// Add Recent Readings
-			int currentRecent = 0;
 			Drawable drawable = this.getResources().getDrawable(
 					R.drawable.ic_marker);
-
+			System.out.println("frame observations " + frameObservations.size());
 			for (CbWeather weatherObs : frameObservations) {
 				CbObservation observation = (CbObservation) weatherObs;
 				LatLng point = new LatLng(observation.getLocation()
@@ -1654,8 +1656,8 @@ public class BarometerNetworkActivity extends Activity implements
 						.title(observation.getObservationValue() + "")
 						.icon(BitmapDescriptorFactory.fromBitmap(image)));
 
-				currentRecent++;
-				if (currentRecent > totalEachAllowed) {
+				currentObs++;
+				if (currentObs > totalEachAllowed) {
 					break;
 				}
 			}
@@ -1910,7 +1912,7 @@ public class BarometerNetworkActivity extends Activity implements
 		textCallLog.setText("Refreshing...");
 
 		CbApiCall api = buildMapAPICall(1);
-		askForRecents(api);
+		//askForRecents(api);
 
 		// limit the calls made when the user is moving around
 		int timeLimit = 1000 * 1;
