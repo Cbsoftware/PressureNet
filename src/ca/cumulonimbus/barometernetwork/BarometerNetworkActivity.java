@@ -659,7 +659,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
 
-				long msAgoSelected = (int) (hoursAgoSelected * 60 * 60 * 1000);
+				long msAgoSelected = (int) (1 * 60 * 60 * 1000);
 				long singleTimeSpan = msAgoSelected / 100;
 
 				long universalStartTime = System.currentTimeMillis()
@@ -958,7 +958,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			//makeLocationAPICalls();
+			makeLocationAPICalls();
 
 		}
 
@@ -1836,7 +1836,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((hoursAgoSelected * 60 * 60 * 1000));
+				- (int) ((1 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
