@@ -36,13 +36,13 @@
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="match_parent"
-            android:layout_height="300dp" >
+            android:layout_height="wrap_content" >
 
             <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="300dp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -107,18 +107,13 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutDataDisplayControls"
+        android:id="@+id/layoutSensorInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/textViewCallLog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:visibility="gone" />
-
+        android:orientation="horizontal"
+        android:visibility="gone" >
+        
+        
         <Button
             android:id="@+id/imageButtonBarometer"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -132,6 +127,7 @@
         android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:orientation="horizontal" >
 
         <Button
@@ -140,8 +136,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:layout_weight=".24"
             android:text="Map"
             android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
 
         <Button
             android:id="@+id/buttonAnimationMode"
@@ -149,8 +153,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:layout_weight=".24"
             android:text="Animation"
             android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
 
         <Button
             android:id="@+id/buttonGraphMode"
@@ -158,7 +170,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
+            android:layout_weight=".24"
             android:text="Graph"
+            android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+
+        <Button
+            android:id="@+id/buttonSensorMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".24"
+            android:text="Sensors"
             android:textColor="@android:color/black" />
     </LinearLayout>
 

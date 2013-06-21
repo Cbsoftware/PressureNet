@@ -137,16 +137,17 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonPlay;
 	private Button buttonBarometer;
 	private Spinner spinnerTime;
-	private TextView textCallLog;
 	private double hoursAgoSelected = 1;
 
 	private Button mapMode;
 	private Button animationMode;
 	private Button graphMode;
+	private Button sensorMode;
 	
 	private LinearLayout layoutAnimationControlContainer;
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
+	private LinearLayout layoutSensors;
 	
 	private TextView mapInfoText;
 	
@@ -470,7 +471,6 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
 		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
-		textCallLog = (TextView) findViewById(R.id.textViewCallLog);
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
@@ -479,10 +479,13 @@ public class BarometerNetworkActivity extends Activity implements
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
 		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
+		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
+		
 		
 		layoutAnimationControlContainer = (LinearLayout) findViewById(R.id.layoutAnimationControlContainer);
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
+		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		
 		mapInfoText = (TextView) findViewById(R.id.textMapInfo);
 		
@@ -523,6 +526,8 @@ public class BarometerNetworkActivity extends Activity implements
 				layoutAnimationControlContainer.setVisibility(View.VISIBLE);
 				layoutGraph.setVisibility(View.GONE);
 				layoutMapInfo.setVisibility(View.GONE);
+				layoutSensors.setVisibility(View.GONE);
+
 			}
 		});
 
@@ -535,6 +540,23 @@ public class BarometerNetworkActivity extends Activity implements
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.VISIBLE);
 				layoutMapInfo.setVisibility(View.GONE);
+				layoutSensors.setVisibility(View.GONE);
+
+			}
+		});
+
+		
+		sensorMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				activeMode = "sensors";
+				
+				// UI switch
+				layoutAnimationControlContainer.setVisibility(View.GONE);
+				layoutGraph.setVisibility(View.GONE);
+				layoutMapInfo.setVisibility(View.GONE);
+				layoutSensors.setVisibility(View.VISIBLE);
 			}
 		});
 
@@ -1930,8 +1952,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void makeMapApiCallAndLoadRecents() {
-		textCallLog.setText("Refreshing...");
-
 		CbApiCall api = buildMapAPICall(1);
 		
 		// limit the calls made when the user is moving around
