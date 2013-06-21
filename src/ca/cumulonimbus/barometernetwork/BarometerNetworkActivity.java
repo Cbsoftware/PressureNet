@@ -148,6 +148,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
 	
+	private TextView mapInfoText;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -191,6 +193,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private long lastMapMove = System.currentTimeMillis();
 	private long lastMapDataUpdate = System.currentTimeMillis();
+	
+	private String activeMode = "map";
+	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -268,6 +273,15 @@ public class BarometerNetworkActivity extends Activity implements
 
 					createAndShowChart();
 					addDataToMap();
+					
+					if(activeMode.equals("animation")) {
+						// if we're in animation mode, ask for the full recents on map move
+						// TODO: limit to zoom 7 and up
+						CbApiCall api = buildMapAPICall(1);
+						askForRecents(api);
+					}
+					
+					// mapInfoText.setText("zoom " + mMap.getCameraPosition().zoom);
 				}
 			});
 			
@@ -470,6 +484,8 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		
+		mapInfoText = (TextView) findViewById(R.id.textMapInfo);
+		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
 						android.R.layout.simple_spinner_item);
@@ -484,8 +500,9 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				// Clear the animation buffers
-				//fullRecents.clear();
+				fullRecents.clear();
 				
+				activeMode = "map";
 				
 				// UI switch
 				layoutAnimationControlContainer.setVisibility(View.GONE);
@@ -501,6 +518,8 @@ public class BarometerNetworkActivity extends Activity implements
 				CbApiCall api = buildMapAPICall(1);
 				askForRecents(api);
 				
+				activeMode = "animation";
+				
 				layoutAnimationControlContainer.setVisibility(View.VISIBLE);
 				layoutGraph.setVisibility(View.GONE);
 				layoutMapInfo.setVisibility(View.GONE);
@@ -511,6 +530,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				activeMode = "graph";
+				
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.VISIBLE);
 				layoutMapInfo.setVisibility(View.GONE);
@@ -1912,8 +1933,7 @@ public class BarometerNetworkActivity extends Activity implements
 		textCallLog.setText("Refreshing...");
 
 		CbApiCall api = buildMapAPICall(1);
-		//askForRecents(api);
-
+		
 		// limit the calls made when the user is moving around
 		int timeLimit = 1000 * 1;
 		long timeNow = System.currentTimeMillis();
