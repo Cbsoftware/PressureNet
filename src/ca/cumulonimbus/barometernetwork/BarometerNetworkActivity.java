@@ -1787,8 +1787,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 				Bitmap image = drawableToBitmap(drawable);
 
+				String valueToPrint = displayPressureValue(observation.getObservationValue());
+				
 				mMap.addMarker(new MarkerOptions().position(point)
-						.title(observation.getObservationValue() + "")
+						.title(valueToPrint)
 						.icon(BitmapDescriptorFactory.fromBitmap(image)));
 
 				currentObs++;
@@ -2022,17 +2024,21 @@ public class BarometerNetworkActivity extends Activity implements
 		unBindCbService();
 		super.onDestroy();
 	}
+	
+	public String displayPressureValue(double value) {
+		DecimalFormat df = new DecimalFormat("####.00");
+		PressureUnit unit = new PressureUnit(preferenceUnit);
+		unit.setValue(value);
+		double pressureInPreferredUnit = unit
+				.convertToPreferredUnit(preferenceUnit);
+		return df.format(pressureInPreferredUnit);	
+	}
 
 	public void updateVisibleReading() {
 		preferenceUnit = getUnitPreference();
 
 		if (recentPressureReading != 0.0) {
-			DecimalFormat df = new DecimalFormat("####.00");
-			PressureUnit unit = new PressureUnit(preferenceUnit);
-			unit.setValue(recentPressureReading);
-			double pressureInPreferredUnit = unit
-					.convertToPreferredUnit(preferenceUnit);
-			String toPrint = df.format(pressureInPreferredUnit);
+			String toPrint = displayPressureValue(recentPressureReading);
 			buttonBarometer.setText(toPrint + " " + preferenceUnit);
 		} else {
 			buttonBarometer.setText("No barometer detected.");
