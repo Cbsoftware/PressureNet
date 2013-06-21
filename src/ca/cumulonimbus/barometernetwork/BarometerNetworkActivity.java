@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -48,7 +47,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,11 +78,13 @@ import ca.cumulonimbus.pressurenetsdk.CbWeather;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class BarometerNetworkActivity extends Activity implements
@@ -239,7 +239,14 @@ public class BarometerNetworkActivity extends Activity implements
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 
-			
+			mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+				
+				@Override
+				public boolean onMarkerClick(Marker arg0) {
+					lastMapDataUpdate = System.currentTimeMillis();
+					return false;
+				}
+			});
 			
 			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 				
@@ -1702,7 +1709,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap() {
-		int totalEachAllowed = 30;
+		int totalEachAllowed = 60;
 		int currentObs = 0;
 		int currentCur = 0;
 		
@@ -1710,7 +1717,7 @@ public class BarometerNetworkActivity extends Activity implements
 		long now = System.currentTimeMillis();
 		if(now - lastMapDataUpdate > maxUpdateFrequency) {
 			System.out.println("clearing map");
-			mMap.clear();	
+			mMap.clear();
 			lastMapDataUpdate = now;
 		} else {
 			System.out.println("adding data, not clearing map " + (now - lastMapDataUpdate));
