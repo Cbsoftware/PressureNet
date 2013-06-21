@@ -208,8 +208,8 @@ public class Chart {
 			
 			// bail after a while
 			count++;
-			if(count>500) {
-				System.out.println("CHART 500 BAILING");
+			if(count>5000) {
+				System.out.println("CHART 5000 BAILING");
 				break;
 			}
 		

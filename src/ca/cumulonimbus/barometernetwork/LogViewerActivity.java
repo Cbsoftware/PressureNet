@@ -52,7 +52,7 @@ public class LogViewerActivity extends Activity {
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 
-			getRecents(24);
+			getRecents(6);
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
