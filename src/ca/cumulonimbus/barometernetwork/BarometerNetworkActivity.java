@@ -165,6 +165,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_LOCATION_CHOICE = 2;
 	public static final int REQUEST_MAILED_LOG = 3;
 
+	boolean activeAnimation = false;
 
 	private boolean pressureReadingsActive = false;
 	private boolean humidityReadingsActive = false;
@@ -371,6 +372,7 @@ public class BarometerNetworkActivity extends Activity implements
 		@Override
 		public void run() {
 			mMap.clear();
+			activeAnimation = true;
 			if (currentTimeProgress <= 100) {
 
 				currentTimeProgress++;
@@ -383,6 +385,8 @@ public class BarometerNetworkActivity extends Activity implements
 				buttonPlay.setImageDrawable(play);
 				animateState = false;
 				currentTimeProgress = 0;
+
+				activeAnimation = false;
 				addDataToMap();
 			}
 
@@ -435,7 +439,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
 
-		for (CbObservation r : uniqueRecents) {
+		for (CbObservation r : fullRecents) {
 			if (isCloseToFrame(r.getAnimateGroupNumber(), currentTimeProgress)) {
 				thisFrameObservation.add(r);
 			} else {
@@ -480,7 +484,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				// Clear the animation buffers
-				fullRecents.clear();
+				//fullRecents.clear();
 				
 				
 				// UI switch
@@ -822,13 +826,11 @@ public class BarometerNetworkActivity extends Activity implements
 					log("received recents: NULL");
 				}
 				dataReceivedToPlot = true;
-				createAndShowChart();
-				addDataToMap();
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
-				textCallLog.setText(count + " API results cached");
-
+				System.out.println("Call result: " + count + " API results cached");
+				addDataToMap();
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				log("receiving current conditions");
@@ -1713,6 +1715,11 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentObs = 0;
 		int currentCur = 0;
 		
+		if(activeAnimation) {
+			// map markers are handled by addDataFrameToMap for animations
+			return; 
+		}
+		
 		int maxUpdateFrequency = 1 * 1000; 
 		long now = System.currentTimeMillis();
 		if(now - lastMapDataUpdate > maxUpdateFrequency) {
@@ -1727,7 +1734,24 @@ public class BarometerNetworkActivity extends Activity implements
 				R.drawable.ic_marker);
 
 		try {
+			// Add Recent Readings
+			for (CbObservation observation : uniqueRecents) {
+				LatLng point = new LatLng(observation.getLocation()
+						.getLatitude(), observation.getLocation()
+						.getLongitude());
 
+				Bitmap image = drawableToBitmap(drawable);
+
+				mMap.addMarker(new MarkerOptions().position(point)
+						.title(observation.getObservationValue() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+				currentObs++;
+				if (currentObs > totalEachAllowed) {
+					break;
+				}
+			}
+			
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
@@ -1746,24 +1770,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 				currentCur++;
 				if (currentCur > totalEachAllowed) {
-					break;
-				}
-			}
-
-			// Add Recent Readings
-			for (CbObservation observation : uniqueRecents) {
-				LatLng point = new LatLng(observation.getLocation()
-						.getLatitude(), observation.getLocation()
-						.getLongitude());
-
-				Bitmap image = drawableToBitmap(drawable);
-
-				mMap.addMarker(new MarkerOptions().position(point)
-						.title(observation.getObservationValue() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(image)));
-
-				currentObs++;
-				if (currentObs > totalEachAllowed) {
 					break;
 				}
 			}
