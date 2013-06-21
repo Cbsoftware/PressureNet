@@ -189,7 +189,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
 	private long lastMapMove = System.currentTimeMillis();
-
+	private long lastMapDataUpdate = System.currentTimeMillis();
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -238,7 +239,12 @@ public class BarometerNetworkActivity extends Activity implements
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 
+			
+			
 			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+				
+				
+				
 				@Override
 				public void onCameraChange(CameraPosition position) {
 					// dismiss the keyboard
@@ -650,7 +656,6 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if (selected.equals("1 day")) {
 					hoursAgoSelected = 24;
 				}
-				makeMapApiCallAndLoadRecents();
 				createAndShowChart();
 			}
 
@@ -1701,8 +1706,15 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentObs = 0;
 		int currentCur = 0;
 		
-		
-		//mMap.clear();
+		int maxUpdateFrequency = 1 * 1000; 
+		long now = System.currentTimeMillis();
+		if(now - lastMapDataUpdate > maxUpdateFrequency) {
+			System.out.println("clearing map");
+			mMap.clear();	
+			lastMapDataUpdate = now;
+		} else {
+			System.out.println("adding data, not clearing map " + (now - lastMapDataUpdate));
+		}
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.ic_marker);
