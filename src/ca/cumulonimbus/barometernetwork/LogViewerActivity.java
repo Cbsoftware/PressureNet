@@ -14,12 +14,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -46,6 +48,25 @@ public class LogViewerActivity extends Activity {
 	Button oneDay;
 	Button oneWeek;
 
+	private String preferenceUnit;
+	
+	/**
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
+	 */
+	public String getUnitPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		return sharedPreferences.getString("units", "millibars");
+	}
+
+	public double convertedPressureValue(double value) {
+		PressureUnit unit = new PressureUnit(preferenceUnit);
+		unit.setValue(value);
+		return unit.convertToPreferredUnit(preferenceUnit);
+	}
+
+	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
@@ -126,9 +147,7 @@ public class LogViewerActivity extends Activity {
 						c.setTimeInMillis(obs.getTime());
 						String dateString = c.getTime().toLocaleString();
 						DecimalFormat df = new DecimalFormat("####.00");
-						String valueString = df.format(obs
-								.getObservationValue());
-
+						String valueString = df.format(convertedPressureValue(obs.getObservationValue()));
 						rawLog += dateString + ": " + valueString + "\n";
 					}
 					
@@ -205,6 +224,8 @@ public class LogViewerActivity extends Activity {
 		setContentView(R.layout.logviewer);
 		super.onCreate(savedInstanceState);
 
+		preferenceUnit = getUnitPreference();
+		
 		// ActionBar gets initiated
 		ActionBar actionbar = getActionBar();
 		// Tell the ActionBar we want to use Tabs.
