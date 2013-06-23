@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -255,6 +256,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				oneHour.setTextColor(Color.BLUE);
+				sixHours.setTextColor(Color.BLACK);
+				oneDay.setTextColor(Color.BLACK);
+				oneWeek.setTextColor(Color.BLACK);
 				getRecents(1);
 			}
 		});
@@ -263,6 +268,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				oneHour.setTextColor(Color.BLACK);
+				sixHours.setTextColor(Color.BLUE);
+				oneDay.setTextColor(Color.BLACK);
+				oneWeek.setTextColor(Color.BLACK);
 				getRecents(6);
 			}
 		});
@@ -270,6 +279,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				oneHour.setTextColor(Color.BLACK);
+				sixHours.setTextColor(Color.BLACK);
+				oneDay.setTextColor(Color.BLUE);
+				oneWeek.setTextColor(Color.BLACK);
 				getRecents(24);
 			}
 		});
@@ -277,6 +290,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				oneHour.setTextColor(Color.BLACK);
+				sixHours.setTextColor(Color.BLACK);
+				oneDay.setTextColor(Color.BLACK);
+				oneWeek.setTextColor(Color.BLUE);
 				getRecents(24 * 7);
 			}
 		});

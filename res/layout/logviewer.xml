@@ -17,7 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1 hour"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:layout_weight=".24" />
 
         <View
             android:layout_width="1dip"
@@ -32,7 +33,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="6 hours"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black" 
+            android:layout_weight=".24"/>
 
         <View
             android:layout_width="1dip"
@@ -47,7 +49,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="24 hours"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:layout_weight=".24" />
 
         <View
             android:layout_width="1dip"
@@ -62,7 +65,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1 week"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:layout_weight=".24" />
     </LinearLayout>
 
     <LinearLayout
