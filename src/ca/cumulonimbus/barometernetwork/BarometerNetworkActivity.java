@@ -354,9 +354,7 @@ public class BarometerNetworkActivity extends Activity implements
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
 		settings.setSharingData(preferenceShareData);
-		settings.setDataCollectionFrequency(1000 * 60 * 1); // TODO: fix hack
-															// for
-															// preferenceCollectionFrequency
+		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
 		settings.saveSettings();
 		log("saved new settings; sharing " + preferenceShareLevel);
@@ -511,6 +509,7 @@ public class BarometerNetworkActivity extends Activity implements
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.GONE);
 				layoutMapInfo.setVisibility(View.VISIBLE);
+				layoutSensors.setVisibility(View.GONE);
 			}
 		});
 
@@ -892,17 +891,15 @@ public class BarometerNetworkActivity extends Activity implements
 				addDataToMap();
 				break;
 			case CbService.MSG_API_UNIQUE_RECENTS:
-				uniqueRecents.clear();
 				uniqueRecents = (ArrayList<CbObservation>) msg.obj;
 				if (uniqueRecents != null) {
 					log("received " + uniqueRecents.size()
 							+ " unique recent observations in buffer.");
+					addDataToMap();
 				} else {
 					log("received unique recents: NULL");
 				}
 				dataReceivedToPlot = true;
-
-				addDataToMap();
 				break;
 			default:
 				log("received default message");
@@ -1092,7 +1089,7 @@ public class BarometerNetworkActivity extends Activity implements
 			SharedPreferences.Editor editor = newSharedPreferences.edit();
 			editor.putBoolean("autoupdate", autoUpdate);
 			editor.putString("units", unit);
-			editor.putString("autoFrequency", autoFrequency);
+			editor.putString("autofrequency", autoFrequency);
 			editor.putString("sharing_preference", sharing);
 			editor.putInt("first_run", firstRun);
 			editor.commit();
