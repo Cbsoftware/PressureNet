@@ -272,10 +272,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 					makeMapApiCallAndLoadRecents();
 
-					createAndShowChart();
 					addDataToMap();
 					
-					if(activeMode.equals("animation")) {
+					if(activeMode.equals("graph")) {
+						createAndShowChart();
+					} else if(activeMode.equals("animation")) {
 						// if we're in animation mode, ask for the full recents on map move
 						// TODO: limit to zoom 7 and up
 						CbApiCall api = buildMapAPICall(1);
@@ -535,6 +536,10 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				activeMode = "graph";
+				
+				CbApiCall api = buildMapAPICall(1);
+				askForRecents(api);
+				
 				
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.VISIBLE);
@@ -871,6 +876,10 @@ public class BarometerNetworkActivity extends Activity implements
 					log("received recents: NULL");
 				}
 				dataReceivedToPlot = true;
+				if(activeMode.equals("graph")) {
+					createAndShowChart();
+				}
+				
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
@@ -909,20 +918,20 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void createAndShowChart() {
-		if (listRecents == null) {
-			log("list recents null RETURNING");
+		if (fullRecents == null) {
+			log("full recents null RETURNING, no chart");
 			return;
-		} else if (listRecents.size() == 0) {
-			log("list recents 0, RETURNING");
+		} else if (fullRecents.size() == 0) {
+			log("full recents 0, RETURNING, no chart");
 			return;
 		}
 		if (dataReceivedToPlot) {
 			// draw chart
-			log("plotting... " + listRecents.size());
+			log("plotting... " + fullRecents.size());
 			Chart chart = new Chart(getApplicationContext());
-			View chartView = chart.drawChart(listRecents);
+			View chartView = chart.drawChart(fullRecents);
 
-			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutMap);
+			LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
 
 			try {
 				View testChartView = findViewById(100); // TODO: ...
@@ -944,6 +953,8 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			// TODO: bring the chart back
 			mainLayout.addView(chartView);
+		} else {
+			System.out.println("no data to plot chart");
 		}
 	}
 
