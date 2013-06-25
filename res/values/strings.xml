@@ -120,5 +120,6 @@
     <string name="heavy_fog">Heavy Fog</string>
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">pressureNET Data</string>
+    <string name="locationName">Location Name</string>
 
 </resources>
