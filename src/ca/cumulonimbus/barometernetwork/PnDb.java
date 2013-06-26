@@ -61,23 +61,23 @@ public class PnDb {
 	 * 
 	 * @return
 	 */
-	public long updateLocation(String searchText, double latitude,
-			double longitude, long lastCall) {
+	public long updateLocation(long rowId, String searchText, double latitude,
+			double longitude) {
 
 		ContentValues newValues = new ContentValues();
 		newValues.put(KEY_SEARCH_TEXT, searchText);
 		newValues.put(KEY_LATITUDE, latitude);
 		newValues.put(KEY_LONGITUDE, longitude);
-		newValues.put(KEY_LAST_CALL, lastCall);
 
-		return mDB.update(SEARCH_LOCATIONS_TABLE, newValues, KEY_SEARCH_TEXT
-				+ "='" + searchText + "'", null);
+		return mDB.update(SEARCH_LOCATIONS_TABLE, newValues, KEY_ROW_ID
+				+ "='" + rowId + "'", null);
 	}
 
 	public void deleteLocation(long rowId) {
 
 		mDB.execSQL("delete from " + SEARCH_LOCATIONS_TABLE + " where " + 
 		KEY_ROW_ID + "=" + rowId);
+		
 	
 	}
 	
@@ -87,7 +87,6 @@ public class PnDb {
 
 	 * @return
 	 */
-
 	public long addLocation(String searchText, double latitude, double longitude, long lastCall) {
 
 		ContentValues initialValues = new ContentValues();

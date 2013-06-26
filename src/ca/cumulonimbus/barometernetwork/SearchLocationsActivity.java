@@ -16,7 +16,9 @@ import android.widget.Toast;
 public class SearchLocationsActivity extends ListActivity {
 
 	PnDb pn;
-
+	ListAdapter adapter = null;
+	Cursor cursor = null;
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
@@ -34,7 +36,7 @@ public class SearchLocationsActivity extends ListActivity {
 
 		pn = new PnDb(getApplicationContext());
 		pn.open();
-		Cursor cursor = pn.fetchAllLocations();
+		cursor = pn.fetchAllLocations();
 
 		if (cursor.getCount() == 0) {
 			Toast.makeText(getApplicationContext(), "No saved locations",
@@ -44,7 +46,7 @@ public class SearchLocationsActivity extends ListActivity {
 
 		startManagingCursor(cursor);
 
-		ListAdapter adapter = new SimpleCursorAdapter(this,
+		adapter = new SimpleCursorAdapter(this,
 				R.layout.location_list_item, cursor,
 				new String[] { PnDb.KEY_SEARCH_TEXT },
 				new int[] { R.id.textLocationName });
@@ -62,6 +64,16 @@ public class SearchLocationsActivity extends ListActivity {
 					}
 				});
 
+	}
+
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(cursor!=null ) {
+			cursor.requery();
+		}
 	}
 
 	@Override

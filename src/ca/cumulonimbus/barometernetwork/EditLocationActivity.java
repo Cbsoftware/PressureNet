@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class EditLocationActivity extends Activity {
 
@@ -21,6 +22,7 @@ public class EditLocationActivity extends Activity {
 	private String initialName = "";
 	private double initialLatitude = 0;
 	private double initialLongitude = 0;
+	private long initialRowId = -1;
 
 	public void populateFields() {
 		// get the row id from the intent and load
@@ -41,6 +43,7 @@ public class EditLocationActivity extends Activity {
 				initialName = c.getString(1);
 				initialLatitude = c.getDouble(2);
 				initialLongitude = c.getDouble(3);
+				initialRowId = rowId;
 				
 				editLocationName.setText(initialName);
 				editLatitude.setText(initialLatitude + "");
@@ -74,6 +77,11 @@ public class EditLocationActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				PnDb pn = new PnDb(getApplicationContext());
+				pn.open();
+				pn.deleteLocation(initialRowId);
+				pn.close();
+				Toast.makeText(getApplicationContext(), "Deleted " + initialName, Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		});
@@ -82,6 +90,17 @@ public class EditLocationActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				try {
+					PnDb pn = new PnDb(getApplicationContext());
+					pn.open();
+					pn.updateLocation(initialRowId, editLocationName.getText().toString(), 
+							Double.parseDouble(editLatitude.getText().toString()), 
+							Double.parseDouble(editLongitude.getText().toString()));
+					pn.close();
+					Toast.makeText(getApplicationContext(), "Saved " + editLocationName.getText().toString(), Toast.LENGTH_SHORT).show();
+				} catch(Exception e) {
+					// meh
+				}
 				finish();
 			}
 		});
