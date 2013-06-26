@@ -1,201 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainParentLayout"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomScrollContainer"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@+id/layoutSearchControls"
+        android:id="@+id/mainParentLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <EditText
-            android:id="@+id/editGoLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="51dp"
-            android:layout_weight="1"
-            android:hint="Search" />
-
-        <ImageButton
-            android:id="@+id/buttonGoLocation"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_play"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutMap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1000dp"
         android:orientation="vertical" >
 
         <LinearLayout
-            android:id="@+id/layoutMapContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="300dp" />
-        </LinearLayout>
-    </LinearLayout>
-
-      <LinearLayout
-        android:id="@+id/modeSelectionLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/buttonMapMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".24"
-            android:text="Map"
-            android:textColor="@android:color/black" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
-
-        <Button
-            android:id="@+id/buttonAnimationMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".24"
-            android:text="Animation"
-            android:textColor="@android:color/black" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
-
-        <Button
-            android:id="@+id/buttonGraphMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".24"
-            android:text="Graph"
-            android:textColor="@android:color/black" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
-
-        <Button
-            android:id="@+id/buttonSensorMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".24"
-            android:text="Sensors"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-    
-    <LinearLayout
-        android:id="@+id/layoutGraph"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone" 
-        android:padding="5dp">
-
-        <Spinner
-            android:id="@+id/spinnerChartTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/display_time_chart"
-            android:prompt="@string/chartTimeDisplay" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutMapInformation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:padding="5dp" >
-
-        <TextView
-            android:id="@+id/textMapInfo"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:text=""
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAnimationControlContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:padding="5dp" >
-
-        <LinearLayout
-            android:id="@+id/layoutTimeControls"
-            android:layout_width="match_parent"
+            android:id="@+id/layoutSearchControls"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
+            <EditText
+                android:id="@+id/editGoLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="51dp"
+                android:layout_weight="1"
+                android:hint="Search" />
+
             <ImageButton
-                android:id="@+id/buttonPlay"
+                android:id="@+id/buttonGoLocation"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_menu_play"
                 android:textColor="@android:color/black" />
+        </LinearLayout>
 
-            <SeekBar
-                android:id="@+id/seekBarTime"
-                android:layout_width="fill_parent"
+        <LinearLayout
+            android:id="@+id/layoutMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/layoutMapContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/modeSelectionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/buttonMapMode"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:max="100" />
+                android:layout_gravity="left"
+                android:layout_weight=".24"
+                android:text="Map"
+                android:textColor="@android:color/black" />
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:background="#888888"
+                android:padding="3dip" />
+
+            <Button
+                android:id="@+id/buttonAnimationMode"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight=".24"
+                android:text="Animation"
+                android:textColor="@android:color/black" />
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:background="#888888"
+                android:padding="3dip" />
+
+            <Button
+                android:id="@+id/buttonGraphMode"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight=".24"
+                android:text="Graph"
+                android:textColor="@android:color/black" />
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:background="#888888"
+                android:padding="3dip" />
+
+            <Button
+                android:id="@+id/buttonSensorMode"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight=".24"
+                android:text="Sensors"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutGraph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone" >
+
+            <Spinner
+                android:id="@+id/spinnerChartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/display_time_chart"
+                android:prompt="@string/chartTimeDisplay" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMapInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="visible" >
+
+            <TextView
+                android:id="@+id/textMapInfo"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:text=""
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutAnimationControlContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:id="@+id/layoutTimeControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/buttonPlay"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu_play"
+                    android:textColor="@android:color/black" />
+
+                <SeekBar
+                    android:id="@+id/seekBarTime"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:max="100" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutSensorInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:visibility="gone" >
+
+            <Button
+                android:id="@+id/imageButtonBarometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_menu_barometer"
+                android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutSensorInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:padding="5dp" >
-        
-        
-        <Button
-            android:id="@+id/imageButtonBarometer"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_menu_barometer"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
-  
-
-</LinearLayout>
+</ScrollView>

@@ -728,9 +728,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 		});
-		
-		// Display map text by default
-		layoutMapInfo.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -749,8 +746,8 @@ public class BarometerNetworkActivity extends Activity implements
 		double minLon = Math.min(ne.longitude, sw.longitude);
 		int visibleCount = uniqueRecents.size();
 		
-		String latitudeRange = "Lat: " + latlngFormat.format(minLat) + " - " + latlngFormat.format(maxLat);
-		String longitudeRange = "Lon: " + latlngFormat.format(minLon) + " - " + latlngFormat.format(maxLon);
+		String latitudeRange = "Lat: " + latlngFormat.format(minLat) + " to " + latlngFormat.format(maxLat);
+		String longitudeRange = "Lon: " + latlngFormat.format(minLon) + " to " + latlngFormat.format(maxLon);
 		
 		updatedText = latitudeRange + "\n" + longitudeRange + "\n" + visibleCount + " data points";
 		mapInfoText.setText(updatedText);
@@ -1856,6 +1853,8 @@ public class BarometerNetworkActivity extends Activity implements
 					break;
 				}
 			}
+			
+			updateMapInfoText();
 
 		} catch (Exception e) {
 			log("add data error: " + e.getMessage());
