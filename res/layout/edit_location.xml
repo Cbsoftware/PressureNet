@@ -7,10 +7,9 @@
 
     <EditText
         android:id="@+id/editLocationName"
-        android:layout_column="0"
+        android:layout_width="match_parent"
         android:layout_columnSpan="2"
         android:layout_gravity="center_horizontal"
-        android:layout_row="0"
         android:ems="10"
         android:hint="@string/locationName" >
     </EditText>
@@ -21,32 +20,80 @@
 
     <EditText
         android:id="@+id/editLocationLatitude"
-        android:ems="10" />
+        android:layout_width="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
 
     <TextView
         android:layout_column="0"
         android:layout_gravity="right"
+        android:inputType="number"
         android:text="Longitude:" />
 
     <EditText
-        android:id="@+id/editLocationLatitude"
-        android:ems="8" />
+        android:id="@+id/editLocationLongitude"
+        android:layout_width="wrap_content"
+        android:ems="10" />
 
-    <fragment
-        android:id="@+id/mapLocation"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_columnSpan="2" />
-
-    <Button
-        android:id="@+id/buttonSaveLocation"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+    <LinearLayout
+        android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_columnSpan="2"
-        android:text="Save" 
-        android:textColor="@android:color/black">
-    </Button>
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonCancelLocation"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@android:color/black"
+            android:layout_weight=".33" >
+        </Button>
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+        
+          <Button
+            android:id="@+id/buttonDeleteLocation"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:textColor="@android:color/black"
+            android:layout_weight=".33" >
+        </Button>
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+        
+
+        <Button
+            android:id="@+id/buttonSaveLocation"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:textColor="@android:color/black" 
+            android:layout_weight=".33">
+        </Button>
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+    </LinearLayout>
 
 </GridLayout>

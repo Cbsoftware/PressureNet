@@ -84,7 +84,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.EditLocationActivity"
             android:excludeFromRecents="true"
-            android:label="Location"
+            android:label="Location Details"
             android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
