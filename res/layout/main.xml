@@ -120,7 +120,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone" 
+        android:padding="5dp">
 
         <Spinner
             android:id="@+id/spinnerChartTime"
@@ -135,13 +136,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:padding="5dp" >
 
         <TextView
             android:id="@+id/textMapInfo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Map info"
+            android:layout_height="fill_parent"
+            android:text=""
             android:textColor="@android:color/black" />
     </LinearLayout>
 
@@ -150,7 +152,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:padding="5dp" >
 
         <LinearLayout
             android:id="@+id/layoutTimeControls"
@@ -180,7 +183,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:padding="5dp" >
         
         
         <Button

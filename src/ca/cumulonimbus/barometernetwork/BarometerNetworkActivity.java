@@ -207,6 +207,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// migratePreferences();
 		startLog();
 		getStoredPreferences();
+		setUpMap();
 		setUpUIListeners();
 		setId();
 		setUpFiles();
@@ -214,7 +215,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		startCbService();
 		bindCbService();
-		setUpMap();
+		
 	}
 
 	/**
@@ -283,7 +284,7 @@ public class BarometerNetworkActivity extends Activity implements
 						askForRecents(api);
 					}
 					
-					// mapInfoText.setText("zoom " + mMap.getCameraPosition().zoom);
+					updateMapInfoText();
 				}
 			});
 			
@@ -314,6 +315,7 @@ public class BarometerNetworkActivity extends Activity implements
 			if (loc.getLatitude() != 0) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
 						new LatLng(loc.getLatitude(), loc.getLongitude()), 13));
+				updateMapInfoText();
 			} else {
 
 			}
@@ -332,7 +334,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
 					latitude, longitude), 13));
-
+			updateMapInfoText();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -726,8 +728,34 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 		});
+		
+		// Display map text by default
+		layoutMapInfo.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * Get basic information and format it to display on screen
+	 * Show the map coordinates, number of unique data points visible, etc
+	 */
+	private void updateMapInfoText() {
+		String updatedText = "";
+		DecimalFormat latlngFormat = new DecimalFormat("###.####");
+		
+		LatLng ne = visibleBound.northeast;
+		LatLng sw = visibleBound.southwest;
+		double maxLat = Math.max(ne.latitude, sw.latitude);
+		double minLat = Math.min(ne.latitude, sw.latitude);
+		double maxLon = Math.max(ne.longitude, sw.longitude);
+		double minLon = Math.min(ne.longitude, sw.longitude);
+		int visibleCount = uniqueRecents.size();
+		
+		String latitudeRange = "Lat: " + latlngFormat.format(minLat) + " - " + latlngFormat.format(maxLat);
+		String longitudeRange = "Lon: " + latlngFormat.format(minLon) + " - " + latlngFormat.format(maxLon);
+		
+		updatedText = latitudeRange + "\n" + longitudeRange + "\n" + visibleCount + " data points";
+		mapInfoText.setText(updatedText);
+	}
+	
 	private void startCbService() {
 		log("start cbservice");
 		try {
