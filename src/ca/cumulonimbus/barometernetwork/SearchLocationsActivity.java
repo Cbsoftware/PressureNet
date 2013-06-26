@@ -56,6 +56,7 @@ public class SearchLocationsActivity extends ListActivity {
 					public boolean onItemLongClick(AdapterView<?> parent,
 							View v, int position, long id) {
 						Intent intent = new Intent(getApplicationContext(),EditLocationActivity.class);
+						intent.putExtra("rowId", id);
 						startActivity(intent);
 						return true;
 					}
@@ -64,7 +65,7 @@ public class SearchLocationsActivity extends ListActivity {
 	}
 
 	@Override
-	protected void onStop() {
+	protected void onDestroy() {
 		if (pn != null) {
 			pn.close();
 		}
