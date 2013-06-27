@@ -187,7 +187,7 @@
             android:id="@+id/layoutSensorInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="5dp"
             android:visibility="gone" >
 
@@ -198,6 +198,27 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_menu_barometer"
                 android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/imageButtonThermometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_menu_thermometer"
+                android:textColor="@android:color/black"
+                android:text="No thermometer detected" />
+            
+            
+            <Button
+                android:id="@+id/imageButtonHygrometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_menu_hygrometer"
+                android:textColor="@android:color/black"
+                android:text="No hygrometer detected" />
+            
+            
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
