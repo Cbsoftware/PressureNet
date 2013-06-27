@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bottomScrollContainer"
+    android:id="@+id/totalScrollContainer"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true" >
 
     <LinearLayout
         android:id="@+id/mainParentLayout"
@@ -205,20 +207,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_menu_thermometer"
-                android:textColor="@android:color/black"
-                android:text="No thermometer detected" />
-            
-            
+                android:text="No thermometer detected"
+                android:textColor="@android:color/black" />
+
             <Button
                 android:id="@+id/imageButtonHygrometer"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_menu_hygrometer"
-                android:textColor="@android:color/black"
-                android:text="No hygrometer detected" />
-            
-            
+                android:text="No hygrometer detected"
+                android:textColor="@android:color/black" />
         </LinearLayout>
     </LinearLayout>
+
 </ScrollView>
