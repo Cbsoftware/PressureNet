@@ -152,6 +152,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapInfoText;
 	private ImageButton buttonSearchLocations;
 	
+	private TextView textAnimationInformation;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -437,8 +439,14 @@ public class BarometerNetworkActivity extends Activity implements
 		return rawApi;
 	}
 
-	public boolean isCloseToFrame(int a, int b) {
-		return Math.abs(a - b) < 3;
+	// TODO: clean up
+	public boolean isCloseToFrame(int groupNumber, int currentTimeProgress) {
+		if (currentTimeProgress >= groupNumber) {
+			if(currentTimeProgress - groupNumber < 5) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void updateMapWithSeekTimeData() {
@@ -502,6 +510,8 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
+		textAnimationInformation = (TextView) findViewById(R.id.textAnimationInformation);
+		
 		buttonSearchLocations.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -550,6 +560,8 @@ public class BarometerNetworkActivity extends Activity implements
 				layoutMapInfo.setVisibility(View.GONE);
 				layoutSensors.setVisibility(View.GONE);
 
+				
+				
 			}
 		});
 
@@ -687,7 +699,9 @@ public class BarometerNetworkActivity extends Activity implements
 					buttonPlay.setImageDrawable(play);
 					return;
 				}
-
+				
+				textAnimationInformation.setText(fullRecents.size() + " data points (last hour)");
+				
 				// currentTimeProgress = 0;
 				seekTime.setProgress(currentTimeProgress);
 
