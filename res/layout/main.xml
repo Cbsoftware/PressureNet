@@ -18,6 +18,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
+            <ImageButton
+                android:id="@+id/buttonSearchLocations"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_log"
+                android:textColor="@android:color/black" />
+
             <EditText
                 android:id="@+id/editGoLocation"
                 android:layout_width="wrap_content"

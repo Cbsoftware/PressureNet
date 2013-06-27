@@ -75,6 +75,7 @@ public class LogViewerActivity extends Activity {
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 
 			getRecents(6);
+			sixHours.setTextColor(Color.BLUE);
 		}
 
 		public void onServiceDisconnected(ComponentName className) {

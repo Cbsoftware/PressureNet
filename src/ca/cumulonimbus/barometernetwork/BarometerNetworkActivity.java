@@ -150,6 +150,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutSensors;
 	
 	private TextView mapInfoText;
+	private ImageButton buttonSearchLocations;
 	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
@@ -490,6 +491,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		mapInfoText = (TextView) findViewById(R.id.textMapInfo);
 		
+		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
+		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
 						android.R.layout.simple_spinner_item);
@@ -499,6 +502,17 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
 
+		buttonSearchLocations.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(),
+						SearchLocationsActivity.class);
+				startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
+				
+			}
+		});
+		
 		mapMode.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -1267,12 +1281,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent intent = new Intent(getApplicationContext(), About.class);
 			startActivity(intent);
 
-		} else if (item.getItemId() == R.id.menu_search_locations) {
-			Intent intent = new Intent(getApplicationContext(),
-					SearchLocationsActivity.class);
-			startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
-
-		}
+		} 
 		return super.onOptionsItemSelected(item);
 	}
 
