@@ -23,7 +23,7 @@
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_log"
+                android:src="@drawable/ic_menu_light_locations"
                 android:textColor="@android:color/black" />
 
             <EditText
@@ -38,7 +38,7 @@
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_play"
+                android:src="@drawable/ic_menu_light_play"
                 android:textColor="@android:color/black" />
         </LinearLayout>
 
@@ -181,7 +181,7 @@
                     style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu_play"
+                    android:src="@drawable/ic_menu_light_play"
                     android:textColor="@android:color/black" />
 
                 <SeekBar
@@ -215,7 +215,7 @@
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_menu_barometer"
+                android:drawableLeft="@drawable/ic_menu_light_barometer"
                 android:textColor="@android:color/black" />
 
             <Button
@@ -223,7 +223,7 @@
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_menu_thermometer"
+                android:drawableLeft="@drawable/ic_menu_light_thermometer"
                 android:text="No thermometer detected"
                 android:textColor="@android:color/black" />
 
@@ -232,7 +232,7 @@
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_menu_hygrometer"
+                android:drawableLeft="@drawable/ic_menu_light_hygrometer"
                 android:text="No hygrometer detected"
                 android:textColor="@android:color/black" />
         </LinearLayout>

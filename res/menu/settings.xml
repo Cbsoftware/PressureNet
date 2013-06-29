@@ -3,13 +3,13 @@
     <item
         android:id="@+id/menu_current_conditions"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_weather"
+        android:icon="@drawable/ic_menu_dark_weather"
         android:showAsAction="ifRoom|withText"
         android:title="@string/current_conditions"/>
     <item
         android:id="@+id/menu_log_viewer"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_stats"
+        android:icon="@drawable/ic_menu_dark_stats"
         android:showAsAction="ifRoom|withText"
         android:title="My Data"
         android:visible="true"/>
@@ -29,14 +29,14 @@
      <item
         android:id="@+id/menu_load_data_vis"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_vis"
+        android:icon="@drawable/ic_menu_dark_vis"
         android:showAsAction="never"
         android:title="Website"
         android:visible="false"/>
     <item
         android:id="@+id/menu_settings"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_settings"
+        android:icon="@drawable/ic_menu_dark_settings"
         android:showAsAction="never"
         android:title="@string/settings"/>
      <item

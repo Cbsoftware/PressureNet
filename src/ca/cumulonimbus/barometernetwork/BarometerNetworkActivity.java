@@ -400,7 +400,7 @@ public class BarometerNetworkActivity extends Activity implements
 				timeHandler.postDelayed(animate, 50);
 			} else {
 				Drawable play = getResources().getDrawable(
-						R.drawable.ic_menu_play);
+						R.drawable.ic_menu_dark_play);
 				buttonPlay.setImageDrawable(play);
 				animateState = false;
 				currentTimeProgress = 0;
@@ -690,12 +690,12 @@ public class BarometerNetworkActivity extends Activity implements
 				animateState = !animateState;
 				if (animateState == true) {
 					Drawable pause = getResources().getDrawable(
-							R.drawable.ic_menu_pause);
+							R.drawable.ic_menu_light_pause);
 					buttonPlay.setImageDrawable(pause);
 				} else {
 					timeHandler.removeCallbacks(animate);
 					Drawable play = getResources().getDrawable(
-							R.drawable.ic_menu_play);
+							R.drawable.ic_menu_light_play);
 					buttonPlay.setImageDrawable(play);
 					return;
 				}
