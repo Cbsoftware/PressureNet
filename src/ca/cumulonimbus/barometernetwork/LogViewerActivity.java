@@ -64,7 +64,8 @@ public class LogViewerActivity extends Activity {
 	public double convertedPressureValue(double value) {
 		PressureUnit unit = new PressureUnit(preferenceUnit);
 		unit.setValue(value);
-		return unit.convertToPreferredUnit(preferenceUnit);
+		unit.setAbbreviation(preferenceUnit);
+		return unit.convertToPreferredUnit();
 	}
 
 	

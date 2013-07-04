@@ -9,14 +9,14 @@ public class DistanceUnit {
 	double valueInMeters;
 	String abbrev;
 	
-	private String fullToAbbrev(String full) {
-		if(abbrev.contains("Meters")) {
+	private String fullToAbbrev() {
+		if(abbrev.contains("(m)")) {
 			return "m";
-		} else if(abbrev.contains("Kilometers")) {
+		} else if(abbrev.contains("(km)")) {
 			return "km";
-		} else if(abbrev.contains("Feet")) {
+		} else if(abbrev.contains("(ft)")) {
 			return "ft";
-		} else if(abbrev.contains("Miles")) {
+		} else if(abbrev.contains("(mi)")) {
 			return "mi";
 		} else {
 			return "m";
@@ -28,11 +28,11 @@ public class DistanceUnit {
 			if(abbrev.equals("m")) {
 				return valueInMeters;
 			} else if(abbrev.equals("km")) {
-				return valueInMeters * 1000;
+				return valueInMeters * .001;
 			} else if(abbrev.contains("ft")) {
-				return 0;
+				return valueInMeters * 3.28084;
 			} else if(abbrev.contains("mi")) {
-				return 0;
+				return valueInMeters * 0.000621371;
 			} else {
 				return valueInMeters;
 			}
@@ -45,7 +45,7 @@ public class DistanceUnit {
 		double accurateVal = convertToPreferredUnit(abbrev);
 		DecimalFormat df = new DecimalFormat("##.0");
 		String formatted = df.format(accurateVal);
-		String abb = fullToAbbrev(abbrev);
+		String abb = fullToAbbrev();
 		return formatted + " " + abb;
 	}
 	

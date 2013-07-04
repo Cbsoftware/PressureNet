@@ -2105,8 +2105,9 @@ public class BarometerNetworkActivity extends Activity implements
 		DecimalFormat df = new DecimalFormat("####.00");
 		PressureUnit unit = new PressureUnit(preferenceUnit);
 		unit.setValue(value);
+		unit.setAbbreviation(preferenceUnit);
 		double pressureInPreferredUnit = unit
-				.convertToPreferredUnit(preferenceUnit);
+				.convertToPreferredUnit();
 		return df.format(pressureInPreferredUnit);	
 	}
 

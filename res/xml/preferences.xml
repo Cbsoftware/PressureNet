@@ -49,11 +49,18 @@
             android:key="distance_units"
             android:summary="Pick your preferred distance unit"
             android:title="Distance Unit" />
+        <ListPreference
+            android:defaultValue="Celsius (C)"
+            android:entries="@array/temperature_units"
+            android:entryValues="@array/temperature_units"
+            android:key="temperature_units"
+            android:summary="Pick your preferred temperature unit"
+            android:title="Temperature Unit" />
     </PreferenceCategory>
-        <PreferenceCategory
+    <PreferenceCategory
         android:key="calibration_prefs"
         android:title="Calibration" >
-       <CheckBoxPreference
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="manual_altitude_calibration"
             android:summary="Adjust display pressure to Mean Sea Level Pressure based on your altitude"
@@ -62,9 +69,10 @@
         <EditTextPreference
             android:defaultValue="0"
             android:dependency="manual_altitude_calibration"
+            android:inputType="number"
             android:key="manual_altitude_in_km"
             android:summary="Enter your approximate altitude in kilometers."
-            android:title="Altitude (km)"
-            android:inputType="number" />
-        </PreferenceCategory>
+            android:title="Altitude (km)" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

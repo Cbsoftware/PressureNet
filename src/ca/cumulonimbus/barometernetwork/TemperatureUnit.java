@@ -1,0 +1,63 @@
+package ca.cumulonimbus.barometernetwork;
+
+import java.text.DecimalFormat;
+
+/*
+ *  Temperature Units
+ */
+public class TemperatureUnit {
+	double valueInC;
+	String abbrev;
+	
+	private String fullToAbbrev() {
+		if(abbrev.contains("(C)")) {
+			return "deg C";
+		} else if(abbrev.contains("(F)")) {
+			return "deg F";
+		} else if(abbrev.contains("K")) {
+			return "K ";
+		} else {
+			return "deg C";
+		}
+	}
+	
+	public double convertToPreferredUnit() {
+		try {
+			if(abbrev.equals("C")) {
+				return valueInC;
+			} else if(abbrev.equals("F")) {
+				return valueInC;
+			} else if(abbrev.contains("K")) {
+				return valueInC;
+			} else {
+				return valueInC;
+			}
+		} catch(Exception e) {
+			return -1;
+		}
+	}
+	
+	public String getDisplayText() {
+		double accurateVal = convertToPreferredUnit();
+		DecimalFormat df = new DecimalFormat("##.0");
+		String formatted = df.format(accurateVal);
+		String abb = fullToAbbrev();
+		return formatted + " " + abb;
+	}
+	
+	public TemperatureUnit(String abbrev) {
+		this.abbrev = abbrev;
+	}
+	public double getValueInMeters() {
+		return valueInC;
+	}
+	public void setValue(double valueInC) {
+		this.valueInC = valueInC;
+	}
+	public String getAbbreviation() {
+		return abbrev;
+	}
+	public void setAbbreviation(String abbreviation) {
+		this.abbrev = abbreviation;
+	}
+}

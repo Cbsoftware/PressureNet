@@ -4,12 +4,13 @@ import java.text.DecimalFormat;
 
 /*
  *  Atmospheric Pressure Units
+ *  There ought to be a parent Unit class
  */
 public class PressureUnit {
 	double valueInMb;
 	String abbrev;
 	
-	private String fullToAbbrev(String full) {
+	private String fullToAbbrev() {
 		if(abbrev.contains("mbar")) {
 			// No change. reading comes to us in mbar.
 			return "mbar";
@@ -29,7 +30,7 @@ public class PressureUnit {
 	}
 	
 	// Conversion factors from http://www.csgnetwork.com/meteorologyconvtbl.html
-	public double convertToPreferredUnit(String unit) {
+	public double convertToPreferredUnit() {
 		try {
 			if(abbrev.contains("mbar")) {
 				// No change. reading comes to us in mbar.
@@ -54,10 +55,10 @@ public class PressureUnit {
 	}
 	
 	public String getDisplayText() {
-		double accurateVal = convertToPreferredUnit(abbrev);
+		double accurateVal = convertToPreferredUnit();
 		DecimalFormat df = new DecimalFormat("####.##");
 		String formatted = df.format(accurateVal);
-		String abb = fullToAbbrev(abbrev);
+		String abb = fullToAbbrev();
 		return formatted + " " + abb;
 	}
 	
