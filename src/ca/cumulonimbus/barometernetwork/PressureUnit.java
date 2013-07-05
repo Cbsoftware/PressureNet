@@ -10,7 +10,7 @@ public class PressureUnit {
 	double valueInMb;
 	String abbrev;
 	
-	private String fullToAbbrev() {
+	public String fullToAbbrev() {
 		if(abbrev.contains("mbar")) {
 			// No change. reading comes to us in mbar.
 			return "mbar";

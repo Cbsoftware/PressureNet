@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -218,7 +219,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		startCbService();
 		bindCbService();
-		
+		startSensorListeners();
 	}
 
 	/**
@@ -2108,7 +2109,7 @@ public class BarometerNetworkActivity extends Activity implements
 		unit.setAbbreviation(preferenceUnit);
 		double pressureInPreferredUnit = unit
 				.convertToPreferredUnit();
-		return df.format(pressureInPreferredUnit);	
+		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 
 	public void updateVisibleReading() {
@@ -2116,7 +2117,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (recentPressureReading != 0.0) {
 			String toPrint = displayPressureValue(recentPressureReading);
-			buttonBarometer.setText(toPrint + " " + preferenceUnit);
+			buttonBarometer.setText(toPrint);
+			ActionBar bar = getActionBar();
+			bar.setTitle(toPrint);
+			int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
+			
+			TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
+			actionBarTextView.setTextColor(Color.WHITE);
+			
 		} else {
 			buttonBarometer.setText("No barometer detected.");
 		}
