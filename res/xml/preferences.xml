@@ -57,6 +57,7 @@
             android:summary="Pick your preferred temperature unit"
             android:title="Temperature Unit" />
     </PreferenceCategory>
+    <!-- 
     <PreferenceCategory
         android:key="calibration_prefs"
         android:title="Calibration" >
@@ -74,5 +75,5 @@
             android:summary="Enter your approximate altitude in kilometers."
             android:title="Altitude (km)" />
     </PreferenceCategory>
-
+ -->
 </PreferenceScreen>
