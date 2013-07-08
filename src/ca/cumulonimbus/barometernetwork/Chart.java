@@ -92,11 +92,7 @@ public class Chart {
 
 		Date minTime = c.getTime();
 
-		c.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24)); // TODO:
-																				// fix
-																				// max
-																				// 1-day-ago
-																				// support
+		c.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7)); 
 		Date maxTime = c.getTime();
 
 		int i = 0;
@@ -127,9 +123,6 @@ public class Chart {
 		}
 
 		yMean = ySum / i;
-		if(yMean < 500) {
-			yMean = 1000;
-		}
 		
 		x.add(xValues);
 		values.add(yValues);
@@ -144,7 +137,8 @@ public class Chart {
 				red = 0;
 			}
 			
-			colors[i] = Color.rgb(red, green, blue);
+			// colors[i] = Color.rgb(red, green, blue);
+			 colors[i] = Color.rgb(20, 20, 255);
 		}
 		
 		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
