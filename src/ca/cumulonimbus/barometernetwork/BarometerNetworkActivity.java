@@ -533,8 +533,7 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				activeMode = "map";
 				
-				stopDataStream();
-				stopSensorListeners();
+				//stopDataStream();
 				
 				// UI switch
 				layoutAnimationControlContainer.setVisibility(View.GONE);
@@ -551,8 +550,7 @@ public class BarometerNetworkActivity extends Activity implements
 				CbApiCall api = buildMapAPICall(1);
 				askForRecents(api);
 				
-				stopDataStream();
-				stopSensorListeners();
+				//stopDataStream();
 				
 				activeMode = "animation";
 				
@@ -575,8 +573,7 @@ public class BarometerNetworkActivity extends Activity implements
 				CbApiCall api = buildMapAPICall(1);
 				askForRecents(api);
 				
-				stopDataStream();
-				stopSensorListeners();
+				//stopDataStream();
 				
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.VISIBLE);
@@ -594,8 +591,8 @@ public class BarometerNetworkActivity extends Activity implements
 				activeMode = "sensors";
 				
 				// for UI, not data collection
-				startDataStream();
-				startSensorListeners();
+				//startDataStream();
+				//startSensorListeners();
 				
 				// UI switch
 				layoutAnimationControlContainer.setVisibility(View.GONE);
@@ -2073,10 +2070,8 @@ public class BarometerNetworkActivity extends Activity implements
 		editLocation.setText("");
 		findViewById(R.id.totalScrollContainer).requestFocus();
 		
-		if(activeMode.equals("sensor")) {
-			startSensorListeners();
-			startDataStream();
-		}
+		startSensorListeners();
+		startDataStream();
 	}
 
 	@Override
