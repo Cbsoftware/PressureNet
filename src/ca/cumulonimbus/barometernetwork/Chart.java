@@ -99,7 +99,7 @@ public class Chart {
 		double yMean = 1000;
 		double ySum = 0;
 		for (CbObservation obs : obsList) {
-			if(obs.getObservationValue() < 0) {
+			if(obs.getObservationValue() <= 0) {
 				i++;
 				continue; // TODO: fix hack
 			}

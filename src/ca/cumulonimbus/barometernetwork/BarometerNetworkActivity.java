@@ -204,6 +204,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
+	private long lastGraphApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -615,12 +616,18 @@ public class BarometerNetworkActivity extends Activity implements
 				askForUniqueRecents(apiGraph);
 				
 				
-				System.out.println("making api call 3h for graph");
-				CbApiCall api = buildMapAPICall(3);
-				//api.setApiName("list");
-				api.setLimit(5000);
-				makeAPICall(api);
-
+				// don't make this call repeatedly if user keeps tapping
+				// say, five second limit?
+				long currentTime = System.currentTimeMillis();
+				if(currentTime - lastGraphApiCall > (1000 * 5)) {
+					System.out.println("making api call 3h for graph");
+					CbApiCall api = buildMapAPICall(3);
+					//api.setApiName("list");
+					api.setLimit(5000);
+					makeAPICall(api);
+					
+					lastGraphApiCall = 	currentTime;
+				}
 				
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.VISIBLE);
