@@ -130,6 +130,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbObservation> uniqueRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
+	private ArrayList<CbObservation> globalMapRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> currentConditionAnimation = new ArrayList<CbCurrentCondition>();
 
@@ -245,6 +246,19 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		pn.close();
 	}
+	
+
+	/**
+	 * Get fresh data for the global map
+	 */
+	public void makeGlobalMapCall() {
+		CbApiCall globalMapCall = buildMapAPICall(.2);
+		globalMapCall.setMinLat(-90);
+		globalMapCall.setMaxLat(90);
+		globalMapCall.setMinLon(-180);
+		globalMapCall.setMaxLon(180);
+		makeAPICall(globalMapCall);
+	}
 
 	private void setUpMapIfNeeded() {
 		// Do a null check to confirm that we have not already instantiated the
@@ -292,6 +306,9 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall api = buildMapAPICall(1);
 						askForCurrentConditionAnimation(api);
 						addDataToMap(true);
+					} else if (activeMode.equals("map")) {
+						makeMapApiCallAndLoadRecents();
+						addDataToMap(false);
 					} else {
 						makeMapApiCallAndLoadRecents();
 						addDataToMap(false);
@@ -391,7 +408,7 @@ public class BarometerNetworkActivity extends Activity implements
 		@Override
 		public void run() {
 			System.out.println("making api call (runnable)");
-			CbApiCall api = buildMapAPICall(1);
+			CbApiCall api = buildMapAPICall(.2);
 			api = roundApiCallLocations(api);
 			makeAPICall(api);
 		}
@@ -964,17 +981,25 @@ public class BarometerNetworkActivity extends Activity implements
 					listRecents = (ArrayList<CbObservation>) msg.obj;
 					log("received " + listRecents.size() + " list recents");
 					createAndShowChart();
+				} else if (activeMode.equals("map")) {
+					globalMapRecents.clear();
+					globalMapRecents = (ArrayList<CbObservation>) msg.obj;
+					log("fetched global map 12 minutes, total size " + globalMapRecents.size());
+					addDataToMap(false);
 				} else {
-					fullRecents.clear();
-					fullRecents = (ArrayList<CbObservation>) msg.obj;					
-					log("received " + fullRecents.size() + " full recents");
-
+					//fullRecents.clear();
+					//fullRecents = (ArrayList<CbObservation>) msg.obj;					
+					//log("received " + fullRecents.size() + " full recents");
+					//addDataToMap(false);
 				}
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
-				System.out.println("Call result: " + count + " API results cached");
-				addDataToMap(false);
+				//System.out.println("Call result: " + count + " API results cached");
+				if(activeMode.equals("map")) {
+					CbApiCall api = buildMapAPICall(.2);
+					askForRecents(api);
+				}
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				if (currentConditionRecents != null) {
@@ -1061,8 +1086,8 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			makeLocationAPICalls();
-
+			// makeLocationAPICalls();
+			makeGlobalMapCall();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1987,6 +2012,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
 		api.setApiName("live");
+		System.out.println("building call for time " + api.getStartTime() + " " + api.getEndTime());
 		return api;
 	}
 
@@ -2056,23 +2082,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void makeMapApiCallAndLoadRecents() {
-		CbApiCall api = buildMapAPICall(1);
-		
-		// limit the calls made when the user is moving around
-		int timeLimit = 1000 * 1;
-		long timeNow = System.currentTimeMillis();
-		if (timeNow - lastMapMove < timeLimit) {
-			System.out.println("map move time too short, delaying (runnable)");
-			mapDelayHandler.removeCallbacks(apiCallRunnable);
-			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
-
-		} else {
-			System.out
-					.println("map move initializing wait before call (runnable)");
-			mapDelayHandler.postDelayed(apiCallRunnable, timeLimit);
-		}
-
-		lastMapMove = timeNow;
+		CbApiCall api = buildMapAPICall(.2);
 
 		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
