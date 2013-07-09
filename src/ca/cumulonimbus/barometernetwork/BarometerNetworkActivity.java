@@ -615,10 +615,10 @@ public class BarometerNetworkActivity extends Activity implements
 				askForUniqueRecents(apiGraph);
 				
 				
-				System.out.println("making api call 24h for graph");
-				CbApiCall api = buildMapAPICall(24);
-				api.setApiName("list");
-				api.setLimit(10000);
+				System.out.println("making api call 3h for graph");
+				CbApiCall api = buildMapAPICall(3);
+				//api.setApiName("list");
+				api.setLimit(5000);
 				makeAPICall(api);
 
 				
@@ -795,12 +795,12 @@ public class BarometerNetworkActivity extends Activity implements
 				// TODO: Fix hack
 				if (selected.contains("1 hour")) {
 					hoursAgoSelected = 1;
+				} else if (selected.contains("3 hours")) {
+					hoursAgoSelected = 3;
 				} else if (selected.contains("6 hours")) {
 					hoursAgoSelected = 6;
 				} else if (selected.contains("12 hours")) {
 					hoursAgoSelected = 12;
-				} else if (selected.contains("1 day")) {
-					hoursAgoSelected = 24;
 				} 
 				log("selected " + hoursAgoSelected + " hours ago");
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
