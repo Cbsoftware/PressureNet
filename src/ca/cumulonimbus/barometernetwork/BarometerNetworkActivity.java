@@ -203,7 +203,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastMapDataUpdate = System.currentTimeMillis();
 	
 	private String activeMode = "map";
-	
+	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -252,13 +252,18 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for the global map
 	 */
 	public void makeGlobalMapCall() {
-		CbApiCall globalMapCall = buildMapAPICall(.5);
-		globalMapCall.setMinLat(-90);
-		globalMapCall.setMaxLat(90);
-		globalMapCall.setMinLon(-180);
-		globalMapCall.setMaxLon(180);
-		globalMapCall.setLimit(5000);
-		makeAPICall(globalMapCall);
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
+			
+			CbApiCall globalMapCall = buildMapAPICall(.5);
+			globalMapCall.setMinLat(-90);
+			globalMapCall.setMaxLat(90);
+			globalMapCall.setMinLon(-180);
+			globalMapCall.setMaxLon(180);
+			globalMapCall.setLimit(5000);
+			makeAPICall(globalMapCall);
+			lastGlobalApiCall = currentTime;
+		} 
 	}
 
 	private void setUpMapIfNeeded() {
@@ -283,6 +288,15 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				@Override
 				public void onCameraChange(CameraPosition position) {
+					// change button ability based on zoom level
+					if(position.zoom >= 10) {
+						graphMode.setEnabled(true);
+						graphMode.setTextColor(Color.BLACK);
+					} else {
+						graphMode.setEnabled(false);
+						graphMode.setTextColor(Color.GRAY);
+					}
+					
 					// dismiss the keyboard
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
@@ -469,7 +483,7 @@ public class BarometerNetworkActivity extends Activity implements
 	// TODO: clean up
 	public boolean isCloseToFrame(int groupNumber, int currentTimeProgress) {
 		if (currentTimeProgress >= groupNumber) {
-			if(currentTimeProgress - groupNumber < 5) {
+			if(currentTimeProgress - groupNumber < 10) {
 				return true;
 			}
 		}
@@ -556,6 +570,8 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {				
 				activeMode = "map";
 				
+				addDataToMap(false);
+				
 				// UI switch
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.GONE);
@@ -568,6 +584,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				mMap.clear();
+				
 				CbApiCall api = buildMapAPICall(24 * 7);
 				askForCurrentConditionAnimation(api);
 				
@@ -589,17 +607,18 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				activeMode = "graph";
 				
+				spinnerTime.setSelection(0);
+				hoursAgoSelected = 1;
 
 				CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-				//apiGraph.setApiName("list");
-				apiGraph.setLimit(2000);
-				askForRecents(apiGraph);
+				apiGraph.setLimit(5000);
+				askForUniqueRecents(apiGraph);
 				
 				
 				System.out.println("making api call 24h for graph");
 				CbApiCall api = buildMapAPICall(24);
-				//api.setApiName("list");
-				api.setLimit(5000);
+				api.setApiName("list");
+				api.setLimit(10000);
 				makeAPICall(api);
 
 				
@@ -1014,7 +1033,7 @@ public class BarometerNetworkActivity extends Activity implements
 					addDataToMap(true);
 				} else {
 					currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
-					addDataToMap(false);
+					//addDataToMap(false);
 				}
 				break;
 			case CbService.MSG_API_UNIQUE_RECENTS:
@@ -1411,6 +1430,7 @@ public class BarometerNetworkActivity extends Activity implements
 				file.delete();
 		} else if (requestCode == REQUEST_LOCATION_CHOICE) {
 			if (data != null) {
+				mapMode.performClick();
 				long rowId = data.getLongExtra("location_id", -1);
 				if (rowId != -1) {
 					PnDb pn = new PnDb(getApplicationContext());
