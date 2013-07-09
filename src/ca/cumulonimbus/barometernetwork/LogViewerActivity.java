@@ -51,6 +51,8 @@ public class LogViewerActivity extends Activity {
 
 	private String preferenceUnit;
 	
+	private int hoursSelected = 6;
+	
 	/**
 	 * Check the Android SharedPreferences for important values. Save relevant
 	 * ones to CbSettings for easy access in submitting readings
@@ -86,6 +88,23 @@ public class LogViewerActivity extends Activity {
 	};
 
 	public void getRecents(long hoursAgo) {
+		
+		// disable buttons
+
+		oneHour = (Button) findViewById(R.id.buttonOneHour);
+		sixHours = (Button) findViewById(R.id.buttonSixHours);
+		oneDay = (Button) findViewById(R.id.buttonOneDay);
+		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
+		
+		oneHour.setEnabled(false);
+		oneHour.setTextColor(Color.GRAY);
+		sixHours.setEnabled(false);
+		sixHours.setTextColor(Color.GRAY);
+		oneDay.setEnabled(false);
+		oneDay.setTextColor(Color.GRAY);
+		oneWeek.setEnabled(false);
+		oneWeek.setTextColor(Color.GRAY);
+		
 		if (mBound) {
 			CbApiCall api = new CbApiCall();
 			api.setMinLat(-90);
@@ -175,6 +194,32 @@ public class LogViewerActivity extends Activity {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
+				// enable buttons
+				oneHour.setEnabled(true);
+				oneHour.setTextColor(Color.BLACK);
+				sixHours.setEnabled(true);
+				sixHours.setTextColor(Color.BLACK);
+				oneDay.setEnabled(true);
+				oneDay.setTextColor(Color.BLACK);
+				oneWeek.setEnabled(true);
+				oneWeek.setTextColor(Color.BLACK);
+				
+				switch(hoursSelected) {
+				case 1:
+					oneHour.setTextColor(Color.BLUE);
+					break;
+				case 6:
+					sixHours.setTextColor(Color.BLUE);
+					break;
+				case 24:
+					oneDay.setTextColor(Color.BLUE);
+					break;
+				case 24*7:
+					oneWeek.setTextColor(Color.BLUE);
+					break;
+				}
+				
 				break;
 			default:
 				super.handleMessage(msg);
@@ -262,6 +307,7 @@ public class LogViewerActivity extends Activity {
 				sixHours.setTextColor(Color.BLACK);
 				oneDay.setTextColor(Color.BLACK);
 				oneWeek.setTextColor(Color.BLACK);
+				hoursSelected = 1;
 				getRecents(1);
 			}
 		});
@@ -274,6 +320,7 @@ public class LogViewerActivity extends Activity {
 				sixHours.setTextColor(Color.BLUE);
 				oneDay.setTextColor(Color.BLACK);
 				oneWeek.setTextColor(Color.BLACK);
+				hoursSelected = 6;
 				getRecents(6);
 			}
 		});
@@ -285,6 +332,7 @@ public class LogViewerActivity extends Activity {
 				sixHours.setTextColor(Color.BLACK);
 				oneDay.setTextColor(Color.BLUE);
 				oneWeek.setTextColor(Color.BLACK);
+				hoursSelected = 24;
 				getRecents(24);
 			}
 		});
@@ -296,6 +344,7 @@ public class LogViewerActivity extends Activity {
 				sixHours.setTextColor(Color.BLACK);
 				oneDay.setTextColor(Color.BLACK);
 				oneWeek.setTextColor(Color.BLUE);
+				hoursSelected = 24 * 7;
 				getRecents(24 * 7);
 			}
 		});
