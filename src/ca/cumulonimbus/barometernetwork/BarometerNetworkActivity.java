@@ -252,11 +252,12 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for the global map
 	 */
 	public void makeGlobalMapCall() {
-		CbApiCall globalMapCall = buildMapAPICall(.2);
+		CbApiCall globalMapCall = buildMapAPICall(.5);
 		globalMapCall.setMinLat(-90);
 		globalMapCall.setMaxLat(90);
 		globalMapCall.setMinLon(-180);
 		globalMapCall.setMaxLon(180);
+		globalMapCall.setLimit(5000);
 		makeAPICall(globalMapCall);
 	}
 
@@ -310,8 +311,7 @@ public class BarometerNetworkActivity extends Activity implements
 						makeMapApiCallAndLoadRecents();
 						addDataToMap(false);
 					} else {
-						makeMapApiCallAndLoadRecents();
-						addDataToMap(false);
+						
 					}
 					
 					updateMapInfoText();
@@ -982,10 +982,10 @@ public class BarometerNetworkActivity extends Activity implements
 					log("received " + listRecents.size() + " list recents");
 					createAndShowChart();
 				} else if (activeMode.equals("map")) {
-					globalMapRecents.clear();
-					globalMapRecents = (ArrayList<CbObservation>) msg.obj;
-					log("fetched global map 12 minutes, total size " + globalMapRecents.size());
-					addDataToMap(false);
+					//globalMapRecents.clear();
+					//globalMapRecents = (ArrayList<CbObservation>) msg.obj;
+					//log("fetched global map 30 minutes, total size " + globalMapRecents.size());
+					//addDataToMap(false);
 				} else {
 					//fullRecents.clear();
 					//fullRecents = (ArrayList<CbObservation>) msg.obj;					
@@ -1879,6 +1879,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	public void addDataToMap(boolean onlyConditions) {
+		// TODO: add delay so that the map isn't fully refreshed every touch
+		
 		int totalEachAllowed = 60;
 		int currentObs = 0;
 		int currentCur = 0;
@@ -1891,8 +1893,8 @@ public class BarometerNetworkActivity extends Activity implements
 		int maxUpdateFrequency = 1 * 1000; 
 		long now = System.currentTimeMillis();
 		if(now - lastMapDataUpdate > maxUpdateFrequency) {
-			System.out.println("clearing map");
-			mMap.clear();
+			//System.out.println("clearing map");
+			//mMap.clear();
 			lastMapDataUpdate = now;
 		} else {
 			System.out.println("adding data, not clearing map " + (now - lastMapDataUpdate));
@@ -1904,6 +1906,11 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			// Add Recent Readings
 			if(!onlyConditions) {
+				if(uniqueRecents.size()> 0 ) {
+					mMap.clear();
+					log("clearing map, adding new data");
+				}
+				
 				for (CbObservation observation : uniqueRecents) {
 					LatLng point = new LatLng(observation.getLocation()
 							.getLatitude(), observation.getLocation()
@@ -2082,7 +2089,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void makeMapApiCallAndLoadRecents() {
-		CbApiCall api = buildMapAPICall(.2);
+		CbApiCall api = buildMapAPICall(.5);
 
 		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
