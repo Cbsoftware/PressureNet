@@ -30,7 +30,7 @@
             android:defaultValue="true"
             android:key="send_notifications"
             android:summary="Notify when the pressure changes"
-            android:title="Enable Notifications (BETA )" />
+            android:title="Enable Notifications" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="units_prefs"

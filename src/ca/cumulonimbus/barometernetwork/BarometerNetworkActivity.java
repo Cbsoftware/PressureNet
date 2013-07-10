@@ -256,12 +256,12 @@ public class BarometerNetworkActivity extends Activity implements
 		long currentTime = System.currentTimeMillis();
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
 			
-			CbApiCall globalMapCall = buildMapAPICall(.5);
+			CbApiCall globalMapCall = buildMapAPICall(.2);
 			globalMapCall.setMinLat(-90);
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(5000);
+			globalMapCall.setLimit(2000);
 			makeAPICall(globalMapCall);
 			lastGlobalApiCall = currentTime;
 		} 
@@ -613,7 +613,7 @@ public class BarometerNetworkActivity extends Activity implements
 				hoursAgoSelected = 1;
 
 				CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-				apiGraph.setLimit(5000);
+				apiGraph.setLimit(1000);
 				askForUniqueRecents(apiGraph);
 				
 				
@@ -624,7 +624,7 @@ public class BarometerNetworkActivity extends Activity implements
 					System.out.println("making api call 3h for graph");
 					CbApiCall api = buildMapAPICall(3);
 					//api.setApiName("list");
-					api.setLimit(5000);
+					api.setLimit(1000);
 					makeAPICall(api);
 					
 					lastGraphApiCall = 	currentTime;
