@@ -308,6 +308,7 @@ public class BarometerNetworkActivity extends Activity implements
 					visibleBound = bounds;
 
 					if(activeMode.equals("graph")) {
+						mapMode.performClick();
 						/*
 						makeMapApiCallAndLoadRecents();
 						CbApiCall api = buildMapAPICall(hoursAgoSelected);
