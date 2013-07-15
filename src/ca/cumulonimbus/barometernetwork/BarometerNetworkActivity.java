@@ -571,16 +571,27 @@ public class BarometerNetworkActivity extends Activity implements
 		mapMode.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onClick(View v) {				
-				activeMode = "map";
+			public void onClick(View v) {
+				if(activeMode.equals("map")) {
+					int visible = layoutMapInfo.getVisibility();
+					if(visible == View.VISIBLE) {
+						layoutMapInfo.setVisibility(View.GONE);
+					} else {
+						layoutMapInfo.setVisibility(View.VISIBLE);						
+					}
+				} else {
+					// UI switch
+					layoutAnimationControlContainer.setVisibility(View.GONE);
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.VISIBLE);
+					layoutSensors.setVisibility(View.GONE);
+					
+					// set mode and load data
+					activeMode = "map";
+					addDataToMap(false);
+				}
 				
-				addDataToMap(false);
 				
-				// UI switch
-				layoutAnimationControlContainer.setVisibility(View.GONE);
-				layoutGraph.setVisibility(View.GONE);
-				layoutMapInfo.setVisibility(View.VISIBLE);
-				layoutSensors.setVisibility(View.GONE);
 			}
 		});
 
@@ -588,20 +599,27 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				mMap.clear();
-				
-				CbApiCall api = buildMapAPICall(24 * 7);
-				askForCurrentConditionAnimation(api);
-				
-				activeMode = "animation";
-				
-				layoutAnimationControlContainer.setVisibility(View.VISIBLE);
-				layoutGraph.setVisibility(View.GONE);
-				layoutMapInfo.setVisibility(View.GONE);
-				layoutSensors.setVisibility(View.GONE);
-
-				
-				
+				if(activeMode.equals("animation")) {
+					int visible = layoutAnimationControlContainer.getVisibility();
+					if(visible == View.VISIBLE) {
+						layoutAnimationControlContainer.setVisibility(View.GONE);
+					} else {
+						layoutAnimationControlContainer.setVisibility(View.VISIBLE);						
+					}
+					
+				} else {
+					mMap.clear();
+					
+					CbApiCall api = buildMapAPICall(24 * 7);
+					askForCurrentConditionAnimation(api);
+					
+					activeMode = "animation";
+					
+					layoutAnimationControlContainer.setVisibility(View.VISIBLE);
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+				}
 			}
 		});
 
@@ -609,34 +627,42 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				activeMode = "graph";
-				
-				spinnerTime.setSelection(0);
-				hoursAgoSelected = 1;
-
-				CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-				apiGraph.setLimit(500);
-				askForUniqueRecents(apiGraph);
-				
-				
-				// don't make this call repeatedly if user keeps tapping
-				// say, five second limit?
-				long currentTime = System.currentTimeMillis();
-				if(currentTime - lastGraphApiCall > (1000 * 5)) {
-					System.out.println("making api call 3h for graph");
-					CbApiCall api = buildMapAPICall(3);
-					//api.setApiName("list");
-					api.setLimit(500);
-					makeAPICall(api);
+				if(activeMode.equals("graph")) {
+					int visible = layoutGraph.getVisibility();
+					if (visible == View.VISIBLE) {
+						layoutGraph.setVisibility(View.GONE);
+					} else {
+						layoutGraph.setVisibility(View.VISIBLE);
+					}
+				} else {
+					activeMode = "graph";
 					
-					lastGraphApiCall = 	currentTime;
-				}
-				
-				layoutAnimationControlContainer.setVisibility(View.GONE);
-				layoutGraph.setVisibility(View.VISIBLE);
-				layoutMapInfo.setVisibility(View.GONE);
-				layoutSensors.setVisibility(View.GONE);
+					spinnerTime.setSelection(0);
+					hoursAgoSelected = 1;
 
+					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
+					apiGraph.setLimit(500);
+					askForUniqueRecents(apiGraph);
+					
+					
+					// don't make this call repeatedly if user keeps tapping
+					// say, five second limit?
+					long currentTime = System.currentTimeMillis();
+					if(currentTime - lastGraphApiCall > (1000 * 5)) {
+						System.out.println("making api call 3h for graph");
+						CbApiCall api = buildMapAPICall(3);
+						//api.setApiName("list");
+						api.setLimit(500);
+						makeAPICall(api);
+						
+						lastGraphApiCall = 	currentTime;
+					}
+					
+					layoutAnimationControlContainer.setVisibility(View.GONE);
+					layoutGraph.setVisibility(View.VISIBLE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+				}
 			}
 		});
 
@@ -645,13 +671,23 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				activeMode = "sensors";
-				
-				// UI switch
-				layoutAnimationControlContainer.setVisibility(View.GONE);
-				layoutGraph.setVisibility(View.GONE);
-				layoutMapInfo.setVisibility(View.GONE);
-				layoutSensors.setVisibility(View.VISIBLE);
+				if(activeMode.equals("sensors")) {
+					int visible = layoutSensors.getVisibility();
+					if(visible == View.VISIBLE) {
+						layoutSensors.setVisibility((View.GONE));
+					} else {
+						layoutSensors.setVisibility(View.VISIBLE);
+					}
+				} else {
+					activeMode = "sensors";
+					
+					// UI switch
+					layoutAnimationControlContainer.setVisibility(View.GONE);
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.VISIBLE);				
+				}
+	
 			}
 		});
 
