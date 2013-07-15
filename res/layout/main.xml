@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-
     <LinearLayout
         android:id="@+id/layoutMap"
         android:layout_width="fill_parent"
@@ -25,14 +24,13 @@
         </LinearLayout>
     </LinearLayout>
 
-    
     <LinearLayout
         android:id="@+id/layoutSearchControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="#AAFFFFFF"
         android:orientation="horizontal"
-        android:visibility="visible"
-        android:background="#336699DF">
+        android:visibility="visible" >
 
         <ImageButton
             android:id="@+id/buttonSearchLocations"
@@ -57,14 +55,16 @@
             android:src="@drawable/ic_menu_light_search"
             android:textColor="@android:color/black" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/layoutMap"
         android:layout_gravity="bottom"
+        android:background="#AAFFFFFF"
         android:orientation="horizontal"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <Button
             android:id="@+id/buttonMapMode"
@@ -127,8 +127,6 @@
             android:text="Sensors"
             android:textColor="@android:color/black" />
     </LinearLayout>
-    
-    
 
     <LinearLayout
         android:id="@+id/layoutGraph"
@@ -136,7 +134,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone" >
+        android:visibility="gone" 
+        android:background="#AAFFFFFF" 
+        android:layout_above="@+id/modeSelectionLayout">
 
         <Spinner
             android:id="@+id/spinnerChartTime"
@@ -152,7 +152,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:background="#AAFFFFFF" 
+        android:layout_above="@+id/modeSelectionLayout" >
 
         <TextView
             android:id="@+id/textMapInfo"
@@ -168,7 +170,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:background="#AAFFFFFF" 
+        android:layout_above="@+id/modeSelectionLayout">
 
         <LinearLayout
             android:id="@+id/layoutTimeControls"
@@ -206,7 +210,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:background="#AAFFFFFF" 
+        android:layout_above="@+id/modeSelectionLayout">
 
         <Button
             android:id="@+id/imageButtonBarometer"
