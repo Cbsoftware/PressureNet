@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -557,6 +558,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		textAnimationInformation = (TextView) findViewById(R.id.textAnimationInformation);
 		
+		mapMode.setTypeface(null, Typeface.BOLD);
+		
 		buttonSearchLocations.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -585,6 +588,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.BOLD);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					
 					
 					// set mode and load data
 					activeMode = "map";
@@ -619,6 +628,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.BOLD);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+
 				}
 			}
 		});
@@ -662,6 +677,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.BOLD);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+
 				}
 			}
 		});
@@ -685,7 +706,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.VISIBLE);				
+					layoutSensors.setVisibility(View.VISIBLE);
+					
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.BOLD);
+
 				}
 	
 			}

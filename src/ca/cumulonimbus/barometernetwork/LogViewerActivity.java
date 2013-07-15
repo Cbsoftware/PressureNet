@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -78,7 +79,8 @@ public class LogViewerActivity extends Activity {
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 
 			getRecents(6);
-			sixHours.setTextColor(Color.BLUE);
+			sixHours.setTextColor(Color.BLACK);
+			sixHours.setTypeface(null, Typeface.BOLD);
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -144,6 +146,7 @@ public class LogViewerActivity extends Activity {
 		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT);
 
+		v.setBackgroundColor(Color.BLACK);
 		v.setLayoutParams(lparams);
 		if (mainLayout == null) {
 			System.out.println("ERROR layout null, chart");
@@ -197,26 +200,31 @@ public class LogViewerActivity extends Activity {
 				
 				// enable buttons
 				oneHour.setEnabled(true);
-				oneHour.setTextColor(Color.BLACK);
+				oneHour.setTypeface(null, Typeface.NORMAL);
 				sixHours.setEnabled(true);
-				sixHours.setTextColor(Color.BLACK);
+				sixHours.setTypeface(null, Typeface.NORMAL);
 				oneDay.setEnabled(true);
-				oneDay.setTextColor(Color.BLACK);
+				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setEnabled(true);
+				oneWeek.setTypeface(null, Typeface.NORMAL);
+				
+				oneHour.setTextColor(Color.BLACK);
+				sixHours.setTextColor(Color.BLACK);
+				oneDay.setTextColor(Color.BLACK);
 				oneWeek.setTextColor(Color.BLACK);
 				
 				switch(hoursSelected) {
 				case 1:
-					oneHour.setTextColor(Color.BLUE);
+					oneHour.setTypeface(null, Typeface.BOLD);
 					break;
 				case 6:
-					sixHours.setTextColor(Color.BLUE);
+					sixHours.setTypeface(null, Typeface.BOLD);
 					break;
 				case 24:
-					oneDay.setTextColor(Color.BLUE);
+					oneDay.setTypeface(null, Typeface.BOLD);
 					break;
 				case 24*7:
-					oneWeek.setTextColor(Color.BLUE);
+					oneWeek.setTypeface(null, Typeface.BOLD);
 					break;
 				}
 				
@@ -303,10 +311,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				oneHour.setTextColor(Color.BLUE);
-				sixHours.setTextColor(Color.BLACK);
-				oneDay.setTextColor(Color.BLACK);
-				oneWeek.setTextColor(Color.BLACK);
+				oneHour.setTypeface(null, Typeface.BOLD);
+				sixHours.setTypeface(null, Typeface.NORMAL);
+				oneDay.setTypeface(null, Typeface.NORMAL);
+				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 1;
 				getRecents(1);
 			}
@@ -316,10 +324,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				oneHour.setTextColor(Color.BLACK);
-				sixHours.setTextColor(Color.BLUE);
-				oneDay.setTextColor(Color.BLACK);
-				oneWeek.setTextColor(Color.BLACK);
+				oneHour.setTypeface(null, Typeface.NORMAL);
+				sixHours.setTypeface(null, Typeface.BOLD);
+				oneDay.setTypeface(null, Typeface.NORMAL);
+				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 6;
 				getRecents(6);
 			}
@@ -328,10 +336,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				oneHour.setTextColor(Color.BLACK);
-				sixHours.setTextColor(Color.BLACK);
-				oneDay.setTextColor(Color.BLUE);
-				oneWeek.setTextColor(Color.BLACK);
+				oneHour.setTypeface(null, Typeface.NORMAL);
+				sixHours.setTypeface(null, Typeface.NORMAL);
+				oneDay.setTypeface(null, Typeface.BOLD);
+				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 24;
 				getRecents(24);
 			}
@@ -340,10 +348,10 @@ public class LogViewerActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				oneHour.setTextColor(Color.BLACK);
-				sixHours.setTextColor(Color.BLACK);
-				oneDay.setTextColor(Color.BLACK);
-				oneWeek.setTextColor(Color.BLUE);
+				oneHour.setTypeface(null, Typeface.NORMAL);
+				sixHours.setTypeface(null, Typeface.NORMAL);
+				oneDay.setTypeface(null, Typeface.NORMAL);
+				oneWeek.setTypeface(null, Typeface.BOLD);
 				hoursSelected = 24 * 7;
 				getRecents(24 * 7);
 			}

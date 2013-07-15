@@ -138,7 +138,7 @@ public class Chart {
 			}
 			
 			// colors[i] = Color.rgb(red, green, blue);
-			 colors[i] = Color.rgb(20, 20, 255);
+			 colors[i] = Color.rgb(51, 102, 153);
 		}
 		
 		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
