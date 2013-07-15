@@ -42,6 +42,7 @@
             android:key="units"
             android:summary="Pick your preferred pressure unit"
             android:title="Pressure Unit" />
+        <!-- 
         <ListPreference
             android:defaultValue="Meters (m)"
             android:entries="@array/distance_units"
@@ -49,6 +50,7 @@
             android:key="distance_units"
             android:summary="Pick your preferred distance unit"
             android:title="Distance Unit" />
+         -->
         <ListPreference
             android:defaultValue="Celsius (C)"
             android:entries="@array/temperature_units"
