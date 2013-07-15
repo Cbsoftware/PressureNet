@@ -1,51 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/layoutSearchControls"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-
-        <ImageButton
-            android:id="@+id/buttonSearchLocations"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_light_locations"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/editGoLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="51dp"
-            android:layout_weight="1"
-            android:hint="Search" />
-
-        <ImageButton
-            android:id="@+id/buttonGoLocation"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_light_play"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutMap"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/layoutMapContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
 
             <fragment
                 android:id="@+id/map"
@@ -55,6 +25,7 @@
         </LinearLayout>
     </LinearLayout>
 
+    
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
@@ -122,6 +93,38 @@
             android:layout_gravity="left"
             android:layout_weight=".24"
             android:text="Sensors"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+    
+    
+    <LinearLayout
+        android:id="@+id/layoutSearchControls"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/buttonSearchLocations"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_light_locations"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/editGoLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="51dp"
+            android:layout_weight="1"
+            android:hint="Search" />
+
+        <ImageButton
+            android:id="@+id/buttonGoLocation"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_menu_light_play"
             android:textColor="@android:color/black" />
     </LinearLayout>
 
@@ -230,4 +233,4 @@
             android:textColor="@android:color/black" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
