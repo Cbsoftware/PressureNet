@@ -257,8 +257,6 @@ public class LogViewerActivity extends Activity {
 
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			Toast.makeText(getApplicationContext(), "Reselected!",
-					Toast.LENGTH_LONG).show();
 			getRecents(1);
 		}
 
