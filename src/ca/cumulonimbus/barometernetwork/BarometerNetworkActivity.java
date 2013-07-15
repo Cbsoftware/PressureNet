@@ -2147,7 +2147,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 		addDataToMap(false);
 		editLocation.setText("");
-		findViewById(R.id.totalScrollContainer).requestFocus();
 		
 		startSensorListeners();
 		startDataStream();
