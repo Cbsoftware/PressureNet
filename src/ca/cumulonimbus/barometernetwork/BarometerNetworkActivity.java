@@ -577,7 +577,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// UI switch
 				layoutAnimationControlContainer.setVisibility(View.GONE);
 				layoutGraph.setVisibility(View.GONE);
-				layoutMapInfo.setVisibility(View.VISIBLE);
+				//layoutMapInfo.setVisibility(View.VISIBLE);
 				layoutSensors.setVisibility(View.GONE);
 			}
 		});
