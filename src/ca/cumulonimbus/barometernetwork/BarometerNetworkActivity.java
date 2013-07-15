@@ -274,6 +274,8 @@ public class BarometerNetworkActivity extends Activity implements
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 
+			mMap.getUiSettings().setZoomControlsEnabled(false);
+			
 			mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 				
 				@Override
@@ -613,7 +615,7 @@ public class BarometerNetworkActivity extends Activity implements
 				hoursAgoSelected = 1;
 
 				CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-				apiGraph.setLimit(1000);
+				apiGraph.setLimit(500);
 				askForUniqueRecents(apiGraph);
 				
 				
@@ -624,7 +626,7 @@ public class BarometerNetworkActivity extends Activity implements
 					System.out.println("making api call 3h for graph");
 					CbApiCall api = buildMapAPICall(3);
 					//api.setApiName("list");
-					api.setLimit(1000);
+					api.setLimit(500);
 					makeAPICall(api);
 					
 					lastGraphApiCall = 	currentTime;
@@ -813,7 +815,7 @@ public class BarometerNetworkActivity extends Activity implements
 				log("selected " + hoursAgoSelected + " hours ago");
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
 				//api.setApiName("list");
-				api.setLimit(2000);
+				api.setLimit(500);
 				askForRecents(api);
 			}
 
