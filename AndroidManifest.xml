@@ -61,6 +61,7 @@
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:excludeFromRecents="true"
             android:label="@string/logViewer"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/CustomTheme" >
         </activity>
         <activity
@@ -91,6 +92,7 @@
             android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:label="@string/app_name"
             android:logo="@drawable/ic_launcher"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/CustomTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

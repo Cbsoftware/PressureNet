@@ -23,6 +23,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -521,6 +522,11 @@ public class BarometerNetworkActivity extends Activity implements
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	}
+	
 	private void setUpUIListeners() {
 		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
