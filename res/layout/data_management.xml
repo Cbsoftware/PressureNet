@@ -39,7 +39,7 @@
             android:padding="10dip" />
 
         <Button
-            android:id="@+id/buttonClearCache"
+            android:id="@+id/buttonClearMyData"
             style="@android:style/Widget.DeviceDefault.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

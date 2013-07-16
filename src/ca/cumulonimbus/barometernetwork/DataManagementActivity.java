@@ -27,6 +27,9 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class DataManagementActivity extends Activity {
 
+	Button buttonExportMyData;	
+	Button buttonClearMyData;
+	Button buttonAdvancedAccess;
 	Button buttonClearCache;
 	
 	boolean mBound;
@@ -99,14 +102,40 @@ public class DataManagementActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
 
+		buttonExportMyData = (Button) findViewById(R.id.buttonExportMyData); 
+		buttonClearMyData = (Button) findViewById(R.id.buttonClearMyData);
+		buttonAdvancedAccess = (Button) findViewById(R.id.buttonDataAccess);
 		buttonClearCache = (Button) findViewById(R.id.buttonClearCache);
+		
+		buttonExportMyData.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+		
+		buttonClearMyData.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				clearLocalCache();
+			}
+		});
+		
+		buttonAdvancedAccess.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+		
 		buttonClearCache.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				clearAPICache();
-				clearLocalCache();
-
 			}
 		});
 
