@@ -188,7 +188,24 @@ public class LogViewerActivity extends Activity {
 					// display in chart form
 					try {
 						Chart chart = new Chart(getApplicationContext());
-						View chartView = chart.drawChart(recents);
+						
+						// set units according to preference
+						ArrayList<CbObservation> displayRecents = new ArrayList<CbObservation>();
+						for(CbObservation ob : recents) {
+							double rawValue = ob.getObservationValue();
+							
+							PressureUnit unit = new PressureUnit(preferenceUnit);
+							unit.setValue(rawValue);
+							unit.setAbbreviation(preferenceUnit);
+							double pressureInPreferredUnit = unit
+									.convertToPreferredUnit();
+							
+							ob.setObservationUnit(preferenceUnit);
+							ob.setObservationValue(pressureInPreferredUnit);
+							displayRecents.add(ob);
+						}
+						
+						View chartView = chart.drawChart(displayRecents);
 						showChart(chartView);
 					} catch (NullPointerException npe ) {
 						// TODO: fix hack.
