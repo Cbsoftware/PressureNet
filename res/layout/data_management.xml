@@ -5,11 +5,18 @@
     android:padding="15dip" >
 
     <TextView
-        android:id="@+id/textData"
+        android:id="@+id/textMyData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/data"
+        android:text="My Data"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textMyDataDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have recorded and stored X measurements."
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -37,7 +44,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
-            android:text="Clear Cache"
+            android:text="Clear my data"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textDataCache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Cache"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textDataCacheDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have cached Y measurements from our server."
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+ 
+        <Button
+            android:id="@+id/buttonDataAccess"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="Advanced data access"
+            android:textColor="@android:color/black" />
+        
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="#888888"
+            android:padding="10dip" />
+
+        <Button
+            android:id="@+id/buttonClearCache"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="Clear data cache"
             android:textColor="@android:color/black" />
     </LinearLayout>
 
