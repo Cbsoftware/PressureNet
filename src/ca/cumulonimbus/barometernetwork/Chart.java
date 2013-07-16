@@ -147,7 +147,7 @@ public class Chart {
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles,
 				obsList);
-		setChartSettings(renderer, "Pressure", "Time", "Pressure (mb)",
+		setChartSettings(renderer, "Pressure", "Time", "Pressure",
 				minTime, maxTime, minObservation, maxObservation, Color.GRAY,
 				Color.LTGRAY);
 		renderer.setXLabels(5);
