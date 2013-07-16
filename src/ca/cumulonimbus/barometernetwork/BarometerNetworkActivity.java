@@ -1148,7 +1148,24 @@ public class BarometerNetworkActivity extends Activity implements
 		// draw chart
 		log("plotting... " + listRecents.size());
 		Chart chart = new Chart(getApplicationContext());
-		View chartView = chart.drawChart(listRecents);
+		
+		// set units according to preference
+		ArrayList<CbObservation> displayRecents = new ArrayList<CbObservation>();
+		for(CbObservation ob : listRecents) {
+			double rawValue = ob.getObservationValue();
+			
+			PressureUnit unit = new PressureUnit(preferenceUnit);
+			unit.setValue(rawValue);
+			unit.setAbbreviation(preferenceUnit);
+			double pressureInPreferredUnit = unit
+					.convertToPreferredUnit();
+			
+			ob.setObservationUnit(preferenceUnit);
+			ob.setObservationValue(pressureInPreferredUnit);
+			displayRecents.add(ob);
+		}
+		
+		View chartView = chart.drawChart(displayRecents);
 
 		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
 
