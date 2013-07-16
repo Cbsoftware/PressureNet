@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 
 public class Chart {
@@ -74,6 +75,11 @@ public class Chart {
 	public View drawChart(ArrayList<CbObservation> obsList) {
 		System.out.println("drawing chart " + obsList.size()
 				+ " data points");
+		
+		if(obsList.size() < 2) {
+			Toast.makeText(context, "There is no data to plot", Toast.LENGTH_SHORT).show();
+		}
+		
 		String[] titles = new String[] { "" };
 		List<Date[]> x = new ArrayList<Date[]>();
 		List<double[]> values = new ArrayList<double[]>();

@@ -11,22 +11,27 @@
         android:enabled="true"
         android:icon="@drawable/ic_menu_dark_stats"
         android:showAsAction="ifRoom|withText"
-        android:title="My Data"
+        android:title="My data"
         android:visible="true"/>
-
     <item
         android:id="@+id/menu_data_management"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Data Cache"
-        android:visible="true"/> 
+        android:title="Data cache"
+        android:visible="true"/>
+    <item
+        android:id="@+id/menu_submit_reading"
+        android:enabled="true"
+        android:showAsAction="never"
+        android:title="Submit Reading"
+        android:visible="true"/>
     <item
         android:id="@+id/send_debug_log"
         android:enabled="true"
         android:showAsAction="never"
         android:title="@string/send_debug_log"
         android:visible="false"/>
-     <item
+    <item
         android:id="@+id/menu_load_data_vis"
         android:enabled="true"
         android:icon="@drawable/ic_menu_dark_vis"
@@ -39,7 +44,7 @@
         android:icon="@drawable/ic_menu_dark_settings"
         android:showAsAction="never"
         android:title="@string/settings"/>
-     <item
+    <item
         android:id="@+id/menu_help"
         android:enabled="true"
         android:showAsAction="never"
@@ -49,6 +54,5 @@
         android:enabled="true"
         android:showAsAction="never"
         android:title="@string/about"/>
-    
-    
+
 </menu>

@@ -1474,7 +1474,10 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent intent = new Intent(getApplicationContext(), About.class);
 			startActivity(intent);
 
-		} 
+		} else if (item.getItemId() == R.id.menu_submit_reading) {
+			// submit a single reading
+			
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
