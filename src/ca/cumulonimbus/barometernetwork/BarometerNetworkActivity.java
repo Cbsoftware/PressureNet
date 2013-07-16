@@ -329,7 +329,6 @@ public class BarometerNetworkActivity extends Activity implements
 						addDataToMap(true);
 					} else if (activeMode.equals("map")) {
 						makeMapApiCallAndLoadRecents();
-						addDataToMap(false);
 					} else {
 						
 					}
