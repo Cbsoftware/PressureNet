@@ -735,6 +735,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				if(buttonSearchLocations.getVisibility() == View.INVISIBLE) {
+					buttonSearchLocations.setVisibility(View.VISIBLE);
+					editLocation.setVisibility(View.VISIBLE);
+					return;
+				}
+				
 				String location = editLocation.getEditableText().toString();
 				if (location.equals("")) {
 					return;

@@ -28,7 +28,6 @@
         android:id="@+id/layoutSearchControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#AAFFFFFF"
         android:orientation="horizontal"
         android:visibility="visible" >
 
@@ -36,24 +35,30 @@
             android:id="@+id/buttonSearchLocations"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="51dp"
             android:src="@drawable/ic_menu_light_locations"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:visibility="invisible"
+            android:background="#AAFFFFFF" />
 
         <EditText
             android:id="@+id/editGoLocation"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:layout_weight="1"
-            android:hint="Search" />
+            android:hint="Search"
+            android:visibility="invisible"
+            android:background="#AAFFFFFF" />
 
         <ImageButton
             android:id="@+id/buttonGoLocation"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="51dp"
             android:src="@drawable/ic_menu_light_search"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:background="#AAFFFFFF"
+            android:visibility="visible" />
     </LinearLayout>
 
     <LinearLayout
