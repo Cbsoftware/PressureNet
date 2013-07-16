@@ -59,7 +59,7 @@
         android:id="@+id/textDataCacheDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You have cached Y measurements from our server."
+        android:text="You have cached Y measurements from our servers."
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout
