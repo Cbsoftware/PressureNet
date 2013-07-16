@@ -191,6 +191,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private String preferenceCollectionFrequency;
 	private boolean preferenceShareData;
 	private String preferenceShareLevel;
+	private boolean preferenceSendNotifications;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -402,12 +403,14 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
 		preferenceShareLevel = sharedPreferences.getString(
 				"sharing_preference", "Us, Researchers and Forecasters");
-
+		preferenceSendNotifications = sharedPreferences.getBoolean("send_notifications", false);
+		
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
 		settings.setSharingData(preferenceShareData);
 		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
+		settings.setSendNotifications(preferenceSendNotifications);
 		settings.saveSettings();
 		log("saved new settings; sharing " + preferenceShareLevel);
 
