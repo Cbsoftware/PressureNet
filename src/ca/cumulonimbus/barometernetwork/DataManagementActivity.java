@@ -110,6 +110,18 @@ public class DataManagementActivity extends Activity {
 			mBound = false;
 		}
 	};
+	
+	
+	@Override
+	protected void onResume() {
+		if(mBound ) {
+			askForUserCounts();
+			askForCacheCounts();
+		} else {
+			bindCbService();
+		}
+		super.onResume();
+	}
 
 	public void unBindCbService() {
 		if (mBound) {
