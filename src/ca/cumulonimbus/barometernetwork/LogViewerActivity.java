@@ -322,6 +322,13 @@ public class LogViewerActivity extends Activity {
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
 		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
 
+
+		ActionBar bar = getActionBar();
+		int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
+		
+		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
+		actionBarTextView.setTextColor(Color.WHITE);
+		
 		oneHour.setOnClickListener(new OnClickListener() {
 
 			@Override

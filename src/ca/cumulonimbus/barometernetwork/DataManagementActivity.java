@@ -1,10 +1,12 @@
 package ca.cumulonimbus.barometernetwork;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -135,6 +137,12 @@ public class DataManagementActivity extends Activity {
 		textDataCache = (TextView) findViewById(R.id.textDataCacheDescription);
 		textMyData = (TextView) findViewById(R.id.textMyDataDescription);
 
+		ActionBar bar = getActionBar();
+		int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
+		
+		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
+		actionBarTextView.setTextColor(Color.WHITE);
+		
 		buttonExportMyData.setOnClickListener(new OnClickListener() {
 
 			@Override
