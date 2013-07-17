@@ -1,18 +1,24 @@
-
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-  <style name="CustomTheme" parent="android:Theme.Holo.Light">
-	  <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-  </style>
-  <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">
-	  <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-  </style>
-  <style name="CustomThemeDialogDark" parent="android:Theme.Holo.Dialog">
-	  <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-  </style>
-  
-  
-  <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
-    <item name="android:background">#33b5e5</item>
-  </style>
+
+    <style name="CustomTheme" parent="android:Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
+    </style>
+
+    <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+
+    <style name="CustomThemeDialogDark" parent="android:Theme.Holo.Dialog">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    </style>
+
+    <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">#33b5e5</item>
+    </style>
+
+    <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_menu_dark_overflow</item>
+    </style>
 
 </resources>
