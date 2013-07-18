@@ -38,13 +38,23 @@
             android:name="ca.cumulonimbus.barometernetwork.DataManagementActivity"
             android:excludeFromRecents="true"
             android:label="@string/data"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+>
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.About"
             android:excludeFromRecents="true"
             android:label="@string/about"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+ >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
@@ -55,15 +65,21 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
             android:excludeFromRecents="true"
-            android:label="@string/settings" >
+            android:label="@string/settings"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:theme="@style/CustomTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+ >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="My data"
-            android:theme="@style/CustomTheme" 
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" >
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
