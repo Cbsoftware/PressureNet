@@ -176,6 +176,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_SETTINGS = 1;
 	public static final int REQUEST_LOCATION_CHOICE = 2;
 	public static final int REQUEST_MAILED_LOG = 3;
+	public static final int REQUEST_DATA_CHANGED = 4;
 
 	boolean activeAnimation = false;
 
@@ -258,6 +259,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
+			System.out.println("making global map api call");
 			
 			CbApiCall globalMapCall = buildMapAPICall(.2);
 			globalMapCall.setMinLat(-90);
@@ -265,7 +267,11 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
 			globalMapCall.setLimit(2000);
-			makeAPICall(globalMapCall);
+			
+			runApiCall = globalMapCall;
+			timeHandler.post(apiCallRunnable);
+			// makeAPICall(globalMapCall);
+			
 			lastGlobalApiCall = currentTime;
 		} 
 	}
@@ -426,12 +432,12 @@ public class BarometerNetworkActivity extends Activity implements
 		return sharedPreferences.getString("units", "millibars");
 	}
 
+	CbApiCall runApiCall = new CbApiCall();
 	Runnable apiCallRunnable = new Runnable() {
 		@Override
 		public void run() {
 			System.out.println("making api call (runnable)");
-			CbApiCall api = buildMapAPICall(.2);
-			api = roundApiCallLocations(api);
+			CbApiCall api = roundApiCallLocations(runApiCall);
 			makeAPICall(api);
 		}
 	};
@@ -1191,7 +1197,7 @@ public class BarometerNetworkActivity extends Activity implements
 		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
 				400);
 
-		chartView.setBackgroundColor(Color.BLACK);
+		chartView.setBackgroundColor(Color.rgb(238, 238, 238));
 		chartView.setLayoutParams(lparams);
 		if (mainLayout == null) {
 			log("chartlayout null");
@@ -1468,7 +1474,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (item.getItemId() == R.id.menu_data_management) {
 			Intent intent = new Intent(getApplicationContext(),
 					DataManagementActivity.class);
-			startActivity(intent);
+			startActivityForResult(intent, REQUEST_DATA_CHANGED);
 
 		} else if (item.getItemId() == R.id.menu_about) {
 			Intent intent = new Intent(getApplicationContext(), About.class);
@@ -1561,6 +1567,9 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				}
 			}
+		} else if (requestCode == REQUEST_DATA_CHANGED) {
+			// allow for immediate call of global data
+			lastGlobalApiCall = 0;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -2136,6 +2145,7 @@ public class BarometerNetworkActivity extends Activity implements
 			maxLon = ne.longitude;
 		} else {
 			log("no map center, bailing on map call");
+			return api;
 		}
 
 		api.setMinLat(minLat);

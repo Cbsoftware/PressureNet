@@ -60,7 +60,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:excludeFromRecents="true"
-            android:label="@string/logViewer"
+            android:label="My data"
             android:configChanges="orientation|screenSize"
             android:theme="@style/CustomTheme" >
         </activity>
