@@ -5,11 +5,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
+import ca.cumulonimbus.pressurenetsdk.CbService;
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ActionBar.Tab;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,13 +35,9 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbObservation;
-import ca.cumulonimbus.pressurenetsdk.CbScience;
-import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class LogViewerActivity extends Activity {
+	
 
 	TextView logText;
 
@@ -54,107 +55,8 @@ public class LogViewerActivity extends Activity {
 	
 	private int hoursSelected = 6;
 	
-	/**
-	 * Check the Android SharedPreferences for important values. Save relevant
-	 * ones to CbSettings for easy access in submitting readings
-	 */
-	public String getUnitPreference() {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
-		return sharedPreferences.getString("units", "millibars");
-	}
-
-	public double convertedPressureValue(double value) {
-		PressureUnit unit = new PressureUnit(preferenceUnit);
-		unit.setValue(value);
-		unit.setAbbreviation(preferenceUnit);
-		return unit.convertToPreferredUnit();
-	}
-
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mService = new Messenger(service);
-			mBound = true;
-			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 
-			getRecents(6);
-			sixHours.setTextColor(Color.BLACK);
-			sixHours.setTypeface(null, Typeface.BOLD);
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			mMessenger = null;
-			mBound = false;
-		}
-	};
-
-	public void getRecents(long hoursAgo) {
-		
-		// disable buttons
-
-		oneHour = (Button) findViewById(R.id.buttonOneHour);
-		sixHours = (Button) findViewById(R.id.buttonSixHours);
-		oneDay = (Button) findViewById(R.id.buttonOneDay);
-		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
-		
-		oneHour.setEnabled(false);
-		oneHour.setTextColor(Color.GRAY);
-		sixHours.setEnabled(false);
-		sixHours.setTextColor(Color.GRAY);
-		oneDay.setEnabled(false);
-		oneDay.setTextColor(Color.GRAY);
-		oneWeek.setEnabled(false);
-		oneWeek.setTextColor(Color.GRAY);
-		
-		if (mBound) {
-			CbApiCall api = new CbApiCall();
-			api.setMinLat(-90);
-			api.setMaxLat(90);
-			api.setMinLon(-180);
-			api.setMaxLon(180);
-			api.setStartTime(System.currentTimeMillis()
-					- (hoursAgo * 60 * 60 * 1000));
-			api.setEndTime(System.currentTimeMillis());
-
-			Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
-					api);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("error: not bound");
-		}
-	}
-	
-	public void showChart(View v) {
-		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layout_chart_fragment);
-
-		try {
-			View testChartView = findViewById(100); // TODO: ...
-			mainLayout.removeView(testChartView);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		v.setId(100); // TODO: what's safe?
-
-		// add to layout
-		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT);
-
-		v.setBackgroundColor(Color.BLACK);
-		v.setLayoutParams(lparams);
-		if (mainLayout == null) {
-			System.out.println("ERROR layout null, chart");
-			return;
-		}
-		mainLayout.addView(v);
-	}
-	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -264,6 +166,72 @@ public class LogViewerActivity extends Activity {
 				mConnection, Context.BIND_AUTO_CREATE);
 
 	}
+	public double convertedPressureValue(double value) {
+		PressureUnit unit = new PressureUnit(preferenceUnit);
+		unit.setValue(value);
+		unit.setAbbreviation(preferenceUnit);
+		return unit.convertToPreferredUnit();
+	}
+
+	 	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mService = new Messenger(service);
+			mBound = true;
+			Message msg = Message.obtain(null, CbService.MSG_OKAY);
+
+			getRecents(6);
+			sixHours.setTextColor(Color.BLACK);
+			sixHours.setTypeface(null, Typeface.BOLD);
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			mMessenger = null;
+			mBound = false;
+		}
+	};
+
+	public void getRecents(long hoursAgo) {
+		
+		// disable buttons
+
+		oneHour = (Button) findViewById(R.id.buttonOneHour);
+		sixHours = (Button) findViewById(R.id.buttonSixHours);
+		oneDay = (Button) findViewById(R.id.buttonOneDay);
+		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
+		
+		oneHour.setEnabled(false);
+		oneHour.setTextColor(Color.GRAY);
+		sixHours.setEnabled(false);
+		sixHours.setTextColor(Color.GRAY);
+		oneDay.setEnabled(false);
+		oneDay.setTextColor(Color.GRAY);
+		oneWeek.setEnabled(false);
+		oneWeek.setTextColor(Color.GRAY);
+		
+		if (mBound) {
+			CbApiCall api = new CbApiCall();
+			api.setMinLat(-90);
+			api.setMaxLat(90);
+			api.setMinLon(-180);
+			api.setMaxLon(180);
+			api.setStartTime(System.currentTimeMillis()
+					- (hoursAgo * 60 * 60 * 1000));
+			api.setEndTime(System.currentTimeMillis());
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
+					api);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("error: not bound");
+		}
+	}
+	
 
 	class DataTabsListener implements ActionBar.TabListener {
 		public Fragment fragment;
@@ -291,12 +259,53 @@ public class LogViewerActivity extends Activity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.logviewer);
-		super.onCreate(savedInstanceState);
+	public void onDestroy() {
+		unBindCbService();
+		super.onDestroy();
+	}
 
-		preferenceUnit = getUnitPreference();
+
+	public void showChart(View v) {
+		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layout_chart_fragment);
+
+		try {
+			View testChartView = findViewById(100); // TODO: ...
+			mainLayout.removeView(testChartView);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		v.setId(100); // TODO: what's safe?
+
+		// add to layout
+		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT);
+
+		v.setBackgroundColor(Color.rgb(238, 238, 238));
+		v.setLayoutParams(lparams);
+		if (mainLayout == null) {
+			System.out.println("ERROR layout null, chart");
+			return;
+		}
+		mainLayout.addView(v);
+	}
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.logviewer);
+		bindCbService();
 		
+		Fragment allLogFrags = new LogViewerFragment();
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		fragmentTransaction.add(R.id.layoutLogFragContainer, allLogFrags);
+		fragmentTransaction.commit();
+
+	
+
 		// ActionBar gets initiated
 		ActionBar actionbar = getActionBar();
 		// Tell the ActionBar we want to use Tabs.
@@ -316,18 +325,24 @@ public class LogViewerActivity extends Activity {
 		// add the two tabs to the actionbar
 		actionbar.addTab(chartTab);
 		actionbar.addTab(logTab);
+		int actionBarTitleId = getResources().getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
 
+		TextView actionBarTextView = (TextView) findViewById(
+				actionBarTitleId);
+		actionBarTextView.setTextColor(Color.WHITE);
+	
+		preferenceUnit = getUnitPreference();
+	
+		
 		oneHour = (Button) findViewById(R.id.buttonOneHour);
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
 		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
 
 
-		ActionBar bar = getActionBar();
-		int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
 		
-		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
-		actionBarTextView.setTextColor(Color.WHITE);
+		
 		
 		oneHour.setOnClickListener(new OnClickListener() {
 
@@ -379,19 +394,18 @@ public class LogViewerActivity extends Activity {
 			}
 		});
 
-		bindCbService();
+		
 	}
 
-	@Override
-	protected void onPause() {
-		//unBindCbService();
-		super.onPause();
+	/**
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
+	 */
+	public String getUnitPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		return sharedPreferences.getString("units", "millibars");
 	}
 
-	@Override
-	protected void onDestroy() {
-		unBindCbService();
-		super.onDestroy();
-	}
 
 }

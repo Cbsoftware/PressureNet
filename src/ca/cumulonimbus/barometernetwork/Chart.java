@@ -144,7 +144,7 @@ public class Chart {
 			}
 			
 			// colors[i] = Color.rgb(red, green, blue);
-			 colors[i] = Color.rgb(51, 102, 153);
+			 colors[i] = Color.rgb(51, 181, 229);
 		}
 		
 		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
@@ -153,9 +153,11 @@ public class Chart {
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles,
 				obsList);
+		int axesColor = Color.rgb(0, 0, 0);
+		int labelColor = Color.rgb(0, 0, 0);
 		setChartSettings(renderer, "Pressure", "Time", "Pressure",
-				minTime, maxTime, minObservation, maxObservation, Color.GRAY,
-				Color.LTGRAY);
+				minTime, maxTime, minObservation, maxObservation, axesColor,
+				labelColor);
 		renderer.setXLabels(5);
 		renderer.setYLabels(5);
 		length = renderer.getSeriesRendererCount();
@@ -274,6 +276,7 @@ public class Chart {
 		renderer.setYAxisMax(yMax);
 		renderer.setAxesColor(axesColor);
 		renderer.setLabelsColor(labelsColor);
+		renderer.setMarginsColor(Color.rgb(238,238,238));
 	}
 
 }

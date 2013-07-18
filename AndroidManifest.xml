@@ -59,10 +59,14 @@
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
+            android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="My data"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/CustomTheme" >
+            android:theme="@style/CustomTheme" 
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PNDVActivity"
@@ -90,9 +94,9 @@
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:logo="@drawable/ic_launcher"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/CustomTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
