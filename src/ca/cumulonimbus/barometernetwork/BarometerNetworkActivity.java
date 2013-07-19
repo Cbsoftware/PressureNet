@@ -371,7 +371,7 @@ public class BarometerNetworkActivity extends Activity implements
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if (loc.getLatitude() != 0) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-						new LatLng(loc.getLatitude(), loc.getLongitude()), 13));
+						new LatLng(loc.getLatitude(), loc.getLongitude()), 11));
 				updateMapInfoText();
 			} else {
 
@@ -390,7 +390,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getMap();
 		try {
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-					latitude, longitude), 13));
+					latitude, longitude), 11));
 			updateMapInfoText();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1478,7 +1478,11 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivityForResult(intent, REQUEST_DATA_CHANGED);
 
 		} else if (item.getItemId() == R.id.menu_about) {
-			Intent intent = new Intent(getApplicationContext(), About.class);
+			Intent intent = new Intent(getApplicationContext(), AboutActivity.class);
+			startActivity(intent);
+
+		} else if (item.getItemId() == R.id.menu_help) {
+			Intent intent = new Intent(getApplicationContext(), HelpActivity.class);
 			startActivity(intent);
 
 		} else if (item.getItemId() == R.id.menu_submit_reading) {

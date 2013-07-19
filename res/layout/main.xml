@@ -38,7 +38,7 @@
             android:layout_height="51dp"
             android:src="@drawable/ic_menu_light_locations"
             android:textColor="@android:color/black"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:background="#AAFFFFFF" />
 
         <EditText
@@ -47,8 +47,10 @@
             android:layout_height="51dp"
             android:layout_weight="1"
             android:hint="Search"
-            android:visibility="invisible"
-            android:background="#AAFFFFFF" />
+            android:visibility="visible"
+            android:background="#AAFFFFFF"
+            android:singleLine="true"
+            android:maxLines="1" />
 
         <ImageButton
             android:id="@+id/buttonGoLocation"
@@ -205,7 +207,7 @@
             android:id="@+id/textAnimationInformation"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text=""
+            android:text="Loading animation data..."
             android:textColor="@android:color/black" />
     </LinearLayout>
 
