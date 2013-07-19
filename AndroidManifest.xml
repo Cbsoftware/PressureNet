@@ -46,9 +46,20 @@
 >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.About"
+            android:name="ca.cumulonimbus.barometernetwork.AboutActivity"
             android:excludeFromRecents="true"
             android:label="@string/about"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:theme="@style/CustomTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+ >
+        </activity>
+         <activity
+            android:name="ca.cumulonimbus.barometernetwork.HelpActivity"
+            android:excludeFromRecents="true"
+            android:label="Help"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
