@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.ArrayList;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -9,6 +11,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -18,6 +21,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class DataManagementActivity extends Activity {
@@ -39,6 +45,29 @@ public class DataManagementActivity extends Activity {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
 					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("error: not bound");
+		}
+	}
+
+	public void getAllLocalObservations() {
+		if (mBound) {
+			CbApiCall api = new CbApiCall();
+			api.setMinLat(-90);
+			api.setMaxLat(90);
+			api.setMinLon(-180);
+			api.setMaxLon(180);
+			api.setStartTime(0);
+			api.setEndTime(System.currentTimeMillis());
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
+					api);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -110,11 +139,10 @@ public class DataManagementActivity extends Activity {
 			mBound = false;
 		}
 	};
-	
-	
+
 	@Override
 	protected void onResume() {
-		if(mBound ) {
+		if (mBound) {
 			askForUserCounts();
 			askForCacheCounts();
 		} else {
@@ -150,16 +178,17 @@ public class DataManagementActivity extends Activity {
 		textMyData = (TextView) findViewById(R.id.textMyDataDescription);
 
 		ActionBar bar = getActionBar();
-		int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
-		
-		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
+		int actionBarTitleId = getResources().getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+
+		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
-		
+
 		buttonExportMyData.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-
+				getAllLocalObservations();
 			}
 		});
 
@@ -176,7 +205,8 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// Open Live API sign up
-				Uri uri = Uri.parse("http://pressurenet.cumulonimbus.ca/customers/livestream/");
+				Uri uri = Uri
+						.parse("http://pressurenet.cumulonimbus.ca/customers/livestream/");
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 				startActivity(intent);
 			}
@@ -213,11 +243,38 @@ public class DataManagementActivity extends Activity {
 				textDataCache.setText("You have cached " + countCache
 						+ " measurements from our servers.");
 				break;
+			case CbService.MSG_LOCAL_RECENTS:
+				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 
+				System.out.println("dma receiving local recents size " + recents.size());
+				
+				/*
+				for (CbObservation obs : recents) {
+					String data = obs.getTime() + ","
+							+ obs.getObservationValue() + ","
+							+ obs.getLocation().getLatitude() + ","
+							+ obs.getLocation().getLongitude() + "\n";
+				}
+				*/
+
+				Toast.makeText(
+						getApplicationContext(),
+						"TODO: save data data to: __, length "
+								+ recents.size(), Toast.LENGTH_LONG).show();
+				break;
 			default:
 				super.handleMessage(msg);
 			}
 		}
+	}
+	
+	/* Checks if external storage is available for read and write */
+	public boolean isExternalStorageWritable() {
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    }
+	    return false;
 	}
 
 }
