@@ -15,7 +15,6 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -1934,7 +1934,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				Drawable draw = getSingleDrawable(drLayer);
 
-				Bitmap image = drawableToBitmap(draw);
+				Bitmap image = drawableToBitmap(draw, null);
 
 				mMap.addMarker(new MarkerOptions().position(point).icon(
 						BitmapDescriptorFactory.fromBitmap(image)));
@@ -1955,7 +1955,7 @@ public class BarometerNetworkActivity extends Activity implements
 						.getLatitude(), observation.getLocation()
 						.getLongitude());
 
-				Bitmap image = drawableToBitmap(drawable);
+				Bitmap image = drawableToBitmap(drawable, null);
 
 				mMap.addMarker(new MarkerOptions().position(point)
 						.title(observation.getObservationValue() + "")
@@ -1972,15 +1972,34 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public static Bitmap drawableToBitmap(Drawable drawable) {
+	public Bitmap drawableToBitmap(Drawable drawable, CbObservation obs) {
+		/*
 		if (drawable instanceof BitmapDrawable) {
 			return ((BitmapDrawable) drawable).getBitmap();
 		}
-
-		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-				drawable.getIntrinsicHeight(), Config.ARGB_8888);
+		*/
+		
+		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth() + 20, 
+				drawable.getIntrinsicHeight() + 20, Config.ARGB_8888);
+		
+		System.out.println("drawable dim " +drawable.getIntrinsicWidth() + " by " + drawable.getIntrinsicHeight());
 		Canvas canvas = new Canvas(bitmap);
-		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+
+		int x = 0;
+		int y = canvas.getHeight();
+		System.out.println("canvas dim " + canvas.getWidth() + " by " + canvas.getHeight() + "; x " + x + ", y " + y);
+		Paint paint = new Paint();
+		paint.setStyle(Paint.Style.FILL);
+		paint.setAntiAlias(true);
+		paint.setTextSize(20);
+		paint.setColor(Color.BLACK);
+		
+		DecimalFormat df = new DecimalFormat("####.00");
+		canvas.drawText(df.format(obs.getObservationValue()), x, y, paint);
+
+		
+		
 		drawable.draw(canvas);
 
 		return bitmap;
@@ -2020,6 +2039,8 @@ public class BarometerNetworkActivity extends Activity implements
 	public void addDataToMap(boolean onlyConditions) {
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		
+		System.out.println("add data to map");
+		
 		int totalEachAllowed = 60;
 		int currentObs = 0;
 		int currentCur = 0;
@@ -2055,8 +2076,9 @@ public class BarometerNetworkActivity extends Activity implements
 							.getLatitude(), observation.getLocation()
 							.getLongitude());
 	
-					Bitmap image = drawableToBitmap(drawable);
-	
+					Bitmap image = drawableToBitmap(drawable, observation);
+					
+					
 					String valueToPrint = displayPressureValue(observation.getObservationValue());
 					
 					mMap.addMarker(new MarkerOptions().position(point)
@@ -2081,7 +2103,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				Drawable draw = getSingleDrawable(drLayer);
 
-				Bitmap image = drawableToBitmap(draw);
+				Bitmap image = drawableToBitmap(draw, null);
 
 				mMap.addMarker(new MarkerOptions().position(point).icon(
 						BitmapDescriptorFactory.fromBitmap(image)));
