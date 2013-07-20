@@ -745,11 +745,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				if(buttonSearchLocations.getVisibility() == View.INVISIBLE) {
-					buttonSearchLocations.setVisibility(View.VISIBLE);
-					editLocation.setVisibility(View.VISIBLE);
-					return;
-				}
 				
 				String location = editLocation.getEditableText().toString();
 				if (location.equals("")) {
@@ -763,7 +758,7 @@ public class BarometerNetworkActivity extends Activity implements
 				Geocoder geocode = new Geocoder(getApplicationContext());
 				try {
 					List<Address> addr = geocode.getFromLocationName(location,
-							1);
+							2);
 					if (addr.size() > 0) {
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
@@ -783,8 +778,10 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
 
-						CbApiCall conditionApi = buildMapCurrentConditionsCall(72);
+						CbApiCall conditionApi = buildMapCurrentConditionsCall(12);
 						makeCurrentConditionsAPICall(conditionApi);
+					} else {
+						Toast.makeText(getApplicationContext(), "Error: cannot search Google Maps", Toast.LENGTH_SHORT).show();
 					}
 
 				} catch (IOException ioe) {
