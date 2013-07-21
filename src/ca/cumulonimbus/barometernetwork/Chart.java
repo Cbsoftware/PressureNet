@@ -3,10 +3,7 @@ package ca.cumulonimbus.barometernetwork;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.chart.PointStyle;
@@ -16,8 +13,8 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint.Align;
 import android.view.View;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -267,13 +264,16 @@ public class Chart {
 			String title, String xTitle, String yTitle, Date xMin, Date xMax,
 			double yMin, double yMax, int axesColor, int labelsColor) {
 		// renderer.setChartTitle(title);
-		renderer.setXTitle(xTitle);
-		renderer.setYTitle(yTitle);
+		renderer.setXTitle("");
+		renderer.setYTitle("");
 		renderer.setShowLegend(false);
 		// renderer.setXAxisMin(xMin);
 		// renderer.setXAxisMax(xMax);
 		renderer.setYAxisMin(yMin);
 		renderer.setYAxisMax(yMax);
+		renderer.setYLabelsColor(0, Color.rgb(51,51,51));
+		renderer.setXLabelsColor(Color.rgb(51, 51, 51));
+		renderer.setYLabelsAlign(Align.RIGHT, 0);
 		renderer.setAxesColor(axesColor);
 		renderer.setLabelsColor(labelsColor);
 		renderer.setMarginsColor(Color.rgb(238,238,238));
