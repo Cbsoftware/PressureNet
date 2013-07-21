@@ -146,6 +146,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private SeekBar seekTime;
 	private ImageButton buttonPlay;
 	private Button buttonBarometer;
+	private Button buttonThermometer;
+	private Button buttonHygrometer;
 	private Spinner spinnerTime;
 	private int hoursAgoSelected = 1;
 
@@ -174,6 +176,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean graphVisible = false;
 
 	double recentPressureReading = 0.0;
+	double recentTemperatureReading = 1000; // TODO: fix default value hack
+	double recentHumidityReading = 1000;
 	private final int TYPE_AMBIENT_TEMPERATURE = 13;
 	private final int TYPE_RELATIVE_HUMIDITY = 12;
 
@@ -548,7 +552,9 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
 		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
-
+		buttonThermometer = (Button) findViewById(R.id.imageButtonThermometer);
+		buttonHygrometer = (Button) findViewById(R.id.imageButtonHygrometer);
+		
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
 
@@ -2293,6 +2299,23 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			buttonBarometer.setText("No barometer detected.");
 		}
+		
+		// TODO: fix default value hack
+		if(recentTemperatureReading != 1000) { 
+			String toPrint = recentTemperatureReading + "";
+			buttonThermometer.setText(toPrint);
+		} else {
+			buttonThermometer.setText("No thermometer detected.");
+		}
+		
+		if(recentHumidityReading != 1000 ) {
+			String toPrint = recentHumidityReading + "";
+			buttonHygrometer.setText(toPrint);
+			
+		} else {
+			buttonHygrometer.setText("No hygrometer detected.");
+		}
+		
 	}
 
 	// Log data to SD card for debug purposes.
@@ -2357,9 +2380,13 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
-			// System.out.println("new app pressure reading " +
-			// event.values[0]);
 			recentPressureReading = event.values[0];
+			updateVisibleReading();
+		} else if (event.sensor.getType() == TYPE_AMBIENT_TEMPERATURE) {
+			recentTemperatureReading = event.values[0];
+			updateVisibleReading();
+		} else if (event.sensor.getType() == TYPE_RELATIVE_HUMIDITY) {
+			recentHumidityReading = event.values[0];
 			updateVisibleReading();
 		}
 	}
