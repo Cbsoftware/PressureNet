@@ -30,8 +30,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -53,6 +51,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +59,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -72,6 +72,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
@@ -743,13 +744,24 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
+		editLocation.setOnEditorActionListener(new OnEditorActionListener() {
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        if (actionId == EditorInfo.IME_ACTION_DONE) {
+		        	buttonGoLocation.performClick();
+		        }
+		        return false;
+		    }
+		});
+		
 		buttonGoLocation.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				
-				String location = editLocation.getEditableText().toString();
+				String location = editLocation.getText().toString();
 				if (location.equals("")) {
+					Toast.makeText(getApplicationContext(), "Please enter a location to search", Toast.LENGTH_SHORT).show();
 					return;
 				}
 				location = location.trim();
@@ -1562,12 +1574,12 @@ public class BarometerNetworkActivity extends Activity implements
 						search = c.getString(1);
 						lat = c.getDouble(2);
 						lon = c.getDouble(3);
-					}
-					if (!search.equals("")) {
-						editLocation.setText(search);
-					}
-					if (lat != 0) {
-						moveMapTo(lat, lon);
+						
+						if (lat != 0) {
+							editLocation.setText(search, TextView.BufferType.EDITABLE);
+							moveMapTo(lat, lon);
+						}
+
 					}
 					layoutMapInfo.setVisibility(View.INVISIBLE);
 				}

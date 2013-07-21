@@ -50,7 +50,8 @@
             android:visibility="visible"
             android:background="#AAFFFFFF"
             android:singleLine="true"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:imeOptions="actionDone" />
 
         <ImageButton
             android:id="@+id/buttonGoLocation"
