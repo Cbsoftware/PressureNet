@@ -30,6 +30,8 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -1567,6 +1569,7 @@ public class BarometerNetworkActivity extends Activity implements
 					if (lat != 0) {
 						moveMapTo(lat, lon);
 					}
+					layoutMapInfo.setVisibility(View.INVISIBLE);
 				}
 			}
 		} else if (requestCode == REQUEST_DATA_CHANGED) {
@@ -1979,29 +1982,41 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		*/
 		
-		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth() + 20, 
-				drawable.getIntrinsicHeight() + 20, Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), 
+				drawable.getIntrinsicHeight(), Config.ARGB_8888);
 		
-		System.out.println("drawable dim " +drawable.getIntrinsicWidth() + " by " + drawable.getIntrinsicHeight());
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 
-		int x = 0;
-		int y = canvas.getHeight();
-		System.out.println("canvas dim " + canvas.getWidth() + " by " + canvas.getHeight() + "; x " + x + ", y " + y);
-		Paint paint = new Paint();
-		paint.setStyle(Paint.Style.FILL);
-		paint.setAntiAlias(true);
-		paint.setTextSize(20);
-		paint.setColor(Color.BLACK);
 		
 		DecimalFormat df = new DecimalFormat("####.00");
-		canvas.drawText(df.format(obs.getObservationValue()), x, y, paint);
+	    String toPrint = df.format(obs.getObservationValue());
 
+		int x = 0;
+		int y = canvas.getHeight();
 		
+		int textSize = 16;
 		
+		//Paint
+        Paint paint = new Paint();
+        paint.setTextAlign(Paint.Align.LEFT );
+        paint.setTextSize(textSize);
+        paint.setShadowLayer(15, 5, 5, 0);
+        paint.setAntiAlias(true);
+        paint.setColor(Color.BLACK);
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        
+        //float textWidth = paint.measureText(toPrint);
+        
+        int xMax = canvas.getWidth();
+        int yMax = canvas.getHeight();
+        
 		drawable.draw(canvas);
 
+        canvas.drawText(toPrint, 48, 30, paint);
+		
+		
+		
 		return bitmap;
 	}
 
@@ -2061,7 +2076,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.ic_marker);
+				R.drawable.bg_pre_marker);
 
 		try {
 			// Add Recent Readings
