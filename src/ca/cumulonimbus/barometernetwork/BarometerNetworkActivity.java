@@ -270,7 +270,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(2000);
+			globalMapCall.setLimit(1000);
 			
 			runApiCall = globalMapCall;
 			timeHandler.post(apiCallRunnable);
@@ -312,6 +312,8 @@ public class BarometerNetworkActivity extends Activity implements
 						graphMode.setEnabled(false);
 						graphMode.setTextColor(Color.GRAY);
 					}
+					
+					makeGlobalMapCall();
 					
 					// dismiss the keyboard
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1121,7 +1123,7 @@ public class BarometerNetworkActivity extends Activity implements
 				int count = msg.arg1;
 				//System.out.println("Call result: " + count + " API results cached");
 				if(activeMode.equals("map")) {
-					CbApiCall api = buildMapAPICall(.2);
+					CbApiCall api = buildMapAPICall(1);
 					askForRecents(api);
 				}
 				break;
@@ -1648,77 +1650,6 @@ public class BarometerNetworkActivity extends Activity implements
 			e.printStackTrace();
 		}
 	}
-
-	/*
-	 * // Custom map overlays for barometer readings public class MapOverlay
-	 * extends ItemizedOverlay<OverlayItem> {
-	 * 
-	 * private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-	 * Context mContext; private int mTextSize;
-	 * 
-	 * @Override protected boolean onTap(int index) { // TODO: Implement
-	 * 
-	 * return true; }
-	 * 
-	 * public MapOverlay(Drawable defaultMarker, Context context, int textSize)
-	 * { super(boundCenterBottom(defaultMarker)); mContext = context; mTextSize
-	 * = textSize; }
-	 * 
-	 * public MapOverlay(Drawable defaultMarker, Context context) {
-	 * super(defaultMarker); mContext = context; }
-	 * 
-	 * public MapOverlay(Drawable defaultMarker) {
-	 * super(boundCenterBottom(defaultMarker)); }
-	 * 
-	 * public void addOverlay(OverlayItem overlay) { mOverlays.add(overlay);
-	 * populate(); }
-	 * 
-	 * public void removeOverlay(OverlayItem overlay) {
-	 * mOverlays.remove(overlay); populate(); }
-	 * 
-	 * @Override protected OverlayItem createItem(int i) { return
-	 * mOverlays.get(i); }
-	 * 
-	 * @Override public int size() { return mOverlays.size(); }
-	 * 
-	 * // Draw all the overlay data points onto the map. Include an icon as //
-	 * well as
-	 * 
-	 * @Override public void draw(android.graphics.Canvas canvas, MapView
-	 * mapView, boolean shadow) { shadow = false; super.draw(canvas, mapView,
-	 * shadow);
-	 * 
-	 * if (shadow == false) { // cycle through all overlays for (int index = 0;
-	 * index < mOverlays.size(); index++) { try { OverlayItem item =
-	 * mOverlays.get(index);
-	 * 
-	 * // Converts lat/lng-Point to coordinates on the screen GeoPoint point =
-	 * item.getPoint(); Point ptScreenCoord = new Point();
-	 * mapView.getProjection().toPixels(point, ptScreenCoord);
-	 * 
-	 * // Paint Paint paint = new Paint();
-	 * paint.setTextAlign(Paint.Align.CENTER); paint.setTextSize(mTextSize);
-	 * paint.setShadowLayer(15, 5, 5, 0); paint.setARGB(255, 0, 0, 0); // alpha,
-	 * r, g, b (Black, // semi see-through) paint.setAntiAlias(true);
-	 * 
-	 * // String toPrint = item.getTitle().substring(0, //
-	 * item.getTitle().length() - 5); String toPrint =
-	 * item.getTitle().split(" ")[0]; // Double value =
-	 * Double.parseDouble(toPrint); // DecimalFormat df = new
-	 * DecimalFormat("####.00"); // toPrint = df.format(value);
-	 * 
-	 * // show text to the right of the icon float textWidth =
-	 * paint.measureText(toPrint); Paint bgPaint = new Paint();
-	 * bgPaint.setColor(Color.WHITE);
-	 * 
-	 * Rect rect = new Rect((int) (ptScreenCoord.x - (textWidth / 2) - 2),
-	 * ptScreenCoord.y, (int) (ptScreenCoord.x + (textWidth / 2) + 2),
-	 * ptScreenCoord.y + mTextSize + 5);
-	 * 
-	 * if (toPrint.length() == 0) { canvas.drawRoundRect(new RectF(rect), 6, 6,
-	 * bgPaint); } canvas.drawText(toPrint, ptScreenCoord.x, ptScreenCoord.y +
-	 * mTextSize, paint); } catch (Exception e) { e.printStackTrace(); } } } } }
-	 */
 
 	// Assume that matching latitude and longitude can only be you.
 	public boolean obsIsMe(CbObservation ob) {

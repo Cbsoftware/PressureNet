@@ -99,14 +99,16 @@
             android:layout_gravity="left"
             android:layout_weight=".24"
             android:text="Animation"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:visibility="gone" />
 
         <View
             android:layout_width="1dip"
             android:layout_height="20dp"
             android:layout_gravity="center_vertical"
             android:background="#888888"
-            android:padding="3dip" />
+            android:padding="3dip"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/buttonGraphMode"
