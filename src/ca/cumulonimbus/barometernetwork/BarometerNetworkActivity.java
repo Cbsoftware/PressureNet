@@ -211,8 +211,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
-	private long lastMapMove = System.currentTimeMillis();
-	private long lastMapDataUpdate = System.currentTimeMillis();
+	private long lastMapMove = System.currentTimeMillis() - (1000 * 60 * 10);
+	private long lastMapDataUpdate = System.currentTimeMillis() - (1000* 60* 10); 
 	
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
@@ -269,19 +269,24 @@ public class BarometerNetworkActivity extends Activity implements
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
 			System.out.println("making global map api call");
 			
-			CbApiCall globalMapCall = buildMapAPICall(.2);
+			CbApiCall globalMapCall = new CbApiCall();
 			globalMapCall.setMinLat(-90);
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
 			globalMapCall.setLimit(1000);
-			
+			globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
+			globalMapCall.setEndTime(System.currentTimeMillis());
+			globalMapCall.setApiKey(PressureNETConfiguration.API_KEY);
+			globalMapCall.setApiName("live");
 			//runApiCall = globalMapCall;
 			//timeHandler.post(apiCallRunnable);
 			 makeAPICall(globalMapCall);				
 			 
 			lastGlobalApiCall = currentTime;
-		} 
+		}  else {
+			System.out.println("not making global map call time diff " + (currentTime - lastGlobalApiCall));
+		}
 	}
 
 	private void setUpMapIfNeeded() {
@@ -1594,7 +1599,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		} else if (requestCode == REQUEST_DATA_CHANGED) {
 			// allow for immediate call of global data
-			lastGlobalApiCall = 0;
+			lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -2138,6 +2143,7 @@ public class BarometerNetworkActivity extends Activity implements
 			maxLon = ne.longitude;
 		} else {
 			log("no map center, bailing on map call");
+			lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 			return api;
 		}
 
