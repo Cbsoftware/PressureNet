@@ -2024,7 +2024,8 @@ public class BarometerNetworkActivity extends Activity implements
 			//mMap.clear();
 			lastMapDataUpdate = now;
 		} else {
-			System.out.println("adding data, not clearing map " + (now - lastMapDataUpdate));
+			System.out.println("not adding data, not clearing map " + (now - lastMapDataUpdate));
+			return;
 		}
 
 		Drawable drawable = this.getResources().getDrawable(
