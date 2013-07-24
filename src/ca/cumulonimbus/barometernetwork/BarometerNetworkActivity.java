@@ -278,8 +278,8 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			//runApiCall = globalMapCall;
 			//timeHandler.post(apiCallRunnable);
-			 makeAPICall(globalMapCall);
-			
+			 makeAPICall(globalMapCall);				
+			 
 			lastGlobalApiCall = currentTime;
 		} 
 	}
@@ -1930,6 +1930,9 @@ public class BarometerNetworkActivity extends Activity implements
 			return ((BitmapDrawable) drawable).getBitmap();
 		}
 		*/
+		if(obs==null) {
+			return ((BitmapDrawable) drawable).getBitmap();
+		}
 		
 		Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), 
 				drawable.getIntrinsicHeight(), Config.ARGB_8888);
@@ -2056,6 +2059,7 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 			}
 			
+			System.out.println("adding current conditions to map: " + currentConditionRecents.size());
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
