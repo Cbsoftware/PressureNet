@@ -244,7 +244,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public void makeLocationAPICalls() {
 		long now = System.currentTimeMillis();
-		if( now - lastLocationApiCall >  (1000 * 60 * 5)) { 
+		if( now - lastLocationApiCall >  (1000 * 60 * 10)) { 
 			
 			PnDb pn = new PnDb(getApplicationContext());
 			pn.open();
@@ -2108,7 +2108,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((3 * 60 * 60 * 1000));
+				- (int) ((1 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
@@ -2191,6 +2191,20 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setLimit(500);
 		api.setCallType("Conditions");
 		return api;
+	}
+	
+	public void sendSingleObservation() {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("data management error: not bound");
+		}
 	}
 
 	public void makeAPICall(CbApiCall apiCall) {
