@@ -274,10 +274,9 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(1000);
+			globalMapCall.setLimit(2000);
 			globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
 			globalMapCall.setEndTime(System.currentTimeMillis());
-			globalMapCall.setApiKey(PressureNETConfiguration.API_KEY);
 			globalMapCall.setApiName("live");
 			//runApiCall = globalMapCall;
 			//timeHandler.post(apiCallRunnable);
@@ -915,11 +914,7 @@ public class BarometerNetworkActivity extends Activity implements
 					hoursAgoSelected = 1;
 				} else if (selected.contains("3 hours")) {
 					hoursAgoSelected = 3;
-				} else if (selected.contains("6 hours")) {
-					hoursAgoSelected = 6;
-				} else if (selected.contains("12 hours")) {
-					hoursAgoSelected = 12;
-				} 
+				}
 				log("selected " + hoursAgoSelected + " hours ago");
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
 				//api.setApiName("list");
@@ -1241,7 +1236,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 
-			// makeLocationAPICalls();
+			makeLocationAPICalls();
 			makeGlobalMapCall();
 		}
 
@@ -2107,7 +2102,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((1 * 60 * 60 * 1000));
+				- (int) ((3 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
@@ -2117,8 +2112,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(loc.getLongitude() + .05);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(1000);
+		api.setLimit(500);
 		return api;
 	}
 
@@ -2154,7 +2148,6 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(maxLon);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
 		api.setApiName("live");
 		System.out.println("building call for time " + api.getStartTime() + " " + api.getEndTime());
@@ -2189,7 +2182,6 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(maxLon);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setApiKey(PressureNETConfiguration.API_KEY);
 		api.setLimit(500);
 		api.setCallType("Conditions");
 		return api;
