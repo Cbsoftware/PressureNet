@@ -217,6 +217,12 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				clearAPICache();
+				Intent data = new Intent();
+				if (getParent() == null) {
+				    setResult(Activity.RESULT_OK, data);
+				} else {
+				    getParent().setResult(Activity.RESULT_OK, data);
+				}
 			}
 		});
 

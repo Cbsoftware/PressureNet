@@ -228,16 +228,16 @@ public class BarometerNetworkActivity extends Activity implements
 		// migratePreferences();
 		startLog();
 		getStoredPreferences();
+		startCbService();
+		bindCbService();
 		setUpMap();
 		setUpUIListeners();
 		setId();
 		setUpFiles();
 		showWelcomeActivity();
 		setUpActionBar();
-		startCbService();
-		bindCbService();
 		startSensorListeners();
-	}
+	} 
 
 	/**
 	 * Get fresh data for each of the user's saved locations
@@ -245,7 +245,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeLocationAPICalls() {
 		long now = System.currentTimeMillis();
 		if( now - lastLocationApiCall >  (1000 * 60 * 10)) { 
-			
+			System.out.println("running makeLocationAPICalls");
 			PnDb pn = new PnDb(getApplicationContext());
 			pn.open();
 			Cursor cursor = pn.fetchAllLocations();
@@ -263,6 +263,8 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			pn.close();
 			lastLocationApiCall = now;
+		} else {
+			System.out.println("not running makeLocationAPICalls " + (now - lastGlobalApiCall));
 		}
 	}
 	
@@ -1241,7 +1243,6 @@ public class BarometerNetworkActivity extends Activity implements
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
-
 			makeLocationAPICalls();
 			makeGlobalMapCall();
 		}
@@ -1600,7 +1601,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		} else if (requestCode == REQUEST_DATA_CHANGED) {
 			// allow for immediate call of global data
-			lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
+			if(resultCode==RESULT_OK) {
+				lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
+			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -2108,7 +2111,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((1 * 60 * 60 * 1000));
+				- (int) ((.5 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
@@ -2118,7 +2121,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(loc.getLongitude() + .05);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(500);
+		api.setLimit(50);
 		return api;
 	}
 
