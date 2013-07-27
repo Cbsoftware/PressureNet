@@ -297,7 +297,7 @@ public class BarometerNetworkActivity extends Activity implements
 					R.id.map)).getMap();
 
 			mMap.getUiSettings().setZoomControlsEnabled(false);
-			
+			mMap.getUiSettings().setCompassEnabled(false);
 			mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 				
 				@Override
@@ -2098,7 +2098,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * 
 	 * Users will save locations and we will cache data for those locations.
-	 * Build a general API call to cache a location. Use /live/
+	 * Build a general API call to cache a location. 
 	 * 
 	 * @param locationRowId
 	 * @return
@@ -2116,8 +2116,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
 		api.setApiKey(PressureNETConfiguration.API_KEY);
-		api.setLimit(5000);
-		api.setApiName("live");
+		api.setLimit(1000);
 		return api;
 	}
 
