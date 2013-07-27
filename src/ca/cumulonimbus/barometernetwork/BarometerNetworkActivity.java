@@ -1945,9 +1945,11 @@ public class BarometerNetworkActivity extends Activity implements
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 
-		
-		DecimalFormat df = new DecimalFormat("####.00");
-	    String toPrint = df.format(obs.getObservationValue());
+		String display= displayPressureValue(obs.getObservationValue());
+		if(display.contains(" ")) {
+			display = display.split(" ")[0];
+		}
+	    
 
 		int x = 0;
 		int y = canvas.getHeight();
@@ -1970,7 +1972,7 @@ public class BarometerNetworkActivity extends Activity implements
         
 		drawable.draw(canvas);
 
-        canvas.drawText(toPrint, 48, 30, paint);
+        canvas.drawText(display, 48, 30, paint);
 		
 		
 		
