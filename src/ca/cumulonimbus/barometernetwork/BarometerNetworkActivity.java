@@ -217,6 +217,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	private long lastGraphApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
+	private long lastLocationApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -242,22 +243,27 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for each of the user's saved locations
 	 */
 	public void makeLocationAPICalls() {
-		PnDb pn = new PnDb(getApplicationContext());
-		pn.open();
-		Cursor cursor = pn.fetchAllLocations();
-
-		while (cursor.moveToNext()) {
-			String name = cursor.getString(1);
-			double latitude = cursor.getDouble(2);
-			double longitude = cursor.getDouble(3);
-			SearchLocation location = new SearchLocation(name, latitude,
-					longitude);
-			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-			System.out.println("making api call for " + name + " at "
-					+ latitude + " " + longitude);
-			makeAPICall(locationApiCall);
+		long now = System.currentTimeMillis();
+		if( now - lastLocationApiCall >  (1000 * 60 * 5)) { 
+			
+			PnDb pn = new PnDb(getApplicationContext());
+			pn.open();
+			Cursor cursor = pn.fetchAllLocations();
+	
+			while (cursor.moveToNext()) {
+				String name = cursor.getString(1);
+				double latitude = cursor.getDouble(2);
+				double longitude = cursor.getDouble(3);
+				SearchLocation location = new SearchLocation(name, latitude,
+						longitude);
+				CbApiCall locationApiCall = buildSearchLocationAPICall(location);
+				System.out.println("making api call for " + name + " at "
+						+ latitude + " " + longitude);
+				makeAPICall(locationApiCall);
+			}
+			pn.close();
+			lastLocationApiCall = now;
 		}
-		pn.close();
 	}
 	
 
