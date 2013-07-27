@@ -171,8 +171,8 @@ public class Chart {
 			// dataset.getSeriesAt(i).getMinY());
 		}
 
-		return ChartFactory.getTimeChartView(context, dataset, renderer,
-				"yyyy/MM/dd");
+
+		return ChartFactory.getScatterChartView(context, dataset, renderer);
 
 	}
 
@@ -277,6 +277,7 @@ public class Chart {
 		renderer.setAxesColor(axesColor);
 		renderer.setLabelsColor(labelsColor);
 		renderer.setMarginsColor(Color.rgb(238,238,238));
+		
 	}
 
 }
