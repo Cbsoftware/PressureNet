@@ -7,7 +7,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight=".5"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:clickable="true" >
 
         <ImageView
             android:id="@+id/imagePressureNET"
@@ -41,15 +42,16 @@
         android:layout_height="wrap_content"
         android:layout_weight=".5"
         android:background="#0099cc"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:clickable="true">
 
         <ImageView
             android:id="@+id/imageCumulonimbus"
-            android:layout_width="128dp"
-            android:layout_height="96dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="32dp"
-            android:src="@drawable/ic_menu_dark_about" />
+            android:src="@drawable/ic_logo_cb" />
 
         <TextView
             android:id="@+id/textCb"
