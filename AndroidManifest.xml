@@ -88,7 +88,7 @@
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
-            android:label="My data"
+            android:label="My Data"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data

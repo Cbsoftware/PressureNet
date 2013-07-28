@@ -3,6 +3,8 @@
     <style name="CustomTheme" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
+        <item name="android:actionMenuTextAppearance">@style/ActionBarStyle.MenuTextStyle</item>
+        <item name="android:actionMenuTextColor">@android:color/white</item> 
     </style>
 
     <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">
@@ -15,6 +17,10 @@
 
     <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">#33b5e5</item>
+    </style>
+
+    <style name="ActionBarStyle.MenuTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
+        <item name="android:textColor">#FFFFFF</item>
     </style>
 
     <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
