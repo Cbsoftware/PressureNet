@@ -242,13 +242,13 @@ public class LogViewerActivity extends Activity {
 
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			getRecents(1);
+			
 		}
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			ft.replace(R.id.fragment_container, fragment);
-			getRecents(1);
+			getRecents(hoursSelected);
 		}
 
 		@Override
