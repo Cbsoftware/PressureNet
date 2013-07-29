@@ -51,7 +51,8 @@
             android:background="#AAFFFFFF"
             android:singleLine="true"
             android:maxLines="1"
-            android:imeOptions="actionDone" />
+            android:imeOptions="actionDone"
+			android:cursorVisible="false"/>
 
         <ImageButton
             android:id="@+id/buttonGoLocation"

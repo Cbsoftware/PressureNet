@@ -282,7 +282,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(2000);
+			globalMapCall.setLimit(1000);
 			globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			globalMapCall.setApiName("live");
@@ -335,6 +335,7 @@ public class BarometerNetworkActivity extends Activity implements
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
 							0);
+					editLocation.setCursorVisible(false);
 
 					LatLngBounds bounds = mMap.getProjection()
 							.getVisibleRegion().latLngBounds;
@@ -761,6 +762,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				editLocation.setText("");
+				editLocation.setCursorVisible(true);
 			}
 		});
 
@@ -789,6 +791,7 @@ public class BarometerNetworkActivity extends Activity implements
 						Toast.LENGTH_SHORT).show();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+				editLocation.setCursorVisible(false);
 				Geocoder geocode = new Geocoder(getApplicationContext());
 				try {
 					List<Address> addr = geocode.getFromLocationName(location,
