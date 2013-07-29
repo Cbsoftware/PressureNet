@@ -5,16 +5,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
-import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbObservation;
-import ca.cumulonimbus.pressurenetsdk.CbScience;
-import ca.cumulonimbus.pressurenetsdk.CbService;
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ActionBar.Tab;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +32,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
+import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class LogViewerActivity extends Activity {
 	
@@ -55,17 +56,18 @@ public class LogViewerActivity extends Activity {
 	
 	private int hoursSelected = 6;
 	
-	
+	ProgressDialog pd;
 
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CbService.MSG_LOCAL_RECENTS:
+
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 				Collections.sort(recents,
 						new CbScience.TimeComparator());
-
+				pd.dismiss();
 				try {
 
 					String rawLog = "";
@@ -113,8 +115,11 @@ public class LogViewerActivity extends Activity {
 						// TODO: fix hack.
 						System.out.println("now drawing chart");
 					}
+					
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					
 				}
 				
 				// enable buttons
@@ -194,7 +199,6 @@ public class LogViewerActivity extends Activity {
 	public void getRecents(long hoursAgo) {
 		
 		// disable buttons
-
 		oneHour = (Button) findViewById(R.id.buttonOneHour);
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
@@ -210,6 +214,9 @@ public class LogViewerActivity extends Activity {
 		oneWeek.setTextColor(Color.GRAY);
 		
 		if (mBound) {
+			if(hoursAgo > 1) {
+				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", hoursAgo + " hours of data",true,true,null);
+			}
 			CbApiCall api = new CbApiCall();
 			api.setMinLat(-90);
 			api.setMaxLat(90);
