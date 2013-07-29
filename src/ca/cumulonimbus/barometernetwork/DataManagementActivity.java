@@ -1,5 +1,8 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import android.app.ActionBar;
@@ -40,7 +43,10 @@ public class DataManagementActivity extends Activity {
 	Messenger mService = null;
 
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
-
+	
+	boolean mExternalStorageAvailable = false;
+	boolean mExternalStorageWriteable = false;
+	
 	private void clearLocalCache() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
@@ -168,7 +174,7 @@ public class DataManagementActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
-
+		checkStorage();
 		buttonExportMyData = (Button) findViewById(R.id.buttonExportMyData);
 		buttonClearMyData = (Button) findViewById(R.id.buttonClearMyData);
 		buttonAdvancedAccess = (Button) findViewById(R.id.buttonDataAccess);
@@ -235,6 +241,23 @@ public class DataManagementActivity extends Activity {
 		super.onPause();
 	}
 
+	public void checkStorage() {
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+		    // We can read and write the media
+		    mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+		    // We can only read the media
+		    mExternalStorageAvailable = true;
+		    mExternalStorageWriteable = false;
+		} else {
+		    // Something else is wrong. It may be one of many other states, but all we need
+		    //  to know is we can neither read nor write
+		    mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+	}
+	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -254,19 +277,42 @@ public class DataManagementActivity extends Activity {
 
 				System.out.println("dma receiving local recents size " + recents.size());
 				
-				/*
-				for (CbObservation obs : recents) {
-					String data = obs.getTime() + ","
-							+ obs.getObservationValue() + ","
-							+ obs.getLocation().getLatitude() + ","
-							+ obs.getLocation().getLongitude() + "\n";
-				}
-				*/
+				
+				if(mExternalStorageWriteable) {
+					File export = new File(Environment.getExternalStorageDirectory(), "pressureNET-export.csv");
+					try {
+				        BufferedWriter out = new BufferedWriter(new FileWriter(export.getAbsolutePath(), false));
+				        out.write("Time,Pressure,Latitude,Longitude\n");
+				        for (CbObservation obs : recents) {
+							String data = obs.getTime() + ","
+									+ obs.getObservationValue() + ","
+									+ obs.getLocation().getLatitude() + ","
+									+ obs.getLocation().getLongitude() + "\n";
+							out.write(data);
+						}
+				        out.close();
 
-				Toast.makeText(
-						getApplicationContext(),
-						"TODO: save data data to: __, length "
-								+ recents.size(), Toast.LENGTH_LONG).show();
+				    } catch (Exception e) {
+				    	Toast.makeText(
+								getApplicationContext(),
+								"Error saving data."
+										+ recents.size(), Toast.LENGTH_LONG).show();	
+				    }
+					
+					
+					
+					Toast.makeText(
+							getApplicationContext(),
+							"Saved " 
+									+ recents.size() + " data points to " + export.getAbsolutePath(), Toast.LENGTH_LONG).show();					
+					
+				} else {
+					Toast.makeText(
+							getApplicationContext(),
+							"Error: Storage not available."
+									+ recents.size(), Toast.LENGTH_LONG).show();					
+				}
+
 				break;
 			default:
 				super.handleMessage(msg);
