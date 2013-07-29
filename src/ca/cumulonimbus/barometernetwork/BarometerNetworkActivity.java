@@ -2060,8 +2060,15 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					String valueToPrint = displayPressureValue(observation.getObservationValue());
 					
+
+					long timeRecorded = observation.getTime();
+					long timeNow = System.currentTimeMillis();
+					long msAgo = now - timeRecorded;
+					int minutesAgo = (int)(msAgo / (1000 * 60));
+					
+					
 					mMap.addMarker(new MarkerOptions().position(point)
-							.title(valueToPrint)
+							.title(minutesAgo + " minutes ago")
 							.icon(BitmapDescriptorFactory.fromBitmap(image)));
 	
 					currentObs++;
