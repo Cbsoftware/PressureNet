@@ -2132,7 +2132,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((.5 * 60 * 60 * 1000));
+				- (int) ((2 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
@@ -2142,7 +2142,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(loc.getLongitude() + .05);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(50);
+		api.setLimit(100);
 		return api;
 	}
 
