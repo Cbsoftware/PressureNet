@@ -68,6 +68,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
@@ -140,6 +141,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> currentConditionAnimation = new ArrayList<CbCurrentCondition>();
 
+	private int activeAPICallCount = 0;
 	
 	boolean dataReceivedToPlot = false;
 
@@ -151,6 +153,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private Spinner spinnerTime;
 	private int hoursAgoSelected = 1;
 
+	private ProgressBar progressAPI;
+	
 	private Button mapMode;
 	private Button animationMode;
 	private Button graphMode;
@@ -567,6 +571,8 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 		buttonThermometer = (Button) findViewById(R.id.imageButtonThermometer);
 		buttonHygrometer = (Button) findViewById(R.id.imageButtonHygrometer);
+		
+		progressAPI = (ProgressBar) findViewById(R.id.progressBarAPICalls);
 		
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
@@ -1119,12 +1125,16 @@ public class BarometerNetworkActivity extends Activity implements
 				updateVisibleReading();
 				break;
 			case CbService.MSG_API_RECENTS:
+				updateAPICount(-1);
 				if(activeMode.equals("graph")) {
+					
 					listRecents.clear();
 					listRecents = (ArrayList<CbObservation>) msg.obj;
 					log("received " + listRecents.size() + " list recents");
 					createAndShowChart();
 				} else if (activeMode.equals("map")) {
+					// TODO: indicate data loaded/display update
+					
 					//globalMapRecents.clear();
 					//globalMapRecents = (ArrayList<CbObservation>) msg.obj;
 					//log("fetched global map 30 minutes, total size " + globalMapRecents.size());
@@ -1145,6 +1155,7 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
+				updateAPICount(-1);
 				if (currentConditionRecents != null) {
 					log("currentConditionRecents size "
 							+ currentConditionRecents.size());
@@ -2220,6 +2231,22 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
+	private void updateAPICount(int value) {
+		activeAPICallCount+=value;
+		if(activeAPICallCount < 0) {
+			activeAPICallCount = 0;
+		}
+		updateProgressBar();
+	}
+	
+	private void updateProgressBar() {
+		if(activeAPICallCount > 0) {
+			progressAPI.setVisibility(View.VISIBLE);
+		} else {
+			progressAPI.setVisibility(View.GONE);
+		}
+	}
+	
 	public void makeAPICall(CbApiCall apiCall) {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
@@ -2227,6 +2254,7 @@ public class BarometerNetworkActivity extends Activity implements
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
+				updateAPICount(1);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -2242,6 +2270,7 @@ public class BarometerNetworkActivity extends Activity implements
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
+				updateAPICount(1);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}

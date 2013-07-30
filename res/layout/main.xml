@@ -65,6 +65,11 @@
             android:visibility="visible" />
     </LinearLayout>
 
+    <ProgressBar android:id="@+id/progressBarAPICalls"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"/>
+    
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
