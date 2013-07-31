@@ -36,42 +36,43 @@
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
+            android:background="#AAFFFFFF"
             android:src="@drawable/ic_menu_light_locations"
             android:textColor="@android:color/black"
-            android:visibility="visible"
-            android:background="#AAFFFFFF" />
+            android:visibility="visible" />
 
         <EditText
             android:id="@+id/editGoLocation"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:layout_weight="1"
-            android:hint="Search"
-            android:visibility="visible"
             android:background="#AAFFFFFF"
-            android:singleLine="true"
-            android:maxLines="1"
+            android:cursorVisible="false"
+            android:hint="Search"
             android:imeOptions="actionDone"
-			android:cursorVisible="false"/>
+            android:maxLines="1"
+            android:singleLine="true"
+            android:visibility="visible" />
 
         <ImageButton
             android:id="@+id/buttonGoLocation"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
+            android:background="#AAFFFFFF"
             android:src="@drawable/ic_menu_light_search"
             android:textColor="@android:color/black"
-            android:background="#AAFFFFFF"
             android:visibility="visible" />
     </LinearLayout>
 
-    <ProgressBar android:id="@+id/progressBarAPICalls"
+    <ProgressBar
+        android:id="@+id/progressBarAPICalls"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:progressDrawable="@drawable/progress"/>
-    
+        android:progressDrawable="@drawable/progress" />
+
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
         android:layout_width="match_parent"
@@ -150,11 +151,11 @@
         android:id="@+id/layoutGraph"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#AAFFFFFF"
         android:orientation="vertical"
         android:paddingTop="5dp"
-        android:visibility="gone" 
-        android:background="#AAFFFFFF" 
-        android:layout_above="@+id/modeSelectionLayout">
+        android:visibility="gone" >
 
         <Spinner
             android:id="@+id/spinnerChartTime"
@@ -168,11 +169,11 @@
         android:id="@+id/layoutMapInformation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#AAFFFFFF"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone"
-        android:background="#AAFFFFFF" 
-        android:layout_above="@+id/modeSelectionLayout" >
+        android:visibility="gone" >
 
         <TextView
             android:id="@+id/textMapInfo"
@@ -186,11 +187,11 @@
         android:id="@+id/layoutAnimationControlContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#AAFFFFFF"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone"
-        android:background="#AAFFFFFF" 
-        android:layout_above="@+id/modeSelectionLayout">
+        android:visibility="gone" >
 
         <LinearLayout
             android:id="@+id/layoutTimeControls"
@@ -226,37 +227,50 @@
         android:id="@+id/layoutSensorInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#AAFFFFFF"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="gone"
-        android:background="#AAFFFFFF" 
-        android:layout_above="@+id/modeSelectionLayout">
+        android:visibility="gone" >
 
-        <Button
-            android:id="@+id/imageButtonBarometer"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_menu_light_barometer"
-            android:textColor="@android:color/black" />
+        <ScrollView
+            android:id="@+id/scrollSensor"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_above="@+id/modeSelectionLayout" >
 
-        <Button
-            android:id="@+id/imageButtonThermometer"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_menu_light_thermometer"
-            android:text="No thermometer detected"
-            android:textColor="@android:color/black" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/imageButtonHygrometer"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_menu_light_hygrometer"
-            android:text="No hygrometer detected"
-            android:textColor="@android:color/black" />
+                <Button
+                    android:id="@+id/imageButtonBarometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_menu_light_barometer"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/imageButtonThermometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_menu_light_thermometer"
+                    android:text="No thermometer detected"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/imageButtonHygrometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_menu_light_hygrometer"
+                    android:text="No hygrometer detected"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </RelativeLayout>

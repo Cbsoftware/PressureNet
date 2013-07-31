@@ -697,7 +697,7 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					System.out.println("making api call 1h for graph");
 					CbApiCall api = buildMapAPICall(1);
-					api.setLimit(1000);
+					api.setLimit(500);
 					makeAPICall(api);
 				
 					layoutAnimationControlContainer.setVisibility(View.GONE);
