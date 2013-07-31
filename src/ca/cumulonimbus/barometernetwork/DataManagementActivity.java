@@ -269,7 +269,7 @@ public class DataManagementActivity extends Activity {
 					measurement = "measurement.";
 				}
 				textMyData.setText("You have recorded and stored " + count
-						+ measurement);
+						+ " " + measurement);
 				break;
 			case CbService.MSG_COUNT_API_CACHE_TOTALS:
 				int countCache = msg.arg1;
