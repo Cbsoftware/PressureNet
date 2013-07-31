@@ -261,16 +261,24 @@ public class DataManagementActivity extends Activity {
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
+			String measurement = "measurements.";
 			switch (msg.what) {
 			case CbService.MSG_COUNT_LOCAL_OBS_TOTALS:
 				int count = msg.arg1;
+				if(count==1) {
+					measurement = "measurement.";
+				}
 				textMyData.setText("You have recorded and stored " + count
-						+ " measurements.");
+						+ measurement);
 				break;
 			case CbService.MSG_COUNT_API_CACHE_TOTALS:
 				int countCache = msg.arg1;
+				measurement = "measurements";
+				if(countCache==1) {
+					measurement = "measurement";
+				}
 				textDataCache.setText("You have cached " + countCache
-						+ " measurements from our servers.");
+						+ " " + measurement + " from our servers.");
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
