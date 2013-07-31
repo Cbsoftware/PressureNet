@@ -68,7 +68,9 @@
     <ProgressBar android:id="@+id/progressBarAPICalls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"/>
+        android:indeterminateOnly="true"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/progress"/>
     
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
