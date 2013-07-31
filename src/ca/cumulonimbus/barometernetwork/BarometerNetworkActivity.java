@@ -214,7 +214,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
 	private long lastMapMove = System.currentTimeMillis() - (1000 * 60 * 10);
-	private long lastMapDataUpdate = System.currentTimeMillis() - (1000* 60* 10); 
 	
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
@@ -277,17 +276,18 @@ public class BarometerNetworkActivity extends Activity implements
 	public void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
+			int step = 90; 	
 			System.out.println("making global map api call");
 			
-			for (int latitude = -90; latitude <= 0; latitude+=90) {
-				for(int longitude = -180; longitude <= 90; longitude+=90) {
+			for (int latitude = -90; latitude <= 0; latitude+=step) {
+				for(int longitude = -180; longitude <= 90; longitude+=step) {
 					CbApiCall globalMapCall = new CbApiCall();
 					globalMapCall.setMinLat(latitude);
-					globalMapCall.setMaxLat(latitude+90);
+					globalMapCall.setMaxLat(latitude+step);
 					globalMapCall.setMinLon(longitude);
-					globalMapCall.setMaxLon(longitude+90);
-					globalMapCall.setLimit(500);
-					globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
+					globalMapCall.setMaxLon(longitude+step);
+					globalMapCall.setLimit(1000);
+					globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 30));
 					globalMapCall.setEndTime(System.currentTimeMillis());
 					makeAPICall(globalMapCall);					
 				}
@@ -308,18 +308,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 			mMap.getUiSettings().setZoomControlsEnabled(false);
 			mMap.getUiSettings().setCompassEnabled(false);
-			mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-				
-				@Override
-				public boolean onMarkerClick(Marker arg0) {
-					lastMapDataUpdate = System.currentTimeMillis();
-					return false;
-				}
-			});
 			
 			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-				
-				
 				
 				@Override
 				public void onCameraChange(CameraPosition position) {
@@ -332,7 +322,7 @@ public class BarometerNetworkActivity extends Activity implements
 						graphMode.setTextColor(Color.GRAY);
 					}
 					
-					makeGlobalMapCall();
+					//makeGlobalMapCall();
 					
 					// dismiss the keyboard
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -361,7 +351,7 @@ public class BarometerNetworkActivity extends Activity implements
 						askForCurrentConditionAnimation(api);
 						addDataToMap(true);
 					} else if (activeMode.equals("map")) {
-						makeMapApiCallAndLoadRecents();
+						loadRecents();
 					} else {
 						
 					}
@@ -697,17 +687,17 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					
 					
-					spinnerTime.setSelection(1);
-					hoursAgoSelected = 3;
+					spinnerTime.setSelection(0);
+					hoursAgoSelected = 1;
 
 					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
 					apiGraph.setLimit(500);
 					askForUniqueRecents(apiGraph);
 					
 					
-					System.out.println("making api call 3h for graph");
-					CbApiCall api = buildMapAPICall(3);
-					api.setLimit(500);
+					System.out.println("making api call 1h for graph");
+					CbApiCall api = buildMapAPICall(1);
+					api.setLimit(1000);
 					makeAPICall(api);
 				
 					layoutAnimationControlContainer.setVisibility(View.GONE);
@@ -2036,15 +2026,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		int maxUpdateFrequency = 1 * 1000; 
 		long now = System.currentTimeMillis();
-		if(now - lastMapDataUpdate > maxUpdateFrequency) {
-			//System.out.println("clearing map");
-			//mMap.clear();
-			lastMapDataUpdate = now;
-		} else {
-			System.out.println("not adding data, not clearing map " + (now - lastMapDataUpdate));
-			return;
-		}
-
+		
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
@@ -2170,8 +2152,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(maxLon);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(500);
-		api.setApiName("live");
+		api.setLimit(50);
 		System.out.println("building call for time " + api.getStartTime() + " " + api.getEndTime());
 		return api;
 	}
@@ -2272,13 +2253,15 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void makeMapApiCallAndLoadRecents() {
-		CbApiCall api = buildMapAPICall(.5);
+	public void loadRecents() {
+		CbApiCall api = buildMapAPICall(1);
 
+		/*
 		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
 		askForCurrentConditionRecents(currentApi);
 		makeCurrentConditionsAPICall(currentApi);
-
+		 */
+		
 		askForUniqueRecents(api);
 	}
 
