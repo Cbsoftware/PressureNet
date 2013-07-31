@@ -279,18 +279,19 @@ public class BarometerNetworkActivity extends Activity implements
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
 			System.out.println("making global map api call");
 			
-			CbApiCall globalMapCall = new CbApiCall();
-			globalMapCall.setMinLat(-90);
-			globalMapCall.setMaxLat(90);
-			globalMapCall.setMinLon(-180);
-			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(1000);
-			globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
-			globalMapCall.setEndTime(System.currentTimeMillis());
-			globalMapCall.setApiName("live");
-			//runApiCall = globalMapCall;
-			//timeHandler.post(apiCallRunnable);
-			 makeAPICall(globalMapCall);				
+			for (int latitude = -90; latitude <= 0; latitude+=90) {
+				for(int longitude = -180; longitude <= 90; longitude+=90) {
+					CbApiCall globalMapCall = new CbApiCall();
+					globalMapCall.setMinLat(latitude);
+					globalMapCall.setMaxLat(latitude+90);
+					globalMapCall.setMinLon(longitude);
+					globalMapCall.setMaxLon(longitude+90);
+					globalMapCall.setLimit(500);
+					globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 20));
+					globalMapCall.setEndTime(System.currentTimeMillis());
+					makeAPICall(globalMapCall);					
+				}
+			}
 			 
 			lastGlobalApiCall = currentTime;
 		}  else {
