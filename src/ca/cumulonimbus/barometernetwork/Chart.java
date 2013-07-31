@@ -1,7 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -90,13 +90,9 @@ public class Chart {
 		// currently only pressure
 		double minObservation = 1200;
 		double maxObservation = 0;
-		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis(System.currentTimeMillis());
+		long minTime = System.currentTimeMillis();
 
-		Date minTime = c.getTime();
-
-		c.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7)); 
-		Date maxTime = c.getTime();
+		long maxTime = System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7);
 
 		int i = 0;
 		double yMean = 1000;
@@ -112,11 +108,11 @@ public class Chart {
 			if (obs.getObservationValue() > maxObservation) {
 				maxObservation = obs.getObservationValue();
 			}
-			if (obs.getTime() < minTime.getTime()) {
-				minTime = new Date(obs.getTime());
+			if (obs.getTime() < minTime) {
+				minTime = obs.getTime();
 			}
-			if (obs.getTime() > maxTime.getTime()) {
-				maxTime = new Date(obs.getTime());
+			if (obs.getTime() > maxTime) {
+				maxTime = obs.getTime();
 			}
 			xValues[i] = new Date(obs.getTime());
 			yValues[i] = obs.getObservationValue();
@@ -155,7 +151,7 @@ public class Chart {
 		setChartSettings(renderer, "Pressure", "Time", "Pressure",
 				minTime, maxTime, minObservation, maxObservation, axesColor,
 				labelColor);
-		renderer.setXLabels(5);
+		renderer.setXLabels(0);
 		renderer.setYLabels(5);
 		length = renderer.getSeriesRendererCount();
 		for (i = 0; i < length; i++) {
@@ -261,14 +257,16 @@ public class Chart {
 	 *            the labels color
 	 */
 	protected void setChartSettings(XYMultipleSeriesRenderer renderer,
-			String title, String xTitle, String yTitle, Date xMin, Date xMax,
+			String title, String xTitle, String yTitle, long xMin, long xMax,
 			double yMin, double yMax, int axesColor, int labelsColor) {
+
 		// renderer.setChartTitle(title);
+		
 		renderer.setXTitle("");
 		renderer.setYTitle("");
 		renderer.setShowLegend(false);
-		// renderer.setXAxisMin(xMin);
-		// renderer.setXAxisMax(xMax);
+		renderer.setXLabelsPadding(10);
+		renderer.setYLabelsPadding(5);
 		renderer.setYAxisMin(yMin);
 		renderer.setYAxisMax(yMax);
 		renderer.setYLabelsColor(0, Color.rgb(51,51,51));
@@ -277,7 +275,16 @@ public class Chart {
 		renderer.setAxesColor(axesColor);
 		renderer.setLabelsColor(labelsColor);
 		renderer.setMarginsColor(Color.rgb(238,238,238));
-		
+		renderer.setXLabels(0);
+		long endOffset = 1000 * 60 * 5;
+		Date minDate = new Date(xMin);
+		Date maxDate = new Date(xMax - endOffset);
+		long xMid = xMin + ((xMax - xMin)/2);
+		Date middleDate = new Date(xMid);
+		DateFormat df = new DateFormat();
+		renderer.addXTextLabel(xMin, df.format("HH:mm", minDate).toString());
+		renderer.addXTextLabel(xMid, df.format("HH:mm", middleDate).toString());
+		renderer.addXTextLabel(xMax - endOffset, df.format("HH:mm", maxDate).toString());
 	}
 
 }

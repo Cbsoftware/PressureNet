@@ -5,6 +5,7 @@
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
         <item name="android:actionMenuTextAppearance">@style/ActionBarStyle.MenuTextStyle</item>
         <item name="android:actionMenuTextColor">@android:color/white</item> 
+       <!-- <item name="android:homeAsUpIndicator">@drawable/ic_menu_up_nav</item>  --> 
     </style>
 
     <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">

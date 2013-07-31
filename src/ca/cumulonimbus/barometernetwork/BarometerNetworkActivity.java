@@ -136,8 +136,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ArrayList<CbObservation> uniqueRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
-	private ArrayList<CbObservation> fullRecents = new ArrayList<CbObservation>();
-	private ArrayList<CbObservation> globalMapRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> currentConditionAnimation = new ArrayList<CbCurrentCondition>();
 
@@ -697,27 +695,20 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					activeMode = "graph";
 					
-					spinnerTime.setSelection(0);
-					hoursAgoSelected = 1;
+					
+					spinnerTime.setSelection(1);
+					hoursAgoSelected = 3;
 
 					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
 					apiGraph.setLimit(500);
 					askForUniqueRecents(apiGraph);
 					
 					
-					// don't make this call repeatedly if user keeps tapping
-					// say, five second limit?
-					long currentTime = System.currentTimeMillis();
-					if(currentTime - lastGraphApiCall > (1000 * 5)) {
-						System.out.println("making api call 3h for graph");
-						CbApiCall api = buildMapAPICall(3);
-						//api.setApiName("list");
-						api.setLimit(500);
-						makeAPICall(api);
-						
-						lastGraphApiCall = 	currentTime;
-					}
-					
+					System.out.println("making api call 3h for graph");
+					CbApiCall api = buildMapAPICall(3);
+					api.setLimit(500);
+					makeAPICall(api);
+				
 					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -934,7 +925,6 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				log("selected " + hoursAgoSelected + " hours ago");
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
-				//api.setApiName("list");
 				api.setLimit(500);
 				askForRecents(api);
 			}
@@ -1128,10 +1118,10 @@ public class BarometerNetworkActivity extends Activity implements
 				updateAPICount(-1);
 				if(activeMode.equals("graph")) {
 					
-					listRecents.clear();
 					listRecents = (ArrayList<CbObservation>) msg.obj;
-					log("received " + listRecents.size() + " list recents");
+					log("received " + listRecents.size() + " list recents (graph)");
 					createAndShowChart();
+					addDataToMap(false);
 				} else if (activeMode.equals("map")) {
 					// TODO: indicate data loaded/display update
 					
@@ -1181,6 +1171,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("received unique recents: NULL");
 				}
 				dataReceivedToPlot = true;
+				
 				break;
 			default:
 				log("received default message");
