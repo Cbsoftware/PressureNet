@@ -36,7 +36,7 @@ public class Chart {
 		renderer.setLegendTextSize(20);
 		renderer.setPointSize(5f);
 		renderer.setMargins(new int[] { 20, 50, 15, 20 });
-
+		
 		for (int i = 0; i < 1; i++) { // TODO: fix 1 hack
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
@@ -259,14 +259,12 @@ public class Chart {
 	protected void setChartSettings(XYMultipleSeriesRenderer renderer,
 			String title, String xTitle, String yTitle, long xMin, long xMax,
 			double yMin, double yMax, int axesColor, int labelsColor) {
-
-		// renderer.setChartTitle(title);
 		
 		renderer.setXTitle("");
 		renderer.setYTitle("");
 		renderer.setShowLegend(false);
 		renderer.setXLabelsPadding(10);
-		renderer.setYLabelsPadding(5);
+		renderer.setYLabelsPadding(0);
 		renderer.setYAxisMin(yMin);
 		renderer.setYAxisMax(yMax);
 		renderer.setYLabelsColor(0, Color.rgb(51,51,51));
@@ -285,6 +283,8 @@ public class Chart {
 		renderer.addXTextLabel(xMin, df.format("HH:mm", minDate).toString());
 		renderer.addXTextLabel(xMid, df.format("HH:mm", middleDate).toString());
 		renderer.addXTextLabel(xMax - endOffset, df.format("HH:mm", maxDate).toString());
+		renderer.setMargins(new int[] { 10, 60, 15, 20 });
+		
 	}
 
 }
