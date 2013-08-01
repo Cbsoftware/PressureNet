@@ -134,7 +134,6 @@ public class BarometerNetworkActivity extends Activity implements
 	CbObservation bestPressure;
 	CbSettingsHandler activeSettings;
 
-	private ArrayList<CbObservation> uniqueRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> currentConditionAnimation = new ArrayList<CbCurrentCondition>();
@@ -286,7 +285,7 @@ public class BarometerNetworkActivity extends Activity implements
 					globalMapCall.setMaxLat(latitude+step);
 					globalMapCall.setMinLon(longitude);
 					globalMapCall.setMaxLon(longitude+step);
-					globalMapCall.setLimit(1000);
+					globalMapCall.setLimit(2000);
 					globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 30));
 					globalMapCall.setEndTime(System.currentTimeMillis());
 					makeAPICall(globalMapCall);					
@@ -692,7 +691,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
 					apiGraph.setLimit(500);
-					askForUniqueRecents(apiGraph);
+					askForRecents(apiGraph);
 					
 					
 					System.out.println("making api call 1h for graph");
@@ -942,7 +941,7 @@ public class BarometerNetworkActivity extends Activity implements
 		double minLat = Math.min(ne.latitude, sw.latitude);
 		double maxLon = Math.max(ne.longitude, sw.longitude);
 		double minLon = Math.min(ne.longitude, sw.longitude);
-		int visibleCount = uniqueRecents.size();
+		int visibleCount = listRecents.size();
 		
 		String latitudeRange = "Lat: " + latlngFormat.format(minLat) + " to " + latlngFormat.format(maxLat);
 		String longitudeRange = "Lon: " + latlngFormat.format(minLon) + " to " + latlngFormat.format(maxLon);
@@ -1014,23 +1013,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	private void askForUniqueRecents(CbApiCall apiCall) {
-		if (mBound) {
-			log("asking for recents");
-
-			Message msg = Message.obtain(null,
-					CbService.MSG_GET_API_UNIQUE_RECENTS, apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			log("error: not bound");
-		}
-	}
-
 	public void unBindCbService() {
 		if (mBound) {
 			unbindService(mConnection);
@@ -1114,12 +1096,8 @@ public class BarometerNetworkActivity extends Activity implements
 					createAndShowChart();
 					addDataToMap(false);
 				} else if (activeMode.equals("map")) {
-					// TODO: indicate data loaded/display update
-					
-					//globalMapRecents.clear();
-					//globalMapRecents = (ArrayList<CbObservation>) msg.obj;
-					//log("fetched global map 30 minutes, total size " + globalMapRecents.size());
-					//addDataToMap(false);
+					listRecents = (ArrayList<CbObservation>) msg.obj;
+					addDataToMap(false);
 				} else {
 					//fullRecents.clear();
 					//fullRecents = (ArrayList<CbObservation>) msg.obj;					
@@ -1151,18 +1129,6 @@ public class BarometerNetworkActivity extends Activity implements
 					currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
 					//addDataToMap(false);
 				}
-				break;
-			case CbService.MSG_API_UNIQUE_RECENTS:
-				uniqueRecents = (ArrayList<CbObservation>) msg.obj;
-				if (uniqueRecents != null) {
-					log("received " + uniqueRecents.size()
-							+ " unique recent observations in buffer.");
-					addDataToMap(false);
-				} else {
-					log("received unique recents: NULL");
-				}
-				dataReceivedToPlot = true;
-				
 				break;
 			default:
 				log("received default message");
@@ -2033,12 +1999,12 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			// Add Recent Readings
 			if(!onlyConditions) {
-				if(uniqueRecents.size()> 0 ) {
+				if(listRecents.size()> 0 ) {
 					mMap.clear();
 					log("clearing map, adding new data");
 				}
 				
-				for (CbObservation observation : uniqueRecents) {
+				for (CbObservation observation : listRecents) {
 					LatLng point = new LatLng(observation.getLocation()
 							.getLatitude(), observation.getLocation()
 							.getLongitude());
@@ -2262,7 +2228,7 @@ public class BarometerNetworkActivity extends Activity implements
 		makeCurrentConditionsAPICall(currentApi);
 		 */
 		
-		askForUniqueRecents(api);
+		askForRecents(api);
 	}
 
 	// Stop listening to the barometer when our app is paused.
