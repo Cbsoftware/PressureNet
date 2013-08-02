@@ -214,8 +214,11 @@ public class LogViewerActivity extends Activity {
 		oneWeek.setTextColor(Color.GRAY);
 		
 		if (mBound) {
-			if(hoursAgo > 1) {
+			if((hoursAgo > 1) && (hoursAgo<100)) {
 				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", hoursAgo + " hours of data",true,true,null);
+			} else if(hoursAgo>100) {
+				// TODO: fix hack '1 week'
+				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", "1 week of data",true,true,null);
 			}
 			CbApiCall api = new CbApiCall();
 			api.setMinLat(-90);
