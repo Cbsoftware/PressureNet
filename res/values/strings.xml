@@ -56,8 +56,8 @@
         <item>Miles (mi)</item>
     </string-array>
     <string-array name="temperature_units">
-        <item>Celsius (C)</item>
-        <item>Fahrenheit (F)</item>
+        <item>Celsius (°C)</item>
+        <item>Fahrenheit (°F)</item>
         <item>Kelvin (K)</item>
     </string-array>
 

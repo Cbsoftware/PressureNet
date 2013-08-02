@@ -197,7 +197,8 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * preferences
 	 */
-	private String preferenceUnit;
+	private String preferencePressureUnit;
+	private String preferenceTemperatureUnit;
 	private String preferenceCollectionFrequency;
 	private boolean preferenceShareData;
 	private String preferenceShareLevel;
@@ -400,7 +401,8 @@ public class BarometerNetworkActivity extends Activity implements
 	public void getStoredPreferences() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		preferenceUnit = sharedPreferences.getString("units", "millibars");
+		preferencePressureUnit = sharedPreferences.getString("units", "millibars");
+		preferenceTemperatureUnit = sharedPreferences.getString("temperature_units", "Celsius (°C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
 				"autofrequency", "10 minutes");
 		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
@@ -427,6 +429,17 @@ public class BarometerNetworkActivity extends Activity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		return sharedPreferences.getString("units", "millibars");
+	}
+	
+
+	/**
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
+	 */
+	public String getTempUnitPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		return sharedPreferences.getString("temperature_units", "Celsius (°C)");
 	}
 
 	CbApiCall runApiCall = new CbApiCall();
@@ -985,13 +998,13 @@ public class BarometerNetworkActivity extends Activity implements
 		for(CbObservation ob : graphRecents) {
 			double rawValue = ob.getObservationValue();
 			
-			PressureUnit unit = new PressureUnit(preferenceUnit);
+			PressureUnit unit = new PressureUnit(preferencePressureUnit);
 			unit.setValue(rawValue);
-			unit.setAbbreviation(preferenceUnit);
+			unit.setAbbreviation(preferencePressureUnit);
 			double pressureInPreferredUnit = unit
 					.convertToPreferredUnit();
 			
-			ob.setObservationUnit(preferenceUnit);
+			ob.setObservationUnit(preferencePressureUnit);
 			ob.setObservationValue(pressureInPreferredUnit);
 			displayRecents.add(ob);
 		}
@@ -2103,24 +2116,38 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	public String displayPressureValue(double value) {
 		DecimalFormat df = new DecimalFormat("####.00");
-		PressureUnit unit = new PressureUnit(preferenceUnit);
+		PressureUnit unit = new PressureUnit(preferencePressureUnit);
 		unit.setValue(value);
-		unit.setAbbreviation(preferenceUnit);
+		unit.setAbbreviation(preferencePressureUnit);
 		double pressureInPreferredUnit = unit
 				.convertToPreferredUnit();
 		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
+	
+	public String displayTemperatureValue(double value) {
+		DecimalFormat df = new DecimalFormat("##.0");
+		TemperatureUnit unit = new TemperatureUnit(preferenceTemperatureUnit);
+		unit.setValue(value);
+		unit.setAbbreviation(preferenceTemperatureUnit);
+		double temperatureInPreferredUnit = unit
+				.convertToPreferredUnit();
+		return df.format(temperatureInPreferredUnit) + " " + unit.fullToAbbrev();
+	}
 
 	public void updateVisibleReading() {
-		preferenceUnit = getUnitPreference();
+		preferencePressureUnit = getUnitPreference();
+		preferenceTemperatureUnit = getTempUnitPreference();
 
 		if (recentPressureReading != 0.0) {
 			String toPrint = displayPressureValue(recentPressureReading);
+			if(toPrint.trim().equals("")) {
+				toPrint = "No barometer detected.";
+			}
 			buttonBarometer.setText(toPrint);
+			
 			ActionBar bar = getActionBar();
 			bar.setTitle(toPrint);
-			int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");
-			
+			int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");			
 			TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
 			actionBarTextView.setTextColor(Color.WHITE);
 			
@@ -2130,14 +2157,14 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		// TODO: fix default value hack
 		if(recentTemperatureReading != 1000) { 
-			String toPrint = recentTemperatureReading + "";
+			String toPrint = displayTemperatureValue(recentTemperatureReading);
 			buttonThermometer.setText(toPrint);
 		} else {
 			buttonThermometer.setText("No thermometer detected.");
 		}
 		
 		if(recentHumidityReading != 1000 ) {
-			String toPrint = recentHumidityReading + "";
+			String toPrint = recentHumidityReading + "%";
 			buttonHygrometer.setText(toPrint);
 			
 		} else {

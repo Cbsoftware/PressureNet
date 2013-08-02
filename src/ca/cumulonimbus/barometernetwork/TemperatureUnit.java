@@ -9,24 +9,24 @@ public class TemperatureUnit {
 	double valueInC;
 	String abbrev;
 	
-	private String fullToAbbrev() {
-		if(abbrev.contains("(C)")) {
+	public String fullToAbbrev() {
+		if(abbrev.contains("C")) {
 			return "°C";
-		} else if(abbrev.contains("(F)")) {
+		} else if(abbrev.contains("F")) {
 			return "°F";
 		} else if(abbrev.contains("K")) {
 			return "K ";
 		} else {
-			return "deg C";
+			return "°C";
 		}
 	}
 	
 	public double convertToPreferredUnit() {
 		try {
-			if(abbrev.equals("C")) {
+			if(abbrev.contains("C")) {
 				return valueInC;
-			} else if(abbrev.equals("F")) {
-				return (valueInC * (9/5)) + 32;
+			} else if(abbrev.contains("F")) {
+				return (valueInC * (9/5) + 32);
 			} else if(abbrev.contains("K")) {
 				return valueInC + 273.15;
 			} else {
