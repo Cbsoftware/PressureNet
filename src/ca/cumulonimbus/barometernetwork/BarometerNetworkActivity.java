@@ -148,7 +148,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button buttonThermometer;
 	private Button buttonHygrometer;
 	private Spinner spinnerTime;
-	private int hoursAgoSelected = 1;
+	private int hoursAgoSelected = 3;
 
 	private ProgressBar progressAPI;
 	
@@ -603,17 +603,17 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					
 					
-					spinnerTime.setSelection(1);
+					spinnerTime.setSelection(0);
 					hoursAgoSelected = 3;
 					
 					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-					apiGraph.setLimit(500);
+					apiGraph.setLimit(1000);
 					askForGraphRecents(apiGraph);
 					
 					
-					System.out.println("making api call 3h for graph");
-					CbApiCall api = buildMapAPICall(3);
-					api.setLimit(500);
+					System.out.println("making api call 12h for graph");
+					CbApiCall api = buildMapAPICall(12);
+					api.setLimit(5000);
 					makeAPICall(api);
 				
 					layoutAnimationControlContainer.setVisibility(View.GONE);
@@ -740,13 +740,15 @@ public class BarometerNetworkActivity extends Activity implements
 					int arg2, long arg3) {
 				String selected = arg0.getSelectedItem().toString();
 				// TODO: Fix hack
-				if (selected.contains("1 hour")) {
-					hoursAgoSelected = 1;
-				} else if (selected.contains("3 hours")) {
+				if (selected.contains("3 hours")) {
 					hoursAgoSelected = 3;
+				} else if (selected.contains("6 hours")) {
+					hoursAgoSelected = 6;
+				} else if (selected.contains("12 hours")) {
+					hoursAgoSelected = 12;
 				}
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
-				api.setLimit(500);
+				api.setLimit(1000);
 				askForGraphRecents(api);
 			}
 

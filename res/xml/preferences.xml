@@ -31,6 +31,13 @@
             android:key="send_notifications"
             android:summary="Notify when the pressure changes"
             android:title="Enable Notifications" />
+        
+        
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="only_when_charging"
+            android:summary="Only collect sensor data when charging"
+            android:title="Only when charging" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="units_prefs"
