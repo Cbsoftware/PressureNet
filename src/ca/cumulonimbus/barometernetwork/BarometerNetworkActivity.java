@@ -203,6 +203,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceShareData;
 	private String preferenceShareLevel;
 	private boolean preferenceSendNotifications;
+	private boolean preferenceUseGPS;
+	private boolean preferenceWhenCharging;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -409,6 +411,8 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceShareLevel = sharedPreferences.getString(
 				"sharing_preference", "Us, Researchers and Forecasters");
 		preferenceSendNotifications = sharedPreferences.getBoolean("send_notifications", false);
+		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", false);
+		preferenceWhenCharging = sharedPreferences.getBoolean("only_when_charging", false);
 		
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
@@ -416,6 +420,8 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
 		settings.setSendNotifications(preferenceSendNotifications);
+		settings.setUseGPS(preferenceUseGPS);
+		settings.setOnlyWhenCharging(preferenceWhenCharging);
 		settings.saveSettings();
 		log("saved new settings; sharing " + preferenceShareLevel);
 
@@ -1140,50 +1146,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 	};
-
-	/**
-	 * Migrate from the old 'pressureNETprefs' system to the new one. 3.0 ->
-	 * 3.0.1
-	 */
-	private void migratePreferences() {
-		// Log
-		String version = "";
-		PackageInfo pInfo;
-		try {
-			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			version = pInfo.versionName;
-		} catch (NameNotFoundException e) {
-		}
-
-		log("migrate prefs to " + version);
-
-		// Migrate old preferences
-		SharedPreferences oldSettings = getSharedPreferences(
-				"pressureNETPrefs", 0);
-		if (oldSettings.contains("autoupdate")) {
-			// Load
-			boolean autoUpdate = oldSettings.getBoolean("autoupdate", true);
-			String unit = oldSettings.getString("units", "Millibars (mbar)");
-			String autoFrequency = oldSettings.getString("autofrequency",
-					"10 minutes");
-			String sharing = oldSettings.getString("sharing_preference",
-					"Us, Researchers and Forecasters");
-			int firstRun = oldSettings.getInt("first_run", 1);
-
-			firstRun++;
-
-			// Store
-			SharedPreferences newSharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			SharedPreferences.Editor editor = newSharedPreferences.edit();
-			editor.putBoolean("autoupdate", autoUpdate);
-			editor.putString("units", unit);
-			editor.putString("autofrequency", autoFrequency);
-			editor.putString("sharing_preference", sharing);
-			editor.putInt("first_run", firstRun);
-			editor.commit();
-		}
-	}
 
 	/**
 	 * Welcome the user to pressureNET and explain the privacy options
@@ -1925,7 +1887,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(loc.getLongitude() + .1);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(500);
+		api.setLimit(100);
 		return api;
 	}
 

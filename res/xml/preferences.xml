@@ -39,7 +39,7 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_gps"
-            android:summary="Try GPS for locations"
+            android:summary="Attempt GPS for locations"
             android:title="Use GPS" />
         
         <CheckBoxPreference
