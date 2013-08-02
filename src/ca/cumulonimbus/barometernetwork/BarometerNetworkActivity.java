@@ -218,6 +218,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	private long lastGraphApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	private long lastLocationApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
+	private long lastGraphDataUpdate = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -1826,7 +1827,10 @@ public class BarometerNetworkActivity extends Activity implements
 			// Add Recent Readings
 			if(!onlyConditions) {
 				if(listRecents.size()> 0 ) {
-					mMap.clear();
+					if(now - lastGraphDataUpdate > (1000 * 1)) {
+						mMap.clear();
+						lastGraphDataUpdate = now;
+					}
 					log("clearing map, adding new data");
 				}
 				
