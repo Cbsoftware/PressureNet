@@ -328,8 +328,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 					if(activeMode.equals("graph")) {
 						mapMode.performClick();
+						layoutMapInfo.setVisibility(View.GONE);
 					} else if (activeMode.equals("map")) {
 						loadRecents();
+					} else if (activeMode.equals("sensors")) {
+						mapMode.performClick();
+						layoutMapInfo.setVisibility(View.GONE);
 					}
 					
 					updateMapInfoText();
@@ -1359,6 +1363,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (requestCode == REQUEST_LOCATION_CHOICE) {
 			if (data != null) {
 				mapMode.performClick();
+				layoutMapInfo.setVisibility(View.GONE);
 				long rowId = data.getLongExtra("location_id", -1);
 				if (rowId != -1) {
 					PnDb pn = new PnDb(getApplicationContext());
