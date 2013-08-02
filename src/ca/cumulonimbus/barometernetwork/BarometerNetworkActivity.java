@@ -135,8 +135,8 @@ public class BarometerNetworkActivity extends Activity implements
 	CbSettingsHandler activeSettings;
 
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
+	private ArrayList<CbObservation> graphRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
-	private ArrayList<CbCurrentCondition> currentConditionAnimation = new ArrayList<CbCurrentCondition>();
 
 	private int activeAPICallCount = 0;
 	
@@ -229,7 +229,7 @@ public class BarometerNetworkActivity extends Activity implements
 		startLog();
 		getStoredPreferences();
 		startCbService();
-		bindCbService();
+		//bindCbService();
 		setUpMap();
 		setUpUIListeners();
 		setId();
@@ -243,52 +243,45 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for each of the user's saved locations
 	 */
 	public void makeLocationAPICalls() {
-		long now = System.currentTimeMillis();
-		if( now - lastLocationApiCall >  (1000 * 60 * 10)) { 
-			System.out.println("running makeLocationAPICalls");
-			PnDb pn = new PnDb(getApplicationContext());
-			pn.open();
-			Cursor cursor = pn.fetchAllLocations();
-	
-			while (cursor.moveToNext()) {
-				String name = cursor.getString(1);
-				double latitude = cursor.getDouble(2);
-				double longitude = cursor.getDouble(3);
-				SearchLocation location = new SearchLocation(name, latitude,
-						longitude);
-				CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-				System.out.println("making api call for " + name + " at "
-						+ latitude + " " + longitude);
-				makeAPICall(locationApiCall);
-			}
-			pn.close();
-			lastLocationApiCall = now;
-		} else {
-			System.out.println("not running makeLocationAPICalls " + (now - lastGlobalApiCall));
+		System.out.println("running makeLocationAPICalls");
+		PnDb pn = new PnDb(getApplicationContext());
+		pn.open();
+		Cursor cursor = pn.fetchAllLocations();
+
+		while (cursor.moveToNext()) {
+			String name = cursor.getString(1);
+			double latitude = cursor.getDouble(2);
+			double longitude = cursor.getDouble(3);
+			SearchLocation location = new SearchLocation(name, latitude,
+					longitude);
+			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
+			System.out.println("making api call for " + name + " at "
+					+ latitude + " " + longitude);
+			makeAPICall(locationApiCall);
 		}
+		pn.close();
 	}
 	
-
 	/**
 	 * Get fresh data for the global map
 	 */
 	public void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
-			int step = 90; 	
+			int step = 90;
 			System.out.println("making global map api call");
 			
-			for (int latitude = -90; latitude <= 0; latitude+=step) {
-				for(int longitude = -180; longitude <= 90; longitude+=step) {
+			for (int latitude = -90; latitude <= 90-step; latitude+=step) {
+				for(int longitude = -180; longitude <= 180-step; longitude+=step) {
 					CbApiCall globalMapCall = new CbApiCall();
 					globalMapCall.setMinLat(latitude);
 					globalMapCall.setMaxLat(latitude+step);
 					globalMapCall.setMinLon(longitude);
 					globalMapCall.setMaxLon(longitude+step);
-					globalMapCall.setLimit(2000);
-					globalMapCall.setStartTime(System.currentTimeMillis() - (1000 * 60 * 30));
+					globalMapCall.setLimit(500);
+					globalMapCall.setStartTime(System.currentTimeMillis() - (int)(1000 * 60 * 60 * .25));
 					globalMapCall.setEndTime(System.currentTimeMillis());
-					makeAPICall(globalMapCall);					
+					makeAPICall(globalMapCall);	
 				}
 			}
 			 
@@ -335,24 +328,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 					if(activeMode.equals("graph")) {
 						mapMode.performClick();
-						/*
-						makeMapApiCallAndLoadRecents();
-						CbApiCall api = buildMapAPICall(hoursAgoSelected);
-						api.setApiName("list");
-						api.setLimit(2000);
-						askForRecents(api);
-						
-						createAndShowChart();
-						addDataToMap(false);
-						*/
-					} else if(activeMode.equals("animation")) {
-						CbApiCall api = buildMapAPICall(1);
-						askForCurrentConditionAnimation(api);
-						addDataToMap(true);
 					} else if (activeMode.equals("map")) {
 						loadRecents();
-					} else {
-						
 					}
 					
 					updateMapInfoText();
@@ -457,30 +434,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	};
 
-	Runnable animate = new Runnable() {
-		@Override
-		public void run() {
-			mMap.clear();
-			activeAnimation = true;
-			if (currentTimeProgress <= 100) {
-
-				currentTimeProgress++;
-				seekTime.setProgress(currentTimeProgress);
-				updateMapWithSeekTimeData();
-				timeHandler.postDelayed(animate, 50);
-			} else {
-				Drawable play = getResources().getDrawable(
-						R.drawable.ic_menu_light_play);
-				buttonPlay.setImageDrawable(play);
-				animateState = false;
-				currentTimeProgress = 0;
-
-				activeAnimation = false;
-				addDataToMap(true);
-			}
-
-		}
-	};
 
 	/**
 	 * Round the api call location values to improve performance (caching)
@@ -519,8 +472,8 @@ public class BarometerNetworkActivity extends Activity implements
 		return false;
 	}
 
+	/*
 	public void updateMapWithSeekTimeData() {
-
 		ArrayList<CbWeather> thisFrameCondition = new ArrayList<CbWeather>();
 		for (CbCurrentCondition c : currentConditionAnimation) {
 			if (isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
@@ -531,7 +484,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 		ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();		
-		/*
+	
 		System.out.println("full recents count " + fullRecents.size());
 		for (CbObservation o : fullRecents) {
 			if (isCloseToFrame(o.getAnimateGroupNumber(), currentTimeProgress)) {
@@ -540,10 +493,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		}
-		*/
+		
 
 		addDataFrameToMap(thisFrameCondition, thisFrameObservation);
-	}
+	}*/
 
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -637,65 +590,29 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		animationMode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(activeMode.equals("animation")) {
-					int visible = layoutAnimationControlContainer.getVisibility();
-					if(visible == View.VISIBLE) {
-						layoutAnimationControlContainer.setVisibility(View.GONE);
-					} else {
-						layoutAnimationControlContainer.setVisibility(View.VISIBLE);						
-					}
-					
-				} else {
-					mMap.clear();
-					
-					CbApiCall api = buildMapAPICall(24 * 7);
-					askForCurrentConditionAnimation(api);
-					
-					activeMode = "animation";
-					
-					layoutAnimationControlContainer.setVisibility(View.VISIBLE);
-					layoutGraph.setVisibility(View.GONE);
-					layoutMapInfo.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.GONE);
-					
-					mapMode.setTypeface(null, Typeface.NORMAL);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.BOLD);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-
-				}
-			}
-		});
-
 		graphMode.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				if(activeMode.equals("graph")) {
-					int visible = layoutGraph.getVisibility();
-					if (visible == View.VISIBLE) {
-						layoutGraph.setVisibility(View.GONE);
-					} else {
-						layoutGraph.setVisibility(View.VISIBLE);
-					}
+				
+				int visible = layoutGraph.getVisibility();
+				if (visible == View.VISIBLE) {
+					layoutGraph.setVisibility(View.GONE);
 				} else {
+					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
 					
 					
-					spinnerTime.setSelection(0);
-					hoursAgoSelected = 1;
-
+					spinnerTime.setSelection(1);
+					hoursAgoSelected = 3;
+					
 					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
 					apiGraph.setLimit(500);
-					askForRecents(apiGraph);
+					askForGraphRecents(apiGraph);
 					
 					
-					System.out.println("making api call 1h for graph");
-					CbApiCall api = buildMapAPICall(1);
+					System.out.println("making api call 3h for graph");
+					CbApiCall api = buildMapAPICall(3);
 					api.setLimit(500);
 					makeAPICall(api);
 				
@@ -708,8 +625,9 @@ public class BarometerNetworkActivity extends Activity implements
 					graphMode.setTypeface(null, Typeface.BOLD);
 					animationMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
-
 				}
+			
+				
 			}
 		});
 
@@ -815,92 +733,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		seekTime.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-
-			}
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				if (fromUser) {
-
-					currentTimeProgress = progress;
-					updateMapWithSeekTimeData();
-				}
-
-			}
-		});
-
-		buttonPlay.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				animateState = !animateState;
-				if (animateState == true) {
-					Drawable pause = getResources().getDrawable(
-							R.drawable.ic_menu_light_pause);
-					buttonPlay.setImageDrawable(pause);
-				} else {
-					timeHandler.removeCallbacks(animate);
-					Drawable play = getResources().getDrawable(
-							R.drawable.ic_menu_light_play);
-					buttonPlay.setImageDrawable(play);
-					return;
-				}
-				
-				textAnimationInformation.setText(currentConditionAnimation.size() + " data points (last week)");
-				
-				// currentTimeProgress = 0;
-				seekTime.setProgress(currentTimeProgress);
-
-				long msAgoSelected = (int) (7 * 24 * 60 * 60 * 1000);
-				long singleTimeSpan = msAgoSelected / 100;
-
-				long universalStartTime = System.currentTimeMillis()
-						- msAgoSelected;
-
-				if (currentConditionAnimation.size() > 1) {
-					Collections.sort(currentConditionAnimation,
-							new CbScience.ConditionTimeComparator());
-
-					for (CbCurrentCondition c : currentConditionAnimation) {
-						long time = c.getTime();
-						int group = (int) ((time - universalStartTime) / singleTimeSpan);
-						System.out.println("cond group " + group + " for time "
-								+ time);
-						c.setAnimateGroupNumber(group);
-					}
-
-				}
-				/*
-
-				if (fullRecents.size() > 1) {
-					Collections.sort(fullRecents,
-							new CbScience.TimeComparator());
-
-					for (CbObservation ob : fullRecents) {
-						long time = ob.getTime();
-						int group = (int) ((time - universalStartTime) / singleTimeSpan);
-						System.out.println("rec group " + group + " for time "
-								+ time);
-						ob.setAnimateGroupNumber(group);
-					}
-
-				}
-				*/
-
-				timeHandler.postDelayed(animate, 0);
-			}
-		});
-
 		spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -913,10 +745,9 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if (selected.contains("3 hours")) {
 					hoursAgoSelected = 3;
 				}
-				log("selected " + hoursAgoSelected + " hours ago");
 				CbApiCall api = buildMapAPICall(hoursAgoSelected);
 				api.setLimit(500);
-				askForRecents(api);
+				askForGraphRecents(api);
 			}
 
 			@Override
@@ -979,12 +810,13 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	private void askForCurrentConditionAnimation(CbApiCall api) {
 
+	private void askForGraphRecents(CbApiCall apiCall) {
 		if (mBound) {
-			log("asking for current conditions");
-			Message msg = Message.obtain(null,
-					CbService.MSG_GET_CURRENT_CONDITIONS, api);
+			log("asking for recents");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_API_RECENTS_FOR_GRAPH,
+					apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -995,7 +827,9 @@ public class BarometerNetworkActivity extends Activity implements
 			log("error: not bound");
 		}
 	}
+	
 
+	
 	private void askForRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
@@ -1088,30 +922,20 @@ public class BarometerNetworkActivity extends Activity implements
 				updateVisibleReading();
 				break;
 			case CbService.MSG_API_RECENTS:
-				updateAPICount(-1);
-				if(activeMode.equals("graph")) {
-					
-					listRecents = (ArrayList<CbObservation>) msg.obj;
-					log("received " + listRecents.size() + " list recents (graph)");
-					createAndShowChart();
-					addDataToMap(false);
-				} else if (activeMode.equals("map")) {
-					listRecents = (ArrayList<CbObservation>) msg.obj;
-					addDataToMap(false);
-				} else {
-					//fullRecents.clear();
-					//fullRecents = (ArrayList<CbObservation>) msg.obj;					
-					//log("received " + fullRecents.size() + " full recents");
-					//addDataToMap(false);
-				}
+				listRecents = (ArrayList<CbObservation>) msg.obj;
+				addDataToMap(false);
+				break;
+			case CbService.MSG_API_RECENTS_FOR_GRAPH:
+				graphRecents = (ArrayList<CbObservation>) msg.obj;
+				createAndShowChart();
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
-				//System.out.println("Call result: " + count + " API results cached");
+				updateAPICount(-1);
 				if(activeMode.equals("map")) {
-					CbApiCall api = buildMapAPICall(1);
+					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
-				}
+				} 
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				updateAPICount(-1);
@@ -1122,13 +946,8 @@ public class BarometerNetworkActivity extends Activity implements
 					log("conditions ARE NuLL");
 				}
 
-				if(activeMode.equals("animation")) {
-					currentConditionAnimation = (ArrayList<CbCurrentCondition>) msg.obj;
-					addDataToMap(true);
-				} else {
-					currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
-					//addDataToMap(false);
-				}
+				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
+
 				break;
 			default:
 				log("received default message");
@@ -1142,21 +961,21 @@ public class BarometerNetworkActivity extends Activity implements
 			log("createandshowchart called outside of graph mode");
 			return;
 		}
-		if (listRecents == null) {
-			log("list recents null RETURNING, no chart");
+		if (graphRecents == null) {
+			log("graph recents null RETURNING, no chart");
 			return;
-		} else if (listRecents.size() == 0) {
-			log("list recents 0, RETURNING, no chart");
+		} else if (graphRecents.size() == 0) {
+			log("graph recents 0, RETURNING, no chart");
 			return;
 		}
 	
 		// draw chart
-		log("plotting... " + listRecents.size());
+		log("plotting... " + graphRecents.size());
 		Chart chart = new Chart(getApplicationContext());
 		
 		// set units according to preference
 		ArrayList<CbObservation> displayRecents = new ArrayList<CbObservation>();
-		for(CbObservation ob : listRecents) {
+		for(CbObservation ob : graphRecents) {
 			double rawValue = ob.getObservationValue();
 			
 			PressureUnit unit = new PressureUnit(preferenceUnit);
@@ -2072,17 +1891,17 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((2 * 60 * 60 * 1000));
+				- (int) ((3 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
-		api.setMinLat(loc.getLatitude() - .05);
-		api.setMaxLat(loc.getLatitude() + .05);
-		api.setMinLon(loc.getLongitude() - .05);
-		api.setMaxLon(loc.getLongitude() + .05);
+		api.setMinLat(loc.getLatitude() - .1);
+		api.setMaxLat(loc.getLatitude() + .1);
+		api.setMinLon(loc.getLongitude() - .1);
+		api.setMaxLon(loc.getLongitude() + .1);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(100);
+		api.setLimit(500);
 		return api;
 	}
 
@@ -2108,7 +1927,6 @@ public class BarometerNetworkActivity extends Activity implements
 			maxLon = ne.longitude;
 		} else {
 			log("no map center, bailing on map call");
-			lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 			return api;
 		}
 
@@ -2118,8 +1936,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(maxLon);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(50);
-		System.out.println("building call for time " + api.getStartTime() + " " + api.getEndTime());
+		api.setLimit(500);
 		return api;
 	}
 
@@ -2172,7 +1989,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void updateAPICount(int value) {
 		activeAPICallCount+=value;
-		if(activeAPICallCount < 0) {
+		if(activeAPICallCount <= 0) {
 			activeAPICallCount = 0;
 		}
 		updateProgressBar();
@@ -2220,14 +2037,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	public void loadRecents() {
-		CbApiCall api = buildMapAPICall(1);
-
-		/*
-		CbApiCall currentApi = buildMapCurrentConditionsCall(1);
-		askForCurrentConditionRecents(currentApi);
-		makeCurrentConditionsAPICall(currentApi);
-		 */
-		
+		CbApiCall api = buildMapAPICall(.5);
 		askForRecents(api);
 	}
 

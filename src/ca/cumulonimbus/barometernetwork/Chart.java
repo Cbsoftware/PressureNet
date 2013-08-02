@@ -100,6 +100,7 @@ public class Chart {
 		for (CbObservation obs : obsList) {
 			if(obs.getObservationValue() <= 0) {
 				i++;
+				System.out.println("obs less than 0, continue loop");
 				continue; // TODO: fix hack
 			}
 			if (obs.getObservationValue() < minObservation) {
@@ -201,13 +202,6 @@ public class Chart {
 			xValues.add(dates);
 			yValues.add(values);
 			
-			// bail after a while
-			count++;
-			if(count>5000) {
-				System.out.println("CHART 5000 BAILING");
-				break;
-			}
-		
 		}
 		
 		System.out.println("dataset sizes split to  " + titles.length + " titles " + xValues.size() + " xvalues " + yValues.size() + " yValues");
