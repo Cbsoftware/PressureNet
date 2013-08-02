@@ -31,7 +31,16 @@
             android:key="send_notifications"
             android:summary="Notify when the pressure changes"
             android:title="Enable Notifications" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="device_prefs"
+        android:title="Device">
         
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_gps"
+            android:summary="Try GPS for locations"
+            android:title="Use GPS" />
         
         <CheckBoxPreference
             android:defaultValue="false"
