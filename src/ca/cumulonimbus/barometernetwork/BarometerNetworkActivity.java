@@ -604,6 +604,7 @@ public class BarometerNetworkActivity extends Activity implements
 					animationMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					
+					removeChartFromLayout();
 					
 					// set mode and load data
 					activeMode = "map";
@@ -625,15 +626,10 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
-					
+					removeChartFromLayout();
 					
 					spinnerTime.setSelection(0);
 					hoursAgoSelected = 3;
-					
-					CbApiCall apiGraph = buildMapAPICall(hoursAgoSelected);
-					apiGraph.setLimit(1000);
-					askForGraphRecents(apiGraph);
-					
 					
 					System.out.println("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(12);
@@ -984,6 +980,17 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 	}
+	
+	public void removeChartFromLayout() {
+		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
+
+		try {
+			View testChartView = findViewById(100); // TODO: ...
+			mainLayout.removeView(testChartView);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void createAndShowChart() {
 		if(!activeMode.equals("graph")) {
@@ -1022,13 +1029,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
 
-		try {
-			View testChartView = findViewById(100); // TODO: ...
-			mainLayout.removeView(testChartView);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		removeChartFromLayout();
+		
 		chartView.setId(100); // TODO: what's safe?
 
 		// add to layout
