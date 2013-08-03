@@ -440,6 +440,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
+		settings.setAppID("ca.cumulonimbus.barometernetwork");
 		settings.setSharingData(preferenceShareData);
 		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
