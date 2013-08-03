@@ -334,7 +334,7 @@ public class BarometerNetworkActivity extends Activity implements
 				@Override
 				public void onCameraChange(CameraPosition position) {
 					// change button ability based on zoom level
-					if(position.zoom >= 10) {
+					if(position.zoom >= 9) {
 						graphMode.setEnabled(true);
 						graphMode.setTextColor(Color.BLACK);
 					} else {
@@ -1392,7 +1392,7 @@ public class BarometerNetworkActivity extends Activity implements
 						}
 
 					}
-					layoutMapInfo.setVisibility(View.INVISIBLE);
+					layoutMapInfo.setVisibility(View.GONE);
 				}
 			}
 		} else if (requestCode == REQUEST_DATA_CHANGED) {
