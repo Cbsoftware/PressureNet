@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -221,6 +222,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastGraphDataUpdate = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	private boolean isConnected = false;
+
+	private boolean hasBarometer = true;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -230,6 +233,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setContentView(R.layout.main);
 		// migratePreferences();
 		checkNetwork();
+		checkBarometer();
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
@@ -243,6 +247,15 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 	} 
 
+	/**
+	 * Check if we have a barometer. Use info to disable menu items,
+	 * choose to run the service or not, etc.
+	 */
+	public void checkBarometer() {
+		PackageManager packageManager = this.getPackageManager();
+		hasBarometer = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_BAROMETER);
+	}
+	
 	/**
 	 * Check if we're online
 	 */
@@ -435,7 +448,7 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceShareLevel = sharedPreferences.getString(
 				"sharing_preference", "Us, Researchers and Forecasters");
 		preferenceSendNotifications = sharedPreferences.getBoolean("send_notifications", false);
-		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", false);
+		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", true);
 		preferenceWhenCharging = sharedPreferences.getBoolean("only_when_charging", false);
 		
 		CbSettingsHandler settings = new CbSettingsHandler(
@@ -831,9 +844,10 @@ public class BarometerNetworkActivity extends Activity implements
 	private void startCbService() {
 		log("start cbservice");
 		try {
-			serviceIntent = new Intent(this, CbService.class);
-			startService(serviceIntent);
-
+			if(hasBarometer) {
+				serviceIntent = new Intent(this, CbService.class);
+				startService(serviceIntent);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1766,7 +1780,8 @@ public class BarometerNetworkActivity extends Activity implements
         paint.setColor(Color.BLACK);
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         
-        //float textWidth = paint.measureText(toPrint);
+        float textWidth = paint.measureText(display);
+        System.out.println("text width " + textWidth);
         
         int xMax = canvas.getWidth();
         int yMax = canvas.getHeight();
