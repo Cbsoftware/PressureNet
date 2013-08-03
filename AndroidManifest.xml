@@ -31,7 +31,11 @@
         android:label="@string/app_name" >
         <service
             android:name="ca.cumulonimbus.pressurenetsdk.CbService"
-            android:enabled="true" />
+            android:enabled="true" >
+              <intent-filter>
+                <action android:name="ca.cumulonimbus.pressurenetsdk.ACTION_SEND_MEASUREMENT" />
+            </intent-filter>
+            </service>
 
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity

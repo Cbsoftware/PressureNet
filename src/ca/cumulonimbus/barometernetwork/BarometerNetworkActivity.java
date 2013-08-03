@@ -1305,7 +1305,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// submit a single reading
-			
+			sendSingleObservation();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -2130,8 +2130,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public void updateVisibleReading() {
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
-
-		System.out.println("baro report " + recentPressureReading);
 		
 		if (recentPressureReading != 0.0) {
 			String toPrint = displayPressureValue(recentPressureReading);
