@@ -659,7 +659,7 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = buildMapAPICall(12);
 					api.setLimit(5000);
 					makeAPICall(api);
-				
+					
 					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -984,7 +984,10 @@ public class BarometerNetworkActivity extends Activity implements
 				if(activeMode.equals("map")) {
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
-				} 
+				} else if(activeMode.endsWith("graph")) {
+					CbApiCall api = buildMapAPICall(hoursAgoSelected);
+					askForGraphRecents(api);
+				}
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				updateAPICount(-1);
@@ -1906,7 +1909,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((3 * 60 * 60 * 1000));
+				- (int) ((.5 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
