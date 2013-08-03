@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
@@ -273,10 +273,10 @@ public class Chart {
 		Date maxDate = new Date(xMax - endOffset);
 		long xMid = xMin + ((xMax - xMin)/2);
 		Date middleDate = new Date(xMid);
-		DateFormat df = new DateFormat();
-		renderer.addXTextLabel(xMin, df.format("HH:mm", minDate).toString());
-		renderer.addXTextLabel(xMid, df.format("HH:mm", middleDate).toString());
-		renderer.addXTextLabel(xMax - endOffset, df.format("HH:mm", maxDate).toString());
+		SimpleDateFormat df = new SimpleDateFormat("kk:mm");
+		renderer.addXTextLabel(xMin, df.format(minDate).toString());
+		renderer.addXTextLabel(xMid, df.format(middleDate).toString());
+		renderer.addXTextLabel(xMax - endOffset, df.format(maxDate).toString());
 		renderer.setMargins(new int[] { 10, 60, 15, 20 });
 		
 	}

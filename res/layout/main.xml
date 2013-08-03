@@ -233,44 +233,31 @@
         android:padding="5dp"
         android:visibility="gone" >
 
-        <ScrollView
-            android:id="@+id/scrollSensor"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_above="@+id/modeSelectionLayout" >
+        <Button
+            android:id="@+id/imageButtonBarometer"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_menu_light_barometer"
+            android:textColor="@android:color/black" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+        <Button
+            android:id="@+id/imageButtonThermometer"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_menu_light_thermometer"
+            android:text="No thermometer detected"
+            android:textColor="@android:color/black" />
 
-                <Button
-                    android:id="@+id/imageButtonBarometer"
-                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_menu_light_barometer"
-                    android:textColor="@android:color/black" />
-
-                <Button
-                    android:id="@+id/imageButtonThermometer"
-                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_menu_light_thermometer"
-                    android:text="No thermometer detected"
-                    android:textColor="@android:color/black" />
-
-                <Button
-                    android:id="@+id/imageButtonHygrometer"
-                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_menu_light_hygrometer"
-                    android:text="No hygrometer detected"
-                    android:textColor="@android:color/black" />
-            </LinearLayout>
-        </ScrollView>
+        <Button
+            android:id="@+id/imageButtonHygrometer"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_menu_light_hygrometer"
+            android:text="No hygrometer detected"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
 </RelativeLayout>
