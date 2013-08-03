@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +41,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,7 +71,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -78,7 +78,6 @@ import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
-import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
@@ -86,13 +85,11 @@ import ca.cumulonimbus.pressurenetsdk.CbWeather;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class BarometerNetworkActivity extends Activity implements
@@ -223,6 +220,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastLocationApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	private long lastGraphDataUpdate = System.currentTimeMillis() - (1000 * 60 * 10);
 	
+	private boolean isConnected = false;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -230,6 +229,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		setContentView(R.layout.main);
 		// migratePreferences();
+		checkNetwork();
 		startLog();
 		getStoredPreferences();
 		startCbService();
@@ -243,6 +243,30 @@ public class BarometerNetworkActivity extends Activity implements
 		startSensorListeners();
 	} 
 
+	/**
+	 * Check if we're online
+	 */
+	public void checkNetwork() {
+		ConnectivityManager cm =
+		        (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+		 
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		if(activeNetwork!=null) {
+			isConnected = activeNetwork.isConnectedOrConnecting();
+		} else {
+			isConnected = false;
+		}
+	}
+	
+	/** 
+	 * Alert the user if pressureNET is offline
+	 */
+	public void displayNetworkOfflineToast() {
+		if(!isConnected) {
+			Toast.makeText(getApplicationContext(), "Cannot connect to network.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
 	/**
 	 * Get fresh data for each of the user's saved locations
 	 */
@@ -2048,6 +2072,8 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onResume();
 		bindCbService();
 		
+		checkNetwork();
+		displayNetworkOfflineToast();
 
 		getStoredPreferences();
 
