@@ -230,6 +230,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setContentView(R.layout.main);
 		// migratePreferences();
 		checkNetwork();
+		startSensorListeners();
 		startLog();
 		getStoredPreferences();
 		startCbService();
@@ -240,7 +241,6 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpFiles();
 		showWelcomeActivity();
 		setUpActionBar();
-		startSensorListeners();
 	} 
 
 	/**
@@ -2131,19 +2131,20 @@ public class BarometerNetworkActivity extends Activity implements
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
 
+		System.out.println("baro report " + recentPressureReading);
+		
 		if (recentPressureReading != 0.0) {
 			String toPrint = displayPressureValue(recentPressureReading);
-			if(toPrint.trim().equals("")) {
-				toPrint = "No barometer detected.";
+			if(toPrint.length() > 2) {
+				buttonBarometer.setText(toPrint);
+				ActionBar bar = getActionBar();
+				bar.setTitle(toPrint);
+				int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");			
+				TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
+				actionBarTextView.setTextColor(Color.WHITE);
+			} else {
+				buttonBarometer.setText("No barometeer detected.");
 			}
-			buttonBarometer.setText(toPrint);
-			
-			ActionBar bar = getActionBar();
-			bar.setTitle(toPrint);
-			int actionBarTitleId = getResources().getSystem().getIdentifier("action_bar_title", "id", "android");			
-			TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
-			actionBarTextView.setTextColor(Color.WHITE);
-			
 		} else {
 			buttonBarometer.setText("No barometer detected.");
 		}
@@ -2189,6 +2190,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	public void startSensorListeners() {
 		try {
+			updateVisibleReading();
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 			Sensor pressureSensor = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
 			Sensor temperatureSensor = sm
@@ -2198,14 +2200,20 @@ public class BarometerNetworkActivity extends Activity implements
 			if (pressureSensor != null) {
 				pressureReadingsActive = sm.registerListener(this,
 						pressureSensor, SensorManager.SENSOR_DELAY_UI);
+			} else {
+				recentPressureReading = 0.0;
 			}
 			if (temperatureSensor != null) {
 				temperatureReadingsActive = sm.registerListener(this,
 						temperatureSensor, SensorManager.SENSOR_DELAY_UI);
+			} else {
+				recentTemperatureReading = 1000.0;
 			}
 			if (humiditySensor != null) {
 				humidityReadingsActive = sm.registerListener(this,
 						humiditySensor, SensorManager.SENSOR_DELAY_UI);
+			} else {
+				recentHumidityReading = 1000.0;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
