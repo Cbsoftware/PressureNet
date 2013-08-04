@@ -53,6 +53,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -1768,8 +1769,52 @@ public class BarometerNetworkActivity extends Activity implements
 
 		int x = 0;
 		int y = canvas.getHeight();
+
+
+		// Use the screen data to determine text size
+		int defaultTextSize = 16;
+		int defaultTextXOffset = 48;
+		int defaultTextYOffset = 30;
+
+		int textSize = defaultTextSize;
+		int textXOffset = defaultTextXOffset;
+		int textYOffset = defaultTextYOffset;
 		
-		int textSize = 16;
+		// Check screen metrics
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		switch(metrics.densityDpi){
+		     case DisplayMetrics.DENSITY_LOW:
+		    	 textSize = defaultTextSize - 10;
+		    	 textXOffset = defaultTextXOffset - 30;
+		    	 textYOffset = defaultTextYOffset - 25;
+		         break;
+		     case DisplayMetrics.DENSITY_MEDIUM:
+		    	 textSize = defaultTextSize - 8;
+		    	 textXOffset = defaultTextXOffset - 24;
+		    	 textYOffset = defaultTextYOffset - 15;
+		    	 break;
+		     case DisplayMetrics.DENSITY_HIGH:
+		    	 textSize = defaultTextSize - 4;
+		    	 textXOffset = defaultTextXOffset - 12;
+		    	 textYOffset = defaultTextYOffset - 8;
+
+		    	 break;
+		     case DisplayMetrics.DENSITY_XHIGH:
+		    	 textSize = defaultTextSize;
+		    	 textXOffset = defaultTextXOffset + 3;
+		    	 textYOffset = defaultTextYOffset;
+                 break;
+		     case DisplayMetrics.DENSITY_XXHIGH:
+		    	 textSize = defaultTextSize  + 2;
+		    	 textXOffset = defaultTextXOffset + 5;
+		    	 textYOffset = defaultTextYOffset + 5;
+                 break;
+		     default:
+		    	 break;
+             
+		}
+		
 		
 		//Paint
         Paint paint = new Paint();
@@ -1780,15 +1825,12 @@ public class BarometerNetworkActivity extends Activity implements
         paint.setColor(Color.BLACK);
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         
-        float textWidth = paint.measureText(display);
-        System.out.println("text width " + textWidth);
-        
         int xMax = canvas.getWidth();
         int yMax = canvas.getHeight();
         
 		drawable.draw(canvas);
 
-        canvas.drawText(display, 48, 30, paint);
+        canvas.drawText(display, textXOffset, textYOffset, paint);
 		
 		
 		
@@ -2127,7 +2169,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	public String displayPressureValue(double value) {
-		DecimalFormat df = new DecimalFormat("####.00");
+		DecimalFormat df = new DecimalFormat("####.0");
 		PressureUnit unit = new PressureUnit(preferencePressureUnit);
 		unit.setValue(value);
 		unit.setAbbreviation(preferencePressureUnit);
