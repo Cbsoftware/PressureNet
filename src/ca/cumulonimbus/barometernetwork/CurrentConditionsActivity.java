@@ -168,13 +168,37 @@ public class CurrentConditionsActivity extends Activity {
     	return nvp;
     }
     
+    /** 
+     * Choose icon between sun and moon depending on daytimes
+     * and on/off status. 
+     */
+    public void setCorrectClearIcon(boolean on) {
+		if(isDaytime()) {
+			// set to Sun icon
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_sun);
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_sun);
+			}
+		} else {
+			// set to Moon icon
+			// TODO: show moon icon depending on phase
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+		}
+
+    }
+    
     /**
      * Change the buttons on the UI. General Conditions.
      * @param condition
      */
     private void switchActiveGeneral(String condition) {
     	// Turn everything off
-    	buttonSunny.setImageResource(R.drawable.ic_wea_sun);
+    	setCorrectClearIcon(false);
     	buttonFoggy.setImageResource(R.drawable.ic_wea_fog3);
     	buttonCloudy.setImageResource(R.drawable.ic_wea_cloud);
     	buttonPrecipitation.setImageResource(R.drawable.ic_wea_precip);
@@ -183,7 +207,7 @@ public class CurrentConditionsActivity extends Activity {
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.sunny))) {
-    		buttonSunny.setImageResource(R.drawable.ic_wea_on_sun);
+        	setCorrectClearIcon(true);
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
@@ -922,18 +946,15 @@ public class CurrentConditionsActivity extends Activity {
 		}
 		
 		// Check sunrise and sunset times to choose Sun vs. Moon
-		SunLocation sunLocation = new SunLocation(mLatitude, mLongitude);
-		Calendar calendar = Calendar.getInstance();
+		if(isDaytime()) {
+			// set to Sun icon
+			buttonSunny.setImageResource(R.drawable.ic_wea_sun);
+		} else {
+			// set to Moon icon
+			buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			// TODO: show moon icon depending on phase
+		}
 		
-		long tzMsOffset = calendar.getTimeZone().getOffset(calendar.getInstance().getTimeInMillis());
-		long tzHoursOffset = tzMsOffset / ( 1000 * 60 * 60);
-		String gmtString = "GMT" + tzHoursOffset;
-		
-		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
-		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(Calendar.getInstance());
-		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(Calendar.getInstance());
-		
-		Toast.makeText(getApplicationContext(), gmtString + " Sunrise " +  officialSunrise.get(Calendar.HOUR_OF_DAY)  +" Sunset " + officialSunset.get(Calendar.HOUR_OF_DAY),  Toast.LENGTH_LONG).show();
 		
 		// Set the initial state: Sunny, no wind
 		// Or guess from pressure data
@@ -946,8 +967,31 @@ public class CurrentConditionsActivity extends Activity {
 		//condition.setWindy(0 + "");
 	}
 	
-	// Log data to SD card for debug purposes.
-	// To enable logging, ensure the Manifest allows writing to SD card.
+	public boolean isDaytime() {
+		SunLocation sunLocation = new SunLocation(mLatitude, mLongitude);
+		Calendar calendar = Calendar.getInstance();
+		
+		long tzMsOffset = calendar.getTimeZone().getOffset(calendar.getInstance().getTimeInMillis());
+		long tzHoursOffset = tzMsOffset / ( 1000 * 60 * 60);
+		String gmtString = "GMT" + tzHoursOffset;
+		
+		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
+		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(Calendar.getInstance());
+		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(Calendar.getInstance());
+		
+		int sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
+		int sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);
+		int nowHour = calendar.get(Calendar.HOUR_OF_DAY);
+		
+		return (nowHour >= sunriseHour) && (nowHour <= sunsetHour);
+	}
+	
+	/**
+	 *  Log data to SD card for debug purposes.
+	 *  To enable logging, ensure the Manifest allows writing to SD card.
+	 * 
+	 * @param text
+	 */
 	public void logToFile(String text) {
 		try {
 			OutputStream output = new FileOutputStream(mAppDir + "/log.txt", true);
