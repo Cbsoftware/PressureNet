@@ -14,6 +14,10 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -97,6 +101,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
 
+	private static final int NOTIFICATION_ID = 101325;
+	
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
 	double mReading = 0.0;
@@ -247,6 +253,57 @@ public class BarometerNetworkActivity extends Activity implements
 		showWelcomeActivity();
 		setUpActionBar();
 	} 
+	
+	public void deliverNotification(String tendencyChange ) {
+		System.out.println("delivering notification for tendency change");
+		Notification.Builder mBuilder = new Notification.Builder(
+				getApplicationContext())
+				.setSmallIcon(
+						android.R.drawable.ic_dialog_info)
+				.setContentTitle("pressureNET")
+				.setContentText(
+						"Trend change: "
+								+ tendencyChange);
+		// Creates an explicit intent for an activity
+		Intent resultIntent = new Intent(getApplicationContext(), CurrentConditionsActivity.class);
+		// Current Conditions activity likes to know the location in the Intent
+		double notificationLatitude = 0.0;
+		double notificationLongitude = 0.0;
+		try {
+			LocationManager lm = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (loc.getLatitude() != 0) {
+				notificationLatitude = loc.getLatitude();
+				notificationLongitude = loc.getLongitude();
+			} 
+		} catch (Exception e) {
+
+		}
+		
+		Bundle locationsBundle = new Bundle();
+		locationsBundle.putString("latitude", notificationLatitude + "");
+		locationsBundle.putString("longitude", notificationLongitude + "");
+		resultIntent.putExtras(locationsBundle);
+		
+		TaskStackBuilder stackBuilder = TaskStackBuilder
+				.create(getApplicationContext());
+
+		stackBuilder
+				.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent = stackBuilder
+				.getPendingIntent(
+						0,
+						PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// mId allows you to update the
+		// notification later on.
+		mNotificationManager.notify(
+				NOTIFICATION_ID,
+				mBuilder.build());
+	}
 
 	/**
 	 * Check if we have a barometer. Use info to disable menu items,
@@ -1013,6 +1070,9 @@ public class BarometerNetworkActivity extends Activity implements
 				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
 
 				break;
+			case CbService.MSG_CHANGE_NOTIFICATION:
+				String change = (String) msg.obj;
+				deliverNotification(change);
 			default:
 				log("received default message");
 				super.handleMessage(msg);

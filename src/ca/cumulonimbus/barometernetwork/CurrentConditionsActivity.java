@@ -903,7 +903,7 @@ public class CurrentConditionsActivity extends Activity {
 		Bundle bundle = intent.getExtras();
 		
 		try {
-			mAppDir = bundle.getString("appdir");
+			//mAppDir = bundle.getString("appdir");
 			mLatitude = intent.getDoubleExtra("latitude",0.0);
 			mLongitude = intent.getDoubleExtra("longitude",-1.0);
 			Location location = new Location("network");
