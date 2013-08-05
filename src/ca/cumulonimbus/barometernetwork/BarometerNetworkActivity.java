@@ -282,10 +282,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 		
-		Bundle locationsBundle = new Bundle();
-		locationsBundle.putString("latitude", notificationLatitude + "");
-		locationsBundle.putString("longitude", notificationLongitude + "");
-		resultIntent.putExtras(locationsBundle);
+		resultIntent.putExtra("latitude", notificationLatitude);
+		resultIntent.putExtra("longitude", notificationLongitude);
 		
 		TaskStackBuilder stackBuilder = TaskStackBuilder
 				.create(getApplicationContext());

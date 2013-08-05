@@ -13,6 +13,9 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.SunLocation;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
@@ -900,8 +904,7 @@ public class CurrentConditionsActivity extends Activity {
 		
 		// Start adding the data for our current condition
 		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
-		
+			
 		try {
 			//mAppDir = bundle.getString("appdir");
 			mLatitude = intent.getDoubleExtra("latitude",0.0);
@@ -914,10 +917,23 @@ public class CurrentConditionsActivity extends Activity {
 			condition.setTime(Calendar.getInstance().getTimeInMillis());
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
-			//Toast.makeText(this, userSelf + " " + mAppDir, Toast.LENGTH_SHORT).show();
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
 		}
+		
+		// Check sunrise and sunset times to choose Sun vs. Moon
+		SunLocation sunLocation = new SunLocation(mLatitude, mLongitude);
+		Calendar calendar = Calendar.getInstance();
+		
+		long tzMsOffset = calendar.getTimeZone().getOffset(calendar.getInstance().getTimeInMillis());
+		long tzHoursOffset = tzMsOffset / ( 1000 * 60 * 60);
+		String gmtString = "GMT" + tzHoursOffset;
+		
+		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
+		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(Calendar.getInstance());
+		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(Calendar.getInstance());
+		
+		Toast.makeText(getApplicationContext(), gmtString + " Sunrise " +  officialSunrise.get(Calendar.HOUR_OF_DAY)  +" Sunset " + officialSunset.get(Calendar.HOUR_OF_DAY),  Toast.LENGTH_LONG).show();
 		
 		// Set the initial state: Sunny, no wind
 		// Or guess from pressure data
