@@ -173,7 +173,7 @@ public class CurrentConditionsActivity extends Activity {
      * and on/off status. 
      */
     public void setCorrectClearIcon(boolean on) {
-		if(isDaytime()) {
+		if(isDaytime(mLatitude, mLongitude)) {
 			// set to Sun icon
 			if(on) {
 				buttonSunny.setImageResource(R.drawable.ic_wea_on_sun);
@@ -946,7 +946,7 @@ public class CurrentConditionsActivity extends Activity {
 		}
 		
 		// Check sunrise and sunset times to choose Sun vs. Moon
-		if(isDaytime()) {
+		if(isDaytime(mLatitude, mLongitude)) {
 			// set to Sun icon
 			buttonSunny.setImageResource(R.drawable.ic_wea_sun);
 		} else {
@@ -967,8 +967,8 @@ public class CurrentConditionsActivity extends Activity {
 		//condition.setWindy(0 + "");
 	}
 	
-	public boolean isDaytime() {
-		SunLocation sunLocation = new SunLocation(mLatitude, mLongitude);
+	public static boolean isDaytime(double latitude, double longitude) {
+		SunLocation sunLocation = new SunLocation(latitude, longitude);
 		Calendar calendar = Calendar.getInstance();
 		
 		long tzMsOffset = calendar.getTimeZone().getOffset(calendar.getInstance().getTimeInMillis());

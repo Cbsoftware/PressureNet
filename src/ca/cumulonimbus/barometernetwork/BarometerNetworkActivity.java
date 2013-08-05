@@ -241,6 +241,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// migratePreferences();
 		checkNetwork();
 		checkBarometer();
+		checkLocation();
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
@@ -253,6 +254,17 @@ public class BarometerNetworkActivity extends Activity implements
 		showWelcomeActivity();
 		setUpActionBar();
 	} 
+	
+	public void checkLocation() {
+		LocationManager lm = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		Location loc = lm
+				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		double latitude = loc.getLatitude();
+		double longitude = loc.getLongitude();
+		mLatitude = latitude;
+		mLongitude = longitude;
+	}
 	
 	public void deliverNotification(String tendencyChange ) {
 		System.out.println("delivering notification for tendency change");
@@ -1051,6 +1063,7 @@ public class BarometerNetworkActivity extends Activity implements
 				if(activeMode.equals("map")) {
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
+					askForCurrentConditionRecents(api);
 				} else if(activeMode.endsWith("graph")) {
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
 					askForGraphRecents(api);
@@ -1546,6 +1559,10 @@ public class BarometerNetworkActivity extends Activity implements
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
+			if(!CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
+				sunDrawable = this.getResources().getDrawable(
+						R.drawable.ic_wea_col_moon2);
+			}			
 			Drawable[] layers = { weatherBackgroundDrawable,
 					resizeDrawable(sunDrawable) };
 			LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -2169,6 +2186,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public void loadRecents() {
 		CbApiCall api = buildMapAPICall(.5);
 		askForRecents(api);
+		askForCurrentConditionRecents(api);
 	}
 
 	// Stop listening to the barometer when our app is paused.
