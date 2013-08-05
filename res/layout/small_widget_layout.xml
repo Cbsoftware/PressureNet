@@ -1,63 +1,44 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/widget_margin" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutSmallWidget"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/widget_margin"
+    android:background="@drawable/bg_widget_hug"
+    android:padding="10dp" >
 
-    <LinearLayout
-        android:id="@+id/layoutSmallWidget"
+    <ImageButton
+        android:id="@+id/widgetSmallSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:orientation="horizontal"
-        android:background="@drawable/bg_widget_hug" >
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:src="@drawable/widget_button_drawable" />
 
-        <ImageButton
-            android:id="@+id/widgetSmallSubmitButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@null"
-            android:maxHeight="62dp"
-            android:paddingLeft="8dp"
-            android:src="@drawable/widget_button_drawable" />
+    <TextView
+        android:id="@+id/widgetSmallText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:clickable="true"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:paddingLeft="-5dp" >
+    <ImageView
+        android:id="@+id/widget_tendency_image_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:src="@drawable/bg_widget_rising"
+        android:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/widget_tendency_image_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:background="@null"
-                android:maxHeight="62dp"
-                android:paddingBottom="25dp"
-                android:paddingTop="8dp"
-                android:src="@drawable/bg_widget_rising" />
+    <ImageView
+        android:id="@+id/widget_tendency_image_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:src="@drawable/bg_widget_falling"
+        android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/widget_tendency_image_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@null"
-                android:maxHeight="62dp"
-                android:src="@drawable/bg_widget_falling"
-                android:visibility="invisible" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/widgetSmallText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
-
-</FrameLayout>
+</RelativeLayout>

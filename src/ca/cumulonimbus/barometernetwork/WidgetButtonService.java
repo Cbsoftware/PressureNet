@@ -102,17 +102,17 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					
 					if(tendency.contains("Rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.INVISIBLE);
+						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
 						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.TOP);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "rising");
 					} else if(tendency.contains("Falling")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
+						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.VISIBLE);
 						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.BOTTOM);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "falling");
 					} else if(tendency.contains("Steady")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.INVISIBLE);
+						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
+						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "steady");
 					} else {
 						//remoteView.setInt(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
