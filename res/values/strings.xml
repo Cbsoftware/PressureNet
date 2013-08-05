@@ -93,7 +93,7 @@
         We are currently building a system to let you access this data yourself, since you contribute. Thank you!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
-    <string name="sunny">Sunny</string>
+    <string name="sunny">Clear</string>
     <string name="foggy">Foggy</string>
     <string name="cloudy">Cloudy</string>
     <string name="precipitation">Precipitation</string>
