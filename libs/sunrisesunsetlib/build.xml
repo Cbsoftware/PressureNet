@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ ~ Copyright 2008-2009 Mike Reedell / LuckyCatLabs.
+ ~ 
+ ~ Licensed under the Apache License, Version 2.0 (the "License");
+ ~ you may not use this file except in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~ 
+ ~      http://www.apache.org/licenses/LICENSE-2.0
+ ~ 
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS,
+ ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~ See the License for the specific language governing permissions and
+ ~ limitations under the License.
+-->
+
+<project name="sunrisesunsetlib" basedir="." default="all">
+
+	<property name="app-name" value="SunriseSunsetLib" />
+	<property name="build-dir" value="build" />
+	<property name="dist-dir" value="dist" />
+	<property name="src-dir" value="src" />
+	<property name="test-dir" value="test" />
+	<property name="docs-dir" value="docs" />
+
+	<target name="all" description="Compiles, packages, unit test and generate javadoc">
+		<antcall target="clean" />
+		<antcall target="compile" />
+		<antcall target="package" />
+		<antcall target="unittest" />
+		<antcall target="javadoc" />
+	</target>
+
+	<target name="compile" description="Cleanly compiles the sunrisesunset lib.">
+		<antcall target="cleanbuilddir" />
+		<mkdir dir="${build-dir}/test" />
+		<javac srcdir="${src-dir}" destdir="${build-dir}" fork="true" />
+	</target>
+
+	<target name="package" description="Packages the compiled code into a jar file.">
+		<jar destfile="${dist-dir}/SunriseSunsetLib-bin.jar">
+			<fileset dir="${build-dir}" includes="**/*.class"/>
+			<fileset dir="." includes="LICENSE"/>
+		    <manifest>
+		      <attribute name="Built-By" value="${user.name}"/>
+		      <attribute name="Implementation-Vendor" value="LuckyCatLabs"/>
+		      <attribute name="Implementation-Title" value="SunriseSunsetCalculatorLib"/>
+		      <attribute name="Implementation-Version" value="1.0"/>
+		    </manifest>
+		</jar>
+		
+		<jar destfile="${dist-dir}/SunriseSunsetLib-src.jar">
+			<fileset dir="${src-dir}" includes="**/*.java"/>
+			<fileset dir="." includes="LICENSE"/>
+			<manifest>
+		      <attribute name="Built-By" value="${user.name}"/>
+		      <attribute name="Implementation-Vendor" value="LuckyCatLabs"/>
+		      <attribute name="Implementation-Title" value="SunriseSunsetCalculatorLib"/>
+		      <attribute name="Implementation-Version" value="1.0"/>				
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="unittest" description="Run the JUnit tests.">
+		<path id="test.class.path">
+			<pathelement path="${dist-dir}/SunriseSunsetLib-bin.jar" />
+			<pathelement path="lib/junit-4.3.1.jar" />
+		</path>
+		<javac srcdir="${test-dir}" destdir="${build-dir}/test" classpathref="test.class.path" />
+		<jar destfile="${dist-dir}/SunriseSunsetLibTest.jar" basedir="${build-dir}/test/" />
+
+		<junit printsummary="withOutAndErr" showoutput="yes" haltonfailure="yes" fork="true" forkmode="once">
+			<classpath>
+				<pathelement location="${dist-dir}/SunriseSunsetLib-bin.jar" />
+				<pathelement location="lib/junit-4.3.1.jar" />
+				<pathelement location="${dist-dir}/SunriseSunsetLibTest.jar" />
+			</classpath>
+
+			<batchtest todir=".">
+				<formatter type="brief" usefile="false" />
+				<fileset dir="${test-dir}">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+			<formatter type="plain" usefile="false" />
+		</junit>
+	</target>
+
+	<target name="javadoc" description="Generate javadoc">
+		<mkdir dir="${docs-dir}/api" />
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${docs-dir}/api" includes="*.*" />
+		</delete>
+		
+		<javadoc packagenames="com.luckycatlabs.sunrisesunset.*"
+			defaultexcludes="yes"
+			destdir="${docs-dir}/api"
+			version="true"
+			windowtitle="LuckyCatLabs - Sunrise Sunset Lib API">
+			
+			<fileset dir="${src-dir}" defaultexcludes="yes">
+				<include name="com/luckycatlabs/sunrisesunset/**" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<target name="clean" description="Cleans the build and dist directories.">
+		<antcall target="cleandistdir" />
+		<antcall target="cleanbuilddir" />
+	</target>
+
+	<target name="cleandistdir">
+		<mkdir dir="${dist-dir}" />
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${dist-dir}" includes="*.jar" />
+		</delete>
+	</target>
+
+	<target name="cleanbuilddir">
+		<mkdir dir="${build-dir}" />
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build-dir}" includes="**/*" />
+		</delete>
+	</target>
+</project>
