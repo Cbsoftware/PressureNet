@@ -24,6 +24,8 @@ public class PressureUnit {
 			return "mmHg";
 		} else if(abbrev.contains("inHg")) {
 			return "inHg"; 
+		} else if(abbrev.contains("psi")) {
+			return "psi"; 
 		} else {
 			return "mbar";
 		}
@@ -46,6 +48,8 @@ public class PressureUnit {
 				return valueInMb * 0.75006;
 			} else if(abbrev.contains("inHg")) {
 				return valueInMb * 0.02961; 
+			} else if(abbrev.contains("psi")) {
+				return valueInMb * 0.01450377; 
 			} else {
 				return valueInMb;
 			}

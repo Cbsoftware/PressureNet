@@ -48,6 +48,7 @@
         <item>Standard Atmosphere (atm)</item>
         <item>Millimeteres of Mercury (mmHg)</item>
         <item>Inches of Mercury (inHg)</item>
+        <item>Pounds per Square Inch (psi)</item>
     </string-array>
     <string-array name="distance_units">
         <item>Meters (m)</item>
