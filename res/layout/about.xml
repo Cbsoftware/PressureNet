@@ -8,7 +8,9 @@
         android:layout_height="wrap_content"
         android:layout_weight=".5"
         android:orientation="vertical"
-        android:clickable="true" >
+        android:clickable="true" 
+        
+        android:id="@+id/layoutAboutPressureNET">
 
         <ImageView
             android:id="@+id/imagePressureNET"
@@ -43,7 +45,8 @@
         android:layout_weight=".5"
         android:background="#0099cc"
         android:orientation="vertical" 
-        android:clickable="true">
+        android:clickable="true"
+        android:id="@+id/layoutAboutCumulonimbus">
 
         <ImageView
             android:id="@+id/imageCumulonimbus"
