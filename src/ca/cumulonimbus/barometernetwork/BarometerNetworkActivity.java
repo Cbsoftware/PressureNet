@@ -1392,8 +1392,21 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// submit a single reading
 			sendSingleObservation();
+		} else if (item.getItemId() == R.id.menu_grow_pressurenet) {
+			growPressureNET();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	/**
+	 * Send a share intent to encourage network growth
+	 */
+	private void growPressureNET() {
+		Intent sendIntent = new Intent();
+		sendIntent.setAction(Intent.ACTION_SEND);
+		sendIntent.putExtra(Intent.EXTRA_TEXT, "pressureNET crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork");
+		sendIntent.setType("text/plain");
+		startActivity(sendIntent);
 	}
 
 	/**
