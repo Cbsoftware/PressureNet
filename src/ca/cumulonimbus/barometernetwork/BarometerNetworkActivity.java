@@ -1414,7 +1414,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Email debug logs to Cumulonimbus.
 	 * 
 	 */
-	public void emailLogs() {
+	private void emailLogs() {
 		try {
 			String strFile = mAppDir + "/log.txt";
 
@@ -1502,7 +1502,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Give a quick overview of recent
 	// submissions
-	public void viewLog() {
+	private void viewLog() {
 		try {
 			Intent intent = new Intent(this, LogViewerActivity.class);
 			startActivity(intent);
@@ -1511,7 +1511,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void setUpActionBar() {
+	private void setUpActionBar() {
 		// TODO: Compatible Action Bar
 		ActionBar bar = getActionBar();
 		bar.setDisplayUseLogoEnabled(true);
@@ -1546,7 +1546,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	// Used to write a log to SD card. Not used unless logging enabled.
-	public void setUpFiles() {
+	private void setUpFiles() {
 		try {
 			File homeDirectory = getExternalFilesDir(null);
 			if (homeDirectory != null) {
@@ -1559,7 +1559,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	// Assume that matching latitude and longitude can only be you.
-	public boolean obsIsMe(CbObservation ob) {
+	private boolean obsIsMe(CbObservation ob) {
 		return ((ob.getUser_id().equals(android_id)));
 	}
 
@@ -1771,7 +1771,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
-	public void addDataFrameToMap(ArrayList<CbWeather> frameConditions,
+	private void addDataFrameToMap(ArrayList<CbWeather> frameConditions,
 			ArrayList<CbWeather> frameObservations) {
 
 		int totalEachAllowed = 30;
@@ -1829,7 +1829,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public Bitmap drawableToBitmap(Drawable drawable, CbObservation obs) {
+	private Bitmap drawableToBitmap(Drawable drawable, CbObservation obs) {
 		/*
 		if (drawable instanceof BitmapDrawable) {
 			return ((BitmapDrawable) drawable).getBitmap();
@@ -1921,7 +1921,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return bitmap;
 	}
 
-	public Drawable getSingleDrawable(LayerDrawable layerDrawable) {
+	private Drawable getSingleDrawable(LayerDrawable layerDrawable) {
 
 		int resourceBitmapHeight = layerDrawable.getMinimumHeight(), resourceBitmapWidth = layerDrawable
 				.getMinimumWidth();
@@ -1952,7 +1952,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
-	public void addDataToMap(boolean onlyConditions) {
+	private void addDataToMap(boolean onlyConditions) {
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		
 		System.out.println("add data to map");
@@ -2049,7 +2049,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param locationRowId
 	 * @return
 	 */
-	public CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
+	private CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
 				- (int) ((.5 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
@@ -2065,7 +2065,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	public CbApiCall buildMapAPICall(double hoursAgo) {
+	private CbApiCall buildMapAPICall(double hoursAgo) {
 		// TODO: Don't override hoursAgo. One method for map overlays
 		// and one for graph generation; map overlays is static 1 hour ago
 		long startTime = System.currentTimeMillis()
@@ -2100,7 +2100,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	public CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
+	private CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
@@ -2133,7 +2133,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 	
-	public void sendSingleObservation() {
+	private void sendSingleObservation() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
 			try {
@@ -2163,7 +2163,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	public void makeAPICall(CbApiCall apiCall) {
+	private void makeAPICall(CbApiCall apiCall) {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_MAKE_API_CALL,
 					apiCall);
@@ -2196,7 +2196,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void loadRecents() {
+	private void loadRecents() {
 		CbApiCall api = buildMapAPICall(.5);
 		askForRecents(api);
 		askForCurrentConditionRecents(api);
@@ -2253,7 +2253,7 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onDestroy();
 	}
 	
-	public String displayPressureValue(double value) {
+	private String displayPressureValue(double value) {
 		DecimalFormat df = new DecimalFormat("####.0");
 		PressureUnit unit = new PressureUnit(preferencePressureUnit);
 		unit.setValue(value);
@@ -2263,7 +2263,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 	
-	public String displayTemperatureValue(double value) {
+	private String displayTemperatureValue(double value) {
 		DecimalFormat df = new DecimalFormat("##.0");
 		TemperatureUnit unit = new TemperatureUnit(preferenceTemperatureUnit);
 		unit.setValue(value);
@@ -2273,7 +2273,7 @@ public class BarometerNetworkActivity extends Activity implements
 		return df.format(temperatureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 
-	public void updateVisibleReading() {
+	private void updateVisibleReading() {
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
@@ -2313,7 +2313,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Log data to SD card for debug purposes.
 	// To enable logging, ensure the Manifest allows writing to SD card.
-	public void logToFile(String text) {
+	private void logToFile(String text) {
 		try {
 			OutputStream output = new FileOutputStream(mAppDir + "/log.txt",
 					true);
@@ -2327,12 +2327,12 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void log(String text) {
+	private void log(String text) {
 		// logToFile(text);
 		System.out.println(text);
 	}
 
-	public void startSensorListeners() {
+	private void startSensorListeners() {
 		try {
 			updateVisibleReading();
 			sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
