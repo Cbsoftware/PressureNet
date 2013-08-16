@@ -130,7 +130,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// pressureNET 4.0
 	// SDK communication
-
 	boolean mBound;
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
 	Messenger mService = null;
@@ -255,7 +254,10 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 	} 
 	
-	public void checkLocation() {
+	/**
+	 * Update local location data with the last known location.
+	 */
+	private void checkLocation() {
 		LocationManager lm = (LocationManager) this
 				.getSystemService(Context.LOCATION_SERVICE);
 		Location loc = lm
@@ -266,7 +268,12 @@ public class BarometerNetworkActivity extends Activity implements
 		mLongitude = longitude;
 	}
 	
-	public void deliverNotification(String tendencyChange ) {
+	/**
+	 * Send an Android notification to the user with a notice
+	 * of pressure tendency change.  
+	 * @param tendencyChange
+	 */
+	private void deliverNotification(String tendencyChange ) {
 		System.out.println("delivering notification for tendency change");
 		Notification.Builder mBuilder = new Notification.Builder(
 				getApplicationContext())
@@ -319,7 +326,8 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Check if we have a barometer. Use info to disable menu items,
 	 * choose to run the service or not, etc.
 	 */
-	public void checkBarometer() {
+	
+	private void checkBarometer() {
 		PackageManager packageManager = this.getPackageManager();
 		hasBarometer = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_BAROMETER);
 	}
@@ -327,7 +335,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Check if we're online
 	 */
-	public void checkNetwork() {
+	private void checkNetwork() {
 		ConnectivityManager cm =
 		        (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 		 
@@ -342,7 +350,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/** 
 	 * Alert the user if pressureNET is offline
 	 */
-	public void displayNetworkOfflineToast() {
+	private void displayNetworkOfflineToast() {
 		if(!isConnected) {
 			Toast.makeText(getApplicationContext(), "Cannot connect to network.", Toast.LENGTH_SHORT).show();
 		}
@@ -351,7 +359,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Get fresh data for each of the user's saved locations
 	 */
-	public void makeLocationAPICalls() {
+	private void makeLocationAPICalls() {
 		System.out.println("running makeLocationAPICalls");
 		PnDb pn = new PnDb(getApplicationContext());
 		pn.open();
@@ -374,7 +382,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Get fresh data for the global map
 	 */
-	public void makeGlobalMapCall() {
+	private void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
 		if(currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
 			System.out.println("making global map api call");
@@ -396,6 +404,9 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * Run map setup, update UI accordingly
+	 */
 	private void setUpMapIfNeeded() {
 		// Do a null check to confirm that we have not already instantiated the
 		// map.
@@ -455,7 +466,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
-	// Zoom into the user's location, add pinch zoom controls
+	/** 
+	 * Zoom into the user's location
+	 */
 	public void setUpMap() {
 		setUpMapIfNeeded();
 
@@ -483,7 +496,13 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
-	public void moveMapTo(double latitude, double longitude) {
+	/**
+	 * Move and animate the map to a new location
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 */
+	private void moveMapTo(double latitude, double longitude) {
 		setUpMapIfNeeded();
 
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
@@ -501,7 +520,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Check the Android SharedPreferences for important values. Save relevant
 	 * ones to CbSettings for easy access in submitting readings
 	 */
-	public void getStoredPreferences() {
+	private void getStoredPreferences() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units", "millibars");
@@ -538,28 +557,16 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		return sharedPreferences.getString("units", "millibars");
 	}
-	
 
 	/**
 	 * Check the Android SharedPreferences for important values. Save relevant
 	 * ones to CbSettings for easy access in submitting readings
 	 */
-	public String getTempUnitPreference() {
+	private String getTempUnitPreference() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		return sharedPreferences.getString("temperature_units", "Celsius (°C)");
 	}
-
-	CbApiCall runApiCall = new CbApiCall();
-	Runnable apiCallRunnable = new Runnable() {
-		@Override
-		public void run() {
-			System.out.println("making api call (runnable)");
-			CbApiCall api = roundApiCallLocations(runApiCall);
-			makeAPICall(api);
-		}
-	};
-
 
 	/**
 	 * Round the api call location values to improve performance (caching)
@@ -567,7 +574,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param rawApi
 	 * @return
 	 */
-	public CbApiCall roundApiCallLocations(CbApiCall rawApi) {
+	private CbApiCall roundApiCallLocations(CbApiCall rawApi) {
 		double newMinLat = Math.floor(rawApi.getMinLat() * 10) / 10;
 		double newMaxLat = Math.floor(rawApi.getMaxLat() * 10) / 10;
 		double newMinLon = Math.floor(rawApi.getMinLon() * 10) / 10;
@@ -588,7 +595,13 @@ public class BarometerNetworkActivity extends Activity implements
 		return rawApi;
 	}
 
-	// TODO: clean up
+	/**
+	 * During animation, check if a condition/reading's time
+	 * is close enough to the current frame to show it on the map
+	 * @param groupNumber
+	 * @param currentTimeProgress
+	 * @return
+	 */
 	public boolean isCloseToFrame(int groupNumber, int currentTimeProgress) {
 		if (currentTimeProgress >= groupNumber) {
 			if(currentTimeProgress - groupNumber < 10) {
@@ -599,6 +612,9 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/*
+	 * 
+	 * // For animation
+	 *  
 	public void updateMapWithSeekTimeData() {
 		ArrayList<CbWeather> thisFrameCondition = new ArrayList<CbWeather>();
 		for (CbCurrentCondition c : currentConditionAnimation) {
@@ -629,6 +645,9 @@ public class BarometerNetworkActivity extends Activity implements
 	    super.onConfigurationChanged(newConfig);
 	}
 	
+	/**
+	 * Attach listeners to UI elements
+	 */
 	private void setUpUIListeners() {
 		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
@@ -905,6 +924,9 @@ public class BarometerNetworkActivity extends Activity implements
 		mapInfoText.setText(updatedText);
 	}
 	
+	/**
+	 * Initiate the CbService
+	 */
 	private void startCbService() {
 		log("start cbservice");
 		try {
@@ -918,6 +940,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
+	/**
+	 * Query the database for locally stored current conditions
+	 * 
+	 * @param api
+	 */
 	private void askForCurrentConditionRecents(CbApiCall api) {
 
 		if (mBound) {
@@ -935,7 +962,11 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-
+	/**
+	 * Query the database for locally stored observations
+	 * with the intent to display on a time series chart 
+	 * @param apiCall
+	 */
 	private void askForGraphRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
@@ -954,7 +985,10 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 
-	
+	/**
+	 * Query the database for locally stored observations
+	 * @param apiCall
+	 */
 	private void askForRecents(CbApiCall apiCall) {
 		if (mBound) {
 			log("asking for recents");
@@ -986,7 +1020,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
-	public void askForSettings() {
+	/**
+	 * Get the settings from the Cb database
+	 */
+	private void askForSettings() {
 		if (mBound) {
 			log("asking for settings");
 
@@ -1002,7 +1039,14 @@ public class BarometerNetworkActivity extends Activity implements
 			log("error: not bound");
 		}
 	}
-
+	
+	/**
+	 * Handle communication with CbService. Listen for messages
+	 * and act when they're received, sometimes responding with answers.
+	 * 
+	 * @author jacob
+	 *
+	 */
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -1091,18 +1135,24 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	public void removeChartFromLayout() {
+	/**
+	 * Take the chart away.
+	 */
+	private void removeChartFromLayout() {
 		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
 
 		try {
-			View testChartView = findViewById(100); // TODO: ...
+			View testChartView = findViewById(100); // TODO: set a better constant
 			mainLayout.removeView(testChartView);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void createAndShowChart() {
+	/**
+	 * Display a chart 
+	 */
+	private void createAndShowChart() {
 		if(!activeMode.equals("graph")) {
 			log("createandshowchart called outside of graph mode");
 			return;
@@ -1158,6 +1208,9 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	}
 
+	/**
+	 * Communicate with CbService
+	 */
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			log("client says : service connected");
@@ -1176,7 +1229,10 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	};
 
-	public void startDataStream() {
+	/**
+	 * Tell CbService to stream us sensor data
+	 */
+	private void startDataStream() {
 		if (mBound) {
 			log("pN-4 starting data stream");
 			Message msg = Message.obtain(null, CbService.MSG_START_DATA_STREAM,
@@ -1192,7 +1248,10 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void stopDataStream() {
+	/**
+	 * Tell CbService to stop streaming us sensor data
+	 */
+	private void stopDataStream() {
 		if (mBound) {
 			log("pN-4 stopping data stream");
 			Message msg = Message.obtain(null, CbService.MSG_STOP_DATA_STREAM,
@@ -1208,8 +1267,10 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void startLog() {
-		// Log
+	/**
+	 * Log session init
+	 */
+	private void startLog() {
 		String version = "";
 		PackageInfo pInfo;
 		try {
@@ -1221,8 +1282,13 @@ public class BarometerNetworkActivity extends Activity implements
 		log("oncreate main activity v: " + version);
 	}
 
-	// Get the phone ID and hash it
-	public String getID() {
+	/**
+	 * Get a unique ID by fetching the 
+	 * phone ID and hashing it
+	 * 
+	 * @return
+	 */
+	private String getID() {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -1240,7 +1306,10 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public void deleteUserData() {
+	/**
+	 * Delete user data
+	 */
+	private void deleteUserData() {
 		// show a dialog, listen for its response.
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(getResources().getString(R.string.deleteWarning))
@@ -1265,7 +1334,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Welcome the user to pressureNET and explain the privacy options
 	 */
-	public void showWelcomeActivity() {
+	private void showWelcomeActivity() {
 		// has this been shown yet?
 		// TODO: store in preferences
 		int firstRun = 0;
@@ -1273,7 +1342,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if (firstRun == 0) {
 			Intent intent = new Intent(this,
 					ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
-			// startActivityForResult(intent, 0);
+			startActivityForResult(intent, 0);
 		}
 
 	}
@@ -1282,7 +1351,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Some devices have barometers, other's don't. Fix up the UI a bit so that
 	 * most useful elements show for the right users
 	 */
-	public void cleanUI(Menu menu) {
+	private void cleanUI(Menu menu) {
 		// TODO: implement
 		// hide some menu items that are barometer-specific
 		// menu.removeItem(R.id.menu_my_info);
@@ -1525,9 +1594,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
-	// Set a unique identifier so that updates from the same user are
-	// seen as updates and not new data. MD5 to minimize privacy problems. (?)
-	public void setId() {
+	/**
+	 * Set a unique identifier so that updates from the same user are
+	 * seen as updates and not new data. 
+	 */
+	private void setId() {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 
@@ -1545,7 +1616,9 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	// Used to write a log to SD card. Not used unless logging enabled.
+	/**
+	 * Prepare to write a log to SD card. Not used unless logging enabled.
+	 */
 	private void setUpFiles() {
 		try {
 			File homeDirectory = getExternalFilesDir(null);
@@ -1558,12 +1631,25 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	// Assume that matching latitude and longitude can only be you.
+	/**
+	 * Check if an observation is from the current device
+	 * 
+	 * @param ob
+	 * @return
+	 */
 	private boolean obsIsMe(CbObservation ob) {
 		return ((ob.getUser_id().equals(android_id)));
 	}
 
-	public LayerDrawable getCurrentConditionDrawable(
+	
+	/**
+	 * Create neat drawables for weather conditions
+	 * depending on the type of weather, the time, etc.
+	 * @param condition
+	 * @param drawable
+	 * @return
+	 */
+	private LayerDrawable getCurrentConditionDrawable(
 			CbCurrentCondition condition, Drawable drawable) {
 
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources()
@@ -1760,8 +1846,13 @@ public class BarometerNetworkActivity extends Activity implements
 	// http://developer.android.com/guide/practices/screens_support.html#density-independence
 	private static final float GESTURE_THRESHOLD_DP = 16.0f;
 
-	// resize drawables on demand.
-	// High-res bitmaps on Android? Be careful of memory issues
+	/**
+	 * Resize drawables on demand.
+	 * High-res bitmaps on Android? Be careful of memory issues 
+	 * 
+	 * @param image
+	 * @return
+	 */
 	private Drawable resizeDrawable(Drawable image) {
 		Bitmap d = ((BitmapDrawable) image).getBitmap();
 		final float scale = getResources().getDisplayMetrics().density;
@@ -1770,7 +1861,11 @@ public class BarometerNetworkActivity extends Activity implements
 		return new BitmapDrawable(bitmapOrig);
 	}
 
-	// Put a bunch of barometer readings and current conditions on the map.
+	/**
+	 * Animation. Put a bunch of barometer readings and current conditions on the map.
+	 * @param frameConditions
+	 * @param frameObservations
+	 */
 	private void addDataFrameToMap(ArrayList<CbWeather> frameConditions,
 			ArrayList<CbWeather> frameObservations) {
 
