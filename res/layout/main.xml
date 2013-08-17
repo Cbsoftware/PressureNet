@@ -171,16 +171,122 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#AAFFFFFF"
-        android:orientation="vertical"
-        android:padding="5dp"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
         android:visibility="gone" >
 
-        <TextView
-            android:id="@+id/textMapInfo"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:text=""
-            android:textColor="@android:color/black" />
+        <RelativeLayout
+            android:id="@+id/layoutMapInfoLeft"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5" >
+
+            <TextView
+                android:id="@+id/latitudeLabelMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="Latitude"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/longitudeLabelMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/latitudeLabelMapInfoText"
+                android:text="Longitude"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/imageDataPointsMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/longitudeLabelMapInfoText"
+                android:padding="4dp"
+                android:src="@drawable/ic_marker" />
+
+            <TextView
+                android:id="@+id/dataPointsLabelMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/longitudeLabelMapInfoText"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/imageDataPointsMapInfoText"
+                android:padding="4dp"
+                android:text="Data Points"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/latitudeValueMinMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/longitudeValueMinMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/latitudeValueMinMapInfoText"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutMapInfoRight"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".5"
+            android:gravity="right" >
+
+            <RelativeLayout
+                android:id="@+id/layoutMiddleMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:minWidth="50dp" >
+
+                <TextView
+                    android:id="@+id/textLocationRangeTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="to"
+                    android:textSize="16sp"
+                    android:layout_alignTop="@+id/latitudeLabelMapInfoText"
+                    android:paddingTop="10dp"/>
+                
+                <TextView
+                    android:id="@+id/dataPointsValueMapInfoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent" 
+                    android:textSize="16sp"
+                    android:layout_below="@+id/textLocationRangeTo"
+                    android:gravity="bottom"
+                    android:paddingBottom="5dp"
+                    />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/latitudeValueMaxMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/layoutMiddleMapInfoText"
+                android:layout_alignTop="@+id/layoutMiddleMapInfoText"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/longitudeValueMaxMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/latitudeValueMaxMapInfoText"                
+                android:layout_alignRight="@+id/latitudeValueMaxMapInfoText"
+                android:textSize="16sp" />
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout

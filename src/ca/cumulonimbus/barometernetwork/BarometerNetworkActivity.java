@@ -166,7 +166,13 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
 	
-	private TextView mapInfoText;
+	private TextView mapLatitudeMinText;
+	private TextView mapLongitudeMinText;
+	private TextView mapLatitudeMaxText;
+	private TextView mapLongitudeMaxText;
+	private TextView mapDataPointsText;
+	
+	
 	private ImageButton buttonSearchLocations;
 	
 	private TextView textAnimationInformation;
@@ -663,18 +669,21 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
 
+		mapLatitudeMinText = (TextView) findViewById(R.id.latitudeValueMinMapInfoText);
+		mapLongitudeMinText = (TextView) findViewById(R.id.longitudeValueMinMapInfoText);
+		mapLatitudeMaxText = (TextView) findViewById(R.id.latitudeValueMaxMapInfoText);
+		mapLongitudeMaxText = (TextView) findViewById(R.id.longitudeValueMaxMapInfoText);
+		mapDataPointsText = (TextView) findViewById(R.id.dataPointsValueMapInfoText);
+		
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
 		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
 		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
 		
-		
 		layoutAnimationControlContainer = (LinearLayout) findViewById(R.id.layoutAnimationControlContainer);
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
-		
-		mapInfoText = (TextView) findViewById(R.id.textMapInfo);
 		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		
@@ -917,11 +926,17 @@ public class BarometerNetworkActivity extends Activity implements
 		double minLon = Math.min(ne.longitude, sw.longitude);
 		int visibleCount = listRecents.size();
 		
-		String latitudeRange = "Lat: " + latlngFormat.format(minLat) + " to " + latlngFormat.format(maxLat);
-		String longitudeRange = "Lon: " + latlngFormat.format(minLon) + " to " + latlngFormat.format(maxLon);
+		String minLatitude = latlngFormat.format(minLat);
+		String maxLatitude = latlngFormat.format(maxLat);
+		String minLongitude = latlngFormat.format(minLon);
+		String maxLongitude = latlngFormat.format(maxLon);
 		
-		updatedText = latitudeRange + "\n" + longitudeRange + "\n" + visibleCount + " data points";
-		mapInfoText.setText(updatedText);
+
+		mapLatitudeMinText.setText(minLatitude);
+		mapLatitudeMaxText.setText(maxLatitude);
+		mapLongitudeMinText.setText(minLongitude);
+		mapLongitudeMaxText.setText(maxLongitude);
+		mapDataPointsText.setText(visibleCount + "");
 	}
 	
 	/**
