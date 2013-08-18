@@ -2,7 +2,7 @@
      <item android:state_pressed="true"
            android:drawable="@drawable/ic_widget_pressed" /> <!-- pressed -->
      <item android:state_focused="true"
-           android:drawable="@drawable/ic_widget_success" /> <!-- focused -->
+           android:drawable="@drawable/ic_widget_normal" /> <!-- focused -->
      <item android:drawable="@drawable/ic_widget_normal" /> <!-- default -->
  </selector>
  
