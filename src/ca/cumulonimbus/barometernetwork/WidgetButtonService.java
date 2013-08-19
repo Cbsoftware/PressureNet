@@ -13,17 +13,27 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
+import ca.cumulonimbus.barometernetwork.BarometerNetworkActivity.IncomingHandler;
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
+import ca.cumulonimbus.pressurenetsdk.CbService;
+import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class WidgetButtonService extends Service implements SensorEventListener {
 	
@@ -40,9 +50,86 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	private String localHistoryFile = "recent.txt";
 	
 	private String mAppDir = "";
+
+	CbSettingsHandler activeSettings;
+	ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	
+	// pressureNET 4.0
+	// SDK communication
+	boolean mBound;
+	private Messenger mMessenger = new Messenger(new IncomingHandler());
+	Messenger mService = null;
 	
+	public void unBindCbService() {
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+		}
+	}
+
+	public void bindCbService() {
+		log("bind cbservice");
+		bindService(new Intent(getApplicationContext(), CbService.class),
+				mConnection, Context.BIND_AUTO_CREATE);
+
+	}
 	
+	/**
+	 * Handle communication with CbService. Listen for messages
+	 * and act when they're received, sometimes responding with answers.
+	 * 
+	 * @author jacob
+	 *
+	 */
+	class IncomingHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case CbService.MSG_SETTINGS:
+				activeSettings = (CbSettingsHandler) msg.obj;
+				System.out.println("got settings, share level "
+						+ activeSettings.getShareLevel());
+				if (activeSettings != null) {
+					log("Client Received from service "
+							+ activeSettings.getServerURL());
+				} else {
+					log("settings null");
+				}
+				break;
+			case CbService.MSG_API_RECENTS:
+				listRecents = (ArrayList<CbObservation>) msg.obj;
+				// TODO: Use recents to calculate trend
+				break;
+			case CbService.MSG_CHANGE_NOTIFICATION:
+				String change = (String) msg.obj;
+				// TODO: handle change notification
+			default:
+				log("received default message");
+				super.handleMessage(msg);
+			}
+		}
+	}
+	
+	/**
+	 * Communicate with CbService
+	 */
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			log("client says : service connected");
+			mService = new Messenger(service);
+			mBound = true;
+			Message msg = Message.obtain(null, CbService.MSG_OKAY);
+			log("client received " + msg.arg1 + " " + msg.arg2);
+			// TODO: check trend
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			log("client: service disconnected");
+			mMessenger = null;
+			mBound = false;
+		}
+	};
+
 	public void startListening() {
 		try {
 	    	sm = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -58,6 +145,8 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
 	public void update(Intent intent, double reading) {
+		System.out.println("widget binding to service");
+		bindCbService(); 
 		DecimalFormat df = new DecimalFormat("####.00");
 		String msg = "0.00";
 		if(reading>1) {
