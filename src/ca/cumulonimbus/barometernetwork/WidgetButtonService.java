@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -54,6 +55,8 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	CbSettingsHandler activeSettings;
 	ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	
+	private Intent mIntent;
+	
 	// pressureNET 4.0
 	// SDK communication
 	boolean mBound;
@@ -68,7 +71,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 
 	public void bindCbService() {
-		log("bind cbservice");
+		log("widget bind cbservice");
 		bindService(new Intent(getApplicationContext(), CbService.class),
 				mConnection, Context.BIND_AUTO_CREATE);
 
@@ -96,16 +99,86 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 					log("settings null");
 				}
 				break;
-			case CbService.MSG_API_RECENTS:
-				listRecents = (ArrayList<CbObservation>) msg.obj;
-				// TODO: Use recents to calculate trend
+			case CbService.MSG_LOCAL_RECENTS:
+				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
+				System.out.println("widget msg_local_recents received " + recents.size());
+				DecimalFormat df = new DecimalFormat("####.00");
+				String message = "0.00";
+				if(mReading>1) {
+					message = df.format(mReading);
+				} else {
+					 try {
+						 message = mIntent.getStringExtra("msg");
+						 //Toast.makeText(getApplicationContext(), "msg: " + msg, Toast.LENGTH_SHORT).show();
+					 } catch(NullPointerException e) {
+						 //
+					 }
+				}
+				
+				try {
+					RemoteViews remoteView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.small_widget_layout);
+					
+					if(message.contains(",")) {
+						message = message.replace(",", ".");
+					}
+					
+					if(Double.parseDouble(message) != 0) {
+						// send the reading
+			
+						// This is messy. Fix it.
+						SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			    		String abbrev = settings.getString("units", "mbar"); 
+			    		mUnit = new PressureUnit(abbrev);
+			    		double val = Double.valueOf(message);
+			    		mUnit.setValue(val);
+			    		String toPrint = mUnit.getDisplayText();
+			    		toPrint = toPrint.replace(" ", "\n");
+						
+						//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
+						remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
+						
+						try {
+							String tendency = CbScience.findApproximateTendency(recents);
+							
+							log("widget getting tendency, updating and sending: " + tendency + " from " + recents.size() + " recents");
+							
+							if(tendency.contains("Rising")) {
+								remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
+								remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
+							} else if(tendency.contains("Falling")) {
+								remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
+								remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.VISIBLE);
+							} else if(tendency.contains("Steady")) {
+								remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
+								remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
+							} else {
+								remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
+								remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
+								//remoteView.setInt(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
+								//remoteView.setFloat(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
+								//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "--");
+							}
+			
+						} catch(Exception e) {
+							System.out.println("oy! " + e.getMessage());
+						}
+						
+						AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+						ComponentName component = new ComponentName(getApplicationContext().getPackageName(), WidgetProvider.class.getName());    
+						appWidgetManager.updateAppWidget(component, remoteView);
+					}
+				
+				} catch(Exception e) {
+					// :(
+				}
+				
+				
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
 				// TODO: handle change notification
 			default:
-				log("received default message");
-				super.handleMessage(msg);
+				break;
 			}
 		}
 	}
@@ -115,22 +188,24 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	 */
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			log("client says : service connected");
+			log("widget client says : service connected");
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			log("client received " + msg.arg1 + " " + msg.arg2);
-			// TODO: check trend
+			log("widget client received " + msg.arg1 + " " + msg.arg2);
+			askForLocalRecents(2);
 		}
 
+		
+		
 		public void onServiceDisconnected(ComponentName className) {
-			log("client: service disconnected");
+			log("widget client: service disconnected");
 			mMessenger = null;
 			mBound = false;
 		}
 	};
 
-	public void startListening() {
+	private void startListening() {
 		try {
 	    	sm = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
 	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
@@ -144,80 +219,37 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		}
 	}
 	
+	private void askForLocalRecents(int hoursAgo) {
+		CbApiCall api = new CbApiCall();
+		api.setMinLat(-90);
+		api.setMaxLat(90);
+		api.setMinLon(-180);
+		api.setMaxLon(180);
+		api.setStartTime(System.currentTimeMillis()
+				- (hoursAgo * 60 * 60 * 1000));
+		api.setEndTime(System.currentTimeMillis());
+
+		Message msg = Message.obtain(null, CbService.MSG_GET_LOCAL_RECENTS,
+				api);
+		try {
+			msg.replyTo = mMessenger;
+			mService.send(msg);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
 	public void update(Intent intent, double reading) {
 		System.out.println("widget binding to service");
+		mIntent = intent;
 		bindCbService(); 
-		DecimalFormat df = new DecimalFormat("####.00");
-		String msg = "0.00";
-		if(reading>1) {
-			msg = df.format(reading);
-		} else {
-			 try {
-				 msg = intent.getStringExtra("msg");
-				 //Toast.makeText(getApplicationContext(), "msg: " + msg, Toast.LENGTH_SHORT).show();
-			 } catch(NullPointerException e) {
-				 //
-			 }
-		}
-		
+		// TODO: clean this up, (sometimes runs twice?)
 		try {
-			RemoteViews remoteView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.small_widget_layout);
-			
-			if(msg.contains(",")) {
-				msg = msg.replace(",", ".");
-			}
-			
-			if(Double.parseDouble(msg) != 0) {
-				// send the reading
-	
-				// This is messy. Fix it.
-				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-	    		String abbrev = settings.getString("units", "mbar"); 
-	    		mUnit = new PressureUnit(abbrev);
-	    		double val = Double.valueOf(msg);
-	    		mUnit.setValue(val);
-	    		String toPrint = mUnit.getDisplayText();
-	    		toPrint = toPrint.replace(" ", "\n");
-				
-				//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
-				remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
-				
-				try {
-					ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
-					
-					
-					String tendency = CbScience.findApproximateTendency(recents);
-					
-					log("widget getting tendency, updating and sending: " + tendency);
-					
-					if(tendency.contains("Rising")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
-					} else if(tendency.contains("Falling")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.VISIBLE);
-					} else if(tendency.contains("Steady")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
-					} else {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
-						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
-						//remoteView.setInt(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
-						//remoteView.setFloat(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
-						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "--");
-					}
-	
-				} catch(Exception e) {
-					System.out.println("oy! " + e.getMessage());
-				}
-				
-				AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-				ComponentName component = new ComponentName(getApplicationContext().getPackageName(), WidgetProvider.class.getName());    
-				appWidgetManager.updateAppWidget(component, remoteView);
-			}
-		
+			askForLocalRecents(2);
 		} catch(Exception e) {
-			// :(
+			System.out.println("no recents, exception");
+			e.printStackTrace();
 		}
 			
 	}
@@ -238,12 +270,12 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		
 		startListening();
 		update(intent,0.1);
+		
 		super.onStart(intent, startId);
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -252,8 +284,6 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {

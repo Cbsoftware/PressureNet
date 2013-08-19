@@ -31,7 +31,7 @@
         android:layout_alignParentRight="true"
         android:padding="6dp"
         android:src="@drawable/ic_widget_falling"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/widgetSmallText"
