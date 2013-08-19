@@ -1489,8 +1489,34 @@ public class BarometerNetworkActivity extends Activity implements
 			sendSingleObservation();
 		} else if (item.getItemId() == R.id.menu_grow_pressurenet) {
 			growPressureNET();
+		} else if (item.getItemId() == R.id.menu_send_feedback) {
+			sendFeedback();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	/** 
+	 * Email software@cumulonimbus.ca for feedback
+	 */
+	private void sendFeedback() {
+		String address = "software@cumulonimbus.ca";
+		String subject = "pressureNET feedback";
+		String emailtext = "";
+		final Intent emailIntent = new Intent(
+				android.content.Intent.ACTION_SEND);
+
+		emailIntent.setType("plain/text");
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+				new String[] { address });
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
+
+		startActivityForResult(
+				Intent.createChooser(emailIntent, "Send mail..."),
+				REQUEST_MAILED_LOG);
 	}
 	
 	/**
