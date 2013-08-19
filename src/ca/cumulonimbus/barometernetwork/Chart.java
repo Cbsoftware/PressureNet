@@ -41,7 +41,7 @@ public class Chart {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colors[i]);
-			// System.out.println("setting renderer color " + colors[i] );
+			// //System.out.println("setting renderer color " + colors[i] );
 			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
@@ -70,8 +70,7 @@ public class Chart {
 	}
 
 	public View drawChart(ArrayList<CbObservation> obsList) {
-		System.out.println("drawing chart " + obsList.size()
-				+ " data points");
+		//System.out.println("drawing chart " + obsList.size() + " data points");
 		
 		if(obsList.size() < 2) {
 			Toast.makeText(context, "There is no data to plot", Toast.LENGTH_SHORT).show();
@@ -100,7 +99,7 @@ public class Chart {
 		for (CbObservation obs : obsList) {
 			if(obs.getObservationValue() <= 0) {
 				i++;
-				System.out.println("obs less than 0, continue loop");
+				//System.out.println("obs less than 0, continue loop");
 				continue; // TODO: fix hack
 			}
 			// if this value is very far away from the running mean,
@@ -108,7 +107,7 @@ public class Chart {
 			double distance = Math.abs(yMean - obs.getObservationValue());
 			if(distance >= 300) {
 				i++;
-				System.out.println("obs is " + obs.getObservationValue() + ", dropping");
+				//System.out.println("obs is " + obs.getObservationValue() + ", dropping");
 				continue;
 			}
 			
@@ -163,8 +162,7 @@ public class Chart {
 					.setFillPoints(true);
 		}
 		XYMultipleSeriesDataset dataset = buildDataset(titles, obsList);
-		System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", "
-				+ renderer.getSeriesRendererCount());
+		//System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", " + renderer.getSeriesRendererCount());
 		int total = dataset.getSeriesCount();
 	
 
@@ -185,7 +183,7 @@ public class Chart {
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
 			ArrayList<CbObservation> obsList) {
-		System.out.println("build dataset");
+		//System.out.println("build dataset");
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		// add each component to the dataset
 		List<Date[]> xValues = new ArrayList<Date[]>();
@@ -203,7 +201,7 @@ public class Chart {
 			
 		}
 		
-		System.out.println("dataset sizes split to  " + titles.length + " titles " + xValues.size() + " xvalues " + yValues.size() + " yValues");
+		//System.out.println("dataset sizes split to  " + titles.length + " titles " + xValues.size() + " xvalues " + yValues.size() + " yValues");
 		dataset = addXYSeries(dataset, titles, xValues, yValues, 0);
 		return dataset;
 	}

@@ -22,7 +22,7 @@ public class SearchLocationsActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		System.out.println("clicked " + position + " " + id);
+		//System.out.println("clicked " + position + " " + id);
 		Intent resultIntent = new Intent();
 		resultIntent.putExtra("location_id", id);
 		setResult(Activity.RESULT_OK, resultIntent);

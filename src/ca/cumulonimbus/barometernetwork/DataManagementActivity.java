@@ -58,7 +58,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 
@@ -81,7 +81,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 
@@ -96,7 +96,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 
@@ -111,7 +111,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 
@@ -126,7 +126,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 
@@ -135,7 +135,7 @@ public class DataManagementActivity extends Activity {
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			System.out.println("dm bound");
+			//System.out.println("dm bound");
 			askForUserCounts();
 			askForCacheCounts();
 		}
@@ -283,7 +283,7 @@ public class DataManagementActivity extends Activity {
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 
-				System.out.println("dma receiving local recents size " + recents.size());
+				//System.out.println("dma receiving local recents size " + recents.size());
 				
 				
 				if(mExternalStorageWriteable) {

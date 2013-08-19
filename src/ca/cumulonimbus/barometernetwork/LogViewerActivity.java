@@ -86,7 +86,7 @@ public class LogViewerActivity extends Activity {
 						logText.setText(rawLog);
 					} catch (NullPointerException npe) {
 						// TODO; fix hack. 
-						System.out.println("not loading text");
+						//System.out.println("not loading text");
 					}
 					
 					// display in chart form
@@ -113,7 +113,7 @@ public class LogViewerActivity extends Activity {
 						showChart(chartView);
 					} catch (NullPointerException npe ) {
 						// TODO: fix hack.
-						System.out.println("now drawing chart");
+						//System.out.println("now drawing chart");
 					}
 					
 				} catch (Exception e) {
@@ -238,7 +238,7 @@ public class LogViewerActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			System.out.println("error: not bound");
+			//System.out.println("error: not bound");
 		}
 	}
 	
@@ -294,7 +294,7 @@ public class LogViewerActivity extends Activity {
 		v.setBackgroundColor(Color.rgb(238, 238, 238));
 		v.setLayoutParams(lparams);
 		if (mainLayout == null) {
-			System.out.println("ERROR layout null, chart");
+			//System.out.println("ERROR layout null, chart");
 			return;
 		}
 		mainLayout.addView(v);

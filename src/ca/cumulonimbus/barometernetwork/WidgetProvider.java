@@ -57,7 +57,7 @@ public class WidgetProvider extends AppWidgetProvider implements SensorEventList
 		try {
 			actionPendingIntent.send();
 		} catch(CanceledException ce) {
-			System.out.println(ce.getMessage());
+			//System.out.println(ce.getMessage());
 		}
 		
 		appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);

@@ -90,8 +90,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			switch (msg.what) {
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
-				System.out.println("got settings, share level "
-						+ activeSettings.getShareLevel());
+				//System.out.println("got settings, share level " + activeSettings.getShareLevel());
 				if (activeSettings != null) {
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
@@ -101,7 +100,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
-				System.out.println("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
+				//System.out.println("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
 				DecimalFormat df = new DecimalFormat("####.00");
 				String message = "0.00";
 				if(mReading>1) {
@@ -111,7 +110,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 						 message = mIntent.getStringExtra("msg");
 						 //Toast.makeText(getApplicationContext(), "msg: " + msg, Toast.LENGTH_SHORT).show();
 					 } catch(NullPointerException e) {
-						 System.out.println("widget tried mintent getstringextra, failed");
+						 //System.out.println("widget tried mintent getstringextra, failed");
 					 }
 				}
 				
@@ -133,7 +132,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			    		mUnit.setValue(val);
 			    		String toPrint = mUnit.getDisplayText();
 			    		toPrint = toPrint.replace(" ", "\n");
-						System.out.println("widget displaytext " + toPrint);
+						//System.out.println("widget displaytext " + toPrint);
 						//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
 						remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
 						
@@ -160,14 +159,14 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 							}
 			
 						} catch(Exception e) {
-							System.out.println("oy! " + e.getMessage());
+							//System.out.println("oy! " + e.getMessage());
 						}
 						
 						AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 						ComponentName component = new ComponentName(getApplicationContext().getPackageName(), WidgetProvider.class.getName());    
 						appWidgetManager.updateAppWidget(component, remoteView);
 					} else {
-						System.out.println("widget value is 0.0, didn't update");
+						//System.out.println("widget value is 0.0, didn't update");
 					}
 				
 				} catch(Exception e) {
@@ -243,14 +242,14 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
 	public void update(Intent intent, double reading) {
-		System.out.println("widget binding to service");
+		//System.out.println("widget binding to service");
 		mIntent = intent;
 		bindCbService(); 
 		// TODO: clean this up, (sometimes runs twice?)
 		try {
 			askForLocalRecents(2);
 		} catch(Exception e) {
-			System.out.println("no recents, exception");
+			//System.out.println("no recents, exception");
 			e.printStackTrace();
 		}
 			
@@ -317,7 +316,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
     public void log(String text) {
-    	System.out.println(text);
+    	//System.out.println(text);
     	//logToFile(text);
     }
 	

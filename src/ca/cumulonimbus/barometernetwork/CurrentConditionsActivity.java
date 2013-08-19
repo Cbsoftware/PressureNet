@@ -123,7 +123,7 @@ public class CurrentConditionsActivity extends Activity {
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			System.out.println("dm bound");
+			//System.out.println("dm bound");
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -1007,7 +1007,7 @@ public class CurrentConditionsActivity extends Activity {
 	
     public void log(String text) {
     	//logToFile(text);
-    	//System.out.println(text);
+    	////System.out.println(text);
     }
 	
 	@Override
