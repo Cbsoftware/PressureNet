@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 
 public class WidgetButtonService extends Service implements SensorEventListener {
 	
@@ -94,27 +95,24 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				
 				try {
 					ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
-					// String tendency = ScienceHandler.findTendency(recents);
 					
-					String tendency = ""; //science.findApproximateTendency(recents);
+					
+					String tendency = CbScience.findApproximateTendency(recents);
 					
 					log("widget getting tendency, updating and sending: " + tendency);
 					
 					if(tendency.contains("Rising")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.VISIBLE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
-						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.TOP);
-						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "rising");
 					} else if(tendency.contains("Falling")) {
 						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.VISIBLE);
-						//remoteView.setInt(R.id.widget_tendency_image, "setGravity", Gravity.BOTTOM);
-						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "falling");
 					} else if(tendency.contains("Steady")) {
-						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.GONE);
+						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
 						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
-						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "steady");
 					} else {
+						remoteView.setInt(R.id.widget_tendency_image_up, "setVisibility", View.INVISIBLE);
+						remoteView.setInt(R.id.widget_tendency_image_down, "setVisibility", View.GONE);
 						//remoteView.setInt(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
 						//remoteView.setFloat(R.id.widgetSmallSubmitButton, "setImageResource", R.drawable.widget_button_drawable);
 						//remoteView.setTextViewText(R.id.widgetSmallText, toPrint + "\n" + "--");
@@ -199,7 +197,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
     public void log(String text) {
-    	//System.out.println(text);
+    	System.out.println(text);
     	//logToFile(text);
     }
 	

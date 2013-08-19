@@ -53,7 +53,7 @@
         android:id="@+id/menu_grow_pressurenet"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Grow pressureNET"/>
+        android:title="Share pressureNET"/>
     <item
         android:id="@+id/menu_about"
         android:enabled="true"

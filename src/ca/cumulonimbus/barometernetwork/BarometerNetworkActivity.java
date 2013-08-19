@@ -268,6 +268,10 @@ public class BarometerNetworkActivity extends Activity implements
 				.getSystemService(Context.LOCATION_SERVICE);
 		Location loc = lm
 				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		if(preferenceUseGPS) {
+			loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		}
+		
 		double latitude = loc.getLatitude();
 		double longitude = loc.getLongitude();
 		mLatitude = latitude;
