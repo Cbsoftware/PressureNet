@@ -18,20 +18,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/widgetSmallSubmitButton"
-        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:layout_alignParentRight="true"
         android:padding="6dp"
         android:src="@drawable/ic_widget_rising"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/widget_tendency_image_down"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/widgetSmallSubmitButton"
-        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:layout_alignParentRight="true"
         android:padding="6dp"
         android:src="@drawable/ic_widget_falling"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <TextView
         android:id="@+id/widgetSmallText"
