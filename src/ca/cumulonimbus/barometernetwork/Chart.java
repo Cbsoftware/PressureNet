@@ -103,6 +103,16 @@ public class Chart {
 				System.out.println("obs less than 0, continue loop");
 				continue; // TODO: fix hack
 			}
+			// if this value is very far away from the running mean,
+			// drop it and move on
+			double distance = Math.abs(yMean - obs.getObservationValue());
+			if(distance >= 300) {
+				i++;
+				System.out.println("obs is " + obs.getObservationValue() + ", dropping");
+				continue;
+			}
+			
+			
 			if (obs.getObservationValue() < minObservation) {
 				minObservation = obs.getObservationValue();
 			}
@@ -120,6 +130,9 @@ public class Chart {
 			
 			ySum += yValues[i];
 			i++;
+
+			// keep a running mean
+			yMean = ySum / i;			
 		}
 
 		yMean = ySum / i;
@@ -127,23 +140,13 @@ public class Chart {
 		x.add(xValues);
 		values.add(yValues);
 
+		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
+		// current hack is min/max observation or hardcoded default range
 		int[] colors = new int[count];
-		int colorVal = 16;
 		for (i = 0; i < count; i++) {
-			int blue = 128 + random128();
-			int green = blue - (3 * colorVal);
-			int red = blue - (11 * colorVal);
-			if (red < 0) {
-				red = 0;
-			}
-			
-			// colors[i] = Color.rgb(red, green, blue);
 			 colors[i] = Color.rgb(51, 181, 229);
 		}
 		
-		// TODO: Implement smarter axis min/max. range around 1 sd from the mean?
-		// current hack is min/max observation or hardcoded default range
-
 		PointStyle[] styles = new PointStyle[] { PointStyle.CIRCLE };
 		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles,
 				obsList);
@@ -163,11 +166,7 @@ public class Chart {
 		System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", "
 				+ renderer.getSeriesRendererCount());
 		int total = dataset.getSeriesCount();
-		for (i = 0; i < total; i++) {
-			// System.out.println(i + " min ys " +
-			// dataset.getSeriesAt(i).getMinY());
-		}
-
+	
 
 		return ChartFactory.getScatterChartView(context, dataset, renderer);
 
