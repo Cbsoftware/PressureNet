@@ -28,7 +28,7 @@ public class HelpActivity extends Activity {
 		WebSettings webSettings = pndvWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setBuiltInZoomControls(true);
-		webHelp.loadUrl("http://pressurenet.cumulonimbus.ca/");
+		webHelp.loadUrl("http://www.cumulonimbus.ca/pressurenet-help/");
 		 
 	}
 }
