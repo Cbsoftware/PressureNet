@@ -45,6 +45,7 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -237,6 +238,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private boolean hasBarometer = true;
 	
+	private LocationManager networkLocationManager;
+	private LocationListener locationListener;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -246,7 +250,8 @@ public class BarometerNetworkActivity extends Activity implements
 		// migratePreferences();
 		checkNetwork();
 		checkBarometer();
-		checkLocation();
+		setLastKnownLocation();
+		startAppLocationListener();
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
@@ -261,21 +266,80 @@ public class BarometerNetworkActivity extends Activity implements
 	} 
 	
 	/**
+	 * Start the network location listener for use outside the SDK
+	 */
+	private void startAppLocationListener() {
+    	networkLocationManager = (LocationManager)  getSystemService(Context.LOCATION_SERVICE);
+    	startGettingLocations();
+	}
+	
+	/**
+	 * Stop all location listeners
+	 * @return
+	 */
+	public boolean stopGettingLocations() {
+		try {
+			if(locationListener!=null) {
+				if(networkLocationManager!=null) {
+					networkLocationManager.removeUpdates(locationListener);
+				}
+			}
+			networkLocationManager = null;
+	        return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Get the user's location from the location service
+	 * @return
+	 */
+    public boolean startGettingLocations() {
+    	locationListener = new LocationListener() {
+    	    public void onLocationChanged(Location location) {
+    	    	bestLocation = location;
+    	    	mLatitude = location.getLatitude();
+    	    	mLongitude = location.getLongitude();
+    	    }
+
+    	    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+    	    public void onProviderEnabled(String provider) {}
+
+    	    public void onProviderDisabled(String provider) {}
+    	};
+
+       	// Register the listener with the Location Manager to receive location updates
+    	try {
+    		networkLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 60 * 60 * 5, 300, locationListener);
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    	return true;   	
+    }
+	
+	
+	/**
 	 * Update local location data with the last known location.
 	 */
-	private void checkLocation() {
+	private void setLastKnownLocation() {
 		LocationManager lm = (LocationManager) this
 				.getSystemService(Context.LOCATION_SERVICE);
 		Location loc = lm
 				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if(preferenceUseGPS) {
-			loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		bestLocation = loc;
+		try {
+			double latitude = loc.getLatitude();
+			double longitude = loc.getLongitude();
+			mLatitude = latitude;
+			mLongitude = longitude;		
+		} catch(Exception e) {
+			// everything stays as previous, likely 0
 		}
-		
-		double latitude = loc.getLatitude();
-		double longitude = loc.getLongitude();
-		mLatitude = latitude;
-		mLongitude = longitude;
+	
 	}
 	
 	/**
@@ -2355,7 +2419,7 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onPause();
 		stopDataStream();
 		unBindCbService();
-
+		stopGettingLocations();
 		stopSensorListeners();
 	}
 
@@ -2375,6 +2439,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		startSensorListeners();
 		startDataStream();
+		startGettingLocations();
 	}
 
 	@Override
@@ -2397,6 +2462,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		stopDataStream();
 		unBindCbService();
+		stopGettingLocations();
 		super.onDestroy();
 	}
 	
