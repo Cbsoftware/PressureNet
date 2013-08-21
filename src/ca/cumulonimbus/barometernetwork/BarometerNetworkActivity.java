@@ -326,12 +326,13 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Update local location data with the last known location.
 	 */
 	private void setLastKnownLocation() {
-		LocationManager lm = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
-		Location loc = lm
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		bestLocation = loc;
 		try {
+			LocationManager lm = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			bestLocation = loc;
+			
 			double latitude = loc.getLatitude();
 			double longitude = loc.getLongitude();
 			mLatitude = latitude;
