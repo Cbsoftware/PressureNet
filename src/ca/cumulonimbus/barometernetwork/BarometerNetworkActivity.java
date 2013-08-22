@@ -984,7 +984,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void updateMapInfoText() {
 		String updatedText = "";
-		DecimalFormat latlngFormat = new DecimalFormat("###.####");
+		DecimalFormat latlngFormat = new DecimalFormat("###.0000");
 		
 		LatLng ne = visibleBound.northeast;
 		LatLng sw = visibleBound.southwest;
