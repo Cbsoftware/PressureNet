@@ -2,6 +2,7 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -230,25 +231,62 @@ public class Chart {
 	 */
 	protected void addXLabels(XYMultipleSeriesRenderer renderer, long xMin, long xMax) {
 		long timeSpanHours = (xMax - xMin) / (1000 * 60 * 60);
-	
-		long endOffset = 1000 * 60 * 5;
+		
 		Date minDate = new Date(xMin);
-		Date maxDate = new Date(xMax - endOffset);
-		long xMid = xMin + ((xMax - xMin)/2);
-		Date middleDate = new Date(xMid);
+		Calendar minCal = Calendar.getInstance();
+		minCal.setTime(minDate);
+
+		Date maxDate = new Date(xMax);
+		Calendar maxCal = Calendar.getInstance();
+		maxCal.setTime(maxDate);
+		
+		Calendar markerCal = Calendar.getInstance();
 		
 		SimpleDateFormat df = new SimpleDateFormat("kk:mm");
-		if(timeSpanHours < 10) {
-			// display a few hour markers
+		if(timeSpanHours <= 6) {
+			// markers at 0 and every couple hours
 			df = new SimpleDateFormat("kk:mm");
-		}  else if(timeSpanHours >= 10 ) {
-			// display date info
-			df = new SimpleDateFormat("LLL dd kk:mm");
+			markerCal.setTime(minDate);
+			
+			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			
+			markerCal.set(Calendar.MINUTE, 0);
+			int step = 1;
+			for(int i = 1; i <= 6; i+=step) {
+				markerCal.add(Calendar.HOUR_OF_DAY, step);
+				long markerInMs = markerCal.getTimeInMillis();
+				renderer.addXTextLabel(markerInMs, df.format(markerCal.getTime()).toString());
+			}
+		}  else if((timeSpanHours > 6) && (timeSpanHours < 24) )  {
+			// marker at 0, then one marker per day
+			df = new SimpleDateFormat("L/dd kk:mm");
+			markerCal.setTime(minDate);
+			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			markerCal.set(Calendar.MINUTE, 0);
+			int step = 3;
+			if(timeSpanHours > 12) {
+				step = 4;
+			}
+			for(int i = 1; i < 19; i+=step) {
+				markerCal.add(Calendar.HOUR_OF_DAY, step);
+				long markerInMs = markerCal.getTimeInMillis();
+				renderer.addXTextLabel(markerInMs, df.format(markerCal.getTime()).toString());
+			}
+		} else if(timeSpanHours >= 24 ) {
+			// marker at 0, then one marker per day
+			df = new SimpleDateFormat("LLL dd");
+			markerCal.setTime(minDate);
+			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			int step = 1;
+			for(int i = 1; i <= 7; i+=step) {
+				markerCal.add(Calendar.DAY_OF_MONTH, step);
+				long markerInMs = markerCal.getTimeInMillis();
+				renderer.addXTextLabel(markerInMs, df.format(markerCal.getTime()).toString());
+			}
 		}
 
-		renderer.addXTextLabel(xMin, df.format(minDate).toString());
-		renderer.addXTextLabel(xMid, df.format(middleDate).toString());
-		renderer.addXTextLabel(xMax - endOffset, df.format(maxDate).toString());
+
+		
 	}
 
 	/**
