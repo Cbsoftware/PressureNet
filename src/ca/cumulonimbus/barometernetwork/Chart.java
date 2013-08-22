@@ -229,12 +229,23 @@ public class Chart {
 	 * @param xMax
 	 */
 	protected void addXLabels(XYMultipleSeriesRenderer renderer, long xMin, long xMax) {
+		long timeSpanHours = (xMax - xMin) / (1000 * 60 * 60);
+	
 		long endOffset = 1000 * 60 * 5;
 		Date minDate = new Date(xMin);
 		Date maxDate = new Date(xMax - endOffset);
 		long xMid = xMin + ((xMax - xMin)/2);
 		Date middleDate = new Date(xMid);
+		
 		SimpleDateFormat df = new SimpleDateFormat("kk:mm");
+		if(timeSpanHours < 10) {
+			// display a few hour markers
+			df = new SimpleDateFormat("kk:mm");
+		}  else if(timeSpanHours >= 10 ) {
+			// display date info
+			df = new SimpleDateFormat("LLL dd kk:mm");
+		}
+
 		renderer.addXTextLabel(xMin, df.format(minDate).toString());
 		renderer.addXTextLabel(xMid, df.format(middleDate).toString());
 		renderer.addXTextLabel(xMax - endOffset, df.format(maxDate).toString());
