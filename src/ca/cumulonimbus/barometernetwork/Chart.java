@@ -222,6 +222,23 @@ public class Chart {
 		dataset.addSeries(series);
 		return dataset;
 	}
+	/**
+	 * Add appropriate x-axis date/time labels
+	 * @param renderer
+	 * @param xMin
+	 * @param xMax
+	 */
+	protected void addXLabels(XYMultipleSeriesRenderer renderer, long xMin, long xMax) {
+		long endOffset = 1000 * 60 * 5;
+		Date minDate = new Date(xMin);
+		Date maxDate = new Date(xMax - endOffset);
+		long xMid = xMin + ((xMax - xMin)/2);
+		Date middleDate = new Date(xMid);
+		SimpleDateFormat df = new SimpleDateFormat("kk:mm");
+		renderer.addXTextLabel(xMin, df.format(minDate).toString());
+		renderer.addXTextLabel(xMid, df.format(middleDate).toString());
+		renderer.addXTextLabel(xMax - endOffset, df.format(maxDate).toString());
+	}
 
 	/**
 	 * Sets a few of the series renderer settings.
@@ -265,15 +282,7 @@ public class Chart {
 		renderer.setLabelsColor(labelsColor);
 		renderer.setMarginsColor(Color.rgb(238,238,238));
 		renderer.setXLabels(0);
-		long endOffset = 1000 * 60 * 5;
-		Date minDate = new Date(xMin);
-		Date maxDate = new Date(xMax - endOffset);
-		long xMid = xMin + ((xMax - xMin)/2);
-		Date middleDate = new Date(xMid);
-		SimpleDateFormat df = new SimpleDateFormat("kk:mm");
-		renderer.addXTextLabel(xMin, df.format(minDate).toString());
-		renderer.addXTextLabel(xMid, df.format(middleDate).toString());
-		renderer.addXTextLabel(xMax - endOffset, df.format(maxDate).toString());
+		addXLabels(renderer, xMin, xMax);
 		renderer.setMargins(new int[] { 10, 60, 15, 20 });
 		
 	}
