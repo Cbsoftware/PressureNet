@@ -349,7 +349,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param tendencyChange
 	 */
 	private void deliverNotification(String tendencyChange ) {
-		//System.out.println("delivering notification for tendency change");
+		System.out.println("app delivering notification for tendency change");
 		Notification.Builder mBuilder = new Notification.Builder(
 				getApplicationContext())
 				.setSmallIcon(
@@ -1302,6 +1302,27 @@ public class BarometerNetworkActivity extends Activity implements
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			makeLocationAPICalls();
 			makeGlobalMapCall();
+			sendChangeNotification();
+		}
+		
+		/**
+		 * Send a message with a good replyTo for the Service to send notifications through.
+		 */
+		private void sendChangeNotification() {
+			if (mBound) {
+				log("send change notif request");
+
+				Message msg = Message.obtain(null, CbService.MSG_CHANGE_NOTIFICATION,
+						0,0);
+				try {
+					msg.replyTo = mMessenger;
+					mService.send(msg);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			} else {
+				log("error: not bound");
+			}			
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -2543,7 +2564,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void log(String text) {
 		// logToFile(text);
-		//System.out.println(text);
+		// System.out.println(text);
 	}
 
 	private void startSensorListeners() {
