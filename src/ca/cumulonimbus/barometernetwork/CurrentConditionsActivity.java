@@ -13,10 +13,8 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
-import com.luckycatlabs.sunrisesunset.dto.SunLocation;
-
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -35,9 +33,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
+
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.SunLocation;
 
 public class CurrentConditionsActivity extends Activity {
 
@@ -941,6 +941,12 @@ public class CurrentConditionsActivity extends Activity {
 			condition.setTime(Calendar.getInstance().getTimeInMillis());
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
+	    	// cancel any notifications?
+	    	if(intent.hasExtra("cancelNotification")) {
+		    	if(intent.getBooleanExtra("cancelNotification",false)) {
+		    		cancelNotification(BarometerNetworkActivity.NOTIFICATION_ID);
+		    	}
+	    	}
 		} catch(Exception e) {
 			log("conditions missing data, cannot submit");
 		}
@@ -965,6 +971,12 @@ public class CurrentConditionsActivity extends Activity {
 		//buttonIsCalm.setImageResource(R.drawable.ic_on_wind0);
 		//textWindyDescription.setText(getString(R.string.calm));
 		//condition.setWindy(0 + "");
+	}
+	
+	private void cancelNotification(int notifyId) {
+	    String ns = Context.NOTIFICATION_SERVICE;
+	    NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+	    nMgr.cancel(notifyId);
 	}
 	
 	public static boolean isDaytime(double latitude, double longitude) {

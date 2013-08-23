@@ -102,7 +102,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
 
-	private static final int NOTIFICATION_ID = 101325;
+	public static final int NOTIFICATION_ID = 101325;
 	
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
@@ -349,11 +349,9 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param tendencyChange
 	 */
 	private void deliverNotification(String tendencyChange ) {
-		System.out.println("app delivering notification for tendency change");
 		Notification.Builder mBuilder = new Notification.Builder(
 				getApplicationContext())
-				.setSmallIcon(
-						android.R.drawable.ic_dialog_info)
+				.setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("pressureNET")
 				.setContentText(
 						"Trend change: "
@@ -378,6 +376,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
+		resultIntent.putExtra("cancelNotification", true);
 		
 		TaskStackBuilder stackBuilder = TaskStackBuilder
 				.create(getApplicationContext());
