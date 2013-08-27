@@ -2122,9 +2122,9 @@ public class BarometerNetworkActivity extends Activity implements
 		    	 textYOffset = defaultTextYOffset;
                  break;
 		     case DisplayMetrics.DENSITY_XXHIGH:
-		    	 textSize = defaultTextSize  + 2;
-		    	 textXOffset = defaultTextXOffset + 5;
-		    	 textYOffset = defaultTextYOffset + 5;
+		    	 textSize = defaultTextSize  + 4;
+		    	 textXOffset = defaultTextXOffset + 15;
+		    	 textYOffset = defaultTextYOffset + 8;
                  break;
 		     default:
 		    	 break;
@@ -2507,6 +2507,11 @@ public class BarometerNetworkActivity extends Activity implements
 		return df.format(temperatureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 
+	
+	private String displayHumidityValue(double value) {
+		DecimalFormat df = new DecimalFormat("##.00");
+		return df.format(value) + "%";
+	}
 	private void updateVisibleReading() {
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
@@ -2536,7 +2541,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		
 		if(recentHumidityReading != 1000 ) {
-			String toPrint = recentHumidityReading + "%";
+			String toPrint = displayHumidityValue(recentHumidityReading);
 			buttonHygrometer.setText(toPrint);
 			
 		} else {
