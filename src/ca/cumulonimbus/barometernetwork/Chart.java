@@ -248,7 +248,7 @@ public class Chart {
 			df = new SimpleDateFormat("kk:mm");
 			markerCal.setTime(minDate);
 			
-			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			//renderer.addXTextLabel(xMin, df.format(minDate).toString());
 			
 			markerCal.set(Calendar.MINUTE, 0);
 			int step = 1;
@@ -261,7 +261,7 @@ public class Chart {
 			// marker at 0, then one marker per day
 			df = new SimpleDateFormat("L/dd kk:mm");
 			markerCal.setTime(minDate);
-			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			//renderer.addXTextLabel(xMin, df.format(minDate).toString());
 			markerCal.set(Calendar.MINUTE, 0);
 			int step = 3;
 			if(timeSpanHours > 12) {
@@ -276,7 +276,7 @@ public class Chart {
 			// marker at 0, then one marker per day
 			df = new SimpleDateFormat("LLL dd");
 			markerCal.setTime(minDate);
-			renderer.addXTextLabel(xMin, df.format(minDate).toString());
+			//renderer.addXTextLabel(xMin, df.format(minDate).toString());
 			int step = 1;
 			for(int i = 1; i <= 7; i+=step) {
 				markerCal.add(Calendar.DAY_OF_MONTH, step);
