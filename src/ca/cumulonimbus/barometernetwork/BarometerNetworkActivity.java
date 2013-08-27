@@ -349,13 +349,33 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param tendencyChange
 	 */
 	private void deliverNotification(String tendencyChange ) {
+		String deliveryMessage = "";
+		if(!tendencyChange.contains(",")) {
+			// not returning to directional values? don't deliver notification
+			return;
+		}
+		
+		String first = tendencyChange.split(",")[0];
+		String second = tendencyChange.split(",")[1];		
+		
+		if( (first.contains("Rising")) && (second.contains("Falling")) ) {
+			deliveryMessage = "The pressure is starting to drop";
+		} else if( (first.contains("Steady")) && (second.contains("Falling")) ) {
+			deliveryMessage = "The pressure is starting to drop";
+		} else if( (first.contains("Steady")) && (second.contains("Rising")) ) {
+			deliveryMessage = "The pressure is starting to rise";
+		} else if( (first.contains("Falling")) && (second.contains("Rising")) ) {
+			deliveryMessage = "The pressure is starting to rise";
+		} else {
+			deliveryMessage = "The pressure is steady"; // don't deliver this message probably
+		}
+		
+		
 		Notification.Builder mBuilder = new Notification.Builder(
 				getApplicationContext())
 				.setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("pressureNET")
-				.setContentText(
-						"Trend change: "
-								+ tendencyChange);
+				.setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(getApplicationContext(), CurrentConditionsActivity.class);
 		// Current Conditions activity likes to know the location in the Intent
