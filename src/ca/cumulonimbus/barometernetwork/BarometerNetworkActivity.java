@@ -315,7 +315,7 @@ public class BarometerNetworkActivity extends Activity implements
     	try {
     		networkLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 60 * 60 * 5, 300, locationListener);
     	} catch(Exception e) {
-    		e.printStackTrace();
+    		//e.printStackTrace();
     		return false;
     	}
     	return true;   	
@@ -637,8 +637,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setUseGPS(preferenceUseGPS);
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
 		settings.saveSettings();
-		log("saved new settings; sharing " + preferenceShareLevel);
-
+		System.out.println("saved new settings:" + settings);
 	}
 
 	/**
@@ -1174,8 +1173,8 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
-				//System.out.println("got settings, share level " + activeSettings.getShareLevel());
 				if (activeSettings != null) {
+					System.out.println("received msg_settings, setting activeSettings " + activeSettings);
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
 				} else {
@@ -2532,6 +2531,10 @@ public class BarometerNetworkActivity extends Activity implements
 		DecimalFormat df = new DecimalFormat("##.00");
 		return df.format(value) + "%";
 	}
+	
+	/**
+	 * Display visible reading to the user
+	 */
 	private void updateVisibleReading() {
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
@@ -2619,7 +2622,7 @@ public class BarometerNetworkActivity extends Activity implements
 				recentHumidityReading = 1000.0;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
