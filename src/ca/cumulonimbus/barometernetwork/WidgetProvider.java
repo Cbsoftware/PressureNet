@@ -49,6 +49,9 @@ public class WidgetProvider extends AppWidgetProvider implements SensorEventList
 		Intent clickIntent = new Intent(context, BarometerNetworkActivity.class);
 		PendingIntent clickPI = PendingIntent.getActivity(context, 0, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		remoteViews.setOnClickPendingIntent(R.id.widgetSmallText, clickPI);
+		remoteViews.setOnClickPendingIntent(R.id.widget_tendency_image_down, clickPI);
+		remoteViews.setOnClickPendingIntent(R.id.widget_tendency_image_steady, clickPI);
+		remoteViews.setOnClickPendingIntent(R.id.widget_tendency_image_up, clickPI);
 		
 		PendingIntent actionPendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); 
 		

@@ -2,7 +2,9 @@
     android:id="@+id/layoutSmallWidget"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_widget" >
+    android:background="@drawable/bg_widget"
+    android:paddingBottom="@dimen/widget_margin"
+    android:paddingTop="@dimen/widget_margin" >
 
     <ImageButton
         android:id="@+id/widgetSmallSubmitButton"
@@ -10,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:background="@null"
+        android:paddingBottom="2dp"
         android:paddingLeft="4dp"
         android:src="@drawable/widget_button_drawable" />
 
@@ -17,10 +20,23 @@
         android:id="@+id/widget_tendency_image_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/widgetSmallSubmitButton"
         android:layout_alignParentRight="true"
-        android:padding="6dp"
+        android:layout_alignTop="@id/widgetSmallSubmitButton"
+        android:clickable="true"
+        android:paddingRight="6dp"
+        android:paddingTop="6dp"
         android:src="@drawable/ic_widget_rising"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/widget_tendency_image_steady"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:paddingRight="6dp"
+        android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
 
     <ImageView
@@ -29,7 +45,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/widgetSmallSubmitButton"
         android:layout_alignParentRight="true"
-        android:padding="6dp"
+        android:clickable="true"
+        android:paddingBottom="6dp"
+        android:paddingRight="6dp"
         android:src="@drawable/ic_widget_falling"
         android:visibility="invisible" />
 
@@ -37,10 +55,11 @@
         android:id="@+id/widgetSmallText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/widgetSmallSubmitButton"
         android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
         android:clickable="true"
+        android:paddingLeft="4dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textStyle="bold"
-        android:paddingLeft="4dp"/>
+        android:textStyle="bold" />
+
 </RelativeLayout>
