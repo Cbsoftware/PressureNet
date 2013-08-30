@@ -1,5 +1,10 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,9 +28,12 @@ import ca.cumulonimbus.pressurenetsdk.CbObservation;
 public class Chart {
 
 	Context context;
-
+	private String mAppDir = "";
+	
 	public Chart(Context ctx) {
 		context = ctx;
+		setUpFiles();
+		
 	}
 
 	protected void setRenderer(XYMultipleSeriesRenderer renderer, int[] colors,
@@ -42,7 +50,6 @@ public class Chart {
 			// TODO: Colors and Style
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colors[i]);
-			// //System.out.println("setting renderer color " + colors[i] );
 			r.setPointStyle(styles[0]);
 			renderer.addSeriesRenderer(r);
 		}
@@ -100,7 +107,7 @@ public class Chart {
 		for (CbObservation obs : obsList) {
 			if(obs.getObservationValue() <= 0) {
 				i++;
-				//System.out.println("obs less than 0, continue loop");
+				log("chart; obs less than 0, continue loop");
 				continue; // TODO: fix hack
 			}
 			// if this value is very far away from the running mean,
@@ -108,7 +115,7 @@ public class Chart {
 			double distance = Math.abs(yMean - obs.getObservationValue());
 			if(distance >= 300) {
 				i++;
-				//System.out.println("obs is " + obs.getObservationValue() + ", dropping");
+				log("obs is " + obs.getObservationValue() + ", dropping value");
 				continue;
 			}
 			
@@ -163,7 +170,6 @@ public class Chart {
 					.setFillPoints(true);
 		}
 		XYMultipleSeriesDataset dataset = buildDataset(titles, obsList);
-		//System.out.println("FINAL CALL " + dataset.getSeriesCount() + ", " + renderer.getSeriesRendererCount());
 		int total = dataset.getSeriesCount();
 	
 
@@ -184,7 +190,6 @@ public class Chart {
 	 */
 	protected XYMultipleSeriesDataset buildDataset(String[] titles,
 			ArrayList<CbObservation> obsList) {
-		//System.out.println("build dataset");
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 		// add each component to the dataset
 		List<Date[]> xValues = new ArrayList<Date[]>();
@@ -202,7 +207,6 @@ public class Chart {
 			
 		}
 		
-		//System.out.println("dataset sizes split to  " + titles.length + " titles " + xValues.size() + " xvalues " + yValues.size() + " yValues");
 		dataset = addXYSeries(dataset, titles, xValues, yValues, 0);
 		return dataset;
 	}
@@ -336,4 +340,47 @@ public class Chart {
 		
 	}
 
+	/**
+	 * 
+	 * @param message
+	 */
+	public void logToFile(String message) {
+		try {
+			OutputStream output = new FileOutputStream(mAppDir + "/log.txt",
+					true);
+			String logString = (new Date()).toString() + ": " + message + "\n";
+			output.write(logString.getBytes());
+			output.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+	
+	/** 
+	 * Log
+	 * 
+	 * @param message
+	 */
+	public void log(String message) {
+		System.out.println(message);
+		logToFile(message);
+	}
+
+	/**
+	 * Prepare to write a log to SD card. Not used unless logging enabled.
+	 */
+	private void setUpFiles() {
+		try {
+			File homeDirectory = context.getExternalFilesDir(null);
+			if (homeDirectory != null) {
+				mAppDir = homeDirectory.getAbsolutePath();
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

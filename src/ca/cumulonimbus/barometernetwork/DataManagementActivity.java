@@ -2,8 +2,13 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -47,6 +52,8 @@ public class DataManagementActivity extends Activity {
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
 	
+	private String mAppDir = "";
+	
 	private void clearLocalCache() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
@@ -58,7 +65,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("error: not bound");
+			log("dm error: not bound");
 		}
 	}
 
@@ -81,10 +88,44 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("error: not bound");
+			log("dm getlocalobs error: not bound");
 		}
 	}
+	
+	public void log(String message) { 
+		System.out.println(message);
+		logToFile(message);
+	}
 
+	public void logToFile(String message ) {
+		try {
+			OutputStream output = new FileOutputStream(mAppDir + "/log.txt",
+					true);
+			String logString = (new Date()).toString() + ": " + message + "\n";
+			output.write(logString.getBytes());
+			output.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Prepare to write a log to SD card. Not used unless logging enabled.
+	 */
+	private void setUpFiles() {
+		try {
+			File homeDirectory = getExternalFilesDir(null);
+			if (homeDirectory != null) {
+				mAppDir = homeDirectory.getAbsolutePath();
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void askForCacheCounts() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_COUNT_API_CACHE,
@@ -96,7 +137,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("error: not bound");
+			//log("error: not bound");
 		}
 	}
 
@@ -111,7 +152,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("error: not bound");
+			//log("error: not bound");
 		}
 	}
 
@@ -126,7 +167,7 @@ public class DataManagementActivity extends Activity {
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("error: not bound");
+			//log("error: not bound");
 		}
 	}
 
@@ -135,7 +176,7 @@ public class DataManagementActivity extends Activity {
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			//System.out.println("dm bound");
+			//log("dm bound");
 			askForUserCounts();
 			askForCacheCounts();
 		}
@@ -233,6 +274,8 @@ public class DataManagementActivity extends Activity {
 		});
 
 		bindCbService();
+	
+		setUpFiles();
 	}
 
 	@Override
@@ -283,7 +326,7 @@ public class DataManagementActivity extends Activity {
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 
-				//System.out.println("dma receiving local recents size " + recents.size());
+				log("dma receiving local recents size " + recents.size());
 				
 				
 				if(mExternalStorageWriteable) {

@@ -454,7 +454,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for each of the user's saved locations
 	 */
 	private void makeLocationAPICalls() {
-		//System.out.println("running makeLocationAPICalls");
+		log("running makeLocationAPICalls");
 		PnDb pn = new PnDb(getApplicationContext());
 		pn.open();
 		Cursor cursor = pn.fetchAllLocations();
@@ -466,7 +466,7 @@ public class BarometerNetworkActivity extends Activity implements
 			SearchLocation location = new SearchLocation(name, latitude,
 					longitude);
 			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-			//System.out.println("making api call for " + name + " at " + latitude + " " + longitude);
+			log("making api call for " + name + " at " + latitude + " " + longitude);
 			makeAPICall(locationApiCall);
 		}
 		pn.close();
@@ -493,7 +493,7 @@ public class BarometerNetworkActivity extends Activity implements
 		 
 			lastGlobalApiCall = currentTime;
 		}  else {
-			//System.out.println("not making global map call time diff " + (currentTime - lastGlobalApiCall));
+			log("not making global map call time diff " + (currentTime - lastGlobalApiCall));
 		}
 	}
 
@@ -637,7 +637,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setUseGPS(preferenceUseGPS);
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
 		settings.saveSettings();
-		System.out.println("saved new settings:" + settings);
+		log("app saved new settings (getStoredPreferences):" + settings);
 	}
 
 	/**
@@ -847,7 +847,7 @@ public class BarometerNetworkActivity extends Activity implements
 					spinnerTime.setSelection(0);
 					hoursAgoSelected = 3;
 					
-					//System.out.println("making api call 12h for graph");
+					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(12);
 					api.setLimit(5000);
 					makeAPICall(api);
@@ -1059,7 +1059,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 	
@@ -1081,7 +1081,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			//log("error: not bound");
 		}
 	}
 	
@@ -1103,7 +1103,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 	
@@ -1137,7 +1137,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 	
@@ -1174,7 +1174,7 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
 				if (activeSettings != null) {
-					System.out.println("received msg_settings, setting activeSettings " + activeSettings);
+					log("received msg_settings, setting activeSettings " + activeSettings);
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
 				} else {
@@ -1339,7 +1339,7 @@ public class BarometerNetworkActivity extends Activity implements
 					e.printStackTrace();
 				}
 			} else {
-				log("error: not bound");
+				//log("error: not bound");
 			}			
 		}
 
@@ -1365,7 +1365,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			//log("error: not bound");
 		}
 	}
 
@@ -1384,7 +1384,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			log("error: not bound");
+			//'log("error: not bound");
 		}
 	}
 
@@ -2056,7 +2056,7 @@ public class BarometerNetworkActivity extends Activity implements
 			// Add Recent Readings
 			Drawable drawable = this.getResources().getDrawable(
 					R.drawable.ic_marker);
-			//System.out.println("frame observations " + frameObservations.size());
+			log("frame observations " + frameObservations.size());
 			for (CbWeather weatherObs : frameObservations) {
 				CbObservation observation = (CbObservation) weatherObs;
 				LatLng point = new LatLng(observation.getLocation()
@@ -2206,7 +2206,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void addDataToMap(boolean onlyConditions) {
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		
-		//System.out.println("add data to map");
+		log("add data to map");
 		
 		int totalEachAllowed = 60;
 		int currentObs = 0;
@@ -2394,7 +2394,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("data management error: not bound");
+			log("app failed to send single obs; data management error: not bound");
 		}
 	}
 
@@ -2426,7 +2426,7 @@ public class BarometerNetworkActivity extends Activity implements
 				e.printStackTrace();
 			}
 		} else {
-			//System.out.println("data management error: not bound");
+			log("app failed api call; data management error: not bound");
 		}
 	}
 
@@ -2573,8 +2573,12 @@ public class BarometerNetworkActivity extends Activity implements
 		
 	}
 
-	// Log data to SD card for debug purposes.
-	// To enable logging, ensure the Manifest allows writing to SD card.
+	/** 
+	 * Log data to SD card for debug purposes.
+	 * To enable logging, ensure the Manifest allows writing to SD card.
+	 * 
+	 * @param text
+	 */
 	private void logToFile(String text) {
 		try {
 			OutputStream output = new FileOutputStream(mAppDir + "/log.txt",
@@ -2590,8 +2594,8 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void log(String text) {
-		// logToFile(text);
-		// System.out.println(text);
+		logToFile(text);
+		System.out.println(text);
 	}
 
 	private void startSensorListeners() {
