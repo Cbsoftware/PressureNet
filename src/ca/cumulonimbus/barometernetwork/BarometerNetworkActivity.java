@@ -1373,6 +1373,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Tell CbService to stop streaming us sensor data
 	 */
 	private void stopDataStream() {
+		/*
 		if (mBound) {
 			log("pN-4 stopping data stream");
 			Message msg = Message.obtain(null, CbService.MSG_STOP_DATA_STREAM,
@@ -1386,6 +1387,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			//'log("error: not bound");
 		}
+		*/
 	}
 
 	/**
