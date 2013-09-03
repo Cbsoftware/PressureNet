@@ -255,7 +255,6 @@ public class BarometerNetworkActivity extends Activity implements
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
-		startCbService();
 		//bindCbService();
 		setUpMap();
 		setUpUIListeners();
@@ -263,6 +262,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpFiles();
 		showWelcomeActivity();
 		setUpActionBar();
+		startCbService();
 	} 
 	
 	/**
@@ -1034,6 +1034,9 @@ public class BarometerNetworkActivity extends Activity implements
 			if(hasBarometer) {
 				serviceIntent = new Intent(this, CbService.class);
 				startService(serviceIntent);
+				log("app started service");
+			} else {
+				log("app detects no barometer, not starting service");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1184,9 +1187,9 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_DATA_STREAM:
 				bestPressure = (CbObservation) msg.obj;
 				if (bestPressure != null) {
-					// log("received " + bestPressure.getObservationValue());
+					log("received " + bestPressure.getObservationValue());
 				} else {
-					// log("received null observation");
+					log("received null observation");
 				}
 				updateVisibleReading();
 				break;
@@ -1354,6 +1357,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Tell CbService to stream us sensor data
 	 */
 	private void startDataStream() {
+		/*
 		if (mBound) {
 			log("pN-4 starting data stream");
 			Message msg = Message.obtain(null, CbService.MSG_START_DATA_STREAM,
@@ -1367,6 +1371,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			//log("error: not bound");
 		}
+		*/
 	}
 
 	/**
