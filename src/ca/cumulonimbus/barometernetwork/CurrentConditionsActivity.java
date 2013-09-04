@@ -19,6 +19,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -105,7 +106,14 @@ public class CurrentConditionsActivity extends Activity {
 	
 	boolean mBound;
 	Messenger mService = null;
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {	
+		log("currentconditions onconfig changed");
+	    super.onConfigurationChanged(newConfig);
+	}
 
+	
 	public void unBindCbService() {
 		if (mBound) {
 			unbindService(mConnection);
@@ -544,7 +552,7 @@ public class CurrentConditionsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_conditions);
-
+		log("currentconditions oncreate");
 		bindCbService();
 
 		condition = new CbCurrentCondition();
