@@ -1505,9 +1505,10 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void cleanUI(Menu menu) {
 		// hide some menu items that are barometer-specific
-		menu.removeItem(R.id.menu_submit_reading);
-		menu.removeItem(R.id.menu_log_viewer);
-
+		if(!hasBarometer) {
+			menu.removeItem(R.id.menu_submit_reading);
+			menu.removeItem(R.id.menu_log_viewer);
+		}
 		if (!debugMode) {
 			// hide menu item
 			menu.removeItem(R.id.send_debug_log);
