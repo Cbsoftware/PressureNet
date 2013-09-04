@@ -46,13 +46,11 @@ public class Chart {
 		renderer.setPointSize(5f);
 		renderer.setMargins(new int[] { 20, 50, 15, 20 });
 		
-		for (int i = 0; i < 1; i++) { // TODO: fix 1 hack
-			// TODO: Colors and Style
-			XYSeriesRenderer r = new XYSeriesRenderer();
-			r.setColor(colors[i]);
-			r.setPointStyle(styles[0]);
-			renderer.addSeriesRenderer(r);
-		}
+		XYSeriesRenderer r = new XYSeriesRenderer();
+		r.setColor(colors[0]);
+		r.setPointStyle(styles[0]);
+		renderer.addSeriesRenderer(r);
+
 	}
 
 
