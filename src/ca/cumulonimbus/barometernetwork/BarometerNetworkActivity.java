@@ -422,10 +422,10 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Check if we have a barometer. Use info to disable menu items,
 	 * choose to run the service or not, etc.
 	 */
-	
-	private void checkBarometer() {
+	private boolean checkBarometer() {
 		PackageManager packageManager = this.getPackageManager();
 		hasBarometer = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_BAROMETER);
+		return hasBarometer;
 	}
 	
 	/**
@@ -1504,11 +1504,9 @@ public class BarometerNetworkActivity extends Activity implements
 	 * most useful elements show for the right users
 	 */
 	private void cleanUI(Menu menu) {
-		// TODO: implement
 		// hide some menu items that are barometer-specific
-		// menu.removeItem(R.id.menu_my_info);
-		// menu.removeItem(R.id.menu_submit_reading);
-		// menu.removeItem(R.id.menu_log_viewer);
+		menu.removeItem(R.id.menu_submit_reading);
+		menu.removeItem(R.id.menu_log_viewer);
 
 		if (!debugMode) {
 			// hide menu item
@@ -1533,8 +1531,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_settings) {
 			Intent i = new Intent(this, PreferencesActivity.class);
-			i.putExtra("hasBarometer", false); // TODO: fix, was
-												// barometerdetected
 			startActivityForResult(i, REQUEST_SETTINGS);
 		} else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
