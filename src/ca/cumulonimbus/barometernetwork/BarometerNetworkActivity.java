@@ -13,6 +13,8 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -1032,16 +1034,29 @@ public class BarometerNetworkActivity extends Activity implements
 		log("start cbservice");
 		try {
 			if(hasBarometer) {
-				serviceIntent = new Intent(this, CbService.class);
-				startService(serviceIntent);
-				log("app started service");
+				if(!isCbServiceRunning()) {
+					serviceIntent = new Intent(this, CbService.class);
+					startService(serviceIntent);
+					log("app started service");
+				} else {
+					log("app not starting service, it's already running");
+				}
 			} else {
 				log("app detects no barometer, not starting service");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+	}
+	
+	private boolean isCbServiceRunning() {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (CbService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 
 	/**
