@@ -2160,8 +2160,8 @@ public class BarometerNetworkActivity extends Activity implements
 		    	 textYOffset = defaultTextYOffset;
                  break;
 		     case DisplayMetrics.DENSITY_XXHIGH:
-		    	 textSize = defaultTextSize  + 4;
-		    	 textXOffset = defaultTextXOffset + 15;
+		    	 textSize = defaultTextSize  + 8;
+		    	 textXOffset = defaultTextXOffset + 22;
 		    	 textYOffset = defaultTextYOffset + 8;
                  break;
 		     default:
