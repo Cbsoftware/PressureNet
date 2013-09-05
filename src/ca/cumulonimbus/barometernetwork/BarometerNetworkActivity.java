@@ -351,6 +351,17 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param tendencyChange
 	 */
 	private void deliverNotification(String tendencyChange ) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		
+		long lastNotificationTime = sharedPreferences.getLong("lastNotificationTime", System.currentTimeMillis() - (1000 * 60 * 60 * 10));
+		long now = System.currentTimeMillis();
+		long waitDiff = 1000 * 60 * 60 * 6;
+		if(now - lastNotificationTime < waitDiff) {
+			log("bailing on notification, not 6h wait yet");
+			return;
+		}
+		
 		String deliveryMessage = "";
 		if(!tendencyChange.contains(",")) {
 			// not returning to directional values? don't deliver notification
@@ -361,15 +372,18 @@ public class BarometerNetworkActivity extends Activity implements
 		String second = tendencyChange.split(",")[1];		
 		
 		if( (first.contains("Rising")) && (second.contains("Falling")) ) {
-			deliveryMessage = "The pressure is starting to drop";
+			deliveryMessage = "The pressure is dropping";
 		} else if( (first.contains("Steady")) && (second.contains("Falling")) ) {
-			deliveryMessage = "The pressure is starting to drop";
+			deliveryMessage = "The pressure is dropping";
 		} else if( (first.contains("Steady")) && (second.contains("Rising")) ) {
-			deliveryMessage = "The pressure is starting to rise";
+			deliveryMessage = "The pressure is rising";
 		} else if( (first.contains("Falling")) && (second.contains("Rising")) ) {
-			deliveryMessage = "The pressure is starting to rise";
+			deliveryMessage = "The pressure is rising";
 		} else {
-			deliveryMessage = "The pressure is steady"; // don't deliver this message probably
+			deliveryMessage = "The pressure is steady"; 
+			// don't deliver this message
+			log("bailing on notification, pressure is steady");
+			return;
 		}
 		
 		
@@ -416,6 +430,12 @@ public class BarometerNetworkActivity extends Activity implements
 		mNotificationManager.notify(
 				NOTIFICATION_ID,
 				mBuilder.build());
+		
+		// save the time
+		SharedPreferences.Editor editor = sharedPreferences.edit(); 
+		editor.putLong("lastNotificationTime", now);
+		editor.commit();
+
 	}
 
 	/**
