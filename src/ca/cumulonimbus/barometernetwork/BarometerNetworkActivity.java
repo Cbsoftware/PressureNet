@@ -1237,7 +1237,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("currentConditionRecents size "
 							+ currentConditionRecents.size());
 				} else {
-					log("conditions ARE NuLL");
+					log("conditions are null");
 				}
 
 				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
@@ -1246,6 +1246,15 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
 				deliverNotification(change);
+				break;
+			case CbService.MSG_DATA_RESULT:
+				String errors = (String) msg.obj;
+				if(errors.equals("")) {
+					Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(getApplicationContext(), "Error sending data.", Toast.LENGTH_SHORT).show();
+				}
+				break;
 			default:
 				log("received default message");
 				super.handleMessage(msg);
