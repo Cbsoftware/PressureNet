@@ -100,7 +100,7 @@ public class Chart {
 		long maxTime = System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7);
 
 		int i = 0;
-		double yMean = 1000;
+		double yMean = obsList.get(0).getObservationValue();
 		double ySum = 0;
 		for (CbObservation obs : obsList) {
 			if(obs.getObservationValue() <= 0) {
