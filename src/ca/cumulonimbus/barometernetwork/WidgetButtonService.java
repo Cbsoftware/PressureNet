@@ -69,6 +69,40 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			mBound = false;
 		}
 	}
+	
+	/**
+	 * Get the settings from the Cb database
+	 */
+	private void askForSettings() {
+		if (mBound) {
+			log("asking for settings");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_SETTINGS,
+					0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+	
+	private void sendSingleObservation() {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		} else {
+			log("widget failed to send single obs; data management error: not bound");
+		}
+	}
 
 	public void bindCbService() {
 		log("widget bind cbservice");
@@ -132,8 +166,11 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			    		mUnit.setValue(val);
 			    		String toPrint = mUnit.getDisplayText();
 			    		toPrint = toPrint.replace(" ", "\n");
-						//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
-						remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
+						
+			    		sendSingleObservation();
+			    		//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
+						
+			    		remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
 						
 						try {
 							String tendency = CbScience.findApproximateTendency(recents);
@@ -175,8 +212,6 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				} catch(Exception e) {
 					// :(
 				}
-				
-				
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
@@ -197,7 +232,9 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("widget client received " + msg.arg1 + " " + msg.arg2);
-			askForLocalRecents(2);
+			askForLocalRecents(3);
+			
+			askForSettings();
 		}
 
 		
@@ -250,7 +287,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		bindCbService(); 
 		// TODO: clean this up, (sometimes runs twice?)
 		try {
-			askForLocalRecents(2);
+			askForLocalRecents(3);
 		} catch(Exception e) {
 			log("no recents, exception");
 			e.printStackTrace();
