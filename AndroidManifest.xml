@@ -155,7 +155,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="ca.cumulonimbus.pressurenetsdk.Alarm"
+            android:name="ca.cumulonimbus.pressurenetsdk.CbAlarm"
             android:process=":remote" >
             <intent-filter>
                 <action android:name="ca.cumulonimbus.pressurenetsdk.START_ALARM" >

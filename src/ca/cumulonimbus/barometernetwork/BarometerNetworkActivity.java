@@ -257,7 +257,7 @@ public class BarometerNetworkActivity extends Activity implements
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
-		//bindCbService();
+		bindCbService();
 		setUpMap();
 		setUpUIListeners();
 		setId();
@@ -1353,6 +1353,7 @@ public class BarometerNetworkActivity extends Activity implements
 			makeLocationAPICalls();
 			makeGlobalMapCall();
 			sendChangeNotification();
+			startCbService();
 		}
 		
 		/**
@@ -2500,7 +2501,6 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		startCbService();
 		bindCbService();
 		
 		checkNetwork();
