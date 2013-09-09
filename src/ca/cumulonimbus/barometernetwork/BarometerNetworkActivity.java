@@ -264,7 +264,6 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpFiles();
 		showWelcomeActivity();
 		setUpActionBar();
-		startCbService();
 	} 
 	
 	/**
@@ -2501,6 +2500,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
+		startCbService();
 		bindCbService();
 		
 		checkNetwork();
