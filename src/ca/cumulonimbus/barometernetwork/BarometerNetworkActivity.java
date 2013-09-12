@@ -1204,15 +1204,6 @@ public class BarometerNetworkActivity extends Activity implements
 					log("settings null");
 				}
 				break;
-			case CbService.MSG_DATA_STREAM:
-				bestPressure = (CbObservation) msg.obj;
-				if (bestPressure != null) {
-					log("received " + bestPressure.getObservationValue());
-				} else {
-					log("received null observation");
-				}
-				updateVisibleReading();
-				break;
 			case CbService.MSG_API_RECENTS:
 				listRecents = (ArrayList<CbObservation>) msg.obj;
 				addDataToMap(false);
@@ -1383,47 +1374,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	};
 
-	/**
-	 * Tell CbService to stream us sensor data
-	 */
-	private void startDataStream() {
-		/*
-		if (mBound) {
-			log("pN-4 starting data stream");
-			Message msg = Message.obtain(null, CbService.MSG_START_DATA_STREAM,
-					0, 0);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			//log("error: not bound");
-		}
-		*/
-	}
-
-	/**
-	 * Tell CbService to stop streaming us sensor data
-	 */
-	private void stopDataStream() {
-		/*
-		if (mBound) {
-			log("pN-4 stopping data stream");
-			Message msg = Message.obtain(null, CbService.MSG_STOP_DATA_STREAM,
-					0, 0);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		} else {
-			//'log("error: not bound");
-		}
-		*/
-	}
 
 	/**
 	 * Log session init
@@ -2491,7 +2441,6 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		stopDataStream();
 		unBindCbService();
 		stopGettingLocations();
 		stopSensorListeners();
@@ -2512,7 +2461,6 @@ public class BarometerNetworkActivity extends Activity implements
 		editLocation.setText("");
 		
 		startSensorListeners();
-		startDataStream();
 		startGettingLocations();
 	}
 
@@ -2526,7 +2474,6 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onStop() {
 		dataReceivedToPlot = false;
-		stopDataStream();
 		unBindCbService();
 		super.onStop();
 	}
@@ -2534,7 +2481,6 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		dataReceivedToPlot = false;
-		stopDataStream();
 		unBindCbService();
 		stopGettingLocations();
 		super.onDestroy();
