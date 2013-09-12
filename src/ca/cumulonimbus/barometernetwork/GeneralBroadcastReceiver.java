@@ -34,24 +34,6 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 	private Context mContext;
 	private String mAppDir = "";
 	
-	// pressureNET 4.0
-	// SDK communication
-	boolean mBound;
-	private Messenger mMessenger = new Messenger(new IncomingHandler());
-	Messenger mService = null;
-	
-	/**
-	 * Handle incoming communication from CbService.
-	 * 
-	 * @author jacob
-	 *
-	 */
-	class IncomingHandler extends Handler {
-		@Override
-		public void handleMessage(Message msg) {
-			
-		}
-	}
 	
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -59,6 +41,11 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
     	
     	try {
     		setUpFiles();
+    	} catch (Exception e) {
+    		log(e.getStackTrace().toString());
+    	}
+    	
+    	try {
     		startCbService();
     	} catch (Exception e) {
     		log(e.getStackTrace().toString());
@@ -71,10 +58,9 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 	private void startCbService() {
 		try {
 			if(hasBarometer()) {
-				log("start cbservice");
+				log("broadcast receiver start cbservice");
 				Intent serviceIntent = new Intent(mContext, CbService.class);
 				mContext.startService(serviceIntent);
-				bindCbService();
 				log("generalbroadcastreceiver started service");
 			} else {
 				log("generalbroadcastreceiver detects no barometer, not starting service");
@@ -84,57 +70,6 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 		}
 	}
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			log("general broadcast receiver says : service connected");
-			mService = new Messenger(service);
-			mBound = true;
-			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			log("general broadcast receiver received " + msg.arg1 + " " + msg.arg2);
-			sendChangeNotification();
-		}
-		
-		/**
-		 * Send a message with a good replyTo for the Service to send notifications through.
-		 */
-		private void sendChangeNotification() {
-			if (mBound) {
-				log("send change notif request");
-
-				Message msg = Message.obtain(null, CbService.MSG_CHANGE_NOTIFICATION,
-						0,0);
-				try {
-					msg.replyTo = mMessenger;
-					mService.send(msg);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-			} else {
-				//log("error: not bound");
-			}			
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			log("client: service disconnected");
-			mMessenger = null;
-			mBound = false;
-		}
-	};
-	
-	public void unBindCbService() {
-		if (mBound) {
-			mContext.unbindService(mConnection);
-			mBound = false;
-		}
-	}
-
-	public void bindCbService() {
-		log("bind cbservice");
-		mContext.bindService(new Intent(mContext, CbService.class),
-				mConnection, Context.BIND_AUTO_CREATE);
-
-	}
-
 	/**
 	 * Check if we have a barometer. Use info to disable menu items,
 	 * choose to run the service or not, etc.
