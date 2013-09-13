@@ -75,7 +75,7 @@ public class LogViewerActivity extends Activity {
 						Calendar c = Calendar.getInstance();
 						c.setTimeInMillis(obs.getTime());
 						String dateString = c.getTime().toLocaleString();
-						DecimalFormat df = new DecimalFormat("####.00");
+						DecimalFormat df = new DecimalFormat("####.00000");
 						String valueString = df.format(convertedPressureValue(obs.getObservationValue()));
 						rawLog += dateString + ": " + valueString + "\n";
 					}
