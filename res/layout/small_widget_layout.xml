@@ -36,6 +36,7 @@
         android:layout_centerHorizontal="true"
         android:clickable="true"
         android:paddingRight="6dp"
+        android:paddingTop="6dp"
         android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
 
