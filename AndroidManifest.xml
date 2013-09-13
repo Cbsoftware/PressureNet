@@ -52,6 +52,17 @@
 >
         </activity>
         <activity
+            android:name="ca.cumulonimbus.barometernetwork.PlayServicesLegalActivity"
+            android:excludeFromRecents="true"
+            android:label="Legal Notices"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:theme="@style/CustomTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+>
+        </activity>
+        <activity
             android:name="ca.cumulonimbus.barometernetwork.AboutActivity"
             android:excludeFromRecents="true"
             android:label="@string/about"
