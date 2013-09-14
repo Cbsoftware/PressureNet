@@ -80,8 +80,8 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 	}
 	
 	private void log(String message) {
-		System.out.println(message);
-		logToFile(message);
+		//System.out.println(message);
+		//logToFile(message);
 	}
 	
 	/** 

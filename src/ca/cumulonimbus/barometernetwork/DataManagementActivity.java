@@ -93,8 +93,8 @@ public class DataManagementActivity extends Activity {
 	}
 	
 	public void log(String message) { 
-		System.out.println(message);
-		logToFile(message);
+		//System.out.println(message);
+		//logToFile(message);
 	}
 
 	public void logToFile(String message ) {

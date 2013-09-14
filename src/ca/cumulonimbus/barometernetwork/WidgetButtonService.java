@@ -336,7 +336,6 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			sm.unregisterListener(this);
 			break;
 	    }
-		
 	}
 
 	// Log data to SD card for debug purposes.
@@ -356,8 +355,8 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
     public void log(String text) {
-    	System.out.println(text);
-    	logToFile(text);
+    	//System.out.println(text);
+    	//logToFile(text);
     }
 	
 }

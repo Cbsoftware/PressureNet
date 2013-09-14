@@ -1025,8 +1025,8 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
     public void log(String text) {
-    	logToFile(text);
-    	System.out.println(text);
+    	//logToFile(text);
+    	//System.out.println(text);
     }
 	
 	@Override

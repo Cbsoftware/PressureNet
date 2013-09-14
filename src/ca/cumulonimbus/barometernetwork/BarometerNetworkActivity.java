@@ -2572,8 +2572,8 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void log(String text) {
-		logToFile(text);
-		System.out.println(text);
+		//logToFile(text);
+		//System.out.println(text);
 	}
 
 	private void startSensorListeners() {
