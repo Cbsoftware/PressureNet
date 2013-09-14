@@ -2465,7 +2465,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onStart() {
 		dataReceivedToPlot = false;
-		bindCbService();
+		//bindCbService();
 		super.onStart();
 	}
 
