@@ -83,7 +83,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			// log("error: not bound");
@@ -97,7 +97,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("widget failed to send single obs; data management error: not bound");
@@ -276,7 +276,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			msg.replyTo = mMessenger;
 			mService.send(msg);
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 	}
@@ -290,7 +290,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			askForLocalRecents(3);
 		} catch(Exception e) {
 			log("no recents, exception");
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 			
 	}

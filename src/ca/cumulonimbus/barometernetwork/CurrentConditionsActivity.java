@@ -527,7 +527,7 @@ public class CurrentConditionsActivity extends Activity {
 			try {
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("error: not bound");
@@ -541,7 +541,7 @@ public class CurrentConditionsActivity extends Activity {
 			try {
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("error: not bound");

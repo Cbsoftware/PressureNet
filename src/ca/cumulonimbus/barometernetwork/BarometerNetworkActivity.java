@@ -286,7 +286,7 @@ public class BarometerNetworkActivity extends Activity implements
 			networkLocationManager = null;
 	        return true;
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 	}
@@ -624,7 +624,7 @@ public class BarometerNetworkActivity extends Activity implements
 					latitude, longitude), 11));
 			updateMapInfoText();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -982,7 +982,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 
 				} catch (IOException ioe) {
-					ioe.printStackTrace();
+					//ioe.printStackTrace();
 				}
 
 			}
@@ -1058,7 +1058,7 @@ public class BarometerNetworkActivity extends Activity implements
 				log("app detects no barometer, not starting service");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -1077,7 +1077,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			// log("error: not bound");
@@ -1099,7 +1099,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			//log("error: not bound");
@@ -1121,7 +1121,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			// log("error: not bound");
@@ -1155,7 +1155,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			// log("error: not bound");
@@ -1266,7 +1266,7 @@ public class BarometerNetworkActivity extends Activity implements
 			View testChartView = findViewById(100); // TODO: set a better constant
 			mainLayout.removeView(testChartView);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -1358,7 +1358,7 @@ public class BarometerNetworkActivity extends Activity implements
 					msg.replyTo = mMessenger;
 					mService.send(msg);
 				} catch (RemoteException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			} else {
 				//log("error: not bound");
@@ -1714,7 +1714,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent intent = new Intent(this, LogViewerActivity.class);
 			startActivity(intent);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -1750,7 +1750,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			android_id = hexString.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -1765,7 +1765,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -2373,7 +2373,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("app failed to send single obs; data management error: not bound");
@@ -2405,7 +2405,7 @@ public class BarometerNetworkActivity extends Activity implements
 				mService.send(msg);
 				updateAPICount(1);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("app failed api call; data management error: not bound");
@@ -2421,7 +2421,7 @@ public class BarometerNetworkActivity extends Activity implements
 				mService.send(msg);
 				updateAPICount(1);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			System.out
@@ -2565,9 +2565,9 @@ public class BarometerNetworkActivity extends Activity implements
 			output.write(logString.getBytes());
 			output.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			//ioe.printStackTrace();
 		}
 	}
 

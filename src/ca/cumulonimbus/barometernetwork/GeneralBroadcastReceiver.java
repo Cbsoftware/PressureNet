@@ -66,7 +66,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 				log("generalbroadcastreceiver detects no barometer, not starting service");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -98,9 +98,9 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 			output.write(logString.getBytes());
 			output.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			//ioe.printStackTrace();
 		}
 	}
 
@@ -115,7 +115,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 }

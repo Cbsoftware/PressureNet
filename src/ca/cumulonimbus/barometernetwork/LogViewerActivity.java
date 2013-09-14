@@ -117,7 +117,7 @@ public class LogViewerActivity extends Activity {
 					}
 					
 				} catch (Exception e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				} finally {
 					
 				}
@@ -235,7 +235,7 @@ public class LogViewerActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			//log("error: not bound");
@@ -282,7 +282,7 @@ public class LogViewerActivity extends Activity {
 			View testChartView = findViewById(100); // TODO: ...
 			mainLayout.removeView(testChartView);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 		v.setId(100); // TODO: what's safe?

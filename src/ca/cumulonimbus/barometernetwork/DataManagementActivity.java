@@ -62,7 +62,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("dm error: not bound");
@@ -85,7 +85,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			log("dm getlocalobs error: not bound");
@@ -105,9 +105,9 @@ public class DataManagementActivity extends Activity {
 			output.write(logString.getBytes());
 			output.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			//ioe.printStackTrace();
 		}
 	}
 	
@@ -122,7 +122,7 @@ public class DataManagementActivity extends Activity {
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -134,7 +134,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			//log("error: not bound");
@@ -149,7 +149,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			//log("error: not bound");
@@ -164,7 +164,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		} else {
 			//log("error: not bound");
