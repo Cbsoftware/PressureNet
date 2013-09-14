@@ -13,8 +13,6 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;

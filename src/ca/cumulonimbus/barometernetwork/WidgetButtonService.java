@@ -124,8 +124,8 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			switch (msg.what) {
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
-				log("widgetbuttonservice got settings, share level " + activeSettings.getShareLevel());
 				if (activeSettings != null) {
+					log("widgetbuttonservice got settings, share level " + activeSettings.getShareLevel());
 					log("Client Received from service "
 							+ activeSettings.getServerURL());
 				} else {
