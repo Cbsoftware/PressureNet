@@ -36,7 +36,7 @@
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
-            android:background="#AAFFFFFF"
+            android:background="#CCFFFFFF"
             android:src="@drawable/ic_menu_light_locations"
             android:textColor="@android:color/black"
             android:visibility="visible" />
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:layout_weight="1"
-            android:background="#AAFFFFFF"
+            android:background="#CCFFFFFF"
             android:cursorVisible="false"
             android:hint="Search"
             android:imeOptions="actionDone"
@@ -59,7 +59,7 @@
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="51dp"
-            android:background="#AAFFFFFF"
+            android:background="#CCFFFFFF"
             android:src="@drawable/ic_menu_light_search"
             android:textColor="@android:color/black"
             android:visibility="visible" />
@@ -79,7 +79,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/layoutMap"
         android:layout_gravity="bottom"
-        android:background="#AAFFFFFF"
+        android:background="#CCFFFFFF"
         android:orientation="horizontal"
         android:visibility="visible" >
 
@@ -152,7 +152,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
-        android:background="#AAFFFFFF"
+        android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:paddingTop="5dp"
         android:visibility="gone" >
@@ -162,7 +162,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/display_time_chart"
-            android:prompt="@string/chartTimeDisplay" />
+            android:prompt="@string/chartTimeDisplay"
+            android:visibility="gone" />
+        
+        
+        <TextView
+            android:id="@+id/textChartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last 12 hours"
+            android:layout_gravity="center_horizontal"
+            android:padding="4dp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
@@ -170,7 +181,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
-        android:background="#AAFFFFFF"
+        android:background="#CCFFFFFF"
         android:orientation="horizontal"
         android:paddingBottom="0dp"
         android:paddingLeft="5dp"
@@ -294,7 +305,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
-        android:background="#AAFFFFFF"
+        android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:padding="5dp"
         android:visibility="gone" >
@@ -334,7 +345,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
-        android:background="#AAFFFFFF"
+        android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:padding="5dp"
         android:visibility="gone" >

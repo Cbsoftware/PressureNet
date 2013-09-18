@@ -153,7 +153,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button buttonThermometer;
 	private Button buttonHygrometer;
 	private Spinner spinnerTime;
-	private int hoursAgoSelected = 3;
+	private int hoursAgoSelected = 12;
 
 	private ProgressBar progressAPI;
 	
@@ -177,15 +177,12 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonSearchLocations;
 	
 	private TextView textAnimationInformation;
+	private TextView textChartTimeInfo;
 	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
 	String apiServerURL = "https://pressurenet.cumulonimbus.ca/list/?";
-
-	private int currentTimeProgress = 0;
-	private boolean animateState = false;
-	private boolean graphVisible = false;
 
 	double recentPressureReading = 0.0;
 	double recentTemperatureReading = 1000; // TODO: fix default value hack
@@ -199,11 +196,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_DATA_CHANGED = 4;
 
 	boolean activeAnimation = false;
-
-	private boolean pressureReadingsActive = false;
-	private boolean humidityReadingsActive = false;
-	private boolean temperatureReadingsActive = false;
-
 	
 	/**
 	 * preferences
@@ -216,7 +208,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceSendNotifications;
 	private boolean preferenceUseGPS;
 	private boolean preferenceWhenCharging;
-
+	
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
 
@@ -225,13 +217,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private EditText editLocation;
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
-
-	private long lastMapMove = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
-	private long lastGraphApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
-	private long lastLocationApiCall = System.currentTimeMillis() - (1000 * 60 * 10);
 	private long lastGraphDataUpdate = System.currentTimeMillis() - (1000 * 60 * 10);
 	
 	private boolean isConnected = false;
@@ -790,6 +778,8 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		
+		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
+		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
@@ -834,6 +824,8 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 					
+					textChartTimeInfo.setVisibility(View.GONE);
+					
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
@@ -858,13 +850,15 @@ public class BarometerNetworkActivity extends Activity implements
 				int visible = layoutGraph.getVisibility();
 				if (visible == View.VISIBLE) {
 					layoutGraph.setVisibility(View.GONE);
+					textChartTimeInfo.setVisibility(View.GONE);
 				} else {
+					Toast.makeText(getApplicationContext(), "Loading graph...", Toast.LENGTH_SHORT).show();
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
 					removeChartFromLayout();
 					
 					spinnerTime.setSelection(0);
-					hoursAgoSelected = 3;
+					hoursAgoSelected = 12;
 					
 					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(12);
@@ -906,6 +900,8 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
+					
+					textChartTimeInfo.setVisibility(View.GONE);
 					
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
@@ -1324,6 +1320,7 @@ public class BarometerNetworkActivity extends Activity implements
 			log("chartlayout null");
 			return;
 		}
+		textChartTimeInfo.setVisibility(View.VISIBLE);
 		// TODO: bring the chart back
 		mainLayout.addView(chartView);
 	
@@ -2586,19 +2583,19 @@ public class BarometerNetworkActivity extends Activity implements
 			Sensor humiditySensor = sm.getDefaultSensor(TYPE_RELATIVE_HUMIDITY);
 
 			if (pressureSensor != null) {
-				pressureReadingsActive = sm.registerListener(this,
+				sm.registerListener(this,
 						pressureSensor, SensorManager.SENSOR_DELAY_UI);
 			} else {
 				recentPressureReading = 0.0;
 			}
 			if (temperatureSensor != null) {
-				temperatureReadingsActive = sm.registerListener(this,
+				sm.registerListener(this,
 						temperatureSensor, SensorManager.SENSOR_DELAY_UI);
 			} else {
 				recentTemperatureReading = 1000.0;
 			}
 			if (humiditySensor != null) {
-				humidityReadingsActive = sm.registerListener(this,
+				sm.registerListener(this,
 						humiditySensor, SensorManager.SENSOR_DELAY_UI);
 			} else {
 				recentHumidityReading = 1000.0;
@@ -2611,9 +2608,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public void stopSensorListeners() {
 		sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		sm.unregisterListener(this);
-		pressureReadingsActive = false;
-		temperatureReadingsActive = false;
-		humidityReadingsActive = false;
 	}
 
 	@Override
