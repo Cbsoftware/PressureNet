@@ -11,13 +11,13 @@ public class TemperatureUnit {
 	
 	public String fullToAbbrev() {
 		if(abbrev.contains("C")) {
-			return "Â°C";
+			return "¡C";
 		} else if(abbrev.contains("F")) {
-			return "Â°F";
+			return "¡F";
 		} else if(abbrev.contains("K")) {
 			return "K ";
 		} else {
-			return "Â°C";
+			return "¡C";
 		}
 	}
 	
@@ -26,7 +26,7 @@ public class TemperatureUnit {
 			if(abbrev.contains("C")) {
 				return valueInC;
 			} else if(abbrev.contains("F")) {
-				return (valueInC * (9/5) + 32);
+				return ((valueInC * 9) /5) + 32;
 			} else if(abbrev.contains("K")) {
 				return valueInC + 273.15;
 			} else {
