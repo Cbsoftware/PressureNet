@@ -229,13 +229,14 @@ public class BarometerNetworkActivity extends Activity implements
 	private LocationManager networkLocationManager;
 	private LocationListener locationListener;
 	
+	private long lastSubmitStart = 0;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dataReceivedToPlot = false;
 		setContentView(R.layout.main);
-		// migratePreferences();
 		checkNetwork();
 		checkBarometer();
 		setLastKnownLocation();
@@ -243,7 +244,6 @@ public class BarometerNetworkActivity extends Activity implements
 		startSensorListeners();
 		startLog();
 		getStoredPreferences();
-		bindCbService();
 		setUpMap();
 		setUpUIListeners();
 		setId();
@@ -624,7 +624,7 @@ public class BarometerNetworkActivity extends Activity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units", "millibars");
-		preferenceTemperatureUnit = sharedPreferences.getString("temperature_units", "Celsius (Â°C)");
+		preferenceTemperatureUnit = sharedPreferences.getString("temperature_units", "Celsius (¡C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
 				"autofrequency", "10 minutes");
 		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
@@ -636,7 +636,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
-		settings.setAppID("ca.cumulonimbus.barometernetwork");
+		settings.setAppID("ca.cumulonimbus.barometernetwork"); // TODO: use app dev setting
 		settings.setSharingData(preferenceShareData);
 		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
@@ -1133,9 +1133,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	public void bindCbService() {
 		log("bind cbservice");
-		bindService(new Intent(getApplicationContext(), CbService.class),
-				mConnection, Context.BIND_AUTO_CREATE);
-
+		if(!mBound) {
+			bindService(new Intent(getApplicationContext(), CbService.class),
+					mConnection, Context.BIND_AUTO_CREATE);
+			
+		}
 	}
 
 	/**
@@ -1339,7 +1341,6 @@ public class BarometerNetworkActivity extends Activity implements
 			makeLocationAPICalls();
 			makeGlobalMapCall();
 			sendChangeNotification();
-			startCbService();
 		}
 		
 		/**
@@ -2445,7 +2446,6 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		bindCbService();
 		
 		checkNetwork();
 		displayNetworkOfflineToast();
@@ -2457,6 +2457,10 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		startSensorListeners();
 		startGettingLocations();
+		
+		startCbService();
+		bindCbService();
+
 	}
 
 	@Override
