@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -54,7 +55,7 @@ public class AboutActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				openWebBrowser("http://pressurenet.cumulonimbus.ca");
+				openWebBrowser(CbConfiguration.SERVER_URL);
 			}
 		});
 		
@@ -63,7 +64,7 @@ public class AboutActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				openWebBrowser("http://cumulonimbus.ca");
+				openWebBrowser(CbConfiguration.CB_WEBSITE);
 			}
 		});
 

@@ -83,6 +83,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -182,7 +183,7 @@ public class BarometerNetworkActivity extends Activity implements
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
-	String apiServerURL = "https://pressurenet.cumulonimbus.ca/list/?";
+	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
 
 	double recentPressureReading = 0.0;
 	double recentTemperatureReading = 1000; // TODO: fix default value hack

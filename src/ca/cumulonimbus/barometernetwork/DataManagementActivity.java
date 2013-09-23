@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
@@ -253,7 +254,7 @@ public class DataManagementActivity extends Activity {
 			public void onClick(View v) {
 				// Open Live API sign up
 				Uri uri = Uri
-						.parse("http://pressurenet.cumulonimbus.ca/customers/livestream/");
+						.parse(CbConfiguration.API_SIGNUP_URL);
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 				startActivity(intent);
 			}

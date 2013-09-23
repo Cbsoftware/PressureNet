@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
@@ -98,7 +99,7 @@ public class CurrentConditionsActivity extends Activity {
 	private double mLongitude = 0.0;
 	private CbCurrentCondition condition;
 	
-    private String serverURL = PressureNETConfiguration.SERVER_URL;
+    private String serverURL = CbConfiguration.SERVER_URL;
 
 	public final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
