@@ -285,6 +285,10 @@ public class DataManagementActivity extends Activity {
 		super.onPause();
 	}
 
+	/**
+	 * Check the available storage options.
+	 * Used for logging to SD card.
+	 */
 	public void checkStorage() {
 		String state = Environment.getExternalStorageState();
 
@@ -302,6 +306,12 @@ public class DataManagementActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Handle messages and communication with CbService
+	 * 
+	 * @author jacob
+	 *
+	 */
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -351,8 +361,6 @@ public class DataManagementActivity extends Activity {
 										+ recents.size(), Toast.LENGTH_LONG).show();	
 				    }
 					
-					
-					
 					Toast.makeText(
 							getApplicationContext(),
 							"Saved " 
@@ -372,7 +380,10 @@ public class DataManagementActivity extends Activity {
 		}
 	}
 	
-	/* Checks if external storage is available for read and write */
+	/**
+	 * Checks if external storage is available for read and write
+	 * @return
+	 */
 	public boolean isExternalStorageWritable() {
 	    String state = Environment.getExternalStorageState();
 	    if (Environment.MEDIA_MOUNTED.equals(state)) {
