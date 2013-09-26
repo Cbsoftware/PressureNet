@@ -1026,8 +1026,10 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
     public void log(String text) {
-    	//logToFile(text);
-    	//System.out.println(text);
+    	if(!PressureNETConfiguration.DEBUG_MODE) {
+    		logToFile(text);
+    		System.out.println(text);
+    	}
     }
 	
 	@Override

@@ -121,8 +121,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private String android_id;
 
-	private boolean debugMode = true;
-
 	private String mTendency = "";
 
 	public String statusText = "";
@@ -1471,7 +1469,7 @@ public class BarometerNetworkActivity extends Activity implements
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
 		}
-		if (!debugMode) {
+		if (!PressureNETConfiguration.DEBUG_MODE) {
 			// hide menu item
 			menu.removeItem(R.id.send_debug_log);
 		}
@@ -2574,8 +2572,10 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void log(String text) {
-		//logToFile(text);
-		//System.out.println(text);
+		if(!PressureNETConfiguration.DEBUG_MODE) {
+			logToFile(text);
+			System.out.println(text);
+		}
 	}
 
 	private void startSensorListeners() {

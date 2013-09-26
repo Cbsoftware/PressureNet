@@ -355,8 +355,9 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	}
 	
     public void log(String text) {
-    	//System.out.println(text);
-    	//logToFile(text);
+    	if(!PressureNETConfiguration.DEBUG_MODE) {
+    		System.out.println(text);
+    		logToFile(text);
+    	}
     }
-	
 }
