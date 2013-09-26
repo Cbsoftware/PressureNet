@@ -2572,7 +2572,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void log(String text) {
-		if(!PressureNETConfiguration.DEBUG_MODE) {
+		if(PressureNETConfiguration.DEBUG_MODE) {
 			logToFile(text);
 			System.out.println(text);
 		}
