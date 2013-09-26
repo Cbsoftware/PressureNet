@@ -1312,8 +1312,51 @@ public class BarometerNetworkActivity extends Activity implements
 		chartView.setId(100); // TODO: what's safe?
 
 		// add to layout
+		// Check screen metrics and orientation, set chart height accordingly
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		int chartHeight = 380;
+		try {
+			DisplayMetrics displayMetrics = new DisplayMetrics(); 
+			displayMetrics = getResources().getDisplayMetrics();
+			log("setting text size, density is " + displayMetrics.densityDpi);
+			switch(displayMetrics.densityDpi){
+		     case DisplayMetrics.DENSITY_LOW:
+		    	 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {	
+		    		chartHeight = 100;
+		    	 } else {
+		    		 chartHeight = 200;
+		    	 }
+		         break;
+		     case DisplayMetrics.DENSITY_MEDIUM:
+		    	 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {	
+			    		chartHeight = 230;
+			    	 } else {
+			    		 chartHeight = 300;
+			    	 }
+		    	 break;
+		     case DisplayMetrics.DENSITY_HIGH:
+		    	 if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {	
+			    		chartHeight = 200;
+			    	 } else {
+			    		 chartHeight = 350;
+			    	 }
+		    	 break;
+		     case DisplayMetrics.DENSITY_XHIGH:
+		    	 chartHeight = 400;
+                 break;
+		     case DisplayMetrics.DENSITY_XXHIGH:
+		    	 chartHeight = 450;
+                 break;
+		     default:
+		    	 break;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				400);
+				chartHeight);
 
 		chartView.setBackgroundColor(Color.rgb(238, 238, 238));
 		chartView.setLayoutParams(lparams);
