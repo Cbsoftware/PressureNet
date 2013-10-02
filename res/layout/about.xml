@@ -34,8 +34,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="8dp"
-            android:text="Version 4.0"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Version 4.0.5RC"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#888888" />
+        
+          <TextView
+            android:id="@+id/textVersionSDK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="SDK 1.0.1RC"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#888888" />
     </LinearLayout>
 
@@ -65,18 +74,10 @@
             android:text="Cumulonimbus"
             android:textColor="#FFFFFF"
             android:textSize="24dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            />
 
-        <TextView
-            android:id="@+id/textSoftware"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:fontFamily="sans-serif-condensed"
-            android:text="Software"
-            android:textColor="#FFFFFF"
-            android:textSize="24dp"
-            android:textStyle="bold" />
+   
     </LinearLayout>
 
 </LinearLayout>
