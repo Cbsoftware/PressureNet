@@ -851,6 +851,8 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					textChartTimeInfo.setVisibility(View.GONE);
 				} else {
+					graphMode.setEnabled(false);
+					graphMode.setTextColor(Color.GRAY);
 					Toast.makeText(getApplicationContext(), "Loading graph...", Toast.LENGTH_SHORT).show();
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
@@ -1367,7 +1369,9 @@ public class BarometerNetworkActivity extends Activity implements
 		textChartTimeInfo.setVisibility(View.VISIBLE);
 		// TODO: bring the chart back
 		mainLayout.addView(chartView);
-	
+		
+		graphMode.setEnabled(true);
+		graphMode.setTextColor(Color.BLACK);
 	}
 
 	/**
