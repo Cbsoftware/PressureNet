@@ -164,15 +164,14 @@
             android:entries="@array/display_time_chart"
             android:prompt="@string/chartTimeDisplay"
             android:visibility="gone" />
-        
-        
+
         <TextView
             android:id="@+id/textChartTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last 12 hours"
             android:layout_gravity="center_horizontal"
             android:padding="4dp"
+            android:text="Last 12 hours"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -213,14 +212,6 @@
                 android:text="Longitude"
                 android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/imageDataPointsMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/longitudeLabelMapInfoText"
-                android:padding="4dp"
-                android:src="@drawable/ic_marker" />
-
             <TextView
                 android:id="@+id/dataPointsLabelMapInfoText"
                 android:layout_width="wrap_content"
@@ -228,7 +219,6 @@
                 android:layout_below="@id/longitudeLabelMapInfoText"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/imageDataPointsMapInfoText"
-                android:padding="4dp"
                 android:text="Data Points"
                 android:textSize="16sp" />
 
@@ -247,6 +237,15 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMinMapInfoText"
                 android:textSize="16sp" />
+            
+            
+            <TextView
+                android:id="@+id/dataPointsValueMapInfoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/longitudeValueMinMapInfoText"
+                android:textSize="16sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -256,47 +255,21 @@
             android:layout_weight=".5"
             android:gravity="right" >
 
-            <RelativeLayout
-                android:id="@+id/layoutMiddleMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:minWidth="50dp" >
-
-                <TextView
-                    android:id="@+id/textLocationRangeTo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="to"
-                    android:textSize="16sp"
-                    android:layout_alignParentTop="true"
-                    android:paddingTop="10dp"/>
-                
-                <TextView
-                    android:id="@+id/dataPointsValueMapInfoText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent" 
-                    android:textSize="16sp"
-                    android:layout_below="@+id/textLocationRangeTo"
-                    android:gravity="bottom"
-                    android:paddingBottom="5dp"
-                    />
-            </RelativeLayout>
-
             <TextView
                 android:id="@+id/latitudeValueMaxMapInfoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/layoutMiddleMapInfoText"
-                android:layout_alignTop="@+id/layoutMiddleMapInfoText"
+                android:layout_alignParentRight="true"
                 android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/longitudeValueMaxMapInfoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/latitudeValueMaxMapInfoText"                
-                android:layout_alignRight="@+id/latitudeValueMaxMapInfoText"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
+
         </RelativeLayout>
     </LinearLayout>
 
