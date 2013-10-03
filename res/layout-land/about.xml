@@ -8,7 +8,8 @@
         android:layout_height="fill_parent"
         android:layout_weight=".5"
         android:orientation="vertical"
-        android:clickable="true" >
+        android:clickable="true"
+        android:id="@+id/layoutAboutPressureNET" >
 
         <ImageView
             android:id="@+id/imagePressureNET"
@@ -32,8 +33,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="8dp"
-            android:text="Version 4.0"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Version 4.0.5RC"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#888888" />
+        
+          <TextView
+            android:id="@+id/textVersionSDK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="SDK 1.0.1RC"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#888888" />
     </LinearLayout>
 
@@ -43,7 +53,8 @@
         android:layout_weight=".5"
         android:background="#0099cc"
         android:orientation="vertical"
-        android:clickable="true" >
+        android:clickable="true" 
+        android:id="@+id/layoutAboutCumulonimbus">
 
         <ImageView
             android:id="@+id/imageCumulonimbus"
@@ -64,16 +75,6 @@
             android:textSize="24dp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textSoftware"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:fontFamily="sans-serif-condensed"
-            android:text="Software"
-            android:textColor="#FFFFFF"
-            android:textSize="24dp"
-            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>
