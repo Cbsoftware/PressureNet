@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="406"
-    android:versionName="4.0.6" >
+    android:versionCode="407"
+    android:versionName="4.0.7" >
 
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="16" />
-										
+			
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -190,7 +190,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCZIU09ltg1rLTHB9wlcs3xD4111vxf0-k" />
+            android:value="AIzaSyC-lUvBgpXNiITyTDBRX-qsu1h36-LHouY" />
     </application>
 
 </manifest>
