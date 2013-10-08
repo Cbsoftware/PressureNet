@@ -642,6 +642,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setSendNotifications(preferenceSendNotifications);
 		settings.setUseGPS(preferenceUseGPS);
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
+		settings.setServerURL(CbConfiguration.SERVER_URL);
 		settings.saveSettings();
 		log("app saved new settings (getStoredPreferences):" + settings);
 	}
