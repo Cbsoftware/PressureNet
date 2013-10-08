@@ -635,7 +635,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		CbSettingsHandler settings = new CbSettingsHandler(
 				getApplicationContext());
-		settings.setAppID("ca.cumulonimbus.barometernetwork"); // TODO: use app dev setting
+		settings.setAppID(getPackageName()); 
 		settings.setSharingData(preferenceShareData);
 		settings.setDataCollectionFrequency(CbService.stringTimeToLongHack(preferenceCollectionFrequency));
 		settings.setShareLevel(preferenceShareLevel);
@@ -644,6 +644,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
 		settings.setServerURL(CbConfiguration.SERVER_URL);
 		settings.saveSettings();
+		sendNewSettings();
 		log("app saved new settings (getStoredPreferences):" + settings);
 	}
 
@@ -1194,6 +1195,7 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_SETTINGS:
 				activeSettings = (CbSettingsHandler) msg.obj;
+				activeSettings.getSettings();
 				if (activeSettings != null) {
 					log("received msg_settings, setting activeSettings " + activeSettings);
 					log("Client Received from service "
@@ -1385,6 +1387,7 @@ public class BarometerNetworkActivity extends Activity implements
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
+			askForSettings();
 			makeLocationAPICalls();
 			makeGlobalMapCall();
 			sendChangeNotification();
@@ -2424,6 +2427,22 @@ public class BarometerNetworkActivity extends Activity implements
 			log("app failed to send single obs; data management error: not bound");
 		}
 	}
+	
+	private void sendNewSettings() {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_SET_SETTINGS, activeSettings);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				//e.printStackTrace();
+			}
+		} else {
+			log("app failed to send single obs; data management error: not bound");
+		}
+	}
+	
+	
 
 	private void updateAPICount(int value) {
 		activeAPICallCount+=value;
