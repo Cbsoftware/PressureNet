@@ -190,7 +190,7 @@
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyC-lUvBgpXNiITyTDBRX-qsu1h36-LHouY" />
+            android:value="" />
     </application>
 
 </manifest>
