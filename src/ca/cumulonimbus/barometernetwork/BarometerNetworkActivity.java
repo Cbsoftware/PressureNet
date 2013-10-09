@@ -2286,8 +2286,8 @@ public class BarometerNetworkActivity extends Activity implements
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
-		if(listRecents.size()> 0 ) {
-			if(now - lastGraphDataUpdate > (1000 * 1)) {
+		if(listRecents.size() > 0 ) {
+			if((now - lastGraphDataUpdate) > (1000 * 1)) {
 				mMap.clear();
 				lastGraphDataUpdate = now;
 			}
