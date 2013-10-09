@@ -175,8 +175,6 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	
 	private ImageButton buttonSearchLocations;
-	
-	private TextView textAnimationInformation;
 	private TextView textChartTimeInfo;
 	
 	Handler timeHandler = new Handler();
@@ -195,7 +193,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_MAILED_LOG = 3;
 	public static final int REQUEST_DATA_CHANGED = 4;
 
-	boolean activeAnimation = false;
 	
 	/**
 	 * preferences
@@ -547,8 +544,6 @@ public class BarometerNetworkActivity extends Activity implements
 						graphMode.setTextColor(Color.GRAY);
 					}
 					
-					//makeGlobalMapCall();
-					
 					// dismiss the keyboard
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
@@ -574,12 +569,6 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 			});
 			
-			
-
-			// Check if we were successful in obtaining the map.
-			if (mMap != null) {
-				// The Map is verified. It is now safe to manipulate the map.
-			}
 		}
 
 	}
@@ -810,8 +799,6 @@ public class BarometerNetworkActivity extends Activity implements
 		spinnerTime.setAdapter(adapterTime);
 		spinnerTime.setSelection(0);
 		seekTime.setProgress(100);
-
-		textAnimationInformation = (TextView) findViewById(R.id.textAnimationInformation);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 		
@@ -855,7 +842,7 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					// set mode and load data
 					activeMode = "map";
-					addDataToMap(false);
+					addDataToMap();
 				}
 				
 				
@@ -1225,7 +1212,7 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_API_RECENTS:
 				listRecents = (ArrayList<CbObservation>) msg.obj;
-				addDataToMap(false);
+				addDataToMap();
 				if(activeMode.equals("graph")) {
 					createAndShowChart();
 				}
@@ -1240,23 +1227,29 @@ public class BarometerNetworkActivity extends Activity implements
 				if(activeMode.equals("map")) {
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
-					askForCurrentConditionRecents(api);
+					
+					CbApiCall apiConditions = buildMapAPICall(.5);
+					apiConditions.setCallType("Conditions");
+					askForCurrentConditionRecents(apiConditions);
 				} else if(activeMode.endsWith("graph")) {
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
 					askForGraphRecents(api);
 				}
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
-				updateAPICount(-1);
-				if (currentConditionRecents != null) {
-					log("currentConditionRecents size "
-							+ currentConditionRecents.size());
+				//updateAPICount(-1);
+				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
+				if(receivedList!=null) {
+					if(receivedList.size()>0) {
+						currentConditionRecents = receivedList;
+					} else {
+						log("app received conditions size 0");
+					}
 				} else {
-					log("conditions are null");
+					log("app received null conditions");
 				}
-
-				currentConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
-
+				
+				addDataToMap();
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
@@ -2278,7 +2271,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
-	private void addDataToMap(boolean onlyConditions) {
+	private void addDataToMap() {
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		
 		log("add data to map");
@@ -2287,55 +2280,53 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentObs = 0;
 		int currentCur = 0;
 		
-		if(activeAnimation) {
-			// map markers are handled by addDataFrameToMap for animations
-			return; 
-		}
-		
 		int maxUpdateFrequency = 1 * 1000; 
 		long now = System.currentTimeMillis();
 		
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
+		if(listRecents.size()> 0 ) {
+			if(now - lastGraphDataUpdate > (1000 * 1)) {
+				mMap.clear();
+				lastGraphDataUpdate = now;
+			}
+			log("clearing map, adding new data");
+		}
 		try {
-			// Add Recent Readings
-			if(!onlyConditions) {
-				if(listRecents.size()> 0 ) {
-					if(now - lastGraphDataUpdate > (1000 * 1)) {
-						mMap.clear();
-						lastGraphDataUpdate = now;
-					}
-					log("clearing map, adding new data");
-				}
-				
-				for (CbObservation observation : listRecents) {
-					LatLng point = new LatLng(observation.getLocation()
-							.getLatitude(), observation.getLocation()
-							.getLongitude());
-	
-					Bitmap image = drawableToBitmap(drawable, observation);
 					
-					
-					String valueToPrint = displayPressureValue(observation.getObservationValue());
-					
+			for (CbObservation observation : listRecents) {
+				LatLng point = new LatLng(observation.getLocation()
+						.getLatitude(), observation.getLocation()
+						.getLongitude());
 
-					long timeRecorded = observation.getTime();
-					long timeNow = System.currentTimeMillis();
-					long msAgo = now - timeRecorded;
-					int minutesAgo = (int)(msAgo / (1000 * 60));
-					
-					
-					mMap.addMarker(new MarkerOptions().position(point)
-							.title(minutesAgo + " minutes ago")
-							.icon(BitmapDescriptorFactory.fromBitmap(image)));
-	
-					currentObs++;
-					if (currentObs > totalEachAllowed) {
-						break;
-					}
+				Bitmap image = drawableToBitmap(drawable, observation);
+				
+				
+				String valueToPrint = displayPressureValue(observation.getObservationValue());
+				
+
+				long timeRecorded = observation.getTime();
+				long timeNow = System.currentTimeMillis();
+				long msAgo = now - timeRecorded;
+				int minutesAgo = (int)(msAgo / (1000 * 60));
+				
+				
+				mMap.addMarker(new MarkerOptions().position(point)
+						.title(minutesAgo + " minutes ago")
+						.icon(BitmapDescriptorFactory.fromBitmap(image)));
+
+				currentObs++;
+				if (currentObs > totalEachAllowed) {
+					break;
 				}
 			}
+			updateMapInfoText();
+		} catch(Exception e) {
+			log("error adding observations to map " + e.getMessage());
+		}
+		
+		try {
 			
 			//System.out.println("adding current conditions to map: " + currentConditionRecents.size());
 			// Add Current Conditions
@@ -2360,12 +2351,10 @@ public class BarometerNetworkActivity extends Activity implements
 					break;
 				}
 			}
-			
-			updateMapInfoText();
-
-		} catch (Exception e) {
-			log("add data error: " + e.getMessage());
+		} catch(Exception e) {
+			log("error adding conditions to map " + e.getMessage());
 		}
+		
 	}
 
 	/**
@@ -2542,7 +2531,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void loadRecents() {
-		CbApiCall api = buildMapAPICall(.5);
+		CbApiCall api = buildMapAPICall(1);
 		askForRecents(api);
 		askForCurrentConditionRecents(api);
 	}
@@ -2566,7 +2555,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
-		addDataToMap(false);
+		addDataToMap();
 		editLocation.setText("");
 		
 		startSensorListeners();
