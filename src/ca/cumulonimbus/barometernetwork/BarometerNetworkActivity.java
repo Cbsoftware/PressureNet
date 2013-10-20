@@ -69,7 +69,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -93,6 +92,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -2631,6 +2631,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		// bindCbService();
 		super.onStart();
+		EasyTracker.getInstance(this).activityStart(this); 
 	}
 
 	@Override
@@ -2638,6 +2639,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		unBindCbService();
 		super.onStop();
+		EasyTracker.getInstance(this).activityStop(this);  
 	}
 
 	@Override
