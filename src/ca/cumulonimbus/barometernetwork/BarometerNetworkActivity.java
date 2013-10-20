@@ -1891,7 +1891,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
-			if(!CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
+			if(!CurrentConditionsActivity.isDaytime(condition.getLocation().getLatitude(),condition.getLocation().getLongitude() )) {
 				sunDrawable = this.getResources().getDrawable(
 						R.drawable.ic_wea_col_moon2);
 			}			
