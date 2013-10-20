@@ -59,6 +59,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,7 +67,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -543,13 +546,12 @@ public class BarometerNetworkActivity extends Activity implements
 						graphMode.setEnabled(false);
 						graphMode.setTextColor(Color.GRAY);
 					}
-					
-					// dismiss the keyboard
+				
 					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
 							0);
 					editLocation.setCursorVisible(false);
-
+			
 					LatLngBounds bounds = mMap.getProjection()
 							.getVisibleRegion().latLngBounds;
 					visibleBound = bounds;
@@ -801,6 +803,20 @@ public class BarometerNetworkActivity extends Activity implements
 		seekTime.setProgress(100);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
+		
+		editLocation.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View arg0, boolean hasFocus) {
+				log("editLocation focus change, has focus " + hasFocus);
+				if(hasFocus) {
+					editLocation.setCursorVisible(true);
+				} else {
+					editLocation.setCursorVisible(false);
+				}
+				
+			}
+		});
 		
 		buttonSearchLocations.setOnClickListener(new OnClickListener() {
 			
@@ -1736,8 +1752,8 @@ public class BarometerNetworkActivity extends Activity implements
 			if (data != null) {
 				mapMode.performClick();
 				layoutMapInfo.setVisibility(View.GONE);
-				long rowId = data.getLongExtra("location_id", -1);
-				if (rowId != -1) {
+				long rowId = data.getLongExtra("location_id", -1L);
+				if (rowId >= 1) {
 					PnDb pn = new PnDb(getApplicationContext());
 					pn.open();
 					Cursor c = pn.fetchLocation(rowId);
@@ -1754,10 +1770,28 @@ public class BarometerNetworkActivity extends Activity implements
 							editLocation.setText(search, TextView.BufferType.EDITABLE);
 							moveMapTo(lat, lon);
 						}
-
 					}
 					layoutMapInfo.setVisibility(View.GONE);
+				} else if (rowId == -2L) {
+					log("onactivityresult -2");
+					Toast toast = Toast.makeText(getApplicationContext(), "No saved locations. Please enter a location.",
+							Toast.LENGTH_SHORT);
+					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					toast.show();
+
+					editLocation.setText("");
+					editLocation.setFocusableInTouchMode(true);
+					if(editLocation.requestFocus()) {
+						editLocation.setCursorVisible(true);
+						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.showSoftInput(editLocation,
+								0);
+					}
+				} else {
+					log("onactivity result " + rowId);
 				}
+			} else {
+				log("request location data is null");
 			}
 		} else if (requestCode == REQUEST_DATA_CHANGED) {
 			// allow for immediate call of global data
@@ -2556,14 +2590,14 @@ public class BarometerNetworkActivity extends Activity implements
 		getStoredPreferences();
 
 		addDataToMap();
-		editLocation.setText("");
 		
 		startSensorListeners();
 		startGettingLocations();
 		
 		startCbService();
 		bindCbService();
-
+		
+		editLocation.setText("");
 	}
 
 	@Override
