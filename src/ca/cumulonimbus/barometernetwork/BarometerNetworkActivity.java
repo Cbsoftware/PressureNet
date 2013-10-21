@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -233,6 +234,15 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private long lastSubmitStart = 0;
 
+	 private static final String moon_phase_name[] = { "New Moon",        // 0
+         "Waxing crescent",    // 1 
+         "First quarter",      // 2 
+         "Waxing gibbous",     // 3
+         "Full Moon",          // 4 
+         "Waning gibbous",     // 5
+         "Third quarter",      // 6
+         "Waning crescent" };  // 7
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -429,6 +439,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
+	/**
+	 * Moon phase info
+	 */
+	private void getMoonPhaseInfo() {
+		MoonPhase mp = new MoonPhase(Calendar.getInstance());
+		System.out.println("MOON PHASE " + moon_phase_name[mp.getPhaseIndex()]);
+	}
+	
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
 	 * run the service or not, etc.
@@ -2334,6 +2352,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
+
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
