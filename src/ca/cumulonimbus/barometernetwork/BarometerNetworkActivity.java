@@ -221,6 +221,8 @@ public class BarometerNetworkActivity extends Activity implements
 			- (1000 * 60 * 10);
 	private long lastGraphDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 10);
+	private long lastMapDataUpdate = System.currentTimeMillis()
+			- (1000 * 60 * 10);
 
 	private boolean isConnected = false;
 
@@ -1125,7 +1127,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void askForGraphRecents(CbApiCall apiCall) {
 		if (mBound) {
-			log("asking for recents");
+			log("asking for graph recents");
 
 			Message msg = Message.obtain(null,
 					CbService.MSG_GET_API_RECENTS_FOR_GRAPH, apiCall);
@@ -2333,55 +2335,58 @@ public class BarometerNetworkActivity extends Activity implements
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
 		// TODO: add delay so that the map isn't fully refreshed every touch
-
 		log("add data to map");
 
 		int totalEachAllowed = 30;
 		int currentObs = 0;
 		int currentCur = 0;
 
-		int maxUpdateFrequency = 1 * 1000;
+		int maxUpdateFrequency = 500; // 500ms
 		long now = System.currentTimeMillis();
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
 		if (listRecents.size() > 0) {
-			if ((now - lastGraphDataUpdate) > (1000 * 1)) {
-				mMap.clear();
-				lastGraphDataUpdate = now;
-			}
-			log("clearing map, adding new data");
-		}
-		try {
-
-			for (CbObservation observation : listRecents) {
-				LatLng point = new LatLng(observation.getLocation()
-						.getLatitude(), observation.getLocation()
-						.getLongitude());
-
-				Bitmap image = drawableToBitmap(drawable, observation);
-
-				String valueToPrint = displayPressureValue(observation
-						.getObservationValue());
-
-				long timeRecorded = observation.getTime();
-				long timeNow = System.currentTimeMillis();
-				long msAgo = now - timeRecorded;
-				int minutesAgo = (int) (msAgo / (1000 * 60));
-
-				mMap.addMarker(new MarkerOptions().position(point)
-						.title(minutesAgo + " minutes ago")
-						.icon(BitmapDescriptorFactory.fromBitmap(image)));
-
-				currentObs++;
-				if (currentObs > totalEachAllowed) {
-					break;
+			
+			try {
+				if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
+					log("adding data to map too frequently, bailing");
+					return;
+				} else {
+					log("adding data to map, last update " +  (now-lastMapDataUpdate));
 				}
+				mMap.clear();
+				lastMapDataUpdate = now;
+				System.out.println("adding data to map, list recents size " + listRecents.size());
+				for (CbObservation observation : listRecents) { 
+					LatLng point = new LatLng(observation.getLocation()
+							.getLatitude(), observation.getLocation()
+							.getLongitude());
+	
+					Bitmap image = drawableToBitmap(drawable, observation);
+	
+					String valueToPrint = displayPressureValue(observation
+							.getObservationValue());
+	
+					long timeRecorded = observation.getTime();
+					long timeNow = System.currentTimeMillis();
+					long msAgo = now - timeRecorded;
+					int minutesAgo = (int) (msAgo / (1000 * 60));
+	
+					mMap.addMarker(new MarkerOptions().position(point)
+							.title(minutesAgo + " minutes ago")
+							.icon(BitmapDescriptorFactory.fromBitmap(image)));
+	
+					currentObs++;
+					if (currentObs > totalEachAllowed) {
+						break;
+					}
+				}
+				updateMapInfoText();
+			} catch (Exception e) {
+				log("error adding observations to map " + e.getMessage());
 			}
-			updateMapInfoText();
-		} catch (Exception e) {
-			log("error adding observations to map " + e.getMessage());
 		}
 
 		try {
