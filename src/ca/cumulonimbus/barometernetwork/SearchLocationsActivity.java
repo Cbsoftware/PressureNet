@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -38,8 +39,9 @@ public class SearchLocationsActivity extends ListActivity {
 		cursor = pn.fetchAllLocations();
 
 		if (cursor.getCount() == 0) {
-			Toast.makeText(getApplicationContext(), "No saved locations",
-					Toast.LENGTH_SHORT).show();
+			Intent resultIntent = new Intent();
+			resultIntent.putExtra("location_id", -2L);
+			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}
 
