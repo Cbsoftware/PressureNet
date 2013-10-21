@@ -1323,6 +1323,7 @@ public class BarometerNetworkActivity extends Activity implements
 					Toast.makeText(getApplicationContext(),
 							"Sent " + toPrint + "!", Toast.LENGTH_SHORT).show();
 				}
+				askForCurrentConditionRecents(buildMapCurrentConditionsCall(1));
 				break;
 			default:
 				log("received default message");
