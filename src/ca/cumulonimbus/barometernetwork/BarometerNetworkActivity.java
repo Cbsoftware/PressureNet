@@ -993,9 +993,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 				String location = editLocation.getText().toString();
 				if (location.equals("")) {
-					Toast.makeText(getApplicationContext(),
+					Toast toast = Toast.makeText(getApplicationContext(),
 							"Please enter a location to search",
-							Toast.LENGTH_SHORT).show();
+							Toast.LENGTH_SHORT);
+					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					toast.show();
+					focusSearch();
 					return;
 				}
 				location = location.trim();
@@ -1827,13 +1830,7 @@ public class BarometerNetworkActivity extends Activity implements
 					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 					toast.show();
 
-					editLocation.setText("");
-					editLocation.setFocusableInTouchMode(true);
-					if (editLocation.requestFocus()) {
-						editLocation.setCursorVisible(true);
-						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.showSoftInput(editLocation, 0);
-					}
+					focusSearch();
 				} else {
 					log("onactivity result " + rowId);
 				}
@@ -1850,6 +1847,16 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	private void focusSearch() {
+		editLocation.setText("");
+		editLocation.setFocusableInTouchMode(true);
+		if (editLocation.requestFocus()) {
+			editLocation.setCursorVisible(true);
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(editLocation, 0);
+		}
+	}
+	
 	// Give a quick overview of recent
 	// submissions
 	private void viewLog() {
