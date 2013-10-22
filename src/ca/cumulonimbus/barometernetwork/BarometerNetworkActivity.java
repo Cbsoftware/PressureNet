@@ -1693,10 +1693,21 @@ public class BarometerNetworkActivity extends Activity implements
 			growPressureNET();
 		} else if (item.getItemId() == R.id.menu_send_feedback) {
 			sendFeedback();
+		} else if (item.getItemId() == R.id.menu_rate_pressurenet){
+			ratePressureNET();
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Open the Google Play pressureNET page
+	 */
+	private void ratePressureNET() {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse("market://details?id=ca.cumulonimbus.barometernetwork"));
+		startActivity(intent);
+	}
+	
 	/**
 	 * Email software@cumulonimbus.ca for feedback
 	 */
