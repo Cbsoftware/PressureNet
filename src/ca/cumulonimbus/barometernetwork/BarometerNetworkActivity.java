@@ -438,14 +438,6 @@ public class BarometerNetworkActivity extends Activity implements
 		editor.commit();
 
 	}
-
-	/**
-	 * Moon phase info
-	 */
-	private void getMoonPhaseInfo() {
-		MoonPhase mp = new MoonPhase(Calendar.getInstance());
-		System.out.println("MOON PHASE " + moon_phase_name[mp.getPhaseIndex()]);
-	}
 	
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
@@ -1929,6 +1921,15 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean obsIsMe(CbObservation ob) {
 		return ((ob.getUser_id().equals(android_id)));
 	}
+	
+	/**
+	 * Moon phase info
+	 */
+	private int getMoonPhaseIndex() {
+		MoonPhase mp = new MoonPhase(Calendar.getInstance());
+		return mp.getPhaseIndex();
+	}
+
 
 	/**
 	 * Create neat drawables for weather conditions depending on the type of
@@ -1944,13 +1945,52 @@ public class BarometerNetworkActivity extends Activity implements
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources()
 				.getDrawable(R.drawable.bg_wea_square));
 
+		int moonNumber = getMoonPhaseIndex() + 1;
+		
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
 					.getLatitude(), condition.getLocation().getLongitude())) {
-				sunDrawable = this.getResources().getDrawable(
-						R.drawable.ic_wea_col_moon2);
+				switch(moonNumber) {
+				case 1:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon1);
+					break;
+				case 2:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon2);
+					break;
+				case 3:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon3);
+					break;
+				case 4:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon4);
+					break;
+				case 5:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon5);
+					break;
+				case 6:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon6);
+					break;
+				case 7:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon7);
+					break;
+				case 8:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon8);
+					break;
+				default:
+					sunDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_moon2);
+					break;
+				}
+				
 			}
 			Drawable[] layers = { weatherBackgroundDrawable,
 					resizeDrawable(sunDrawable) };

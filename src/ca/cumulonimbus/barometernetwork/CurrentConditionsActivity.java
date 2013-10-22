@@ -176,6 +176,85 @@ public class CurrentConditionsActivity extends Activity {
     	return nvp;
     }
     
+	/**
+	 * Moon phase info
+	 */
+	private int getMoonPhaseIndex() {
+		MoonPhase mp = new MoonPhase(Calendar.getInstance());
+		return mp.getPhaseIndex();
+	}
+    
+	public void pickAndSetMoonIcon(boolean on) {
+
+		int moonNumber = getMoonPhaseIndex() + 1;
+		
+		switch(moonNumber) {
+		case 1:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon1);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon1);
+			}
+			break;
+		case 2:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+			break;
+		case 3:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon3);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon3);
+			}
+			break;
+		case 4:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon4);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon4);
+			}
+			break;
+		case 5:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon5);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon5);
+			}
+			break;
+		case 6:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon6);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon6);
+			}
+			break;
+		case 7:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon7);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon7);
+			}
+			break;
+		case 8:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+			break;
+		default:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+			break;
+		}
+	}
+	
     /** 
      * Choose icon between sun and moon depending on daytimes
      * and on/off status. 
@@ -190,12 +269,7 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		} else {
 			// set to Moon icon
-			// TODO: show moon icon depending on phase
-			if(on) {
-				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
-			} else {
-				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
-			}
+			pickAndSetMoonIcon(on);
 		}
 
     }
@@ -965,8 +1039,7 @@ public class CurrentConditionsActivity extends Activity {
 			buttonSunny.setImageResource(R.drawable.ic_wea_sun);
 		} else {
 			// set to Moon icon
-			buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
-			// TODO: show moon icon depending on phase
+			pickAndSetMoonIcon(false);
 		}
 		
 		
