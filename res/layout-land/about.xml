@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="8dp"
-            android:text="Version 4.0.11RC"
+            android:text="Version 4.0.11"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#888888" />
         
