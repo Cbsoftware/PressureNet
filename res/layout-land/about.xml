@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="8dp"
-            android:text="Version 4.1.0ALPHA"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#888888" />
         
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="SDK 1.0.4"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#888888" />
     </LinearLayout>
