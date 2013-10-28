@@ -169,9 +169,9 @@ public class Chart {
 		double standardDeviation = Math.sqrt(meanOfSquaredDist);
 		System.out.println("sd is " + standardDeviation);
 		// remove outliers from the list
-		// (1 std away from the mean) 
-		double min = yMean - standardDeviation;
-		double max = yMean + standardDeviation;
+		// (2 std away from the mean) 
+		double min = yMean - (standardDeviation*2);
+		double max = yMean + (standardDeviation*2);
 		ArrayList<CbObservation> toRemove = new ArrayList<CbObservation>();
 		for(CbObservation  obs : obsList) {
 			double v = obs.getObservationValue();
