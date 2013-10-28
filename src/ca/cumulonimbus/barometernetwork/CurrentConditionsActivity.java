@@ -38,6 +38,7 @@ import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.SunLocation;
 
@@ -107,7 +108,19 @@ public class CurrentConditionsActivity extends Activity {
 	
 	boolean mBound;
 	Messenger mService = null;
-	
+
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
+
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {	
 		log("currentconditions onconfig changed");

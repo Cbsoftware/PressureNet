@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -48,6 +50,18 @@ public class AboutActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.about, menu);
 		return true;
+	}
+	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
 	}
 
 	@Override

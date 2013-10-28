@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,6 +26,18 @@ public class EditLocationActivity extends Activity {
 	private double initialLongitude = 0;
 	private long initialRowId = -1;
 
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
+	
 	public void populateFields() {
 		// get the row id from the intent and load
 		// the correct data

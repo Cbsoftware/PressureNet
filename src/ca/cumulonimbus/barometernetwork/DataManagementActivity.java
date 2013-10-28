@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -54,6 +56,18 @@ public class DataManagementActivity extends Activity {
 	boolean mExternalStorageWriteable = false;
 	
 	private String mAppDir = "";
+	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
 	
 	private void clearLocalCache() {
 		if (mBound) {

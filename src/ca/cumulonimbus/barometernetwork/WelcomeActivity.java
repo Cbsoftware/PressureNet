@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,6 +19,18 @@ public class WelcomeActivity extends Activity {
 	
 	Spinner spinnerWelcomeSharing;
 	Button closeButton;
+	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
