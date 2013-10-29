@@ -76,6 +76,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -180,6 +183,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonSearchLocations;
 	private TextView textChartTimeInfo;
 
+	private CheckBox satelliteView;
+
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -234,15 +239,15 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private long lastSubmitStart = 0;
 
-	 private static final String moon_phase_name[] = { "New Moon",        // 0
-         "Waxing crescent",    // 1 
-         "First quarter",      // 2 
-         "Waxing gibbous",     // 3
-         "Full Moon",          // 4 
-         "Waning gibbous",     // 5
-         "Third quarter",      // 6
-         "Waning crescent" };  // 7
-	
+	private static final String moon_phase_name[] = { "New Moon", // 0
+			"Waxing crescent", // 1
+			"First quarter", // 2
+			"Waxing gibbous", // 3
+			"Full Moon", // 4
+			"Waning gibbous", // 5
+			"Third quarter", // 6
+			"Waning crescent" }; // 7
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -438,7 +443,7 @@ public class BarometerNetworkActivity extends Activity implements
 		editor.commit();
 
 	}
-	
+
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
 	 * run the service or not, etc.
@@ -621,7 +626,6 @@ public class BarometerNetworkActivity extends Activity implements
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	/**
@@ -815,6 +819,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 
+		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
+
 		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
 				.createFromResource(this, R.array.display_time_chart,
 						android.R.layout.simple_spinner_item);
@@ -826,6 +832,20 @@ public class BarometerNetworkActivity extends Activity implements
 
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if (isChecked) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+				} else {
+					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				}
+			}
+		});
+
+		
 		editLocation.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
@@ -1308,7 +1328,8 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if ((!errors.contains("error")) && (errors.length() > 1)) {
 					String condition = errors;
 					Toast.makeText(getApplicationContext(),
-							"Sent " + condition + "!", Toast.LENGTH_SHORT).show();
+							"Sent " + condition + "!", Toast.LENGTH_SHORT)
+							.show();
 				} else {
 					// pressure toast
 					String toPrint = displayPressureValue(recentPressureReading);
@@ -1693,7 +1714,7 @@ public class BarometerNetworkActivity extends Activity implements
 			growPressureNET();
 		} else if (item.getItemId() == R.id.menu_send_feedback) {
 			sendFeedback();
-		} else if (item.getItemId() == R.id.menu_rate_pressurenet){
+		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
 		}
 		return super.onOptionsItemSelected(item);
@@ -1704,10 +1725,11 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void ratePressureNET() {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.setData(Uri.parse("market://details?id=ca.cumulonimbus.barometernetwork"));
+		intent.setData(Uri
+				.parse("market://details?id=ca.cumulonimbus.barometernetwork"));
 		startActivity(intent);
 	}
-	
+
 	/**
 	 * Email software@cumulonimbus.ca for feedback
 	 */
@@ -1860,7 +1882,7 @@ public class BarometerNetworkActivity extends Activity implements
 			imm.showSoftInput(editLocation, 0);
 		}
 	}
-	
+
 	// Give a quick overview of recent
 	// submissions
 	private void viewLog() {
@@ -1932,7 +1954,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean obsIsMe(CbObservation ob) {
 		return ((ob.getUser_id().equals(android_id)));
 	}
-	
+
 	/**
 	 * Moon phase info
 	 */
@@ -1940,7 +1962,6 @@ public class BarometerNetworkActivity extends Activity implements
 		MoonPhase mp = new MoonPhase(Calendar.getInstance());
 		return mp.getPhaseIndex();
 	}
-
 
 	/**
 	 * Create neat drawables for weather conditions depending on the type of
@@ -1957,13 +1978,13 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDrawable(R.drawable.bg_wea_square));
 
 		int moonNumber = getMoonPhaseIndex() + 1;
-		
+
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
 					.getLatitude(), condition.getLocation().getLongitude())) {
-				switch(moonNumber) {
+				switch (moonNumber) {
 				case 1:
 					sunDrawable = this.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon1);
@@ -2001,7 +2022,7 @@ public class BarometerNetworkActivity extends Activity implements
 							R.drawable.ic_wea_col_moon2);
 					break;
 				}
-				
+
 			}
 			Drawable[] layers = { weatherBackgroundDrawable,
 					resizeDrawable(sunDrawable) };
@@ -2426,36 +2447,38 @@ public class BarometerNetworkActivity extends Activity implements
 				R.drawable.bg_pre_marker);
 
 		if (listRecents.size() > 0) {
-			
+
 			try {
 				if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
 					log("adding data to map too frequently, bailing");
 					return;
 				} else {
-					log("adding data to map, last update " +  (now-lastMapDataUpdate));
+					log("adding data to map, last update "
+							+ (now - lastMapDataUpdate));
 				}
 				mMap.clear();
 				lastMapDataUpdate = now;
-				System.out.println("adding data to map, list recents size " + listRecents.size());
-				for (CbObservation observation : listRecents) { 
+				System.out.println("adding data to map, list recents size "
+						+ listRecents.size());
+				for (CbObservation observation : listRecents) {
 					LatLng point = new LatLng(observation.getLocation()
 							.getLatitude(), observation.getLocation()
 							.getLongitude());
-	
+
 					Bitmap image = drawableToBitmap(drawable, observation);
-	
+
 					String valueToPrint = displayPressureValue(observation
 							.getObservationValue());
-	
+
 					long timeRecorded = observation.getTime();
 					long timeNow = System.currentTimeMillis();
 					long msAgo = now - timeRecorded;
 					int minutesAgo = (int) (msAgo / (1000 * 60));
-	
+
 					mMap.addMarker(new MarkerOptions().position(point)
 							.title(minutesAgo + " minutes ago")
 							.icon(BitmapDescriptorFactory.fromBitmap(image)));
-	
+
 					currentObs++;
 					if (currentObs > totalEachAllowed) {
 						break;
@@ -2714,7 +2737,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		// bindCbService();
 		super.onStart();
-		EasyTracker.getInstance(this).activityStart(this); 
+		EasyTracker.getInstance(this).activityStart(this);
 	}
 
 	@Override
@@ -2722,7 +2745,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		unBindCbService();
 		super.onStop();
-		EasyTracker.getInstance(this).activityStop(this);  
+		EasyTracker.getInstance(this).activityStop(this);
 	}
 
 	@Override

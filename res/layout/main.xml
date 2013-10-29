@@ -237,8 +237,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMinMapInfoText"
                 android:textSize="16sp" />
-            
-            
+
             <TextView
                 android:id="@+id/dataPointsValueMapInfoText"
                 android:layout_width="wrap_content"
@@ -246,6 +245,14 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/longitudeValueMinMapInfoText"
                 android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/checkSatellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/dataPointsValueMapInfoText"
+                android:text="Satellite view" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -269,7 +276,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
-
         </RelativeLayout>
     </LinearLayout>
 
