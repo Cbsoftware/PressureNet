@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_widget"
     android:paddingBottom="@dimen/widget_margin"
-    android:paddingTop="@dimen/widget_margin" >
+    android:paddingTop="@dimen/widget_margin"
+    android:paddingRight="@dimen/widget_margin" >
 
     <ImageButton
         android:id="@+id/widgetSmallSubmitButton"
@@ -23,8 +24,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/widgetSmallSubmitButton"
         android:clickable="true"
-        android:paddingRight="6dp"
-        android:paddingTop="6dp"
+        android:paddingRight="2dp"
+        android:paddingTop="2dp"
         android:src="@drawable/ic_widget_rising"
         android:visibility="gone" />
 
@@ -34,9 +35,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:clickable="true"
-        android:paddingRight="6dp"
-        android:paddingTop="6dp"
+        android:paddingRight="2dp"
         android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
 
@@ -47,8 +48,8 @@
         android:layout_alignBottom="@id/widgetSmallSubmitButton"
         android:layout_alignParentRight="true"
         android:clickable="true"
-        android:paddingBottom="6dp"
-        android:paddingRight="6dp"
+        android:paddingBottom="2dp"
+        android:paddingRight="2dp"
         android:src="@drawable/ic_widget_falling"
         android:visibility="invisible" />
 
