@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class ConditionsWidgetProvider extends AppWidgetProvider {
 
@@ -119,7 +120,20 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
 		if (ACTION_UPDATEUI.equals(intent.getAction())) {
-		
+			if(intent.hasExtra("general_condition")) {
+				String general = intent.getStringExtra("general_condition");
+				if(general.equals(R.string.sunny)) {
+					
+				} else if(general.equals(R.string.foggy)) {
+					
+				} else if(general.equals(R.string.cloudy)) {
+					
+				} else if(general.equals(R.string.precipitation)) {
+					
+				} else if(general.equals(R.string.thunderstorm)) {
+					
+				} 
+			}
 		}
 		super.onReceive(context, intent);
 	}

@@ -15,6 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +35,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -704,6 +704,16 @@ public class CurrentConditionsActivity extends Activity {
 			public void onClick(View v) {
 				saveCondition();
 				sendCondition();
+				
+				// tell the widget to update
+				Intent intent = new Intent(getApplicationContext(),ConditionsWidgetProvider.class);
+				intent.setAction(ConditionsWidgetProvider.ACTION_UPDATEUI); //"android.appwidget.action.APPWIDGET_UPDATE"
+				intent.putExtra("general_condition", condition.getGeneral_condition());
+				int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), ConditionsWidgetProvider.class));
+				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+				sendBroadcast(intent);
+				
+				
 				finish();
 			}
 		});
