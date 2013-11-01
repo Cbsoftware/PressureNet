@@ -84,7 +84,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -94,7 +93,6 @@ import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
-import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -176,7 +174,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
-	private Button buttonChartTimeInfo;
+	private TextView textChartTimeInfo;
 	private LinearLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
@@ -752,26 +750,6 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onConfigurationChanged(newConfig);
 	}
 
-	public static class DatePickerFragment extends DialogFragment implements
-			DatePickerDialog.OnDateSetListener {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			// Use the current date as the default date in the picker
-			final Calendar c = Calendar.getInstance();
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
-
-			// Create a new instance of DatePickerDialog and return it
-			return new DatePickerDialog(getActivity(), this, year, month, day);
-		}
-
-		public void onDateSet(DatePicker view, int year, int month, int day) {
-			
-		}
-	}
-
 	/**
 	 * Attach listeners to UI elements
 	 */
@@ -801,7 +779,7 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 
-		buttonChartTimeInfo = (Button) findViewById(R.id.buttonChartTime);
+		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
 
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 
@@ -811,15 +789,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		mapMode.setTypeface(null, Typeface.BOLD);
 
-		buttonChartTimeInfo.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				DialogFragment newFragment = new DatePickerFragment();
-				newFragment.show(getFragmentManager(), "datePicker");
-			}
-		});
-
+	
 		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
@@ -909,11 +879,11 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					removeChartFromLayout();
 
-					hoursAgoSelected = 24;
+					hoursAgoSelected = 12;
 
-					log("making api call 24h for graph");
+					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
-					api.setLimit(10000);
+					api.setLimit(5000);
 					makeAPICall(api);
 
 					layoutGraph.setVisibility(View.VISIBLE);

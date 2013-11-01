@@ -173,13 +173,13 @@
 	            android:text="&lt;"
 	            android:gravity="left"/>
 	
-	        <Button
-	            android:id="@+id/buttonChartTime"
-	            android:layout_width="fill_parent"
+	        <TextView
+	            android:id="@+id/textChartTime"
+	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:padding="4dp"
-	            android:text="Last day"
+	            android:text="Recent data"
 	             />
 	
 	        <Button
