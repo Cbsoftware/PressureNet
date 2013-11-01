@@ -176,7 +176,7 @@ public class Chart {
 		for(CbObservation  obs : obsList) {
 			double v = obs.getObservationValue();
 			if( (v < min) || (v > max)) {
-				log("removing " + v + " min " + min + " max " + max);
+				//log("removing " + v + " min " + min + " max " + max);
 				toRemove.add(obs);
 			}
 		}

@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutConditionsWidget"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#333333"
+    android:paddingBottom="@dimen/widget_margin"
+    android:paddingTop="@dimen/widget_margin" >
+
+    <ImageView
+        android:id="@+id/condition_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:src="@drawable/ic_wea_sun" 
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"/>
+
+    <ImageView
+        android:id="@+id/condition_fog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/condition_clear"
+        android:clickable="true"
+        android:src="@drawable/ic_wea_fog1" 
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"/>
+
+    <ImageView
+        android:id="@+id/condition_cloud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/condition_fog"
+        android:clickable="true"
+        android:src="@drawable/ic_wea_cloud" 
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"/>
+
+    <ImageView
+        android:id="@+id/condition_precip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/condition_cloud"
+        android:clickable="true"
+        android:src="@drawable/ic_wea_precip"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"/>
+
+    <ImageView
+        android:id="@+id/condition_thunderstorm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/condition_precip"
+        android:clickable="true"
+        android:src="@drawable/ic_wea_r_l0" 
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="8dp"/>
+
+</RelativeLayout>

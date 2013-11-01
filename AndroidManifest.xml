@@ -159,6 +159,18 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        
+        <receiver android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider.ACTION_UPDATEUI" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/cc_widget_info" />
+        </receiver>
+        
         <receiver android:name="ca.cumulonimbus.barometernetwork.GeneralBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
