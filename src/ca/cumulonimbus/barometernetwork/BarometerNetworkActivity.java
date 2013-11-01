@@ -80,6 +80,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -171,7 +172,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ImageButton buttonSearchLocations;
 	private TextView textChartTimeInfo;
-	private LinearLayout layoutGraphButtons;
+	private RelativeLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
 
@@ -313,16 +314,14 @@ public class BarometerNetworkActivity extends Activity implements
 				loadCachedSegment();
 			}
 			buttonGoForwards.setEnabled(true);
-			textChartTimeInfo.setText("cached " + cachedSegments + ", cur " + currentSegment);
 		}
 		
 		public void goForward() {
 			currentSegment--;
-			if(currentSegment == 0) {
+			if(currentSegment <= 1) {
 				buttonGoForwards.setEnabled(false);
 			}
 			loadCachedSegment();
-			textChartTimeInfo.setText("cached " + cachedSegments + ", cur " + currentSegment);
 		}
 		
 		public int getCachedSegments() {
@@ -859,7 +858,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
-		layoutGraphButtons = (LinearLayout) findViewById(R.id.layoutGraphButtons);
+		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
 		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
 		buttonGoBackwards = (Button) findViewById(R.id.buttonGoBackwards);
 		buttonGoForwards = (Button) findViewById(R.id.buttonGoForwards);

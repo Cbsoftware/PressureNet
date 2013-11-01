@@ -157,11 +157,10 @@
         android:paddingTop="5dp"
         android:visibility="gone" >
         
- 		<LinearLayout
+ 		<RelativeLayout
 	        android:id="@+id/layoutGraphButtons"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:background="#CCFFFFFF"
 	        android:orientation="horizontal"
 	        android:visibility="gone">
 
@@ -171,16 +170,17 @@
 	            android:layout_height="wrap_content"
 	            android:enabled="true"
 	            android:text="&lt;"
-	            android:gravity="left"/>
+	            android:layout_alignParentLeft="true"
+	            android:padding="4dp"/>
 	
 	        <TextView
 	            android:id="@+id/textChartTime"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-	            android:gravity="center_horizontal"
+	            android:layout_gravity="center"
 	            android:padding="4dp"
-	            android:text="Recent data"
-	             />
+	            android:text="Recent data (12h)"
+	            android:layout_centerInParent="true"/>
 	
 	        <Button
 	            android:id="@+id/buttonGoForwards"
@@ -188,8 +188,9 @@
 	            android:layout_height="wrap_content"
 	            android:enabled="false"
 	            android:text="&gt;" 
-	            android:gravity="right"/>
-        </LinearLayout>
+	            android:layout_alignParentRight="true"
+	            android:padding="4dp"/>
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
