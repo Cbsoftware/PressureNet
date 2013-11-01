@@ -15,9 +15,6 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -79,7 +76,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -179,6 +175,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private CheckBox satelliteView;
 
+	private Button buttonGoBackwards;
+	private Button buttonGoForwards;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -242,6 +241,8 @@ public class BarometerNetworkActivity extends Activity implements
 			"Third quarter", // 6
 			"Waning crescent" }; // 7
 
+	ChartController charts = new ChartController();
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -263,6 +264,81 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 	}
 
+	/**
+	 * Controller for the chart viewing experience. Keep some data cached
+	 */
+	private class ChartController {
+		private int cachedSegments;
+		private int currentSegment;
+		
+		/**
+		 * New data is being loaded, so increment the cache count
+		 * and set the current pointer to the most recent value
+		 */
+		public void addAndLoadSegment() {
+			cachedSegments++;
+			currentSegment = cachedSegments;
+			
+			CbApiCall api = getActiveChartCacheCall();
+			makeAPICall(api);
+		}
+		
+		public CbApiCall getActiveChartCacheCall() {
+			long startTime = System.currentTimeMillis() - (currentSegment * 12 * 60 * 60 * 1000);
+			long endTime = startTime + (12 * 60 * 60 * 1000);
+			
+			CbApiCall api = buildMapAPICall(12);
+			api.setStartTime(startTime);
+			api.setEndTime(endTime);
+			api.setLimit(5000);
+			return api;
+		}
+		
+		public void loadCachedSegment() {
+			CbApiCall api = getActiveChartCacheCall();
+			askForGraphRecents(api);
+			
+		}
+		
+		public void reset() {
+			cachedSegments = 0;
+			currentSegment = 0;
+		}
+		
+		public void goBack() {
+			currentSegment++;
+			if(currentSegment > cachedSegments) {
+				addAndLoadSegment();
+			} else {
+				loadCachedSegment();
+			}
+			buttonGoForwards.setEnabled(true);
+			textChartTimeInfo.setText("cached " + cachedSegments + ", cur " + currentSegment);
+		}
+		
+		public void goForward() {
+			currentSegment--;
+			if(currentSegment == 0) {
+				buttonGoForwards.setEnabled(false);
+			}
+			loadCachedSegment();
+			textChartTimeInfo.setText("cached " + cachedSegments + ", cur " + currentSegment);
+		}
+		
+		public int getCachedSegments() {
+			return cachedSegments;
+		}
+		public void setCachedSegments(int cachedSegments) {
+			this.cachedSegments = cachedSegments;
+		}
+		public int getCurrentSegment() {
+			return currentSegment;
+		}
+		public void setCurrentSegment(int currentSegment) {
+			this.currentSegment = currentSegment;
+		}
+	}
+	
 	/**
 	 * Start the network location listener for use outside the SDK
 	 */
@@ -779,17 +855,34 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 
-		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
-
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
 		layoutGraphButtons = (LinearLayout) findViewById(R.id.layoutGraphButtons);
-
+		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
+		buttonGoBackwards = (Button) findViewById(R.id.buttonGoBackwards);
+		buttonGoForwards = (Button) findViewById(R.id.buttonGoForwards);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		buttonGoBackwards.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				charts.goBack();
+			}
+		});
 	
+
+		buttonGoForwards.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				charts.goForward();
+			}
+		});
+		
 		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
@@ -879,12 +972,16 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					removeChartFromLayout();
 
+					charts.reset();
+					
 					hoursAgoSelected = 12;
 
 					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
 					api.setLimit(5000);
 					makeAPICall(api);
+					
+					charts.addAndLoadSegment();
 
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -1222,7 +1319,7 @@ public class BarometerNetworkActivity extends Activity implements
 					apiConditions.setCallType("Conditions");
 					askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
-					CbApiCall api = buildMapAPICall(hoursAgoSelected);
+					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				}
 				break;
