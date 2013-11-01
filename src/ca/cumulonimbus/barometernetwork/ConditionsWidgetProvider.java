@@ -126,17 +126,23 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 				if(general.equals(context.getResources().getString(R.string.sunny))) {
 					remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
 				} else if(general.equals(context.getResources().getString(R.string.foggy))) {
-					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_on_fog1);
+					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_on_fog3);
 				} else if(general.equals(context.getResources().getString(R.string.cloudy))) {
 					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_on_cloud);					
 				} else if(general.equals(context.getResources().getString(R.string.precipitation))) {
 					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_on_precip);
 				} else if(general.equals(context.getResources().getString(R.string.thunderstorm))) {
-					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_on_lightning1);
+					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_on_r_l0);
 				} else {
 					Toast.makeText(context, intent.getStringExtra("general_condition"), Toast.LENGTH_SHORT).show();
 				}
 			}
+		} else {
+			remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
+			remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
+			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);					
+			remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
+			remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
 		}
 		
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);

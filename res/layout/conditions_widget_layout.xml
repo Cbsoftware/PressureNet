@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/condition_clear"
         android:clickable="true"
-        android:src="@drawable/ic_wea_fog1" 
+        android:src="@drawable/ic_wea_fog3" 
         android:paddingRight="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
