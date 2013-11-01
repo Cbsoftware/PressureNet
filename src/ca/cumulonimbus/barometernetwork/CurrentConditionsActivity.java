@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -1055,6 +1056,20 @@ public class CurrentConditionsActivity extends Activity {
 			pickAndSetMoonIcon(false);
 		}
 		
+		if(getIntent().hasExtra("initial")) {
+			String state = getIntent().getStringExtra("initial");
+			if(state.equals("clear")) {
+				buttonSunny.performClick();
+			} else if(state.equals("fog")) {
+				buttonFoggy.performClick();
+			} else if(state.equals("cloud")) {
+				buttonCloudy.performClick();
+			} else if(state.equals("precip")) {
+				buttonPrecipitation.performClick();
+			} else if(state.equals("thunderstorm")) {
+				buttonThunderstorm.performClick();
+			}
+		}
 		
 		// Set the initial state: Sunny, no wind
 		// Or guess from pressure data
