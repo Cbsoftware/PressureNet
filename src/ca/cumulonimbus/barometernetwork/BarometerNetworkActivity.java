@@ -15,6 +15,9 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -72,19 +75,16 @@ import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -154,22 +154,17 @@ public class BarometerNetworkActivity extends Activity implements
 
 	boolean dataReceivedToPlot = false;
 
-	private SeekBar seekTime;
-	private ImageButton buttonPlay;
 	private Button buttonBarometer;
 	private Button buttonThermometer;
 	private Button buttonHygrometer;
-	private Spinner spinnerTime;
 	private int hoursAgoSelected = 12;
 
 	private ProgressBar progressAPI;
 
 	private Button mapMode;
-	private Button animationMode;
 	private Button graphMode;
 	private Button sensorMode;
 
-	private LinearLayout layoutAnimationControlContainer;
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
@@ -181,7 +176,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
-	private TextView textChartTimeInfo;
+	private Button buttonChartTimeInfo;
+	private LinearLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
 
@@ -515,7 +511,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(2000);
+			globalMapCall.setLimit(3000);
 			globalMapCall.setStartTime(System.currentTimeMillis()
 					- (int) (1000 * 60 * 60 * .25));
 			globalMapCall.setEndTime(System.currentTimeMillis());
@@ -751,34 +747,29 @@ public class BarometerNetworkActivity extends Activity implements
 		return false;
 	}
 
-	/*
-	 * 
-	 * // For animation
-	 * 
-	 * public void updateMapWithSeekTimeData() { ArrayList<CbWeather>
-	 * thisFrameCondition = new ArrayList<CbWeather>(); for (CbCurrentCondition
-	 * c : currentConditionAnimation) { if
-	 * (isCloseToFrame(c.getAnimateGroupNumber(), currentTimeProgress)) {
-	 * thisFrameCondition.add(c); } else {
-	 * 
-	 * } }
-	 * 
-	 * ArrayList<CbWeather> thisFrameObservation = new ArrayList<CbWeather>();
-	 * 
-	 * //System.out.println("full recents count " + fullRecents.size()); for
-	 * (CbObservation o : fullRecents) { if
-	 * (isCloseToFrame(o.getAnimateGroupNumber(), currentTimeProgress)) {
-	 * thisFrameObservation.add(o); } else {
-	 * 
-	 * } }
-	 * 
-	 * 
-	 * addDataFrameToMap(thisFrameCondition, thisFrameObservation); }
-	 */
-
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+	}
+
+	public static class DatePickerFragment extends DialogFragment implements
+			DatePickerDialog.OnDateSetListener {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			// Use the current date as the default date in the picker
+			final Calendar c = Calendar.getInstance();
+			int year = c.get(Calendar.YEAR);
+			int month = c.get(Calendar.MONTH);
+			int day = c.get(Calendar.DAY_OF_MONTH);
+
+			// Create a new instance of DatePickerDialog and return it
+			return new DatePickerDialog(getActivity(), this, year, month, day);
+		}
+
+		public void onDateSet(DatePicker view, int year, int month, int day) {
+			
+		}
 	}
 
 	/**
@@ -787,9 +778,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private void setUpUIListeners() {
 		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
-		spinnerTime = (Spinner) findViewById(R.id.spinnerChartTime);
-		buttonPlay = (ImageButton) findViewById(R.id.buttonPlay);
-		seekTime = (SeekBar) findViewById(R.id.seekBarTime);
 		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
 		buttonThermometer = (Button) findViewById(R.id.imageButtonThermometer);
 		buttonHygrometer = (Button) findViewById(R.id.imageButtonHygrometer);
@@ -806,31 +794,31 @@ public class BarometerNetworkActivity extends Activity implements
 		mapDataPointsText = (TextView) findViewById(R.id.dataPointsValueMapInfoText);
 
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
-		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
 		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
 
-		layoutAnimationControlContainer = (LinearLayout) findViewById(R.id.layoutAnimationControlContainer);
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 
-		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
+		buttonChartTimeInfo = (Button) findViewById(R.id.buttonChartTime);
 
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
-		ArrayAdapter<CharSequence> adapterTime = ArrayAdapter
-				.createFromResource(this, R.array.display_time_chart,
-						android.R.layout.simple_spinner_item);
-		adapterTime
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerTime.setAdapter(adapterTime);
-		spinnerTime.setSelection(0);
-		seekTime.setProgress(100);
+		layoutGraphButtons = (LinearLayout) findViewById(R.id.layoutGraphButtons);
 
 		mapMode.setTypeface(null, Typeface.BOLD);
+
+		buttonChartTimeInfo.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				DialogFragment newFragment = new DatePickerFragment();
+				newFragment.show(getFragmentManager(), "datePicker");
+			}
+		});
 
 		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -845,7 +833,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		
 		editLocation.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
@@ -884,16 +871,14 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				} else {
 					// UI switch
-					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 
-					textChartTimeInfo.setVisibility(View.GONE);
+					// buttonChartTimeInfo.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 
 					removeChartFromLayout();
@@ -914,7 +899,7 @@ public class BarometerNetworkActivity extends Activity implements
 				int visible = layoutGraph.getVisibility();
 				if (visible == View.VISIBLE) {
 					layoutGraph.setVisibility(View.GONE);
-					textChartTimeInfo.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
 				} else {
 					graphMode.setEnabled(false);
 					graphMode.setTextColor(Color.GRAY);
@@ -924,22 +909,19 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					removeChartFromLayout();
 
-					spinnerTime.setSelection(0);
-					hoursAgoSelected = 12;
+					hoursAgoSelected = 24;
 
-					log("making api call 12h for graph");
-					CbApiCall api = buildMapAPICall(12);
-					api.setLimit(5000);
+					log("making api call 24h for graph");
+					CbApiCall api = buildMapAPICall(hoursAgoSelected);
+					api.setLimit(10000);
 					makeAPICall(api);
 
-					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.BOLD);
-					animationMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 				}
 
@@ -961,16 +943,14 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "sensors";
 
 					// UI switch
-					layoutAnimationControlContainer.setVisibility(View.GONE);
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
 
-					textChartTimeInfo.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.BOLD);
 
 				}
@@ -1057,31 +1037,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		spinnerTime.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				String selected = arg0.getSelectedItem().toString();
-				// TODO: Fix hack
-				if (selected.contains("3 hours")) {
-					hoursAgoSelected = 3;
-				} else if (selected.contains("6 hours")) {
-					hoursAgoSelected = 6;
-				} else if (selected.contains("12 hours")) {
-					hoursAgoSelected = 12;
-				}
-				CbApiCall api = buildMapAPICall(hoursAgoSelected);
-				api.setLimit(1000);
-				askForGraphRecents(api);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-
-			}
-
-		});
 	}
 
 	/**
@@ -1456,7 +1411,7 @@ public class BarometerNetworkActivity extends Activity implements
 			log("chartlayout null");
 			return;
 		}
-		textChartTimeInfo.setVisibility(View.VISIBLE);
+		layoutGraphButtons.setVisibility(View.VISIBLE);
 		// TODO: bring the chart back
 		mainLayout.addView(chartView);
 
@@ -2241,75 +2196,6 @@ public class BarometerNetworkActivity extends Activity implements
 		@Override
 		public View getInfoContents(Marker marker) {
 			return null;
-		}
-	}
-
-	/**
-	 * Animation. Put a bunch of barometer readings and current conditions on
-	 * the map.
-	 * 
-	 * @param frameConditions
-	 * @param frameObservations
-	 */
-	private void addDataFrameToMap(ArrayList<CbWeather> frameConditions,
-			ArrayList<CbWeather> frameObservations) {
-
-		int totalEachAllowed = 30;
-		int currentObs = 0;
-		int currentCur = 0;
-
-		try {
-
-			// Add Recent Readings
-			Drawable drawable = this.getResources().getDrawable(
-					R.drawable.ic_marker);
-			log("frame observations " + frameObservations.size());
-			for (CbWeather weatherObs : frameObservations) {
-				CbObservation observation = (CbObservation) weatherObs;
-				LatLng point = new LatLng(observation.getLocation()
-						.getLatitude(), observation.getLocation()
-						.getLongitude());
-
-				Bitmap image = drawableToBitmap(drawable, null);
-
-				mMap.addMarker(new MarkerOptions().position(point)
-						.title(observation.getObservationValue() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(image)));
-
-				currentObs++;
-				if (currentObs > totalEachAllowed) {
-					break;
-				}
-			}
-
-		} catch (Exception e) {
-			log("add data error: " + e.getMessage());
-		}
-
-		try {
-			// Add singleton Current Conditions
-			for (CbWeather weather : frameConditions) {
-				CbCurrentCondition condition = (CbCurrentCondition) weather;
-				LatLng point = new LatLng(
-						condition.getLocation().getLatitude(), condition
-								.getLocation().getLongitude());
-				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
-						null);
-
-				Drawable draw = getSingleDrawable(drLayer);
-
-				Bitmap image = drawableToBitmap(draw, null);
-
-				mMap.addMarker(new MarkerOptions().position(point).icon(
-						BitmapDescriptorFactory.fromBitmap(image)));
-
-				currentCur++;
-				if (currentCur > totalEachAllowed) {
-					break;
-				}
-			}
-		} catch (Exception e) {
-			log("add conditions data error: " + e.getMessage());
 		}
 	}
 

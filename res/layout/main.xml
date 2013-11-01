@@ -156,23 +156,40 @@
         android:orientation="vertical"
         android:paddingTop="5dp"
         android:visibility="gone" >
+        
+ 		<LinearLayout
+	        android:id="@+id/layoutGraphButtons"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="#CCFFFFFF"
+	        android:orientation="horizontal"
+	        android:visibility="gone">
 
-        <Spinner
-            android:id="@+id/spinnerChartTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/display_time_chart"
-            android:prompt="@string/chartTimeDisplay"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/textChartTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="4dp"
-            android:text="Last 12 hours"
-            android:visibility="gone" />
+	        <Button
+	            android:id="@+id/buttonGoBackwards"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:enabled="true"
+	            android:text="&lt;"
+	            android:gravity="left"/>
+	
+	        <Button
+	            android:id="@+id/buttonChartTime"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_horizontal"
+	            android:padding="4dp"
+	            android:text="Last day"
+	             />
+	
+	        <Button
+	            android:id="@+id/buttonGoForwards"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:enabled="false"
+	            android:text="&gt;" 
+	            android:gravity="right"/>
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -278,47 +295,6 @@
                 android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAnimationControlContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:visibility="gone" >
-
-        <LinearLayout
-            android:id="@+id/layoutTimeControls"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <ImageButton
-                android:id="@+id/buttonPlay"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_light_play"
-                android:textColor="@android:color/black" />
-
-            <SeekBar
-                android:id="@+id/seekBarTime"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:max="100" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textAnimationInformation"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Loading animation data..."
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
     <LinearLayout
         android:id="@+id/layoutSensorInfo"
         android:layout_width="match_parent"
