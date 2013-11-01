@@ -119,22 +119,29 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
+		RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.conditions_widget_layout);
 		if (ACTION_UPDATEUI.equals(intent.getAction())) {
 			if(intent.hasExtra("general_condition")) {
 				String general = intent.getStringExtra("general_condition");
-				if(general.equals(R.string.sunny)) {
-					
-				} else if(general.equals(R.string.foggy)) {
-					
-				} else if(general.equals(R.string.cloudy)) {
-					
-				} else if(general.equals(R.string.precipitation)) {
-					
-				} else if(general.equals(R.string.thunderstorm)) {
-					
-				} 
+				if(general.equals(context.getResources().getString(R.string.sunny))) {
+					remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
+				} else if(general.equals(context.getResources().getString(R.string.foggy))) {
+					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_on_fog1);
+				} else if(general.equals(context.getResources().getString(R.string.cloudy))) {
+					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_on_cloud);					
+				} else if(general.equals(context.getResources().getString(R.string.precipitation))) {
+					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_on_precip);
+				} else if(general.equals(context.getResources().getString(R.string.thunderstorm))) {
+					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_on_lightning1);
+				} else {
+					Toast.makeText(context, intent.getStringExtra("general_condition"), Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
+		
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		ComponentName component = new ComponentName(context.getPackageName(), ConditionsWidgetProvider.class.getName());    
+		appWidgetManager.updateAppWidget(component, remoteView);
 		super.onReceive(context, intent);
 	}
 
