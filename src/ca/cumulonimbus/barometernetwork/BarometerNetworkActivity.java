@@ -291,7 +291,7 @@ public class BarometerNetworkActivity extends Activity implements
 			CbApiCall api = buildMapAPICall(12);
 			api.setStartTime(startTime);
 			api.setEndTime(endTime);
-			api.setLimit(5000);
+			api.setLimit(3000);
 			return api;
 		}
 		
@@ -606,7 +606,7 @@ public class BarometerNetworkActivity extends Activity implements
 		globalMapCall.setMaxLat(90);
 		globalMapCall.setMinLon(-180);
 		globalMapCall.setMaxLon(180);
-		globalMapCall.setLimit(2000);
+		globalMapCall.setLimit(1000);
 		globalMapCall.setStartTime(System.currentTimeMillis()
 				- (int) (1000 * 60 * 60 * 2));
 		globalMapCall.setEndTime(System.currentTimeMillis());
@@ -934,6 +934,7 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 
@@ -977,7 +978,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
-					api.setLimit(5000);
+					api.setLimit(3000);
 					makeAPICall(api);
 					
 					charts.addAndLoadSegment();
@@ -1010,6 +1011,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
 
