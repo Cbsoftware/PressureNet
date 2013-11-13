@@ -110,7 +110,7 @@ public class DataManagementActivity extends Activity {
 	public void log(String message) { 
 		if(PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
-			logToFile(message);
+			//logToFile(message);
 		}
 	}
 
