@@ -176,8 +176,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private CheckBox satelliteView;
 
-	private Button buttonGoBackwards;
-	private Button buttonGoForwards;
+	private ImageButton buttonGoBackwards;
+	private ImageButton buttonGoForwards;
 	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
@@ -219,7 +219,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private String activeMode = "map";
 	private long lastGlobalApiCall = System.currentTimeMillis()
 			- (1000 * 60 * 10);
-	private long lastGraphDataUpdate = System.currentTimeMillis()
+	private long lastSearchLocationsAPICall = System.currentTimeMillis()
+			- (1000 * 60 * 10);
+	private long lastGlobalConditionsApiCall = System.currentTimeMillis()
 			- (1000 * 60 * 10);
 	private long lastMapDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 10);
@@ -314,12 +316,14 @@ public class BarometerNetworkActivity extends Activity implements
 				loadCachedSegment();
 			}
 			buttonGoForwards.setEnabled(true);
+			buttonGoForwards.setAlpha(1F);
 		}
 		
 		public void goForward() {
 			currentSegment--;
 			if(currentSegment <= 1) {
 				buttonGoForwards.setEnabled(false);
+				buttonGoForwards.setAlpha(.5F);
 			}
 			loadCachedSegment();
 		}
@@ -552,23 +556,39 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh data for each of the user's saved locations
 	 */
 	private void makeLocationAPICalls() {
-		log("running makeLocationAPICalls");
-		PnDb pn = new PnDb(getApplicationContext());
-		pn.open();
-		Cursor cursor = pn.fetchAllLocations();
+		long now = System.currentTimeMillis();
+		long acceptableLocationTimeDifference = 1000 * 60 * 5;
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		// when was the last search locations API call?
+		lastSearchLocationsAPICall = sharedPreferences.getLong("lastSearchLocationsAPICall", now - (1000 * 60 * 5));
+		if(now - lastSearchLocationsAPICall > acceptableLocationTimeDifference) {
+			log("running makeLocationAPICalls");
+			PnDb pn = new PnDb(getApplicationContext());
+			pn.open();
+			Cursor cursor = pn.fetchAllLocations();
 
-		while (cursor.moveToNext()) {
-			String name = cursor.getString(1);
-			double latitude = cursor.getDouble(2);
-			double longitude = cursor.getDouble(3);
-			SearchLocation location = new SearchLocation(name, latitude,
-					longitude);
-			CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-			log("making api call for " + name + " at " + latitude + " "
-					+ longitude);
-			makeAPICall(locationApiCall);
+			while (cursor.moveToNext()) {
+				String name = cursor.getString(1);
+				double latitude = cursor.getDouble(2);
+				double longitude = cursor.getDouble(3);
+				SearchLocation location = new SearchLocation(name, latitude,
+						longitude);
+				CbApiCall locationApiCall = buildSearchLocationAPICall(location);
+				log("making api call for " + name + " at " + latitude + " "
+						+ longitude);
+				makeAPICall(locationApiCall);
+			}
+			pn.close();
+			
+			lastSearchLocationsAPICall = now;
+			// Save the time in prefs
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putLong("lastSearchLocationsAPICall", lastSearchLocationsAPICall);
+			editor.commit();
+		} else {
+			log("not making locations calls, too soon");
 		}
-		pn.close();
 	}
 
 	/**
@@ -576,6 +596,10 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		// when was the last global API call?
+		lastGlobalApiCall = sharedPreferences.getLong("lastGlobalAPICall", currentTime - (1000 * 60 * 5));
 		if (currentTime - lastGlobalApiCall > (1000 * 60 * 5)) {
 			// System.out.println("making global map api call");
 
@@ -590,7 +614,12 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			makeAPICall(globalMapCall);
 
+			// Save the time in prefs
 			lastGlobalApiCall = currentTime;
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
+			editor.commit();
+
 		} else {
 			log("not making global map call time diff "
 					+ (currentTime - lastGlobalApiCall));
@@ -601,16 +630,32 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Get fresh conditions data for the global map
 	 */
 	private void makeGlobalConditionsMapCall() {
-		CbApiCall globalMapCall = new CbApiCall();
-		globalMapCall.setMinLat(-90);
-		globalMapCall.setMaxLat(90);
-		globalMapCall.setMinLon(-180);
-		globalMapCall.setMaxLon(180);
-		globalMapCall.setLimit(1000);
-		globalMapCall.setStartTime(System.currentTimeMillis()
-				- (int) (1000 * 60 * 60 * 2));
-		globalMapCall.setEndTime(System.currentTimeMillis());
-		makeCurrentConditionsAPICall(globalMapCall);
+		long now = System.currentTimeMillis();
+		long acceptableLocationTimeDifference = 1000 * 60 * 5;
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		// when was the last search locations API call?
+		lastGlobalConditionsApiCall = sharedPreferences.getLong("lastGlobalConditionsApiCall", now - (1000 * 60 * 5));
+		if(now - lastGlobalConditionsApiCall > acceptableLocationTimeDifference) {
+			log("making global conditions call");
+			CbApiCall globalMapCall = new CbApiCall();
+			globalMapCall.setMinLat(-90);
+			globalMapCall.setMaxLat(90);
+			globalMapCall.setMinLon(-180);
+			globalMapCall.setMaxLon(180);
+			globalMapCall.setLimit(1000);
+			globalMapCall.setStartTime(System.currentTimeMillis()
+					- (int) (1000 * 60 * 60 * 2));
+			globalMapCall.setEndTime(System.currentTimeMillis());
+			makeCurrentConditionsAPICall(globalMapCall);
+			
+			// Save the time in prefs
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putLong("lastGlobalConditionsApiCall", lastGlobalConditionsApiCall);
+			editor.commit();
+		} else {
+			log("not making conditions global call, too soon");
+		}
 	}
 
 	/**
@@ -860,8 +905,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
 		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
-		buttonGoBackwards = (Button) findViewById(R.id.buttonGoBackwards);
-		buttonGoForwards = (Button) findViewById(R.id.buttonGoForwards);
+		buttonGoBackwards = (ImageButton) findViewById(R.id.buttonGoBackwards);
+		buttonGoForwards = (ImageButton) findViewById(R.id.buttonGoForwards);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
@@ -978,7 +1023,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
-					api.setLimit(3000);
+					api.setLimit(5000);
 					makeAPICall(api);
 					
 					charts.addAndLoadSegment();
@@ -1891,6 +1936,11 @@ public class BarometerNetworkActivity extends Activity implements
 			if (resultCode == RESULT_OK) {
 				lastGlobalApiCall = System.currentTimeMillis()
 						- (1000 * 60 * 10);
+				// Save the time in prefs
+				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
+				editor.commit();
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
@@ -2798,7 +2848,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void log(String text) {
 		if (PressureNETConfiguration.DEBUG_MODE) {
-			logToFile(text);
+			//logToFile(text);
 			System.out.println(text);
 		}
 	}
