@@ -1544,7 +1544,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			askForSettings();
-			makeLocationAPICalls();
+			//makeLocationAPICalls();
 			makeGlobalMapCall();
 			makeGlobalConditionsMapCall();
 			sendChangeNotification();
