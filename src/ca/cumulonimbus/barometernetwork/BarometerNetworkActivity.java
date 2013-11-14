@@ -2594,6 +2594,12 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void sendSingleObservation() {
+		// check location and bail/notify if it's unavailable
+		if(mLatitude==0.0) {
+			Toast.makeText(getApplicationContext(), "Error sending data: location unavailable", Toast.LENGTH_SHORT).show();
+			return;
+		}
+		
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION,
 					0, 0);
