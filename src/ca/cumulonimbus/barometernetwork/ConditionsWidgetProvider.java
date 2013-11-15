@@ -140,14 +140,16 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_on_precip);
 				} else if(general.equals(context.getResources().getString(R.string.thunderstorm))) {
 					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_on_r_l0);
-				} else {
-					Toast.makeText(context, intent.getStringExtra("general_condition"), Toast.LENGTH_SHORT).show();
+				} else if (general.equals("")) {
+					// TODO: this is duplicated below. Make a method for it.
+					setCorrectClearIcon(false);
+					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
+					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);
+					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
+					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
 				}
-			}  else {
-				
-			}
+			}  
 		} else {
-			// remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
 			setCorrectClearIcon(false);
 			remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
 			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);

@@ -705,13 +705,7 @@ public class CurrentConditionsActivity extends Activity {
 				saveCondition();
 				sendCondition();
 				
-				// tell the widget to update
-				Intent intent = new Intent(getApplicationContext(),ConditionsWidgetProvider.class);
-				intent.setAction(ConditionsWidgetProvider.ACTION_UPDATEUI); //"android.appwidget.action.APPWIDGET_UPDATE"
-				intent.putExtra("general_condition", condition.getGeneral_condition());
-				int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), ConditionsWidgetProvider.class));
-				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
-				sendBroadcast(intent);
+				updateWidget();
 				
 				
 				finish();
@@ -721,6 +715,9 @@ public class CurrentConditionsActivity extends Activity {
 		buttonCancelCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				condition.setGeneral_condition("");
+				updateWidget();
+
 				finish();
 			}
 		});
@@ -1079,6 +1076,7 @@ public class CurrentConditionsActivity extends Activity {
 			} else if(state.equals("thunderstorm")) {
 				buttonThunderstorm.performClick();
 			}
+			updateWidget();
 		}
 		
 		// Set the initial state: Sunny, no wind
@@ -1115,6 +1113,15 @@ public class CurrentConditionsActivity extends Activity {
 		int nowHour = calendar.get(Calendar.HOUR_OF_DAY);
 		
 		return (nowHour >= sunriseHour) && (nowHour <= sunsetHour);
+	}
+	
+	private void updateWidget() {
+		Intent intent = new Intent(getApplicationContext(),ConditionsWidgetProvider.class);
+		intent.setAction(ConditionsWidgetProvider.ACTION_UPDATEUI); //"android.appwidget.action.APPWIDGET_UPDATE"
+		intent.putExtra("general_condition", condition.getGeneral_condition());
+		int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), ConditionsWidgetProvider.class));
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+		sendBroadcast(intent);
 	}
 	
 	/**
