@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Calendar;
+
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -15,8 +17,12 @@ import android.widget.Toast;
 
 public class ConditionsWidgetProvider extends AppWidgetProvider {
 
+	
 	Context mContext;
 	SensorManager sm;
+	double mLatitude = 0;
+	double mLongitude = 0;
+	
 	public static String ACTION_UPDATEUI = "UpdateUIConditions";
 
 	@Override
@@ -124,7 +130,8 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 			if(intent.hasExtra("general_condition")) {
 				String general = intent.getStringExtra("general_condition");
 				if(general.equals(context.getResources().getString(R.string.sunny))) {
-					remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
+					// remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
+					setCorrectClearIcon(true);
 				} else if(general.equals(context.getResources().getString(R.string.foggy))) {
 					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_on_fog3);
 				} else if(general.equals(context.getResources().getString(R.string.cloudy))) {
@@ -138,7 +145,8 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 				}
 			}
 		} else {
-			remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
+			// remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
+			setCorrectClearIcon(false);
 			remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
 			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);					
 			remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
@@ -150,5 +158,140 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 		appWidgetManager.updateAppWidget(component, remoteView);
 		super.onReceive(context, intent);
 	}
+	
+	/**
+	 * Moon phase info
+	 */
+	private int getMoonPhaseIndex() {
+		MoonPhase mp = new MoonPhase(Calendar.getInstance());
+		return mp.getPhaseIndex();
+	}
+    
+	/**
+	 * Choose which icon to show based on moon phase and state
+	 * 
+	 * TODO: This code is duplicated here from CurrentConditionsActivity. 
+	 * Make the code general and keep it only in one place
+	 * 
+	 * @param on
+	 */
+	public void pickAndSetMoonIcon(boolean on) {
+		RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
+		
+		int moonNumber = getMoonPhaseIndex() + 1;
+		
+		switch(moonNumber) {
+		case 1:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon1);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon1);
+			}
+			break;
+		case 2:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon2);				
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon2);
+			}
+			break;
+		case 3:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon3);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon3);
+			}
+			break;
+		case 4:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon4);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon4);
+			}
+			break;
+		case 5:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon5);		
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon5);	
+			}
+			break;
+		case 6:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon6);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon6);
+			}
+			break;
+		case 7:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon7);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon7);
+			}
+			break;
+		case 8:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon8);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon8);
+			}
+			break;
+		default:
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_moon2);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_moon2);
+			}
+			break;
+		}
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+		ComponentName component = new ComponentName(mContext.getPackageName(), ConditionsWidgetProvider.class.getName());    
+		appWidgetManager.updateAppWidget(component, remoteView);
+	}
+	
+    /** 
+     * Choose icon between sun and moon depending on daytimes
+     * and on/off status. 
+     */
+    public void setCorrectClearIcon(boolean on) {
+		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
+			// set to Sun icon
+			RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
+			if(on) {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
+			} else {
+				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
+			}
+		} else {
+			// set to Moon icon
+			pickAndSetMoonIcon(on);
+		}
+
+    }
+    
+
+	/**
+	 * Update local location data with the last known location.
+	 */
+	private void setLastKnownLocation() {
+		try {
+			LocationManager lm = (LocationManager) mContext
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		
+			double latitude = loc.getLatitude();
+			double longitude = loc.getLongitude();
+			mLatitude = latitude;
+			mLongitude = longitude;
+		} catch (Exception e) {
+			// everything stays as previous, likely 0
+			Toast.makeText(mContext, "Location unavailable", Toast.LENGTH_SHORT).show();
+		}
+
+	}
+	
+	
 
 }
