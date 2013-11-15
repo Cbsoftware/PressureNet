@@ -143,12 +143,14 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 				} else {
 					Toast.makeText(context, intent.getStringExtra("general_condition"), Toast.LENGTH_SHORT).show();
 				}
+			}  else {
+				
 			}
 		} else {
 			// remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
 			setCorrectClearIcon(false);
 			remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
-			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);					
+			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);
 			remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
 			remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
 		}
@@ -255,8 +257,10 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
      * and on/off status. 
      */
     public void setCorrectClearIcon(boolean on) {
+    	setLastKnownLocation();
 		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
 			// set to Sun icon
+			System.out.println("daytime, sunny");
 			RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
 			if(on) {
 				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
@@ -265,9 +269,9 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 			}
 		} else {
 			// set to Moon icon
+			System.out.println("nighttime, moony");
 			pickAndSetMoonIcon(on);
 		}
-
     }
     
 
