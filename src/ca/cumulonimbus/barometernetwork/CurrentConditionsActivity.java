@@ -254,9 +254,9 @@ public class CurrentConditionsActivity extends Activity {
 			break;
 		case 8:
 			if(on) {
-				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon8);				
 			} else {
-				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon8);
 			}
 			break;
 		default:
