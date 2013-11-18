@@ -160,7 +160,8 @@
                 android:resource="@xml/widget_info" />
         </receiver>
         
-        <receiver android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider">
+        <receiver android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider"
+            android:label="pressureNET Conditions">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider.ACTION_UPDATEUI" />
