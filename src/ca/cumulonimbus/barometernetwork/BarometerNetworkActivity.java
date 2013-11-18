@@ -670,46 +670,51 @@ public class BarometerNetworkActivity extends Activity implements
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 
-			mMap.getUiSettings().setZoomControlsEnabled(false);
-			mMap.getUiSettings().setCompassEnabled(false);
-
-			mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
-
-			mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-
-				@Override
-				public void onCameraChange(CameraPosition position) {
-					// change button ability based on zoom level
-					if (position.zoom >= 9) {
-						graphMode.setEnabled(true);
-						graphMode.setTextColor(Color.BLACK);
-					} else {
-						graphMode.setEnabled(false);
-						graphMode.setTextColor(Color.GRAY);
+			if(mMap!=null) {
+				
+				mMap.getUiSettings().setZoomControlsEnabled(false);
+				mMap.getUiSettings().setCompassEnabled(false);
+	
+				mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
+	
+				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+	
+					@Override
+					public void onCameraChange(CameraPosition position) {
+						// change button ability based on zoom level
+						if (position.zoom >= 9) {
+							graphMode.setEnabled(true);
+							graphMode.setTextColor(Color.BLACK);
+						} else {
+							graphMode.setEnabled(false);
+							graphMode.setTextColor(Color.GRAY);
+						}
+	
+						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
+								0);
+						editLocation.setCursorVisible(false);
+	
+						LatLngBounds bounds = mMap.getProjection()
+								.getVisibleRegion().latLngBounds;
+						visibleBound = bounds;
+	
+						if (activeMode.equals("graph")) {
+							mapMode.performClick();
+							layoutMapInfo.setVisibility(View.GONE);
+						} else if (activeMode.equals("map")) {
+							loadRecents();
+						} else if (activeMode.equals("sensors")) {
+							mapMode.performClick();
+							layoutMapInfo.setVisibility(View.GONE);
+						}
+	
+						updateMapInfoText();
 					}
-
-					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
-							0);
-					editLocation.setCursorVisible(false);
-
-					LatLngBounds bounds = mMap.getProjection()
-							.getVisibleRegion().latLngBounds;
-					visibleBound = bounds;
-
-					if (activeMode.equals("graph")) {
-						mapMode.performClick();
-						layoutMapInfo.setVisibility(View.GONE);
-					} else if (activeMode.equals("map")) {
-						loadRecents();
-					} else if (activeMode.equals("sensors")) {
-						mapMode.performClick();
-						layoutMapInfo.setVisibility(View.GONE);
-					}
-
-					updateMapInfoText();
-				}
-			});
+				});
+			} else {
+				Toast.makeText(getApplicationContext(), "Unable to show map", Toast.LENGTH_SHORT).show();
+			}
 
 		}
 
