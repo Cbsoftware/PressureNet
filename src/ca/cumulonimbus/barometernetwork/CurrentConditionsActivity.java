@@ -110,6 +110,8 @@ public class CurrentConditionsActivity extends Activity {
 	boolean mBound;
 	Messenger mService = null;
 
+	private boolean sending = false;
+	
 	@Override
 	protected void onStart() {
 		EasyTracker.getInstance(this).activityStart(this); 
@@ -118,10 +120,10 @@ public class CurrentConditionsActivity extends Activity {
 
 	@Override
 	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
+		EasyTracker.getInstance(this).activityStop(this);
 		super.onStop();
 	}
-
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {	
 		log("currentconditions onconfig changed");
@@ -702,6 +704,7 @@ public class CurrentConditionsActivity extends Activity {
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				sending = true;
 				saveCondition();
 				sendCondition();
 				
@@ -715,6 +718,7 @@ public class CurrentConditionsActivity extends Activity {
 		buttonCancelCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				sending = false;
 				condition.setGeneral_condition("");
 				updateWidget();
 
@@ -1152,6 +1156,10 @@ public class CurrentConditionsActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
+		if(!sending) {
+			condition.setGeneral_condition("");
+		}
+		updateWidget();
 		unBindCbService();
 		super.onPause();
 	}
