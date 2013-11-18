@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layoutSmallWidget"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_widget"
+    android:minWidth="120dp"
     android:paddingBottom="3dp"
     android:paddingTop="1dp" >
 
@@ -21,8 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/widgetSmallSubmitButton"
         android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:paddingLeft="12dp"
+        android:paddingTop="2dp"
         android:clickable="true"
-        android:paddingLeft="16dp"
         android:src="@drawable/ic_widget_rising"
         android:visibility="gone" />
 
@@ -31,9 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:paddingLeft="12dp"
         android:clickable="true"
-                android:paddingLeft="16dp"
-        
         android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
 
@@ -42,9 +43,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:paddingLeft="12dp"
+        android:paddingBottom="2dp"
         android:clickable="true"
-        android:paddingLeft="16dp"
-
         android:src="@drawable/ic_widget_falling"
         android:visibility="invisible" />
 
