@@ -99,7 +99,7 @@ public class WidgetProvider extends AppWidgetProvider implements SensorEventList
 		        	running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
 		    	}
 	    	} catch(Exception e) {
-	    		Toast.makeText(context, "error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+	    
 	    	}
 		} 
 		super.onReceive(context, intent);

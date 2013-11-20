@@ -256,7 +256,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	        	//Toast.makeText(getApplicationContext(), "starting listener", Toast.LENGTH_SHORT).show();
 	    	}
 		} catch(Exception e) {
-			Toast.makeText(getApplicationContext(), "error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			
 		}
 	}
 	

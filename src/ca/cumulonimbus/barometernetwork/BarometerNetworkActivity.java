@@ -424,7 +424,7 @@ public class BarometerNetworkActivity extends Activity implements
 			mLongitude = longitude;
 		} catch (Exception e) {
 			// everything stays as previous, likely 0
-			Toast.makeText(getApplicationContext(), "Location unavailable", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Location not found", Toast.LENGTH_SHORT).show();
 		}
 
 	}
@@ -549,7 +549,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void displayNetworkOfflineToast() {
 		if (!isConnected) {
 			Toast.makeText(getApplicationContext(),
-					"Cannot connect to network.", Toast.LENGTH_SHORT).show();
+					"No network connection. Data won't load.", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -1018,8 +1018,8 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					graphMode.setEnabled(false);
 					graphMode.setTextColor(Color.GRAY);
-					Toast.makeText(getApplicationContext(), "Loading graph...",
-							Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Loading graphÉ",
+							Toast.LENGTH_LONG).show();
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
 					removeChartFromLayout();
@@ -1106,7 +1106,7 @@ public class BarometerNetworkActivity extends Activity implements
 				String location = editLocation.getText().toString();
 				if (location.equals("")) {
 					Toast toast = Toast.makeText(getApplicationContext(),
-							"Please enter a location to search",
+							"Enter a search location",
 							Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 					toast.show();
@@ -1146,7 +1146,7 @@ public class BarometerNetworkActivity extends Activity implements
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
 						Toast.makeText(getApplicationContext(),
-								"Error: cannot search Google Maps",
+								"Can't search Google Maps",
 								Toast.LENGTH_SHORT).show();
 					}
 
@@ -1399,17 +1399,17 @@ public class BarometerNetworkActivity extends Activity implements
 				String errors = (String) msg.obj;
 				if (errors.contains("error")) {
 					Toast.makeText(getApplicationContext(),
-							"Error sending data.", Toast.LENGTH_SHORT).show();
+							"Error sending data", Toast.LENGTH_SHORT).show();
 				} else if ((!errors.contains("error")) && (errors.length() > 1)) {
 					String condition = errors;
 					Toast.makeText(getApplicationContext(),
-							"Sent " + condition + "!", Toast.LENGTH_SHORT)
+							"Sent " + condition, Toast.LENGTH_SHORT)
 							.show();
 				} else {
 					// pressure toast
 					String toPrint = displayPressureValue(recentPressureReading);
 					Toast.makeText(getApplicationContext(),
-							"Sent " + toPrint + "!", Toast.LENGTH_SHORT).show();
+							"Sent " + toPrint, Toast.LENGTH_SHORT).show();
 				}
 				askForCurrentConditionRecents(buildMapCurrentConditionsCall(1));
 				break;
@@ -1735,8 +1735,8 @@ public class BarometerNetworkActivity extends Activity implements
 				startActivity(intent);
 			} catch (NullPointerException e) {
 				Toast.makeText(getApplicationContext(),
-						"No location found. Please try again soon.",
-						Toast.LENGTH_SHORT).show();
+						"No location found, can't submit current condition",
+						Toast.LENGTH_LONG).show();
 			}
 		} else if (item.getItemId() == R.id.menu_data_management) {
 			Intent intent = new Intent(getApplicationContext(),
@@ -1897,7 +1897,7 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if (rowId == -2L) {
 					log("onactivityresult -2");
 					Toast toast = Toast.makeText(getApplicationContext(),
-							"No saved locations. Please enter a location.",
+							"No saved locations. Enter a location.",
 							Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 					toast.show();
@@ -2601,7 +2601,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void sendSingleObservation() {
 		// check location and bail/notify if it's unavailable
 		if(mLatitude==0.0) {
-			Toast.makeText(getApplicationContext(), "Error sending data: location unavailable", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Can't send data: location unavailable", Toast.LENGTH_LONG).show();
 			return;
 		}
 		

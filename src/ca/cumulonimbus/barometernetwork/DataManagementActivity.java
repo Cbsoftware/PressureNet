@@ -373,8 +373,7 @@ public class DataManagementActivity extends Activity {
 				    } catch (Exception e) {
 				    	Toast.makeText(
 								getApplicationContext(),
-								"Error saving data."
-										+ recents.size(), Toast.LENGTH_LONG).show();	
+								"Couldn't save data", Toast.LENGTH_LONG).show();	
 				    }
 					
 					Toast.makeText(
@@ -385,7 +384,7 @@ public class DataManagementActivity extends Activity {
 				} else {
 					Toast.makeText(
 							getApplicationContext(),
-							"Error: Storage not available."
+							"Can't save data, storage not available"
 									+ recents.size(), Toast.LENGTH_LONG).show();					
 				}
 

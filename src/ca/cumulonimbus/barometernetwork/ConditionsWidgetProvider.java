@@ -293,7 +293,7 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 			mLongitude = longitude;
 		} catch (Exception e) {
 			// everything stays as previous, likely 0
-			Toast.makeText(mContext, "Location unavailable", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, "Location not found", Toast.LENGTH_SHORT).show();
 		}
 
 	}

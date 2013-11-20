@@ -119,7 +119,7 @@ public class Chart {
 		// " data points");
 
 		if (obsList.size() < 2) {
-			Toast.makeText(context, "There is no data to plot",
+			Toast.makeText(context, "There's no data to plot",
 					Toast.LENGTH_SHORT).show();
 		}
 
