@@ -1,9 +1,8 @@
 package ca.cumulonimbus.barometernetwork;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,6 +11,9 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class WelcomeActivity extends Activity {
 	
@@ -19,6 +21,8 @@ public class WelcomeActivity extends Activity {
 	
 	Spinner spinnerWelcomeSharing;
 	Button closeButton;
+	TextView textWelcome;
+	boolean hasBarometer = true;
 	
 	@Override
 	protected void onStart() {
@@ -32,16 +36,33 @@ public class WelcomeActivity extends Activity {
 		super.onStop();
 	}
 	
+	/**
+	 * Check if we have a barometer. Use info to disable menu items, choose to
+	 * run the service or not, etc.
+	 */
+	private boolean checkBarometer() {
+		PackageManager packageManager = this.getPackageManager();
+		hasBarometer = packageManager
+				.hasSystemFeature(PackageManager.FEATURE_SENSOR_BAROMETER);
+		return hasBarometer;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.welcome);
-
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-
-		
 		
 		spinnerWelcomeSharing = (Spinner) findViewById(R.id.spinnerWelcomeSharing);
+		closeButton = (Button) findViewById(R.id.buttonCloseWelcome);
+		textWelcome = (TextView) findViewById(R.id.textAppAndSharingDescription);
+		
+		checkBarometer();
+		if(!hasBarometer) {
+			textWelcome.setText(getString(R.string.appDescritptionNoBarometer));
+		}
+
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	
 		ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter
 				.createFromResource(this, R.array.privacy_settings,
 						android.R.layout.simple_spinner_item);
@@ -61,8 +82,7 @@ public class WelcomeActivity extends Activity {
 			}
 		}
 		spinnerWelcomeSharing.setSelection(positionShare);
-		
-		closeButton = (Button) findViewById(R.id.buttonCloseWelcome);
+	
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

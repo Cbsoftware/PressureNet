@@ -93,6 +93,12 @@
         of your device, the time, and your atmospheric pressure. We will share this data only according to your wishes,
         but remember that limiting your sharing  will limit our ability to help scientists improve 
         weather forecasting. You can change your prefence below or at any time through Settings. Thank you!</string>
+    <string name="appDescritptionNoBarometer">pressureNET is an open source global barometer network. 
+        We intend to improve weather forecasting by increasing inputs into weather models. 
+        \n\npressureNET does not detect a barometer in your device, so we won\'t automatically collect data from you.
+        However, you can still help us out greatly by sending current conditions reports using our widget and app.
+        You can select who you\'d like to share this data with below, which you can change any time in Settings.
+        Thanks for helping and we hope you enjoy pressureNET!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
     <string name="sunny">Clear</string>
