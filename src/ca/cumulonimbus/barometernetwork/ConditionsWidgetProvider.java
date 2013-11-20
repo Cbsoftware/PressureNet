@@ -122,6 +122,17 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
+	private void turnEverythingOff() {
+		log("conditions widget turning everything off");
+		RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
+		setCorrectClearIcon(false);
+		remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
+		remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);
+		remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
+		remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
+		sendUpdate(remoteView);
+	}
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
@@ -134,33 +145,31 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 					setCorrectClearIcon(true);
 				} else if(general.equals(context.getResources().getString(R.string.foggy))) {
 					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_on_fog3);
+					sendUpdate(remoteView);
 				} else if(general.equals(context.getResources().getString(R.string.cloudy))) {
-					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_on_cloud);					
+					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_on_cloud);
+					sendUpdate(remoteView);
 				} else if(general.equals(context.getResources().getString(R.string.precipitation))) {
 					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_on_precip);
+					sendUpdate(remoteView);
 				} else if(general.equals(context.getResources().getString(R.string.thunderstorm))) {
 					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_on_r_l0);
+					sendUpdate(remoteView);
 				} else if (general.equals("")) {
-					// TODO: this is duplicated below. Make a method for it.
-					setCorrectClearIcon(false);
-					remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
-					remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);
-					remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
-					remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
+					turnEverythingOff();
 				}
 			}  
 		} else {
-			setCorrectClearIcon(false);
-			remoteView.setImageViewResource(R.id.condition_fog, R.drawable.ic_wea_fog3);
-			remoteView.setImageViewResource(R.id.condition_cloud, R.drawable.ic_wea_cloud);
-			remoteView.setImageViewResource(R.id.condition_precip, R.drawable.ic_wea_precip);
-			remoteView.setImageViewResource(R.id.condition_thunderstorm, R.drawable.ic_wea_r_l0);
+			turnEverythingOff();
 		}
 		
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		ComponentName component = new ComponentName(context.getPackageName(), ConditionsWidgetProvider.class.getName());    
-		appWidgetManager.updateAppWidget(component, remoteView);
 		super.onReceive(context, intent);
+	}
+	
+	private void sendUpdate(RemoteViews remoteView) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+		ComponentName component = new ComponentName(mContext.getPackageName(), ConditionsWidgetProvider.class.getName());    
+		appWidgetManager.updateAppWidget(component, remoteView);
 	}
 	
 	/**
@@ -260,18 +269,21 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
      */
     public void setCorrectClearIcon(boolean on) {
     	setLastKnownLocation();
+    	log("conditions widget location " + mLatitude + ", "  + mLongitude);
 		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
 			// set to Sun icon
-			//System.out.println("daytime, sunny");
+			log("daytime, sunny");
 			RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
 			if(on) {
 				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
+				sendUpdate(remoteView);
 			} else {
 				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_sun);
+				sendUpdate(remoteView);
 			}
 		} else {
 			// set to Moon icon
-			//System.out.println("nighttime, moony");
+			log("nighttime, moony");
 			pickAndSetMoonIcon(on);
 		}
     }
@@ -298,6 +310,8 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 
 	}
 	
-	
+	private void log(String message) {
+		System.out.println(message);
+	}
 
 }
