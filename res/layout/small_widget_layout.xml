@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/widgetSmallSubmitButton"
-        android:paddingLeft="12dp"
+        android:paddingLeft="2dp"
         android:clickable="true"
         android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
