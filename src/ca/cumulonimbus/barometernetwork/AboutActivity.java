@@ -81,14 +81,14 @@ public class AboutActivity extends Activity {
 			textViewVersion.setText("Version " + versionName);
 
 		} catch (NameNotFoundException e) {
-			System.out.println("name not found " + e.getMessage());
+			//System.out.println("name not found " + e.getMessage());
 		}
 
 		try {
 			sdkVersionName = CbConfiguration.SDK_VERSION;
 			textViewSDKVersion.setText("SDK " + sdkVersionName);
 		} catch (Exception e) {
-			System.out.println("error " + e.getMessage());
+			//System.out.println("error " + e.getMessage());
 		}
 
 		layoutPressureNET.setOnClickListener(new OnClickListener() {

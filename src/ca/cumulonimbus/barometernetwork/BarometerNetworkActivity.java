@@ -2440,7 +2440,7 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				mMap.clear();
 				lastMapDataUpdate = now;
-				System.out.println("adding data to map, list recents size "
+				log("adding data to map, list recents size "
 						+ listRecents.size());
 				for (CbObservation observation : listRecents) {
 					LatLng point = new LatLng(observation.getLocation()
@@ -2564,7 +2564,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
-		System.out.println("building map conditions call for hours: "
+		log("building map conditions call for hours: "
 				+ hoursAgo);
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));

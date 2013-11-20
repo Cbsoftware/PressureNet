@@ -262,7 +262,7 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
     	setLastKnownLocation();
 		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
 			// set to Sun icon
-			System.out.println("daytime, sunny");
+			//System.out.println("daytime, sunny");
 			RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);
 			if(on) {
 				remoteView.setImageViewResource(R.id.condition_clear, R.drawable.ic_wea_on_sun);
@@ -271,7 +271,7 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 			}
 		} else {
 			// set to Moon icon
-			System.out.println("nighttime, moony");
+			//System.out.println("nighttime, moony");
 			pickAndSetMoonIcon(on);
 		}
     }

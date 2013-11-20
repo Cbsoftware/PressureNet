@@ -167,7 +167,7 @@ public class Chart {
 		
 		double meanOfSquaredDist = yDSqSum / i;
 		double standardDeviation = Math.sqrt(meanOfSquaredDist);
-		System.out.println("sd is " + standardDeviation);
+		log("sd is " + standardDeviation);
 		// remove outliers from the list
 		// (2 std away from the mean) 
 		double min = yMean - (standardDeviation*2);
