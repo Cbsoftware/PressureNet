@@ -256,7 +256,6 @@ public class BarometerNetworkActivity extends Activity implements
 		checkBarometer();
 		setLastKnownLocation();
 		startAppLocationListener();
-		startSensorListeners();
 		startLog();
 		getStoredPreferences();
 		setUpMap();
