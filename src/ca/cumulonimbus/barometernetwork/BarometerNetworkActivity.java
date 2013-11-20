@@ -179,6 +179,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonGoBackwards;
 	private ImageButton buttonGoForwards;
 	
+	private Button reloadGobalData;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -599,6 +601,7 @@ public class BarometerNetworkActivity extends Activity implements
 		long acceptableTimeDiff = 1000 * 60 * 5;
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
+		disableReload();
 		// when was the last global API call?
 		lastGlobalApiCall = sharedPreferences.getLong("lastGlobalAPICall", currentTime - (1000 * 60 * 10));
 		if (currentTime - lastGlobalApiCall > (acceptableTimeDiff)) {
@@ -914,8 +917,25 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonGoBackwards = (ImageButton) findViewById(R.id.buttonGoBackwards);
 		buttonGoForwards = (ImageButton) findViewById(R.id.buttonGoForwards);
 		
+		reloadGobalData = (Button) findViewById(R.id.buttonReloadGlobalData);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		reloadGobalData.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+				lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 20);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
+				editor.commit();
+				
+				makeGlobalMapCall();
+			}
+		});
+		
 		buttonGoBackwards.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -1363,6 +1383,7 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
 				updateAPICount(-1);
+				enableReload();
 				if (activeMode.equals("map")) {
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
@@ -1419,6 +1440,16 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
+	private void enableReload() {
+		reloadGobalData.setEnabled(true);
+		reloadGobalData.setTextColor(Color.BLACK);
+	}
+	
+	private void disableReload() {
+		reloadGobalData.setEnabled(false);
+		reloadGobalData.setTextColor(Color.GRAY);
+	}
+	
 	/**
 	 * Take the chart away.
 	 */

@@ -297,6 +297,19 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
+            
+            <Button
+	            android:id="@+id/buttonReloadGlobalData"
+	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textColor="@android:color/black" 
+	            android:layout_alignParentBottom="true"
+	            android:layout_alignParentRight="true"
+	            android:paddingBottom="4dp"
+	            android:gravity="bottom"
+	            android:text="Reload global data"
+	            android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
     <LinearLayout
