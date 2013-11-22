@@ -433,6 +433,75 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
+
+	/**
+	 * Send an Android notification to the user about nearby users
+	 * reporting current conditions.
+	 * 
+	 * @param tendencyChange
+	 */
+	private void deliverConditionNotification(CbCurrentCondition condition) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		long lastConditionTime = sharedPreferences.getLong(
+				"lastConditionTime", System.currentTimeMillis()
+						- (1000 * 60 * 60 * 10));
+		long now = System.currentTimeMillis();
+		long waitDiff = 1000 * 60 * 60 * 2;
+		if (now - lastConditionTime < waitDiff) {
+			log("bailing on conditions notification, not 2h wait yet");
+			return;
+		}
+
+		String deliveryMessage = "A nearby pressureNET user reported " + condition.getGeneral_condition() + ". What's it like near you?";
+		
+	
+		Notification.Builder mBuilder = new Notification.Builder(
+				getApplicationContext()).setSmallIcon(R.drawable.ic_launcher)
+				.setContentTitle("pressureNET").setContentText(deliveryMessage);
+		// Creates an explicit intent for an activity
+		Intent resultIntent = new Intent(getApplicationContext(),
+				CurrentConditionsActivity.class);
+		// Current Conditions activity likes to know the location in the Intent
+		double notificationLatitude = 0.0;
+		double notificationLongitude = 0.0;
+		try {
+			LocationManager lm = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (loc.getLatitude() != 0) {
+				notificationLatitude = loc.getLatitude();
+				notificationLongitude = loc.getLongitude();
+			}
+		} catch (Exception e) {
+
+		}
+
+		resultIntent.putExtra("latitude", notificationLatitude);
+		resultIntent.putExtra("longitude", notificationLongitude);
+		resultIntent.putExtra("cancelNotification", true);
+
+		TaskStackBuilder stackBuilder = TaskStackBuilder
+				.create(getApplicationContext());
+
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		mBuilder.setContentIntent(resultPendingIntent);
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// mId allows you to update the
+		// notification later on.
+		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+
+		// save the time
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putLong("lastConditionTime", now);
+		editor.commit();
+
+	}
+	
 	/**
 	 * Send an Android notification to the user with a notice of pressure
 	 * tendency change.
@@ -1452,14 +1521,13 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param conditions
 	 */
 	private void sendNearbyConditionNotification(ArrayList<CbCurrentCondition> conditions) {
-		long now = System.currentTimeMillis();
-		long minWait = 1000 * 60 * 60;
-		if(now - lastNearbyConditionReportNotification > minWait) {
-			Toast.makeText(getApplicationContext(), "Someone nearby says the weather is " + conditions.get(0).getGeneral_condition(), Toast.LENGTH_LONG).show();
-			lastNearbyConditionReportNotification = now;
-		} else {
-			log("not reporting condition " + conditions.get(0).getGeneral_condition() + ", too soon");
+		if(conditions == null) {
+			return;
 		}
+		if(conditions.size() == 0) {
+			return;
+		}
+		deliverConditionNotification(conditions.get(0));
 	}
 
 	private void enableReload() {
