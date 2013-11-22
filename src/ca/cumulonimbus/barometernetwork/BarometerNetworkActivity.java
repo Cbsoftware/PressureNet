@@ -267,7 +267,7 @@ public class BarometerNetworkActivity extends Activity implements
 		showWelcomeActivity();
 		setUpActionBar();
 	}
-
+	
 	/**
 	 * Controller for the chart viewing experience. Keep some data cached
 	 */
@@ -1792,10 +1792,11 @@ public class BarometerNetworkActivity extends Activity implements
 			sendFeedback();
 		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
-		}
+		} 
 		return super.onOptionsItemSelected(item);
 	}
 
+	
 	/**
 	 * Open the Google Play pressureNET page
 	 */
@@ -2762,10 +2763,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	@Override
 	protected void onStop() {
+		stopSensorListeners();
 		dataReceivedToPlot = false;
 		unBindCbService();
-		super.onStop();
 		EasyTracker.getInstance(this).activityStop(this);
+		super.onStop();
 	}
 
 	@Override
@@ -2879,31 +2881,41 @@ public class BarometerNetworkActivity extends Activity implements
 			Sensor humiditySensor = sm.getDefaultSensor(TYPE_RELATIVE_HUMIDITY);
 
 			if (pressureSensor != null) {
-				sm.registerListener(this, pressureSensor,
-						SensorManager.SENSOR_DELAY_UI);
+				if(android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, pressureSensor,SensorManager.SENSOR_DELAY_UI, 100000);
+				} else {
+					sm.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_UI);
+				}
 			} else {
 				recentPressureReading = 0.0;
 			}
 			if (temperatureSensor != null) {
-				sm.registerListener(this, temperatureSensor,
-						SensorManager.SENSOR_DELAY_UI);
+				if(android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, temperatureSensor,SensorManager.SENSOR_DELAY_UI, 100000);
+				} else {
+					sm.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_UI);
+				}
 			} else {
 				recentTemperatureReading = 1000.0;
 			}
 			if (humiditySensor != null) {
-				sm.registerListener(this, humiditySensor,
-						SensorManager.SENSOR_DELAY_UI);
+				if(android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, humiditySensor,SensorManager.SENSOR_DELAY_UI, 100000);
+				} else {
+					sm.registerListener(this, humiditySensor, SensorManager.SENSOR_DELAY_UI);
+				}
 			} else {
 				recentHumidityReading = 1000.0;
 			}
 		} catch (Exception e) {
-			// e.printStackTrace();
+			log("app sensor error " + e.getMessage());
 		}
 	}
 
 	public void stopSensorListeners() {
 		sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		sm.unregisterListener(this);
+		sm = null;
 	}
 
 	@Override
