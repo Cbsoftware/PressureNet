@@ -1485,7 +1485,14 @@ public class BarometerNetworkActivity extends Activity implements
 				addDataToMap();
 				
 				// potentially notify about nearby conditions
-				sendNearbyConditionNotification(receivedList);
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+				boolean isOkayToDeliver = sharedPreferences.getBoolean("send_condition_notifications", false);
+				if(isOkayToDeliver) {
+					sendNearbyConditionNotification(receivedList);
+				} else {
+					log("not delivering conditions notification, disabled in prefs");
+				}
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
