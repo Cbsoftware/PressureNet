@@ -1,9 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <menu xmlns:android="http://schemas.android.com/apk/res/android">
-        
-           <item
+    <item
         android:id="@+id/menu_legal_notices"
         android:enabled="true"
         android:showAsAction="never"
         android:title="Legal Notices"/>
-    </menu>
+    <item
+        android:id="@+id/menu_whats_new"
+        android:enabled="true"
+        android:showAsAction="never"
+        android:title="What&apos;s New"/>
+
+</menu>

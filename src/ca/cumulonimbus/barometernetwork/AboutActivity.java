@@ -41,9 +41,17 @@ public class AboutActivity extends Activity {
 			Intent intent = new Intent(getApplicationContext(),
 					PlayServicesLegalActivity.class);
 			startActivity(intent);
+		} else if (item.getItemId() == R.id.menu_whats_new) {
+			showWhatsNew();
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	private void showWhatsNew() {
+		Intent intent = new Intent(this, WhatsNewActivity.class);
+		startActivity(intent);
+	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
