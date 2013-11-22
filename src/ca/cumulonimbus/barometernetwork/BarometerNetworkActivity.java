@@ -228,6 +228,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastMapDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 60);
 
+	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
+			- (1000 * 60 * 60);
+	
 	private boolean isConnected = false;
 
 	private boolean hasBarometer = true;
@@ -1388,16 +1391,17 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
 
-					CbApiCall apiConditions = buildMapAPICall(.5);
-					apiConditions.setCallType("Conditions");
+					CbApiCall apiConditions = buildMapCurrentConditionsCall(.5);
 					askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				}
+				// potentially notify about nearby conditions
+				CbApiCall localConditions = buildLocalCurrentConditionsCall(1);
+				askForCurrentConditionRecents(localConditions);
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
-				// updateAPICount(-1);
 				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
 				if (receivedList != null) {
 					if (receivedList.size() > 0) {
@@ -1408,8 +1412,11 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					log("app received null conditions");
 				}
-
+				
 				addDataToMap();
+				
+				// potentially notify about nearby conditions
+				sendNearbyConditionNotification(receivedList);
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
@@ -1437,6 +1444,21 @@ public class BarometerNetworkActivity extends Activity implements
 				log("received default message");
 				super.handleMessage(msg);
 			}
+		}
+	}
+	
+	/**
+	 * Notify the user of nearby current conditions
+	 * @param conditions
+	 */
+	private void sendNearbyConditionNotification(ArrayList<CbCurrentCondition> conditions) {
+		long now = System.currentTimeMillis();
+		long minWait = 1000 * 60 * 60;
+		if(now - lastNearbyConditionReportNotification > minWait) {
+			Toast.makeText(getApplicationContext(), "Someone nearby says the weather is " + conditions.get(0).getGeneral_condition(), Toast.LENGTH_LONG).show();
+			lastNearbyConditionReportNotification = now;
+		} else {
+			log("not reporting condition " + conditions.get(0).getGeneral_condition() + ", too soon");
 		}
 	}
 
@@ -2586,8 +2608,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private CbApiCall buildMapAPICall(double hoursAgo) {
-		// TODO: Don't override hoursAgo. One method for map overlays
-		// and one for graph generation; map overlays is static 1 hour ago
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
@@ -2641,9 +2661,47 @@ public class BarometerNetworkActivity extends Activity implements
 			minLon = sw.longitude;
 			maxLon = ne.longitude;
 		} else {
-			log("no map center, bailing on condition api");
+			log("no map center, bailing");
+			return null;
 		}
 
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setLimit(500);
+		api.setCallType("Conditions");
+		return api;
+	}
+	
+
+	private CbApiCall buildLocalCurrentConditionsCall(double hoursAgo) {
+		log("building map conditions call for hours: "
+				+ hoursAgo);
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+
+		
+		setLastKnownLocation();
+		if(mLatitude != 0) {
+			minLat = mLatitude - .1;
+			maxLat = mLatitude + .1;
+			minLon = mLongitude - .1;
+			maxLon = mLongitude + .1;
+		} else {
+			log("no location, bailing on csll");
+			return null;
+		}
+			
 		api.setMinLat(minLat);
 		api.setMaxLat(maxLat);
 		api.setMinLon(minLon);
