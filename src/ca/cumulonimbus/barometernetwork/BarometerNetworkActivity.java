@@ -2908,7 +2908,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			if (pressureSensor != null) {
 				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, pressureSensor,SensorManager.SENSOR_DELAY_UI, 100000);
+					sm.registerListener(this, pressureSensor,SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
 					sm.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_UI);
 				}
@@ -2917,7 +2917,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			if (temperatureSensor != null) {
 				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, temperatureSensor,SensorManager.SENSOR_DELAY_UI, 100000);
+					sm.registerListener(this, temperatureSensor,SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
 					sm.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_UI);
 				}
@@ -2926,7 +2926,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			if (humiditySensor != null) {
 				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, humiditySensor,SensorManager.SENSOR_DELAY_UI, 100000);
+					sm.registerListener(this, humiditySensor,SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
 					sm.registerListener(this, humiditySensor, SensorManager.SENSOR_DELAY_UI);
 				}
