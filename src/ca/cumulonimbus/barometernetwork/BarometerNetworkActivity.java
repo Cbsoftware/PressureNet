@@ -2184,6 +2184,30 @@ public class BarometerNetworkActivity extends Activity implements
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				}
+			} else {
+				// TODO: this is a copypaste of rain
+				if (condition.getPrecipitation_amount() == 0.0) {
+					Drawable rainDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_rain1);
+					Drawable[] layers = { weatherBackgroundDrawable,
+							resizeDrawable(rainDrawable) };
+					LayerDrawable layerDrawable = new LayerDrawable(layers);
+					return layerDrawable;
+				} else if (condition.getPrecipitation_amount() == 1.0) {
+					Drawable rainDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_rain2);
+					Drawable[] layers = { weatherBackgroundDrawable,
+							resizeDrawable(rainDrawable) };
+					LayerDrawable layerDrawable = new LayerDrawable(layers);
+					return layerDrawable;
+				} else if (condition.getPrecipitation_amount() == 2.0) {
+					Drawable rainDrawable = this.getResources().getDrawable(
+							R.drawable.ic_wea_col_rain3);
+					Drawable[] layers = { weatherBackgroundDrawable,
+							resizeDrawable(rainDrawable) };
+					LayerDrawable layerDrawable = new LayerDrawable(layers);
+					return layerDrawable;
+				}
 			}
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.cloudy))) {
@@ -2255,6 +2279,11 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.thunderstorm))) {
+			try {
+				double d = Double.parseDouble(condition.getThunderstorm_intensity());
+			} catch(Exception e) {
+				condition.setThunderstorm_intensity("0");
+			}
 			if (Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) {
 				Drawable thunderstormDrawable = this.getResources()
 						.getDrawable(R.drawable.ic_wea_col_r_l1);
@@ -2503,21 +2532,22 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 
-		try {
-
-			// System.out.println("adding current conditions to map: " +
-			// currentConditionRecents.size());
+			log("adding current conditions to map: " + currentConditionRecents.size());
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
 				LatLng point = new LatLng(
 						condition.getLocation().getLatitude(), condition
 								.getLocation().getLongitude());
+				log("getting layer drawable for condition " + condition.getGeneral_condition());
 				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
-
+				if(drLayer==null) {
+					log("drlayer null, next!");
+					continue;
+				}
 				Drawable draw = getSingleDrawable(drLayer);
-
+				
 				Bitmap image = drawableToBitmap(draw, null);
 
 				Marker marker = mMap.addMarker(new MarkerOptions().position(
@@ -2529,10 +2559,6 @@ public class BarometerNetworkActivity extends Activity implements
 					break;
 				}
 			}
-		} catch (Exception e) {
-			log("error adding conditions to map " + e.getMessage());
-		}
-
 	}
 
 	/**
