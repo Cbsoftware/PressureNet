@@ -25,23 +25,29 @@
             android:key="sharing_preference"
             android:summary="Define data sharing preference"
             android:title="Share with" />
-
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="notification_preferences"
+        android:title="Notifications" >
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="send_notifications"
             android:summary="Notify when the pressure changes"
-            android:title="Enable Notifications" />
+            android:title="Enable pressure notifications" />
+          <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="send_condition_notifications"
+            android:summary="Notify when nearby users report weather conditions"
+            android:title="Enable condition notifications" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="device_prefs"
-        android:title="Device">
-        
+        android:title="Device" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_gps"
             android:summary="Attempt GPS for locations"
             android:title="Use GPS" />
-        
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="only_when_charging"
@@ -58,7 +64,7 @@
             android:key="units"
             android:summary="Pick your preferred pressure unit"
             android:title="Pressure Unit" />
-        <!-- 
+        <!--
         <ListPreference
             android:defaultValue="Meters (m)"
             android:entries="@array/distance_units"
@@ -66,7 +72,7 @@
             android:key="distance_units"
             android:summary="Pick your preferred distance unit"
             android:title="Distance Unit" />
-         -->
+        -->
         <ListPreference
             android:defaultValue="Celsius (°C)"
             android:entries="@array/temperature_units"
@@ -75,7 +81,7 @@
             android:summary="Pick your preferred temperature unit"
             android:title="Temperature Unit" />
     </PreferenceCategory>
-    <!-- 
+    <!--
     <PreferenceCategory
         android:key="calibration_prefs"
         android:title="Calibration" >
@@ -93,5 +99,6 @@
             android:summary="Enter your approximate altitude in kilometers."
             android:title="Altitude (km)" />
     </PreferenceCategory>
- -->
+    -->
+
 </PreferenceScreen>
