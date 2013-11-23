@@ -83,7 +83,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="@string/current_conditions"
-            android:theme="@style/CustomThemeDialogDark" >
+            android:theme="@style/CustomThemeDialogDark"
+            android:exported="true" >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
