@@ -229,6 +229,8 @@ public class BarometerNetworkActivity extends Activity implements
 			- (1000 * 60 * 60);
 	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
 			- (1000 * 60 * 60);
+	private long lastConditionsSubmit = System.currentTimeMillis() 
+			- (1000 * 60 * 60 * 4);
 	
 	private boolean isConnected = false;
 
@@ -453,12 +455,22 @@ public class BarometerNetworkActivity extends Activity implements
 	private void deliverConditionNotification(CbCurrentCondition condition) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
+		long now = System.currentTimeMillis();
+		// don't deliver if recently interacted with
+		lastConditionsSubmit = sharedPreferences.getLong(
+				"lastConditionsSubmit", System.currentTimeMillis()
+				- (1000 * 60 * 60 * 10));
+		
 		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
 						- (1000 * 60 * 60 * 10));
-		long now = System.currentTimeMillis();
+		
 		long waitDiff = 1000 * 60 * 60 * 2;
+		
+		if(now - lastConditionsSubmit < waitDiff) {
+			log("bailing on conditions notifications, recently submitted one");
+			return;
+		}
 		if (now - lastNearbyConditionReportNotification < waitDiff) {
 			log("bailing on conditions notification, not 2h wait yet");
 			return;

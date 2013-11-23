@@ -20,6 +20,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -109,6 +111,8 @@ public class CurrentConditionsActivity extends Activity {
 	
 	boolean mBound;
 	Messenger mService = null;
+	
+	private long lastConditionsSubmit = 0;
 
 	private boolean sending = false;
 	
@@ -710,6 +714,15 @@ public class CurrentConditionsActivity extends Activity {
 				
 				updateWidget();
 				
+				// save the time
+				lastConditionsSubmit = System.currentTimeMillis();
+				
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putLong("lastConditionsSubmit", lastConditionsSubmit);
+				editor.commit();
 				
 				finish();
 			}
