@@ -487,16 +487,16 @@ public class BarometerNetworkActivity extends Activity implements
 			// pick the right clear icon
 		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
 			initial = "fog";
-			icon = R.drawable.ic_wea_fog1;
+			icon = R.drawable.ic_wea_on_fog1;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
 			initial = "cloud";
-			icon = R.drawable.ic_wea_cloud;
+			icon = R.drawable.ic_wea_on_cloud;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
 			initial = "precip";
-			icon = R.drawable.ic_wea_precip;
+			icon = R.drawable.ic_wea_on_precip;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
-			icon = R.drawable.ic_wea_lightning1;
+			icon = R.drawable.ic_wea_on_lightning1;
 		}
 		
 	
@@ -971,23 +971,6 @@ public class BarometerNetworkActivity extends Activity implements
 		rawApi.setMaxLon(newMaxLon);
 
 		return rawApi;
-	}
-
-	/**
-	 * During animation, check if a condition/reading's time is close enough to
-	 * the current frame to show it on the map
-	 * 
-	 * @param groupNumber
-	 * @param currentTimeProgress
-	 * @return
-	 */
-	public boolean isCloseToFrame(int groupNumber, int currentTimeProgress) {
-		if (currentTimeProgress >= groupNumber) {
-			if (currentTimeProgress - groupNumber < 10) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
