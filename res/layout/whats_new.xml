@@ -16,21 +16,41 @@
             android:text="pressureNET [VERSION]"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
+        
         <TextView
-            android:id="@+id/textWhatsNew"
+            android:id="@+id/textNewFeatures"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/textWhatsNewTitle"
             android:padding="4dp"
+            android:text="NEW FEATURES"
+            android:textStyle="bold" />
+        
+        
+        <TextView
+            android:id="@+id/textWhatsNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textNewFeatures"
+            android:padding="4dp"
             android:paddingTop="16dp"
-            android:text="- Current Conditions widget\n- Satellite view\n- Better graph view (time controls)\n- Nearby condition notifications"
+            android:text="• Current Conditions widget\n• Satellite view\n• Time controls for graphs)\n• Nearby condition notifications"
             android:textSize="16dp" />
 
+        <TextView
+            android:id="@+id/textNewSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textWhatsNew"
+            android:padding="4dp"
+            android:text="NEW SETTINGS"
+            android:textStyle="bold"/>
+        
         <CheckBox
             android:id="@+id/checkReceiveConditionNotifications"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textWhatsNew"
+            android:layout_below="@id/textNewSettings"
             android:paddingTop="6dp"
             android:text="Receive conditions notifications"
             android:textSize="16dp" />

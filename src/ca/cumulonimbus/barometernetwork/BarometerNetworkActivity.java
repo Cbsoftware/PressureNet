@@ -465,7 +465,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 
-		String deliveryMessage = "A nearby pressureNET user reported " + condition.getGeneral_condition() + ". What's it like near you?";
+		String deliveryMessage = "Nearby weather: " + condition.getGeneral_condition() + ". What's it like outside?";
 		
 	
 		Notification.Builder mBuilder = new Notification.Builder(
@@ -2640,33 +2640,33 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 
-			log("adding current conditions to map: " + currentConditionRecents.size());
-			// Add Current Conditions
-			for (CbCurrentCondition condition : currentConditionRecents) {
+		log("adding current conditions to map: " + currentConditionRecents.size());
+		// Add Current Conditions
+		for (CbCurrentCondition condition : currentConditionRecents) {
 
-				LatLng point = new LatLng(
-						condition.getLocation().getLatitude(), condition
-								.getLocation().getLongitude());
-				log("getting layer drawable for condition " + condition.getGeneral_condition());
-				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
-						null);
-				if(drLayer==null) {
-					log("drlayer null, next!");
-					continue;
-				}
-				Drawable draw = getSingleDrawable(drLayer);
-				
-				Bitmap image = drawableToBitmap(draw, null);
-
-				Marker marker = mMap.addMarker(new MarkerOptions().position(
-						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
-				marker.showInfoWindow();
-
-				currentCur++;
-				if (currentCur > totalEachAllowed) {
-					break;
-				}
+			LatLng point = new LatLng(
+					condition.getLocation().getLatitude(), condition
+							.getLocation().getLongitude());
+			log("getting layer drawable for condition " + condition.getGeneral_condition());
+			LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+					null);
+			if(drLayer==null) {
+				log("drlayer null, next!");
+				continue;
 			}
+			Drawable draw = getSingleDrawable(drLayer);
+			
+			Bitmap image = drawableToBitmap(draw, null);
+
+			Marker marker = mMap.addMarker(new MarkerOptions().position(
+					point).icon(BitmapDescriptorFactory.fromBitmap(image)));
+			marker.showInfoWindow();
+
+			currentCur++;
+			if (currentCur > totalEachAllowed) {
+				break;
+			}
+		}
 	}
 
 	/**

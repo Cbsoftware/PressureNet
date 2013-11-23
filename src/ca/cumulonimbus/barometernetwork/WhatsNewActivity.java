@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -73,8 +75,14 @@ public class WhatsNewActivity extends Activity {
 	}
 
 	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
 	protected void onStop() {
-		
+		EasyTracker.getInstance(this).activityStop(this); 
 		super.onStop();
 	}
 
