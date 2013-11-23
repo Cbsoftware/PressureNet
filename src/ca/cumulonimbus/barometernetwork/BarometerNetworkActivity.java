@@ -464,27 +464,33 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 
-		String deliveryMessage = "Nearby weather: " + condition.getGeneral_condition() + ". What's it like outside?";
+		String deliveryMessage = "What's it like where you are?";
 		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
 		String initial = "";
+		int icon = R.drawable.ic_launcher;
 		if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			initial = "clear";
+			// pick the right clear icon
 		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
 			initial = "fog";
+			icon = R.drawable.ic_wea_fog1;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
 			initial = "cloud";
+			icon = R.drawable.ic_wea_cloud;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
 			initial = "precip";
+			icon = R.drawable.ic_wea_precip;
 		} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
+			icon = R.drawable.ic_wea_lightning1;
 		}
 		
 	
 		Notification.Builder mBuilder = new Notification.Builder(
-				getApplicationContext()).setSmallIcon(R.drawable.ic_launcher)
-				.setContentTitle("pressureNET").setContentText(deliveryMessage);
+				getApplicationContext()).setSmallIcon(icon)
+				.setContentTitle("Someone reported: " + condition.getGeneral_condition()).setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(getApplicationContext(),
 				CurrentConditionsActivity.class);
