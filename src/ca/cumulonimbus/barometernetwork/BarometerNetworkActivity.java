@@ -269,6 +269,17 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpFiles();
 		showWelcomeActivity();
 		setUpActionBar();
+		checkDb();
+	}
+	
+	/**
+	 * Create a db object, open and close it.
+	 * Forces a check for upgrades
+	 */
+	private void checkDb() {
+		PnDb db = new PnDb(getApplicationContext());
+		db.open();
+		db.close();
 	}
 	
 	/**

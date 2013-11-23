@@ -2,6 +2,7 @@ package ca.cumulonimbus.barometernetwork;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -31,7 +32,7 @@ public class PnDb {
 			+ ") ON CONFLICT REPLACE)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 5; // db = 2 at pN <=4.0.11
 
 	
 	public PnDb open() throws SQLException {
@@ -117,13 +118,20 @@ public class PnDb {
 		}
 		return mCursor;
 	}
+	
+	private void showWhatsNew() {
+		// show What's New
+		Intent intent = new Intent(mContext, WhatsNewActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mContext.startActivity(intent);
+	}
 
-	private static class DatabaseHelper extends SQLiteOpenHelper {
+	private class DatabaseHelper extends SQLiteOpenHelper {
 
 		DatabaseHelper(Context context) {
 			super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		}
-
+		
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
@@ -133,8 +141,10 @@ public class PnDb {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// Build upgrade mechanism
-			db.execSQL("DROP TABLE IF EXISTS " + SEARCH_LOCATIONS_TABLE);
-			onCreate(db);
+			// db.execSQL("DROP TABLE IF EXISTS " + SEARCH_LOCATIONS_TABLE);
+			// onCreate(db);
+			
+			showWhatsNew();
 		}
 	}
 	
