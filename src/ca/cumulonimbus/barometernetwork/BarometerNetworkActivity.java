@@ -227,7 +227,6 @@ public class BarometerNetworkActivity extends Activity implements
 			- (1000 * 60 * 60);
 	private long lastMapDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 60);
-
 	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
 			- (1000 * 60 * 60);
 	
@@ -455,17 +454,32 @@ public class BarometerNetworkActivity extends Activity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 
-		long lastConditionTime = sharedPreferences.getLong(
+		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
 						- (1000 * 60 * 60 * 10));
 		long now = System.currentTimeMillis();
 		long waitDiff = 1000 * 60 * 60 * 2;
-		if (now - lastConditionTime < waitDiff) {
+		if (now - lastNearbyConditionReportNotification < waitDiff) {
 			log("bailing on conditions notification, not 2h wait yet");
 			return;
 		}
 
 		String deliveryMessage = "Nearby weather: " + condition.getGeneral_condition() + ". What's it like outside?";
+		
+		// feed it with the initial condition
+		// clear, fog, cloud, precip, thunderstorm
+		String initial = "";
+		if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
+			initial = "clear";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
+			initial = "fog";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
+			initial = "cloud";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
+			initial = "precip";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
+			initial = "thunderstorm";
+		}
 		
 	
 		Notification.Builder mBuilder = new Notification.Builder(
@@ -493,6 +507,7 @@ public class BarometerNetworkActivity extends Activity implements
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
+		resultIntent.putExtra("initial", initial);
 
 		TaskStackBuilder stackBuilder = TaskStackBuilder
 				.create(getApplicationContext());
