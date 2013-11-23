@@ -1032,6 +1032,7 @@ public class BarometerNetworkActivity extends Activity implements
 				editor.commit();
 				
 				makeGlobalMapCall();
+				makeGlobalConditionsMapCall();
 			}
 		});
 		
