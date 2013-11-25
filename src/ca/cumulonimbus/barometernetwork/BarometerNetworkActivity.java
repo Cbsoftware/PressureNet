@@ -19,6 +19,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -227,10 +228,7 @@ public class BarometerNetworkActivity extends Activity implements
 			- (1000 * 60 * 60);
 	private long lastMapDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 60);
-	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
-			- (1000 * 60 * 60);
-	private long lastConditionsSubmit = System.currentTimeMillis() 
-			- (1000 * 60 * 60 * 4);
+
 	
 	private boolean isConnected = false;
 
@@ -446,195 +444,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 
-	/**
-	 * Send an Android notification to the user about nearby users
-	 * reporting current conditions.
-	 * 
-	 * @param tendencyChange
-	 */
-	private void deliverConditionNotification(CbCurrentCondition condition) {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		long now = System.currentTimeMillis();
-		// don't deliver if recently interacted with
-		lastConditionsSubmit = sharedPreferences.getLong(
-				"lastConditionsSubmit", System.currentTimeMillis()
-				- (1000 * 60 * 60 * 10));
-		
-		lastNearbyConditionReportNotification = sharedPreferences.getLong(
-				"lastConditionTime", System.currentTimeMillis()
-						- (1000 * 60 * 60 * 10));
-		
-		long waitDiff = 1000 * 60 * 60 * 2;
-		
-		if(now - lastConditionsSubmit < waitDiff) {
-			log("bailing on conditions notifications, recently submitted one");
-			return;
-		}
-		if (now - lastNearbyConditionReportNotification < waitDiff) {
-			log("bailing on conditions notification, not 2h wait yet");
-			return;
-		}
 
-		String deliveryMessage = "What's it like where you are?";
-		
-		// feed it with the initial condition
-		// clear, fog, cloud, precip, thunderstorm
-		String initial = "";
-		int icon = R.drawable.ic_launcher;
-		if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
-			initial = "clear";
-			// pick the right clear icon
-			icon = getResIdForClearIcon(condition);
-		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
-			initial = "fog";
-			icon = R.drawable.ic_wea_on_fog1;
-		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
-			initial = "cloud";
-			icon = R.drawable.ic_wea_on_cloud;
-		} else if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
-			initial = "precip";
-			icon = R.drawable.ic_wea_on_precip;
-		} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
-			initial = "thunderstorm";
-			icon = R.drawable.ic_wea_on_lightning1;
-		}
-		
-	
-		Notification.Builder mBuilder = new Notification.Builder(
-				getApplicationContext()).setSmallIcon(icon)
-				.setContentTitle("Someone reported: " + condition.getGeneral_condition()).setContentText(deliveryMessage);
-		// Creates an explicit intent for an activity
-		Intent resultIntent = new Intent(getApplicationContext(),
-				CurrentConditionsActivity.class);
-		// Current Conditions activity likes to know the location in the Intent
-		double notificationLatitude = 0.0;
-		double notificationLongitude = 0.0;
-		try {
-			LocationManager lm = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if (loc.getLatitude() != 0) {
-				notificationLatitude = loc.getLatitude();
-				notificationLongitude = loc.getLongitude();
-			}
-		} catch (Exception e) {
-
-		}
-
-		resultIntent.putExtra("latitude", notificationLatitude);
-		resultIntent.putExtra("longitude", notificationLongitude);
-		resultIntent.putExtra("cancelNotification", true);
-		resultIntent.putExtra("initial", initial);
-
-		TaskStackBuilder stackBuilder = TaskStackBuilder
-				.create(getApplicationContext());
-
-		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mBuilder.setContentIntent(resultPendingIntent);
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		// mId allows you to update the
-		// notification later on.
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-
-		// save the time
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putLong("lastConditionTime", now);
-		editor.commit();
-
-	}
-	
-	/**
-	 * Send an Android notification to the user with a notice of pressure
-	 * tendency change.
-	 * 
-	 * @param tendencyChange
-	 */
-	private void deliverNotification(String tendencyChange) {
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-
-		long lastNotificationTime = sharedPreferences.getLong(
-				"lastNotificationTime", System.currentTimeMillis()
-						- (1000 * 60 * 60 * 10));
-		long now = System.currentTimeMillis();
-		long waitDiff = 1000 * 60 * 60 * 6;
-		if (now - lastNotificationTime < waitDiff) {
-			log("bailing on notification, not 6h wait yet");
-			return;
-		}
-
-		String deliveryMessage = "";
-		if (!tendencyChange.contains(",")) {
-			// not returning to directional values? don't deliver notification
-			return;
-		}
-
-		String first = tendencyChange.split(",")[0];
-		String second = tendencyChange.split(",")[1];
-
-		if ((first.contains("Rising")) && (second.contains("Falling"))) {
-			deliveryMessage = "The pressure is dropping";
-		} else if ((first.contains("Steady")) && (second.contains("Falling"))) {
-			deliveryMessage = "The pressure is dropping";
-		} else if ((first.contains("Steady")) && (second.contains("Rising"))) {
-			deliveryMessage = "The pressure is rising";
-		} else if ((first.contains("Falling")) && (second.contains("Rising"))) {
-			deliveryMessage = "The pressure is rising";
-		} else {
-			deliveryMessage = "The pressure is steady";
-			// don't deliver this message
-			log("bailing on notification, pressure is steady");
-			return;
-		}
-
-		Notification.Builder mBuilder = new Notification.Builder(
-				getApplicationContext()).setSmallIcon(R.drawable.ic_launcher)
-				.setContentTitle("pressureNET").setContentText(deliveryMessage);
-		// Creates an explicit intent for an activity
-		Intent resultIntent = new Intent(getApplicationContext(),
-				CurrentConditionsActivity.class);
-		// Current Conditions activity likes to know the location in the Intent
-		double notificationLatitude = 0.0;
-		double notificationLongitude = 0.0;
-		try {
-			LocationManager lm = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if (loc.getLatitude() != 0) {
-				notificationLatitude = loc.getLatitude();
-				notificationLongitude = loc.getLongitude();
-			}
-		} catch (Exception e) {
-
-		}
-
-		resultIntent.putExtra("latitude", notificationLatitude);
-		resultIntent.putExtra("longitude", notificationLongitude);
-		resultIntent.putExtra("cancelNotification", true);
-
-		TaskStackBuilder stackBuilder = TaskStackBuilder
-				.create(getApplicationContext());
-
-		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mBuilder.setContentIntent(resultPendingIntent);
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		// mId allows you to update the
-		// notification later on.
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
-
-		// save the time
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putLong("lastNotificationTime", now);
-		editor.commit();
-
-	}
 
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
@@ -1495,9 +1305,6 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				}
-				// potentially notify about nearby conditions
-				CbApiCall localConditions = buildLocalCurrentConditionsCall(1);
-				askForCurrentConditionRecents(localConditions);
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
@@ -1513,19 +1320,11 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				addDataToMap();
 				
-				// potentially notify about nearby conditions
-				SharedPreferences sharedPreferences = PreferenceManager
-						.getDefaultSharedPreferences(getApplicationContext());
-				boolean isOkayToDeliver = sharedPreferences.getBoolean("send_condition_notifications", false);
-				if(isOkayToDeliver) {
-					sendNearbyConditionNotification(receivedList);
-				} else {
-					log("not delivering conditions notification, disabled in prefs");
-				}
+				
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
-				deliverNotification(change);
+				//deliverNotification(change);
 				break;
 			case CbService.MSG_DATA_RESULT:
 				String errors = (String) msg.obj;
@@ -1552,19 +1351,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	/**
-	 * Notify the user of nearby current conditions
-	 * @param conditions
-	 */
-	private void sendNearbyConditionNotification(ArrayList<CbCurrentCondition> conditions) {
-		if(conditions == null) {
-			return;
-		}
-		if(conditions.size() == 0) {
-			return;
-		}
-		deliverConditionNotification(conditions.get(0));
-	}
+	
 
 	private void enableReload() {
 		reloadGobalData.setEnabled(true);
@@ -2170,51 +1957,6 @@ public class BarometerNetworkActivity extends Activity implements
 		MoonPhase mp = new MoonPhase(Calendar.getInstance());
 		return mp.getPhaseIndex();
 	}
-
-	/**
-	 * Given a condition, 
-	 * @param condition
-	 * @return
-	 */
-	private int getResIdForClearIcon(CbCurrentCondition condition) {
-		int moonNumber = getMoonPhaseIndex();
-		int sunDrawable = R.drawable.ic_wea_col_sun;
-		if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-				.getLatitude(), condition.getLocation().getLongitude())) {
-			switch (moonNumber) {
-			case 1:
-				sunDrawable = R.drawable.ic_wea_col_moon1;
-				break;
-			case 2:
-				sunDrawable = R.drawable.ic_wea_col_moon2;
-				break;
-			case 3:
-				sunDrawable = R.drawable.ic_wea_col_moon3;
-				break;
-			case 4:
-				sunDrawable = R.drawable.ic_wea_col_moon4;
-				break;
-			case 5:
-				sunDrawable = R.drawable.ic_wea_col_moon5;
-				break;
-			case 6:
-				sunDrawable = R.drawable.ic_wea_col_moon6;
-				break;
-			case 7:
-				sunDrawable = R.drawable.ic_wea_col_moon7;
-				break;
-			case 8:
-				sunDrawable = R.drawable.ic_wea_col_moon8;
-				break;
-			default:
-				sunDrawable = R.drawable.ic_wea_col_moon2;
-				break;
-			}
-		}
-		return sunDrawable;
-	}
-	
-	
 	/**
 	 * Create neat drawables for weather conditions depending on the type of
 	 * weather, the time, etc.
@@ -2813,43 +2555,6 @@ public class BarometerNetworkActivity extends Activity implements
 			return null;
 		}
 
-		api.setMinLat(minLat);
-		api.setMaxLat(maxLat);
-		api.setMinLon(minLon);
-		api.setMaxLon(maxLon);
-		api.setStartTime(startTime);
-		api.setEndTime(endTime);
-		api.setLimit(500);
-		api.setCallType("Conditions");
-		return api;
-	}
-	
-
-	private CbApiCall buildLocalCurrentConditionsCall(double hoursAgo) {
-		log("building map conditions call for hours: "
-				+ hoursAgo);
-		long startTime = System.currentTimeMillis()
-				- (int) ((hoursAgo * 60 * 60 * 1000));
-		long endTime = System.currentTimeMillis();
-		CbApiCall api = new CbApiCall();
-
-		double minLat = 0;
-		double maxLat = 0;
-		double minLon = 0;
-		double maxLon = 0;
-
-		
-		setLastKnownLocation();
-		if(mLatitude != 0) {
-			minLat = mLatitude - .1;
-			maxLat = mLatitude + .1;
-			minLon = mLongitude - .1;
-			maxLon = mLongitude + .1;
-		} else {
-			log("no location, bailing on csll");
-			return null;
-		}
-			
 		api.setMinLat(minLat);
 		api.setMaxLat(maxLat);
 		api.setMinLon(minLon);
