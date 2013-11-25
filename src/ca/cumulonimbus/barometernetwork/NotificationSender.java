@@ -103,6 +103,7 @@ public class NotificationSender extends BroadcastReceiver {
 		// clear, fog, cloud, precip, thunderstorm
 		String initial = "";
 		int icon = R.drawable.ic_launcher;
+		String politeReportText = condition.getGeneral_condition();
 		if(condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
 			initial = "clear";
 			// pick the right clear icon
@@ -115,7 +116,16 @@ public class NotificationSender extends BroadcastReceiver {
 			icon = R.drawable.ic_wea_on_cloud;
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
-			icon = R.drawable.ic_wea_on_precip;
+			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
+				icon = R.drawable.ic_wea_rain1;
+				politeReportText = "Rain";
+			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
+				icon = R.drawable.ic_wea_snow1;
+				politeReportText = "Snow";
+			} else {
+				icon = R.drawable.ic_wea_on_precip;
+			}
+			
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning1;
@@ -124,7 +134,7 @@ public class NotificationSender extends BroadcastReceiver {
 	
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle("Someone reported: " + condition.getGeneral_condition()).setContentText(deliveryMessage);
+				.setContentTitle("Someone reported: " + politeReportText).setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
