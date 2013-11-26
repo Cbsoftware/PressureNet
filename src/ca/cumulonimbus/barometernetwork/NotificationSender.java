@@ -117,10 +117,10 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
-				icon = R.drawable.ic_wea_rain1;
+				icon = R.drawable.ic_wea_on_rain1;
 				politeReportText = "Rain";
 			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
-				icon = R.drawable.ic_wea_snow1;
+				icon = R.drawable.ic_wea_on_snow1;
 				politeReportText = "Snow";
 			} else {
 				icon = R.drawable.ic_wea_on_precip;
