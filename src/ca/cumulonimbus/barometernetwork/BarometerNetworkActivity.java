@@ -930,6 +930,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// set mode and load data
 					activeMode = "map";
 					addDataToMap();
+					addConditionsToMap();
 				}
 
 			}
@@ -1318,7 +1319,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("app received null conditions");
 				}
 				
-				addDataToMap();
+				addConditionsToMap();
 				
 				
 				break;
@@ -2384,16 +2385,58 @@ public class BarometerNetworkActivity extends Activity implements
 		return bitmapDrawable;
 	}
 
+	private void addConditionsToMap() {		
+		int currentCur = 0;
+		int totalAllowed = 30;
+		
+		
+		if(currentConditionRecents != null) {
+			log("adding current conditions to map: " + currentConditionRecents.size());
+			// Add Current Conditions
+			for (CbCurrentCondition condition : currentConditionRecents) {
+	
+				LatLng point = new LatLng(
+						condition.getLocation().getLatitude(), condition
+								.getLocation().getLongitude());
+				log("getting layer drawable for condition " + condition.getGeneral_condition());
+				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+						null);
+				if(drLayer==null) {
+					log("drlayer null, next!");
+					continue;
+				}
+				Drawable draw = getSingleDrawable(drLayer);
+				
+				Bitmap image = drawableToBitmap(draw, null);
+	
+				Marker marker = mMap.addMarker(new MarkerOptions().position(
+						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
+				marker.showInfoWindow();
+				conditionsMarkers.add(marker);
+				
+				currentCur++;
+				if (currentCur > totalAllowed) {
+					break;
+				}
+			}
+
+			currentConditionRecents.clear();
+		} else {
+			log("addDatatomap conditions recents is null");
+		}
+
+		bringConditionsToFront();
+	}
+	
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
 
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
-		int totalEachAllowed = 30;
+		int totalAllowed = 30;
 		int currentObs = 0;
-		int currentCur = 0;
-
+		
 		int maxUpdateFrequency = 1000; // 500ms
 		long now = System.currentTimeMillis();
 
@@ -2436,7 +2479,7 @@ public class BarometerNetworkActivity extends Activity implements
 									.icon(BitmapDescriptorFactory.fromBitmap(image)));
 		
 							currentObs++;
-							if (currentObs > totalEachAllowed) {
+							if (currentObs > totalAllowed) {
 								break;
 							}
 						} catch (Exception e) {
@@ -2448,67 +2491,26 @@ public class BarometerNetworkActivity extends Activity implements
 					log("error adding observations to map " + e.getMessage());
 				}
 			}
+			listRecents.clear();
 		} else {
 			log("addDatatomap listrecents is null");
-		}
-
-		if(currentConditionRecents != null) {
-			log("adding current conditions to map: " + currentConditionRecents.size());
-			// Add Current Conditions
-			for (CbCurrentCondition condition : currentConditionRecents) {
-	
-				LatLng point = new LatLng(
-						condition.getLocation().getLatitude(), condition
-								.getLocation().getLongitude());
-				log("getting layer drawable for condition " + condition.getGeneral_condition());
-				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
-						null);
-				if(drLayer==null) {
-					log("drlayer null, next!");
-					continue;
-				}
-				Drawable draw = getSingleDrawable(drLayer);
-				
-				Bitmap image = drawableToBitmap(draw, null);
-	
-				Marker marker = mMap.addMarker(new MarkerOptions().position(
-						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
-				marker.showInfoWindow();
-				conditionsMarkers.add(marker);
-				
-				currentCur++;
-				if (currentCur > totalEachAllowed) {
-					break;
-				}
-			}
-		} else {
-			log("addDatatomap conditions recents is null");
-		}
-		bringConditionsToFront();
-		listRecents.clear();
-		currentConditionRecents.clear();
-	}
-	
-	private class ConditionsMapper implements Runnable {
-
-		@Override
-		public void run() {
-			if(conditionsMarkers!=null) {
-				log("bringing conditions to front " + conditionsMarkers.size());
-				for(Marker marker : conditionsMarkers) {
-					marker.showInfoWindow();
-				}
-			}
-			
-		}
-		
+		}		
 	}
 	
 	private void bringConditionsToFront() {
-		log("posted dlayed conditions front");
+		log("posted conditions front");
+	
+		if(conditionsMarkers!=null) {
+			log("bringing conditions to front " + conditionsMarkers.size());
+			for(Marker marker : conditionsMarkers) {
+				marker.showInfoWindow();
+			}
+		}
+		/*
 		ConditionsMapper mapper = new ConditionsMapper();
 		Handler handler = new Handler();
 		handler.postDelayed(mapper, 100);
+		*/
 	}
 
 	/**
