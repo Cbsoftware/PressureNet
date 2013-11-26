@@ -14,12 +14,9 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -1305,6 +1302,7 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				}
+				
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
@@ -2679,17 +2677,32 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
-		addDataToMap();
+		//addDataToMap();
 
 		startSensorListeners();
 		startGettingLocations();
 
-		startCbService();
+		if(!isCbServiceRunning()) {
+			log("onresume cbservice is not already running, ");
+			startCbService();
+		} else {
+			log("onresume cbservice is already running");
+		}
 		bindCbService();
 
 		editLocation.setText("");
 	}
 
+	private boolean isCbServiceRunning() {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if (CbService.class.getName().equals(service.service.getClassName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	@Override
 	protected void onStart() {
 		dataReceivedToPlot = false;
