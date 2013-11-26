@@ -245,6 +245,8 @@ public class BarometerNetworkActivity extends Activity implements
 			"Third quarter", // 6
 			"Waning crescent" }; // 7
 
+	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
+	
 	ChartController charts = new ChartController();
 	
 	/** Called when the activity is first created. */
@@ -2392,83 +2394,121 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentObs = 0;
 		int currentCur = 0;
 
-		int maxUpdateFrequency = 500; // 500ms
+		int maxUpdateFrequency = 1000; // 500ms
 		long now = System.currentTimeMillis();
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
-		if (listRecents.size() > 0) {
-
-			try {
-				if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
-					log("adding data to map too frequently, bailing");
-					return;
-				} else {
-					log("adding data to map, last update "
-							+ (now - lastMapDataUpdate));
-				}
-				mMap.clear();
-				lastMapDataUpdate = now;
-				log("adding data to map, list recents size "
-						+ listRecents.size());
-				for (CbObservation observation : listRecents) {
-					LatLng point = new LatLng(observation.getLocation()
-							.getLatitude(), observation.getLocation()
-							.getLongitude());
-
-					Bitmap image = drawableToBitmap(drawable, observation);
-
-					String valueToPrint = displayPressureValue(observation
-							.getObservationValue());
-
-					long timeRecorded = observation.getTime();
-					long timeNow = System.currentTimeMillis();
-					long msAgo = now - timeRecorded;
-					int minutesAgo = (int) (msAgo / (1000 * 60));
-
-					mMap.addMarker(new MarkerOptions().position(point)
-							.title(minutesAgo + " minutes ago")
-							.icon(BitmapDescriptorFactory.fromBitmap(image)));
-
-					currentObs++;
-					if (currentObs > totalEachAllowed) {
-						break;
+		if(listRecents!=null) {
+			if (listRecents.size() > 0) {
+	
+				try {
+					if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
+						log("adding data to map too frequently, bailing");
+						return;
+					} else {
+						log("adding data to map, last update "
+								+ (now - lastMapDataUpdate));
 					}
+					mMap.clear();
+					lastMapDataUpdate = now;
+					log("adding data to map, list recents size "
+							+ listRecents.size());
+					for (CbObservation observation : listRecents) {
+						try {
+							LatLng point = new LatLng(observation.getLocation()
+									.getLatitude(), observation.getLocation()
+									.getLongitude());
+		
+							Bitmap image = drawableToBitmap(drawable, observation);
+		
+							String valueToPrint = displayPressureValue(observation
+									.getObservationValue());
+		
+							long timeRecorded = observation.getTime();
+							long timeNow = System.currentTimeMillis();
+							long msAgo = now - timeRecorded;
+							int minutesAgo = (int) (msAgo / (1000 * 60));
+		
+							mMap.addMarker(new MarkerOptions().position(point)
+									.title(minutesAgo + " minutes ago")
+									.icon(BitmapDescriptorFactory.fromBitmap(image)));
+		
+							currentObs++;
+							if (currentObs > totalEachAllowed) {
+								break;
+							}
+						} catch (Exception e) {
+							log("app error in adddatatomap recents, " + e.getMessage());
+						}
+					}
+					updateMapInfoText();
+				} catch (Exception e) {
+					log("error adding observations to map " + e.getMessage());
 				}
-				updateMapInfoText();
-			} catch (Exception e) {
-				log("error adding observations to map " + e.getMessage());
 			}
+		} else {
+			log("addDatatomap listrecents is null");
 		}
 
-		log("adding current conditions to map: " + currentConditionRecents.size());
-		// Add Current Conditions
-		for (CbCurrentCondition condition : currentConditionRecents) {
-
-			LatLng point = new LatLng(
-					condition.getLocation().getLatitude(), condition
-							.getLocation().getLongitude());
-			log("getting layer drawable for condition " + condition.getGeneral_condition());
-			LayerDrawable drLayer = getCurrentConditionDrawable(condition,
-					null);
-			if(drLayer==null) {
-				log("drlayer null, next!");
-				continue;
+		if(currentConditionRecents != null) {
+			log("adding current conditions to map: " + currentConditionRecents.size());
+			// Add Current Conditions
+			for (CbCurrentCondition condition : currentConditionRecents) {
+	
+				LatLng point = new LatLng(
+						condition.getLocation().getLatitude(), condition
+								.getLocation().getLongitude());
+				log("getting layer drawable for condition " + condition.getGeneral_condition());
+				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+						null);
+				if(drLayer==null) {
+					log("drlayer null, next!");
+					continue;
+				}
+				Drawable draw = getSingleDrawable(drLayer);
+				
+				Bitmap image = drawableToBitmap(draw, null);
+	
+				Marker marker = mMap.addMarker(new MarkerOptions().position(
+						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
+				marker.showInfoWindow();
+				conditionsMarkers.add(marker);
+				
+				currentCur++;
+				if (currentCur > totalEachAllowed) {
+					break;
+				}
 			}
-			Drawable draw = getSingleDrawable(drLayer);
+		} else {
+			log("addDatatomap conditions recents is null");
+		}
+		bringConditionsToFront();
+		listRecents.clear();
+		currentConditionRecents.clear();
+	}
+	
+	private class ConditionsMapper implements Runnable {
+
+		@Override
+		public void run() {
+			if(conditionsMarkers!=null) {
+				log("bringing conditions to front " + conditionsMarkers.size());
+				for(Marker marker : conditionsMarkers) {
+					marker.showInfoWindow();
+				}
+			}
 			
-			Bitmap image = drawableToBitmap(draw, null);
-
-			Marker marker = mMap.addMarker(new MarkerOptions().position(
-					point).icon(BitmapDescriptorFactory.fromBitmap(image)));
-			marker.showInfoWindow();
-
-			currentCur++;
-			if (currentCur > totalEachAllowed) {
-				break;
-			}
 		}
+		
+	}
+	
+	private void bringConditionsToFront() {
+		log("posted dlayed conditions front");
+		ConditionsMapper mapper = new ConditionsMapper();
+		Handler handler = new Handler();
+		handler.postDelayed(mapper, 100);
 	}
 
 	/**
