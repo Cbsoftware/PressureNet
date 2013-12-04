@@ -912,6 +912,8 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
 					}
+					addDataToMap();
+					addConditionsToMap();
 				} else {
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
