@@ -1286,6 +1286,7 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_API_RECENTS:
 				listRecents = (ArrayList<CbObservation>) msg.obj;
 				addDataToMap();
+				addConditionsToMap();
 				if (activeMode.equals("graph")) {
 					createAndShowChart();
 				}

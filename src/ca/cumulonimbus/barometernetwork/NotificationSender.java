@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
@@ -62,9 +64,47 @@ public class NotificationSender extends BroadcastReceiver {
 				log("pressure change intent not sent, doesn't have extra");
 			}
 			
+		} else if(intent.getAction().equals(CbService.PRESSURE_SENT_TOAST)) {
+			log("app received intent pressure sent toast");
+			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.pressureSent")) {
+				double pressureSent = intent.getDoubleExtra("ca.cumulonimbus.pressurenetsdk.pressureSent", 0.0);
+				Toast.makeText(context, "Sent " + displayPressureValue(pressureSent), Toast.LENGTH_SHORT).show();
+			} else {
+				log("pressure sent intent not sent, doesn't have extra");
+			}
+			
+		} else if(intent.getAction().equals(CbService.CONDITION_SENT_TOAST)) {
+			log("app received intent pressure sent toast");
+			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionSent")) {
+				String conditionSent = intent.getStringExtra("ca.cumulonimbus.pressurenetsdk.conditionSent");
+				Toast.makeText(context, "Sent " + conditionSent, Toast.LENGTH_SHORT).show();
+			} else {
+				log("condition sent intent not sent, doesn't have extra");
+			}
+			
 		} else {
 			log("no matching code for " + intent.getAction());
 		}	
+	}
+	
+	/**
+	 * Check the Android SharedPreferences for important values. Save relevant
+	 * ones to CbSettings for easy access in submitting readings
+	 */
+	public String getUnitPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		return sharedPreferences.getString("units", "millibars");
+	}
+	
+	private String displayPressureValue(double value) {
+		String preferencePressureUnit = getUnitPreference();
+		DecimalFormat df = new DecimalFormat("####.0");
+		PressureUnit unit = new PressureUnit(preferencePressureUnit);
+		unit.setValue(value);
+		unit.setAbbreviation(preferencePressureUnit);
+		double pressureInPreferredUnit = unit.convertToPreferredUnit();
+		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 	
 	/**
