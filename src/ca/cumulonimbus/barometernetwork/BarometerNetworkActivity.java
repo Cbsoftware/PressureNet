@@ -731,6 +731,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
 		settings.setServerURL(CbConfiguration.SERVER_URL);
 		settings.saveSettings();
+		activeSettings = settings;
 		sendNewSettings();
 		log("app saved new settings (getStoredPreferences):" + settings);
 	}
@@ -1500,6 +1501,7 @@ public class BarometerNetworkActivity extends Activity implements
 			makeGlobalMapCall();
 			makeGlobalConditionsMapCall();
 			sendChangeNotification();
+			sendNewSettings();
 		}
 
 		/**
