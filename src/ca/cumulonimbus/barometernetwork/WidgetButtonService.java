@@ -15,11 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Location;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -27,16 +23,13 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
-import ca.cumulonimbus.barometernetwork.BarometerNetworkActivity.IncomingHandler;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
-public class WidgetButtonService extends Service implements SensorEventListener {
+public class WidgetButtonService extends Service {
 	
 	private double mReading = 0.0;
 	SensorManager sm;
@@ -48,15 +41,13 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	PressureUnit mUnit = new PressureUnit("mbar");
 	
-	private String localHistoryFile = "recent.txt";
-	
 	private String mAppDir = "";
 
 	CbSettingsHandler activeSettings;
 	ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	
 	private Intent mIntent;
-	
+		
 	// pressureNET 4.0
 	// SDK communication
 	boolean mBound;
@@ -86,22 +77,34 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				//e.printStackTrace();
 			}
 		} else {
-			// log("error: not bound");
+			log("widget error: not bound, cannot ask for settings");
 		}
 	}
 	
 	private void sendSingleObservation() {
 		if (mBound) {
+			log("widget sending single observation");
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				log("widget cannot send single obs, " + e.getMessage());
 			}
 		} else {
 			log("widget failed to send single obs; data management error: not bound");
 		}
+	}
+
+	
+	
+	@Override
+	public void onRebind(Intent intent) {
+		log("widget onrebind");
+		askForLocalRecents(3);
+		
+		askForSettings();
+		super.onRebind(intent);
 	}
 
 	public void bindCbService() {
@@ -134,6 +137,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
+				mReading = recents.get(recents.size() - 1).getObservationValue();
 				log("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
 				DecimalFormat df = new DecimalFormat("####.00");
 				String message = "0.00";
@@ -237,8 +241,6 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			askForSettings();
 		}
 
-		
-		
 		public void onServiceDisconnected(ComponentName className) {
 			log("widget client: service disconnected");
 			mMessenger = null;
@@ -246,20 +248,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 		}
 	};
 
-	private void startListening() {
-		try {
-	    	sm = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
-	    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
-	    	log("widget start listening pressure");
-	    	if(bar!=null) {
-	        	running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
-	        	//Toast.makeText(getApplicationContext(), "starting listener", Toast.LENGTH_SHORT).show();
-	    	}
-		} catch(Exception e) {
-			
-		}
-	}
-	
+		
 	private void askForLocalRecents(int hoursAgo) {
 		CbApiCall api = new CbApiCall();
 		api.setMinLat(-90);
@@ -276,7 +265,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			msg.replyTo = mMessenger;
 			mService.send(msg);
 		} catch (RemoteException e) {
-			//e.printStackTrace();
+			log("widget ask for local recents failed, " + e.getMessage());
 		}
 
 	}
@@ -309,7 +298,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 			
 		}
 		
-		startListening();
+		
 		update(intent,0.1);
 		
 		super.onStart(intent, startId);
@@ -319,24 +308,7 @@ public class WidgetButtonService extends Service implements SensorEventListener 
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		switch (event.sensor.getType()) {
-		case Sensor.TYPE_PRESSURE: 
-			mReading = event.values[0];
-			log("widget sensor changed " + mReading + " and unregistering");
-			update(new Intent(), mReading);
-			sm.unregisterListener(this);
-			break;
-	    }
-	}
+	
 
 	// Log data to SD card for debug purposes.
 	// To enable logging, ensure the Manifest allows writing to SD card.

@@ -6,20 +6,16 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 public class WidgetProvider extends AppWidgetProvider {
 
 	Context mContext;
 	SensorManager sm;
-	public static String ACTION_SUBMIT_AND_UPDATE = "SubmitAndUpdate";
-	public static String ACTION_UPDATEUI = "UpdateUI";
-	public static String ACTION_SUBMIT_SINGLE = "SubmitSingle";
+	public static String ACTION_SUBMIT_AND_UPDATE = "ca.cumulonimbus.barometernetwork.SubmitAndUpdate";
+	public static String ACTION_UPDATEUI = "ca.cumulonimbus.barometernetwork.UpdateUI";
+	public static String ACTION_SUBMIT_SINGLE = "ca.cumulonimbus.barometernetwork.SubmitSingle";
 	
 	
 	double mReading = 0.0;
