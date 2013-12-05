@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0401052"
-    android:versionName="4.1.5BETA" >
+    android:versionCode="0401062"
+    android:versionName="4.1.6BETA" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -161,7 +161,6 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_AND_UPDATE" />
-                <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
             </intent-filter>
 
             <meta-data
@@ -193,12 +192,6 @@
                 </action>
             </intent-filter>
         </receiver>
-
-        <service
-            android:name="ca.cumulonimbus.barometernetwork.SubmitReadingService"
-            android:enabled="true" >
-            <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_SINGLE" />
-        </service>
         <service
             android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
             android:enabled="true" >
