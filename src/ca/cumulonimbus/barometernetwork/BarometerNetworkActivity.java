@@ -1502,7 +1502,7 @@ public class BarometerNetworkActivity extends Activity implements
 			makeGlobalMapCall();
 			makeGlobalConditionsMapCall();
 			sendChangeNotification();
-			sendNewSettings();
+			getStoredPreferences();
 		}
 
 		/**
@@ -2633,6 +2633,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void sendNewSettings() {
+		log("app sending new settings");
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_SET_SETTINGS,
 					activeSettings);
@@ -2640,6 +2641,7 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
+				log("app can't send new settings, remote exception " + e.getMessage());
 				// e.printStackTrace();
 			}
 		} else {
