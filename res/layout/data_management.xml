@@ -1,122 +1,123 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:padding="15dip" >
-
-    <TextView
-        android:id="@+id/textMyData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="My Data"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textMyDataDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="You have recorded and stored..."
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp" >
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="15dip" >
 
-        <Button
-            android:id="@+id/buttonExportMyData"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless"
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/textMyData"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".49"
             android:padding="5dp"
-            android:text="Export my data"
-            android:textColor="@android:color/black" />
+            android:text="My Data"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <View
-            android:layout_width="1dip"
-            android:layout_height="fill_parent"
-            android:background="#888888"
-            android:padding="10dip" />
-
-        <Button
-            android:id="@+id/buttonClearMyData"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless"
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/textMyDataDescription"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".49"
             android:padding="5dp"
-            android:text="Clear my data"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
+            android:text="You have recorded and stored..."
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-    <TextView
-        android:id="@+id/textDataCache"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="Data Cache"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/textDataCacheDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="You have cached..."
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/buttonClearCache"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:text="Clear data cache"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:padding="5dp" >
 
-    
-    <TextView
-        android:id="@+id/textAPIAccess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="Live API"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-    
-    
-    <TextView
-        android:id="@+id/textAPIDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:text="Our live, raw data is available to researchers and to the public. Learn more: "
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-    
-    
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+            <Button
+                android:id="@+id/buttonExportMyData"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".49"
+                android:padding="5dp"
+                android:text="Export my data"
+                android:textColor="@android:color/black" />
 
-        <Button
-            android:id="@+id/buttonDataAccess"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless"
-            android:layout_width="fill_parent"
+            <View
+                android:layout_width="1dip"
+                android:layout_height="fill_parent"
+                android:background="#888888"
+                android:padding="10dip" />
+
+            <Button
+                android:id="@+id/buttonClearMyData"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".49"
+                android:padding="5dp"
+                android:text="Clear my data"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textDataCache"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".5"
             android:padding="5dp"
-            android:text="Live API Access"
-            android:textColor="@android:color/black" />
-    </LinearLayout>
+            android:text="Data Cache"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/textDataCacheDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="You have cached..."
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/buttonClearCache"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:text="Clear data cache"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textAPIAccess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Live API"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/textAPIDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="Our live, raw data is available to researchers and to the public. Learn more: "
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/buttonDataAccess"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:padding="5dp"
+                android:text="Live API Access"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
