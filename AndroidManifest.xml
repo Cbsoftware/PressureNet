@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0401062"
-    android:versionName="4.1.6BETA" >
+    android:versionCode="0401063"
+    android:versionName="4.1.6RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -154,6 +154,9 @@
             <intent-filter>
                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
 				<action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
+				<action android:name="ca.cumulonimbus.pressurenetsdk.CONDITION_SENT_TOAST" />
+				<action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_SENT_TOAST" />
+				
             </intent-filter>
         </receiver>
 
