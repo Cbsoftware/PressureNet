@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -29,6 +31,18 @@ public class SearchLocationsActivity extends ListActivity {
 		finish();
 	}
 
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

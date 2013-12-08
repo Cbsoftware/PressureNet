@@ -15,10 +15,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
@@ -26,6 +28,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,6 +41,7 @@ import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.SunLocation;
 
@@ -108,6 +112,22 @@ public class CurrentConditionsActivity extends Activity {
 	boolean mBound;
 	Messenger mService = null;
 	
+	private long lastConditionsSubmit = 0;
+
+	private boolean sending = false;
+	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);
+		super.onStop();
+	}
+	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {	
 		log("currentconditions onconfig changed");
@@ -176,6 +196,85 @@ public class CurrentConditionsActivity extends Activity {
     	return nvp;
     }
     
+	/**
+	 * Moon phase info
+	 */
+	private int getMoonPhaseIndex() {
+		MoonPhase mp = new MoonPhase(Calendar.getInstance());
+		return mp.getPhaseIndex();
+	}
+    
+	public void pickAndSetMoonIcon(boolean on) {
+
+		int moonNumber = getMoonPhaseIndex() + 1;
+		
+		switch(moonNumber) {
+		case 1:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon1);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon1);
+			}
+			break;
+		case 2:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+			break;
+		case 3:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon3);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon3);
+			}
+			break;
+		case 4:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon4);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon4);
+			}
+			break;
+		case 5:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon5);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon5);
+			}
+			break;
+		case 6:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon6);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon6);
+			}
+			break;
+		case 7:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon7);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon7);
+			}
+			break;
+		case 8:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon8);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon8);
+			}
+			break;
+		default:
+			if(on) {
+				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
+			} else {
+				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
+			}
+			break;
+		}
+	}
+	
     /** 
      * Choose icon between sun and moon depending on daytimes
      * and on/off status. 
@@ -190,12 +289,7 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		} else {
 			// set to Moon icon
-			// TODO: show moon icon depending on phase
-			if(on) {
-				buttonSunny.setImageResource(R.drawable.ic_wea_on_moon2);				
-			} else {
-				buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
-			}
+			pickAndSetMoonIcon(on);
 		}
 
     }
@@ -614,8 +708,22 @@ public class CurrentConditionsActivity extends Activity {
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				sending = true;
 				saveCondition();
 				sendCondition();
+				
+				updateWidget();
+				
+				// save the time
+				lastConditionsSubmit = System.currentTimeMillis();
+				
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putLong("lastConditionsSubmit", lastConditionsSubmit);
+				editor.commit();
+				
 				finish();
 			}
 		});
@@ -623,6 +731,10 @@ public class CurrentConditionsActivity extends Activity {
 		buttonCancelCondition.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				sending = false;
+				condition.setGeneral_condition("");
+				updateWidget();
+
 				finish();
 			}
 		});
@@ -965,10 +1077,24 @@ public class CurrentConditionsActivity extends Activity {
 			buttonSunny.setImageResource(R.drawable.ic_wea_sun);
 		} else {
 			// set to Moon icon
-			buttonSunny.setImageResource(R.drawable.ic_wea_moon2);
-			// TODO: show moon icon depending on phase
+			pickAndSetMoonIcon(false);
 		}
 		
+		if(getIntent().hasExtra("initial")) {
+			String state = getIntent().getStringExtra("initial");
+			if(state.equals("clear")) {
+				buttonSunny.performClick();
+			} else if(state.equals("fog")) {
+				buttonFoggy.performClick();
+			} else if(state.equals("cloud")) {
+				buttonCloudy.performClick();
+			} else if(state.equals("precip")) {
+				buttonPrecipitation.performClick();
+			} else if(state.equals("thunderstorm")) {
+				buttonThunderstorm.performClick();
+			}
+			updateWidget();
+		}
 		
 		// Set the initial state: Sunny, no wind
 		// Or guess from pressure data
@@ -1006,6 +1132,15 @@ public class CurrentConditionsActivity extends Activity {
 		return (nowHour >= sunriseHour) && (nowHour <= sunsetHour);
 	}
 	
+	private void updateWidget() {
+		Intent intent = new Intent(getApplicationContext(),ConditionsWidgetProvider.class);
+		intent.setAction(ConditionsWidgetProvider.ACTION_UPDATEUI); //"android.appwidget.action.APPWIDGET_UPDATE"
+		intent.putExtra("general_condition", condition.getGeneral_condition());
+		int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), ConditionsWidgetProvider.class));
+		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
+		sendBroadcast(intent);
+	}
+	
 	/**
 	 *  Log data to SD card for debug purposes.
 	 *  To enable logging, ensure the Manifest allows writing to SD card.
@@ -1027,13 +1162,17 @@ public class CurrentConditionsActivity extends Activity {
 	
     public void log(String text) {
     	if(PressureNETConfiguration.DEBUG_MODE) {
-    		logToFile(text);
+    		//logToFile(text);
     		System.out.println(text);
     	}
     }
 	
 	@Override
 	protected void onPause() {
+		if(!sending) {
+			condition.setGeneral_condition("");
+		}
+		updateWidget();
 		unBindCbService();
 		super.onPause();
 	}

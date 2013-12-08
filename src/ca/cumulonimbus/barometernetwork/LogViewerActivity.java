@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -19,6 +21,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -51,6 +54,7 @@ public class LogViewerActivity extends Activity {
 	Button sixHours;
 	Button oneDay;
 	Button oneWeek;
+	long hoursAgo;
 
 	private String preferenceUnit;
 	
@@ -196,8 +200,8 @@ public class LogViewerActivity extends Activity {
 		}
 	};
 
-	public void getRecents(long hoursAgo) {
-		
+	public void getRecents(long numHoursAgo) {
+		this.hoursAgo = numHoursAgo;
 		// disable buttons
 		oneHour = (Button) findViewById(R.id.buttonOneHour);
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
@@ -220,6 +224,29 @@ public class LogViewerActivity extends Activity {
 				// TODO: fix hack '1 week'
 				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", "1 week of data",true,true,null);
 			}
+			MessageSender message = new MessageSender();
+			message.execute("");
+		} else {
+			//log("error: not bound");
+		}
+	}
+	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
+	
+	private class MessageSender extends AsyncTask<String, Integer, Integer> {
+
+		@Override
+		protected Integer doInBackground(String... params) {
 			CbApiCall api = new CbApiCall();
 			api.setMinLat(-90);
 			api.setMaxLat(90);
@@ -237,12 +264,13 @@ public class LogViewerActivity extends Activity {
 			} catch (RemoteException e) {
 				//e.printStackTrace();
 			}
-		} else {
-			//log("error: not bound");
+			return null;
 		}
+		
+		
+		
 	}
 	
-
 	class DataTabsListener implements ActionBar.TabListener {
 		public Fragment fragment;
 

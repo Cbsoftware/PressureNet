@@ -3,28 +3,28 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_widget"
-    android:paddingBottom="@dimen/widget_margin"
-    android:paddingTop="@dimen/widget_margin" >
+    android:minWidth="120dp"
+    android:paddingBottom="3dp"
+    android:paddingTop="1dp" >
 
     <ImageButton
         android:id="@+id/widgetSmallSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="1dp"
         android:background="@null"
-        android:paddingBottom="2dp"
-        android:paddingLeft="4dp"
         android:src="@drawable/widget_button_drawable" />
 
     <ImageView
         android:id="@+id/widget_tendency_image_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignTop="@id/widgetSmallSubmitButton"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:paddingLeft="12dp"
+        android:paddingTop="2dp"
         android:clickable="true"
-        android:paddingRight="6dp"
-        android:paddingTop="6dp"
         android:src="@drawable/ic_widget_rising"
         android:visibility="gone" />
 
@@ -32,11 +32,8 @@
         android:id="@+id/widget_tendency_image_steady"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:clickable="true"
-        android:paddingRight="6dp"
-        android:paddingTop="6dp"
         android:src="@drawable/ic_widget_steady"
         android:visibility="gone" />
 
@@ -44,11 +41,10 @@
         android:id="@+id/widget_tendency_image_down"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/widgetSmallSubmitButton"
-        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/widgetSmallSubmitButton"
+        android:paddingLeft="12dp"
+        android:paddingBottom="2dp"
         android:clickable="true"
-        android:paddingBottom="6dp"
-        android:paddingRight="6dp"
         android:src="@drawable/ic_widget_falling"
         android:visibility="invisible" />
 

@@ -82,7 +82,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 	private void log(String message) {
 		if(PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
-			logToFile(message);
+			//logToFile(message);
 		}
 	}
 	

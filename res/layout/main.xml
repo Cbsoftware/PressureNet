@@ -154,25 +154,46 @@
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
         android:orientation="vertical"
-        android:paddingTop="5dp"
         android:visibility="gone" >
+        
+ 		<RelativeLayout
+	        android:id="@+id/layoutGraphButtons"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:visibility="gone">
 
-        <Spinner
-            android:id="@+id/spinnerChartTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/display_time_chart"
-            android:prompt="@string/chartTimeDisplay"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/textChartTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="4dp"
-            android:text="Last 12 hours"
-            android:visibility="gone" />
+	        <ImageButton
+	            android:id="@+id/buttonGoBackwards"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:enabled="true"
+	            android:layout_alignParentLeft="true"
+	            android:padding="4dp"
+	            android:src="@drawable/ic_menu_graph_back"
+	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
+	
+	        <TextView
+	            android:id="@+id/textChartTime"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:padding="4dp"
+	            android:text="Recent data (12h)"
+	            android:layout_centerInParent="true"
+	            />
+	
+	        <ImageButton
+	            android:id="@+id/buttonGoForwards"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:enabled="false"
+	            android:layout_alignParentRight="true"
+	            android:padding="4dp"
+	            android:src="@drawable/ic_menu_graph_forward"
+	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	            android:alpha=".5"/>
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -237,8 +258,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMinMapInfoText"
                 android:textSize="16sp" />
-            
-            
+
             <TextView
                 android:id="@+id/dataPointsValueMapInfoText"
                 android:layout_width="wrap_content"
@@ -246,6 +266,14 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/longitudeValueMinMapInfoText"
                 android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/checkSatellite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/dataPointsValueMapInfoText"
+                android:text="Satellite view" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -269,50 +297,21 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
-
+            
+            <Button
+	            android:id="@+id/buttonReloadGlobalData"
+	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:textColor="@android:color/black" 
+	            android:layout_alignParentBottom="true"
+	            android:layout_alignParentRight="true"
+	            android:paddingBottom="4dp"
+	            android:gravity="bottom"
+	            android:text="Reload global data"
+	            android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAnimationControlContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:visibility="gone" >
-
-        <LinearLayout
-            android:id="@+id/layoutTimeControls"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <ImageButton
-                android:id="@+id/buttonPlay"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_light_play"
-                android:textColor="@android:color/black" />
-
-            <SeekBar
-                android:id="@+id/seekBarTime"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:max="100" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/textAnimationInformation"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Loading animation data..."
-            android:textColor="@android:color/black" />
-    </LinearLayout>
-
     <LinearLayout
         android:id="@+id/layoutSensorInfo"
         android:layout_width="match_parent"

@@ -6,20 +6,16 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
-public class WidgetProvider extends AppWidgetProvider implements SensorEventListener {
+public class WidgetProvider extends AppWidgetProvider {
 
 	Context mContext;
 	SensorManager sm;
-	public static String ACTION_SUBMIT_AND_UPDATE = "SubmitAndUpdate";
-	public static String ACTION_UPDATEUI = "UpdateUI";
-	public static String ACTION_SUBMIT_SINGLE = "SubmitSingle";
+	public static String ACTION_SUBMIT_AND_UPDATE = "ca.cumulonimbus.barometernetwork.SubmitAndUpdate";
+	public static String ACTION_UPDATEUI = "ca.cumulonimbus.barometernetwork.UpdateUI";
+	public static String ACTION_SUBMIT_SINGLE = "ca.cumulonimbus.barometernetwork.SubmitSingle";
 	
 	
 	double mReading = 0.0;
@@ -67,60 +63,11 @@ public class WidgetProvider extends AppWidgetProvider implements SensorEventList
 		
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
-
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	// Text tap
 	public void onClick() {
 		
 	}
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		String msg = "null";
-		mContext = context;
-		try {
-			msg = intent.getStringExtra("msg");
-		} catch(NullPointerException e) {
-			// eh
-		}
-		if(ACTION_SUBMIT_AND_UPDATE.equals(intent.getAction())) {
-			// Start by starting up the barometer
-			boolean running = false;
-			try {
-		    	sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-		    	Sensor bar = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
-		    	
-		    	if(bar!=null) {
-		        	running = sm.registerListener(this, bar, SensorManager.SENSOR_DELAY_NORMAL);
-		    	}
-	    	} catch(Exception e) {
-	    		Toast.makeText(context, "error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-	    	}
-		} 
-		super.onReceive(context, intent);
-	}
-
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		switch (event.sensor.getType()) {
-		case Sensor.TYPE_PRESSURE: 
-			mReading = event.values[0];
-			
-			Intent updateUI = new Intent(mContext, WidgetProvider.class);
-			updateUI.setAction(ACTION_UPDATEUI);
-			updateUI.putExtra("reading", mReading + "");
-			mContext.sendBroadcast(updateUI);
-			
-			sm.unregisterListener(this);
-
-		    break;
-	    }
-		
-	}
 	
 }

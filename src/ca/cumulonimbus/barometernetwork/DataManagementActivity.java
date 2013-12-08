@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -55,6 +57,18 @@ public class DataManagementActivity extends Activity {
 	
 	private String mAppDir = "";
 	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this); 
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);  
+		super.onStop();
+	}
+	
 	private void clearLocalCache() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
@@ -96,7 +110,7 @@ public class DataManagementActivity extends Activity {
 	public void log(String message) { 
 		if(PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
-			logToFile(message);
+			//logToFile(message);
 		}
 	}
 
@@ -359,8 +373,7 @@ public class DataManagementActivity extends Activity {
 				    } catch (Exception e) {
 				    	Toast.makeText(
 								getApplicationContext(),
-								"Error saving data."
-										+ recents.size(), Toast.LENGTH_LONG).show();	
+								"Couldn't save data", Toast.LENGTH_LONG).show();	
 				    }
 					
 					Toast.makeText(
@@ -371,7 +384,7 @@ public class DataManagementActivity extends Activity {
 				} else {
 					Toast.makeText(
 							getApplicationContext(),
-							"Error: Storage not available."
+							"Can't save data, storage not available"
 									+ recents.size(), Toast.LENGTH_LONG).show();					
 				}
 

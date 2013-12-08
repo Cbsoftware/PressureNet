@@ -119,7 +119,7 @@ public class Chart {
 		// " data points");
 
 		if (obsList.size() < 2) {
-			Toast.makeText(context, "There is no data to plot",
+			Toast.makeText(context, "There's no data to plot",
 					Toast.LENGTH_SHORT).show();
 		}
 
@@ -141,23 +141,53 @@ public class Chart {
 		long maxTime = System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7);
 
 		int i = 0;
-		double yMean = obsList.get(0).getObservationValue();
+		double yMean = 0;
 		double ySum = 0;
-		for (CbObservation obs : obsList) {
-			if (obs.getObservationValue() <= 0) {
-				i++;
-				log("chart; obs less than 0, continue loop");
-				continue; // TODO: fix hack
-			}
-			// if this value is very far away from the running mean,
-			// drop it and move on
-			double distance = Math.abs(yMean - obs.getObservationValue());
-			if (distance >= 300) {
-				i++;
-				log("obs is " + obs.getObservationValue() + ", dropping value");
-				continue;
-			}
+		
+		// TODO: There are too many loops through the data
+		// Use a faster, simpler way to remove outliers
 
+		// calculate simple statistics to improve chart display
+		// find the mean
+		for (CbObservation obs : obsList) {
+			ySum += obs.getObservationValue();
+			i++;
+		}
+		yMean = ySum / i;
+
+		// find standard deviation.
+		double yDSqSum = 0;
+		i = 0;
+		for(CbObservation obs : obsList) {
+			double distance = obs.getObservationValue() - yMean;
+			double dSquared = distance * distance;
+			yDSqSum += dSquared;
+			i++;
+		}
+		
+		double meanOfSquaredDist = yDSqSum / i;
+		double standardDeviation = Math.sqrt(meanOfSquaredDist);
+		log("sd is " + standardDeviation);
+		// remove outliers from the list
+		// (2 std away from the mean) 
+		double min = yMean - (standardDeviation*2);
+		double max = yMean + (standardDeviation*2);
+		ArrayList<CbObservation> toRemove = new ArrayList<CbObservation>();
+		for(CbObservation  obs : obsList) {
+			double v = obs.getObservationValue();
+			if( (v < min) || (v > max)) {
+				//log("removing " + v + " min " + min + " max " + max);
+				toRemove.add(obs);
+			}
+		}
+		
+		// filter values
+		obsList.removeAll(toRemove);
+		
+		i = 0;
+		for(CbObservation obs : obsList) {
+			xValues[i] = new Date(obs.getTime());
+			yValues[i] = obs.getObservationValue();
 			if (obs.getObservationValue() < minObservation) {
 				minObservation = obs.getObservationValue();
 			}
@@ -170,18 +200,10 @@ public class Chart {
 			if (obs.getTime() > maxTime) {
 				maxTime = obs.getTime();
 			}
-			xValues[i] = new Date(obs.getTime());
-			yValues[i] = obs.getObservationValue();
-
-			ySum += yValues[i];
 			i++;
 
-			// keep a running mean
-			yMean = ySum / i;
 		}
-
-		yMean = ySum / i;
-
+		
 		x.add(xValues);
 		values.add(yValues);
 
@@ -407,7 +429,7 @@ public class Chart {
 	public void log(String message) {
 		if (PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
-			logToFile(message);
+			//logToFile(message);
 		}
 	}
 

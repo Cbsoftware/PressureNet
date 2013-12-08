@@ -1,0 +1,70 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="12dp" >
+
+        <TextView
+            android:id="@+id/textWhatsNewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:padding="4dp"
+            android:text="pressureNET [VERSION]"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+
+        
+        <TextView
+            android:id="@+id/textNewFeatures"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textWhatsNewTitle"
+            android:padding="4dp"
+            android:text="NEW FEATURES"
+            android:textStyle="bold" />
+        
+        
+        <TextView
+            android:id="@+id/textWhatsNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textNewFeatures"
+            android:padding="4dp"
+            android:paddingTop="16dp"
+            android:text="• Current Conditions widget\n• Satellite view\n• Time controls for graphs\n• Nearby condition notifications"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/textNewSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textWhatsNew"
+            android:padding="4dp"
+            android:text="NEW SETTINGS"
+            android:textStyle="bold"/>
+        
+        <CheckBox
+            android:id="@+id/checkReceiveConditionNotifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textNewSettings"
+            android:paddingTop="6dp"
+            android:text="Receive conditions notifications"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/buttonDone"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/checkReceiveConditionNotifications"
+            android:paddingTop="4dp"
+            android:text="Done"
+            android:textColor="#000000"
+            android:textSize="20dp" />
+    </RelativeLayout>
+
+</ScrollView>
