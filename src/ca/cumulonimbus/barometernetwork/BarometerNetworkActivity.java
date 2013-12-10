@@ -869,10 +869,14 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				if (isChecked) {
-					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-				} else {
-					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				try {
+					if (isChecked) {
+						mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+					} else {
+						mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+					}
+				} catch(NullPointerException npe) {
+					// no map
 				}
 			}
 		});
