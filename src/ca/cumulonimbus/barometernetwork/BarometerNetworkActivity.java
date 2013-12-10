@@ -2472,6 +2472,11 @@ public class BarometerNetworkActivity extends Activity implements
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
+		if(!displayPressure) {
+			return;
+		}
+	
+		
 		int totalAllowed = 30;
 		int currentObs = 0;
 		
@@ -2483,7 +2488,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if(listRecents!=null) {
 			if (listRecents.size() > 0) {
-	
 				try {
 					if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
 						log("adding data to map too frequently, bailing");
