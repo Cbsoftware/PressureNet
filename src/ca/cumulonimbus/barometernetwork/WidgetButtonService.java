@@ -137,7 +137,17 @@ public class WidgetButtonService extends Service {
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
-				mReading = recents.get(recents.size() - 1).getObservationValue();
+				if(recents == null) {
+					break;
+				}
+				if(recents.size() == 0) {
+					break;
+				}
+				try {
+					mReading = recents.get(recents.size() - 1).getObservationValue();
+				} catch (NullPointerException npe ) {
+					break;
+				}
 				log("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
 				DecimalFormat df = new DecimalFormat("####.00");
 				String message = "0.00";
