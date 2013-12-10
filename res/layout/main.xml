@@ -326,12 +326,10 @@
                 android:id="@+id/checkConditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/buttonReloadGlobalData"
                 android:text="Show conditions"
                 android:checked="true"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
 	             />
         </RelativeLayout>
     </LinearLayout>
