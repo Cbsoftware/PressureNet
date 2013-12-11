@@ -19,7 +19,6 @@ public class WhatsNewActivity extends Activity {
 
 	TextView pressureNETVersion;
 	Button done;
-	CheckBox enableConditionNotifications;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +27,8 @@ public class WhatsNewActivity extends Activity {
 		String versionName = "";
 		pressureNETVersion = (TextView) findViewById(R.id.textWhatsNewTitle);
 		done = (Button) findViewById(R.id.buttonDone);
-		enableConditionNotifications = (CheckBox) findViewById(R.id.checkReceiveConditionNotifications);
 		
 		SharedPreferences prefs  = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		boolean checkedNotifs = prefs.getBoolean("send_condition_notifications", false);
-		enableConditionNotifications.setChecked(checkedNotifs);
 		
 		try {
 			versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
@@ -49,17 +45,6 @@ public class WhatsNewActivity extends Activity {
 			}
 		});
 		
-		enableConditionNotifications.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-				SharedPreferences.Editor editor = sharedPreferences.edit();
-				editor.putBoolean("send_condition_notifications", isChecked);
-				editor.commit();
-			
-			}
-		});
 	}
 
 	@Override

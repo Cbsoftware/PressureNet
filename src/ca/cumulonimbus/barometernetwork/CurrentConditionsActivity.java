@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -1061,6 +1062,12 @@ public class CurrentConditionsActivity extends Activity {
 			condition.setTime(Calendar.getInstance().getTimeInMillis());
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
+	    	if(mLatitude == 0.0) {
+				Toast.makeText(getApplicationContext(), "No location available,  can't send condition", Toast.LENGTH_SHORT).show();
+				finish();
+				
+	    	}
+	    	
 	    	// cancel any notifications?
 	    	if(intent.hasExtra("cancelNotification")) {
 		    	if(intent.getBooleanExtra("cancelNotification",false)) {
@@ -1107,6 +1114,14 @@ public class CurrentConditionsActivity extends Activity {
 		//condition.setWindy(0 + "");
 	}
 	
+	
+	
+	@Override
+	protected void onDestroy() {
+		unBindCbService();
+		super.onDestroy();
+	}
+
 	private void cancelNotification(int notifyId) {
 	    String ns = Context.NOTIFICATION_SERVICE;
 	    NotificationManager nMgr = (NotificationManager) getSystemService(ns);

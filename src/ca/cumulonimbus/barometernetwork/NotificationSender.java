@@ -315,38 +315,42 @@ public class NotificationSender extends BroadcastReceiver {
 	 */
 	private int getResIdForClearIcon(CbCurrentCondition condition) {
 		int moonNumber = getMoonPhaseIndex();
-		int sunDrawable = R.drawable.ic_wea_col_sun;
-		if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-				.getLatitude(), condition.getLocation().getLongitude())) {
-			switch (moonNumber) {
-			case 1:
-				sunDrawable = R.drawable.ic_wea_col_moon1;
-				break;
-			case 2:
-				sunDrawable = R.drawable.ic_wea_col_moon2;
-				break;
-			case 3:
-				sunDrawable = R.drawable.ic_wea_col_moon3;
-				break;
-			case 4:
-				sunDrawable = R.drawable.ic_wea_col_moon4;
-				break;
-			case 5:
-				sunDrawable = R.drawable.ic_wea_col_moon5;
-				break;
-			case 6:
-				sunDrawable = R.drawable.ic_wea_col_moon6;
-				break;
-			case 7:
-				sunDrawable = R.drawable.ic_wea_col_moon7;
-				break;
-			case 8:
-				sunDrawable = R.drawable.ic_wea_col_moon8;
-				break;
-			default:
-				sunDrawable = R.drawable.ic_wea_col_moon2;
-				break;
+		int sunDrawable = R.drawable.ic_wea_on_sun;
+		try {
+			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
+					.getLatitude(), condition.getLocation().getLongitude())) {
+				switch (moonNumber) {
+				case 1:
+					sunDrawable = R.drawable.ic_wea_on_moon1;
+					break;
+				case 2:
+					sunDrawable = R.drawable.ic_wea_on_moon2;
+					break;
+				case 3:
+					sunDrawable = R.drawable.ic_wea_on_moon3;
+					break;
+				case 4:
+					sunDrawable = R.drawable.ic_wea_on_moon4;
+					break;
+				case 5:
+					sunDrawable = R.drawable.ic_wea_on_moon5;
+					break;
+				case 6:
+					sunDrawable = R.drawable.ic_wea_on_moon6;
+					break;
+				case 7:
+					sunDrawable = R.drawable.ic_wea_on_moon7;
+					break;
+				case 8:
+					sunDrawable = R.drawable.ic_wea_on_moon8;
+					break;
+				default:
+					sunDrawable = R.drawable.ic_wea_on_moon2;
+					break;
+				}
 			}
+		} catch (NullPointerException npe) {
+			
 		}
 		return sunDrawable;
 	}

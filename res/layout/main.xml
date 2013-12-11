@@ -274,6 +274,16 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/dataPointsValueMapInfoText"
                 android:text="Satellite view" />
+            
+             <CheckBox
+                android:id="@+id/checkPressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/checkSatellite"
+                android:text="Show pressure data"
+                android:checked="true" />
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -304,12 +314,23 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:textColor="@android:color/black" 
-	            android:layout_alignParentBottom="true"
 	            android:layout_alignParentRight="true"
 	            android:paddingBottom="4dp"
-	            android:gravity="bottom"
 	            android:text="Reload global data"
-	            android:textSize="16sp" />
+	            android:textSize="16sp"
+	            android:gravity="bottom"
+	            android:layout_below="@id/longitudeValueMaxMapInfoText" />
+            
+              
+             <CheckBox
+                android:id="@+id/checkConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show conditions"
+                android:checked="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+	             />
         </RelativeLayout>
     </LinearLayout>
     <LinearLayout

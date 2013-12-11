@@ -137,7 +137,22 @@ public class WidgetButtonService extends Service {
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
-				mReading = recents.get(recents.size() - 1).getObservationValue();
+				RemoteViews remoteView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.small_widget_layout);
+				if(recents == null) {
+					break;
+				}
+				if(recents.size() == 0) {
+					remoteView.setTextViewText(R.id.widgetSmallText, "No data");
+					AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+					ComponentName component = new ComponentName(getApplicationContext().getPackageName(), WidgetProvider.class.getName());    
+					appWidgetManager.updateAppWidget(component, remoteView);
+					break;
+				}
+				try {
+					mReading = recents.get(recents.size() - 1).getObservationValue();
+				} catch (NullPointerException npe ) {
+					break;
+				}
 				log("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
 				DecimalFormat df = new DecimalFormat("####.00");
 				String message = "0.00";
@@ -153,7 +168,7 @@ public class WidgetButtonService extends Service {
 				}
 				
 				try {
-					RemoteViews remoteView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.small_widget_layout);
+					
 					// TODO: fix ugly localization hack
 					if(message.contains(",")) {
 						message = message.replace(",", ".");
@@ -172,8 +187,7 @@ public class WidgetButtonService extends Service {
 			    		toPrint = toPrint.replace(" ", "\n");
 						
 			    		sendSingleObservation();
-			    		//Toast.makeText(getApplicationContext(), "Submitting Barometer Reading", Toast.LENGTH_SHORT).show();
-						
+			    		
 			    		remoteView.setTextViewText(R.id.widgetSmallText, toPrint);
 						
 						try {
@@ -211,6 +225,7 @@ public class WidgetButtonService extends Service {
 						appWidgetManager.updateAppWidget(component, remoteView);
 					} else {
 						//log("widget value is 0.0, didn't update");
+						
 					}
 				
 				} catch(Exception e) {
@@ -273,7 +288,7 @@ public class WidgetButtonService extends Service {
 	public void update(Intent intent, double reading) {
 		log("widget binding to service (update call, reading " + reading + ")");
 		mIntent = intent;
-		bindCbService(); 
+		bindCbService();
 		// TODO: clean this up, (sometimes runs twice?)
 		try {
 			askForLocalRecents(3);

@@ -179,6 +179,9 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private Button reloadGobalData;
 	
+	private CheckBox checkShowPressure;
+	private CheckBox checkShowConditions;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -248,6 +251,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
 	
 	ChartController charts = new ChartController();
+	
+	private boolean displayPressure = true;
+	private boolean displayConditions = true;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -829,8 +835,31 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		reloadGobalData = (Button) findViewById(R.id.buttonReloadGlobalData);
 		
+		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
+		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		checkShowPressure.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+				displayPressure = isChecked;
+				mMap.clear();
+				loadRecents();
+			}
+		});
+		
+		checkShowConditions.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+				displayConditions = isChecked;
+				mMap.clear();
+				loadRecents();
+			}
+		});
+		
 		reloadGobalData.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -869,10 +898,14 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				if (isChecked) {
-					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-				} else {
-					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				try {
+					if (isChecked) {
+						mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+					} else {
+						mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+					}
+				} catch(NullPointerException npe) {
+					// no map
 				}
 			}
 		});
@@ -2426,6 +2459,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 			currentConditionRecents.clear();
+			conditionsMarkers.clear();
 		} else {
 			log("addDatatomap conditions recents is null");
 		}
@@ -2435,10 +2469,14 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
-
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
+		if(!displayPressure) {
+			return;
+		}
+	
+		
 		int totalAllowed = 30;
 		int currentObs = 0;
 		
@@ -2450,7 +2488,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if(listRecents!=null) {
 			if (listRecents.size() > 0) {
-	
 				try {
 					if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
 						log("adding data to map too frequently, bailing");
@@ -2703,8 +2740,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void loadRecents() {
 		CbApiCall api = buildMapAPICall(1);
-		askForRecents(api);
-		askForCurrentConditionRecents(api);
+		if(displayPressure) {
+			askForRecents(api);
+		}
+		if(displayConditions) {
+			askForCurrentConditionRecents(api);
+		}
 	}
 
 	// Stop listening to the barometer when our app is paused.
