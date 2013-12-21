@@ -64,6 +64,17 @@
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
+    
+    <ImageButton
+        android:id="@+id/buttonMyLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutSearchControls"
+        android:layout_alignRight="@id/layoutSearchControls"
+        android:src="@drawable/ic_menu_light_location"
+        android:background="#CCFFFFFF"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+        android:paddingTop="12dp"/>
 
     <ProgressBar
         android:id="@+id/progressBarAPICalls"

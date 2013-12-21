@@ -182,6 +182,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private CheckBox checkShowPressure;
 	private CheckBox checkShowConditions;
 	
+	private ImageButton buttonMyLocation;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 
@@ -664,7 +666,14 @@ public class BarometerNetworkActivity extends Activity implements
 				.getMap();
 
 		// Set default coordinates (centered around the user's location)
-
+		goToMyLocation();
+	}
+	
+	/**
+	 * Use the recent network location to go to the user's location
+	 * on the map
+	 */
+	public void goToMyLocation() {
 		try {
 			LocationManager lm = (LocationManager) this
 					.getSystemService(Context.LOCATION_SERVICE);
@@ -825,7 +834,8 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
-
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+		
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
 		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
@@ -839,6 +849,14 @@ public class BarometerNetworkActivity extends Activity implements
 		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
+		
+		buttonMyLocation.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				goToMyLocation();
+			}
+		});
 
 		checkShowPressure.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
