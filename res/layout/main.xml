@@ -64,17 +64,17 @@
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
-    
+
     <ImageButton
         android:id="@+id/buttonMyLocation"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/layoutSearchControls"
         android:layout_alignRight="@id/layoutSearchControls"
-        android:src="@drawable/ic_menu_light_location"
+        android:layout_below="@id/layoutSearchControls"
         android:background="#CCFFFFFF"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-        android:paddingTop="12dp"/>
+        android:paddingTop="12dp"
+        android:src="@drawable/ic_menu_light_location" />
 
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
@@ -112,25 +112,6 @@
             android:padding="3dip" />
 
         <Button
-            android:id="@+id/buttonAnimationMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".24"
-            android:text="Animation"
-            android:textColor="@android:color/black"
-            android:visibility="gone" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip"
-            android:visibility="gone" />
-
-        <Button
             android:id="@+id/buttonGraphMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
@@ -156,6 +137,23 @@
             android:layout_weight=".24"
             android:text="Sensors"
             android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+
+        <Button
+            android:id="@+id/buttonAnimationMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".24"
+            android:text="Animate"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
     <LinearLayout
@@ -166,44 +164,43 @@
         android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:visibility="gone" >
-        
- 		<RelativeLayout
-	        android:id="@+id/layoutGraphButtons"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="horizontal"
-	        android:visibility="gone">
 
-	        <ImageButton
-	            android:id="@+id/buttonGoBackwards"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:enabled="true"
-	            android:layout_alignParentLeft="true"
-	            android:padding="4dp"
-	            android:src="@drawable/ic_menu_graph_back"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
-	
-	        <TextView
-	            android:id="@+id/textChartTime"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_gravity="center"
-	            android:padding="4dp"
-	            android:text="Recent data (12h)"
-	            android:layout_centerInParent="true"
-	            />
-	
-	        <ImageButton
-	            android:id="@+id/buttonGoForwards"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:enabled="false"
-	            android:layout_alignParentRight="true"
-	            android:padding="4dp"
-	            android:src="@drawable/ic_menu_graph_forward"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	            android:alpha=".5"/>
+        <RelativeLayout
+            android:id="@+id/layoutGraphButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <ImageButton
+                android:id="@+id/buttonGoBackwards"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:enabled="true"
+                android:padding="4dp"
+                android:src="@drawable/ic_menu_graph_back" />
+
+            <TextView
+                android:id="@+id/textChartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:padding="4dp"
+                android:text="Recent data (12h)" />
+
+            <ImageButton
+                android:id="@+id/buttonGoForwards"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:alpha=".5"
+                android:enabled="false"
+                android:padding="4dp"
+                android:src="@drawable/ic_menu_graph_forward" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -285,16 +282,15 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/dataPointsValueMapInfoText"
                 android:text="Satellite view" />
-            
-             <CheckBox
+
+            <CheckBox
                 android:id="@+id/checkPressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/checkSatellite"
-                android:text="Show pressure data"
-                android:checked="true" />
-
+                android:checked="true"
+                android:text="Show pressure data" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -318,32 +314,31 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
-            
+
             <Button
-	            android:id="@+id/buttonReloadGlobalData"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:textColor="@android:color/black" 
-	            android:layout_alignParentRight="true"
-	            android:paddingBottom="4dp"
-	            android:text="Reload global data"
-	            android:textSize="16sp"
-	            android:gravity="bottom"
-	            android:layout_below="@id/longitudeValueMaxMapInfoText" />
-            
-              
-             <CheckBox
+                android:id="@+id/buttonReloadGlobalData"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/longitudeValueMaxMapInfoText"
+                android:gravity="bottom"
+                android:paddingBottom="4dp"
+                android:text="Reload global data"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <CheckBox
                 android:id="@+id/checkConditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Show conditions"
-                android:checked="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-	             />
+                android:layout_alignParentRight="true"
+                android:checked="true"
+                android:text="Show conditions" />
         </RelativeLayout>
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/layoutSensorInfo"
         android:layout_width="match_parent"
@@ -379,6 +374,30 @@
             android:drawableLeft="@drawable/ic_menu_light_hygrometer"
             android:text="No hygrometer detected"
             android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#CCFFFFFF"
+        android:orientation="horizontal"
+        android:paddingBottom="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:visibility="gone" >
+        
+         <Button
+            android:id="@+id/imageButtonPlay"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_menu_light_play"
+            android:textColor="@android:color/black" />
+        
+        
     </LinearLayout>
 
 </RelativeLayout>

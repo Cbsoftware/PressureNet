@@ -157,11 +157,13 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button mapMode;
 	private Button graphMode;
 	private Button sensorMode;
+	private Button animationMode;
 
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
-
+	private LinearLayout layoutAnimation;
+	
 	private TextView mapLatitudeMinText;
 	private TextView mapLongitudeMinText;
 	private TextView mapLatitudeMaxText;
@@ -828,11 +830,13 @@ public class BarometerNetworkActivity extends Activity implements
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
 		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
+		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
-
+		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
+		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 		
@@ -972,12 +976,14 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					// buttonChartTimeInfo.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
 
 					removeChartFromLayout();
 
@@ -1022,10 +1028,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.BOLD);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
 				}
 
 			}
@@ -1050,15 +1058,47 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					layoutGraphButtons.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.BOLD);
-
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					
 				}
 
+			}
+		});
+		
+		animationMode.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (activeMode.equals("animation")) {
+					int visible = layoutAnimation.getVisibility();
+					if (visible == View.VISIBLE) {
+						layoutAnimation.setVisibility(View.GONE);
+					} else {
+						layoutAnimation.setVisibility(View.VISIBLE);
+					}
+				} else {
+					activeMode = "animation";
+				
+					// UI switch
+					layoutGraph.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.VISIBLE);
+					
+					
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.BOLD);
+				}
 			}
 		});
 
@@ -1125,7 +1165,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 						CbApiCall api = buildSearchLocationAPICall(loc);
 						makeAPICall(api);
-
+						
 						CbApiCall conditionApi = buildMapCurrentConditionsCall(2);
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
@@ -1354,7 +1394,7 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = buildMapAPICall(.5);
 					askForRecents(api);
 
-					CbApiCall apiConditions = buildMapCurrentConditionsCall(.5);
+					CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
 					askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
 					CbApiCall api = charts.getActiveChartCacheCall();
@@ -1398,7 +1438,7 @@ public class BarometerNetworkActivity extends Activity implements
 					Toast.makeText(getApplicationContext(),
 							"Sent " + toPrint, Toast.LENGTH_SHORT).show();
 				}
-				askForCurrentConditionRecents(buildMapCurrentConditionsCall(1));
+				askForCurrentConditionRecents(buildMapCurrentConditionsCall(2));
 				break;
 			default:
 				log("received default message");
