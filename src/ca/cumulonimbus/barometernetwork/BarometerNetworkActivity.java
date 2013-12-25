@@ -266,7 +266,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
 	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
-	private ArrayList<Marker> animationMarkers = new ArrayList<Marker>();
 	
 	ChartController charts = new ChartController();
 	
@@ -659,6 +658,8 @@ public class BarometerNetworkActivity extends Activity implements
 						} else if (activeMode.equals("sensors")) {
 							mapMode.performClick();
 							layoutMapInfo.setVisibility(View.GONE);
+						} else if (activeMode.equals("animation")) {
+							conditionAnimationRecents.clear();
 						}
 	
 						updateMapInfoText();
@@ -1112,6 +1113,12 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					activeMode = "animation";
 				
+					if(mMap != null) {
+						mMap.clear();
+
+						
+					}
+					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
@@ -1217,6 +1224,10 @@ public class BarometerNetworkActivity extends Activity implements
 		if(mMap == null) {
 			return;
 		}
+		conditionAnimationRecents.clear();
+		animationMarkerOptions.clear();
+		animationStep = 0;
+		animationProgress.setProgress(0);
 		
 		makeCurrentConditionsAPICall(buildMapCurrentConditionsCall(12));
 	}
@@ -1274,9 +1285,9 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void displayAnimationFrame(int frame) {
-		int e = 5;
 		Iterator<CbCurrentCondition> conditionIterator = conditionAnimationRecents.iterator();
 		int num = 0;
+		int e = 10;
 		mMap.clear();
 		while(conditionIterator.hasNext()) {
 			CbCurrentCondition condition = conditionIterator.next();
@@ -1295,7 +1306,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			animationProgress.setProgress(animationStep);
 			animationStep++;
-			if(animationStep< 100) {
+			if(animationStep < 100) {
 				animationHandler.postDelayed(this, 50);
 			} else {
 				conditionAnimationRecents.clear();
