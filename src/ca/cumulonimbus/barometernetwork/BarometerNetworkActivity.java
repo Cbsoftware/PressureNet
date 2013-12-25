@@ -1304,14 +1304,21 @@ public class BarometerNetworkActivity extends Activity implements
 	private class AnimationRunner implements Runnable {
 		
 		public void run() {
-			displayAnimationFrame(animationStep);
-			
-			animationProgress.setProgress(animationStep);
-			animationStep++;
-			if(animationStep < 100) {
-				animationHandler.postDelayed(this, 50);
+			if(activeMode.equals("animation")) {
+				displayAnimationFrame(animationStep);
+				
+				animationProgress.setProgress(animationStep);
+				animationStep++;
+				if(animationStep < 100) {
+					animationHandler.postDelayed(this, 50);
+				} else {
+					conditionAnimationRecents.clear();
+					imageButtonPlay.setEnabled(true);
+					imageButtonPlay.setAlpha(1F);
+				}
 			} else {
-				conditionAnimationRecents.clear();
+				animationStep = 0;
+				animationProgress.setProgress(animationStep);
 				imageButtonPlay.setEnabled(true);
 				imageButtonPlay.setAlpha(1F);
 			}
@@ -2210,6 +2217,15 @@ public class BarometerNetworkActivity extends Activity implements
 
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources()
 				.getDrawable(R.drawable.bg_wea_square));
+		
+		if (CurrentConditionsActivity.isDaytime(condition.getLocation()
+				.getLatitude(), condition.getLocation().getLongitude())) {
+			weatherBackgroundDrawable = resizeDrawable(this.getResources()
+					.getDrawable(R.drawable.bg_wea_day));
+		} else {
+			weatherBackgroundDrawable = resizeDrawable(this.getResources()
+					.getDrawable(R.drawable.bg_wea_night));
+		}
 
 		int moonNumber = getMoonPhaseIndex() + 1;
 
