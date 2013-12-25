@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -264,6 +265,8 @@ public class BarometerNetworkActivity extends Activity implements
 			"Waning crescent" }; // 7
 
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
+	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
+	private ArrayList<Marker> animationMarkers = new ArrayList<Marker>();
 	
 	ChartController charts = new ChartController();
 	
@@ -1246,6 +1249,24 @@ public class BarometerNetworkActivity extends Activity implements
 			int frame = (int) frameNumber;
 			condition.setAnimateGroupNumber(frame);
 			log("setting condition frame " + frame);
+			
+			LatLng point = new LatLng(
+					condition.getLocation().getLatitude(), condition
+							.getLocation().getLongitude());
+			log("getting layer drawable for condition " + condition.getGeneral_condition());
+			LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+					null);
+			if(drLayer==null) {
+				log("drlayer null, next!");
+				continue;
+			}
+			Drawable draw = getSingleDrawable(drLayer);
+			
+			Bitmap image = drawableToBitmap(draw, null);
+			MarkerOptions thisMarkerOptions = new MarkerOptions().position(
+					point).icon(BitmapDescriptorFactory.fromBitmap(image));
+			
+			animationMarkerOptions.add(thisMarkerOptions);
 		}
 		
 		animationHandler.post(new AnimationRunner());
@@ -1253,39 +1274,32 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void displayAnimationFrame(int frame) {
-		for(CbCurrentCondition condition : conditionAnimationRecents) {
-			if(condition.getAnimateGroupNumber() == frame) {
-				LatLng point = new LatLng(
-						condition.getLocation().getLatitude(), condition
-								.getLocation().getLongitude());
-				log("getting layer drawable for condition " + condition.getGeneral_condition());
-				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
-						null);
-				if(drLayer==null) {
-					log("drlayer null, next!");
-					continue;
-				}
-				Drawable draw = getSingleDrawable(drLayer);
-				
-				Bitmap image = drawableToBitmap(draw, null);
-	
-				Marker marker = mMap.addMarker(new MarkerOptions().position(
-						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
-				marker.showInfoWindow();
-				
-			}
+		int e = 5;
+		Iterator<CbCurrentCondition> conditionIterator = conditionAnimationRecents.iterator();
+		int num = 0;
+		mMap.clear();
+		while(conditionIterator.hasNext()) {
+			CbCurrentCondition condition = conditionIterator.next();
+			MarkerOptions markerOpts = animationMarkerOptions.get(num);
+			if(Math.abs(condition.getAnimateGroupNumber() - frame) < e) {
+				mMap.addMarker(markerOpts);
+			} 
+			num++;
 		}
 	}
 	
 	private class AnimationRunner implements Runnable {
 		
 		public void run() {
-			mMap.clear();
 			displayAnimationFrame(animationStep);
 			
 			animationProgress.setProgress(animationStep);
 			animationStep++;
-			animationHandler.postDelayed(this, 50);
+			if(animationStep< 100) {
+				animationHandler.postDelayed(this, 50);
+			} else {
+				conditionAnimationRecents.clear();
+			}
 		}
 	}
 	
