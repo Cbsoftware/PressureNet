@@ -877,6 +877,8 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			@Override
 			public void onClick(View v) {
+				imageButtonPlay.setEnabled(false);
+				imageButtonPlay.setAlpha(.5F);
 				playConditionsAnimation();
 			}
 		});
@@ -1310,6 +1312,8 @@ public class BarometerNetworkActivity extends Activity implements
 				animationHandler.postDelayed(this, 50);
 			} else {
 				conditionAnimationRecents.clear();
+				imageButtonPlay.setEnabled(true);
+				imageButtonPlay.setAlpha(1F);
 			}
 		}
 	}

@@ -382,26 +382,40 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingBottom="0dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="5dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:gravity="center" >
 
-        <ImageButton
-            android:id="@+id/imageButtonPlay"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+        <LinearLayout
+            android:id="@+id/layoutAnimationHoriz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/imageButtonPlay"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_menu_light_play" />
+
+            <SeekBar
+                android:id="@+id/animationProgress"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:max="100" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/animationTimeInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_light_play" />
-
-        <SeekBar
-            android:id="@+id/animationProgress"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:max="100"
-            android:layout_gravity="center_vertical" />
+            android:text="Last 12 hours" />
     </LinearLayout>
 
 </RelativeLayout>
