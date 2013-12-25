@@ -220,6 +220,8 @@ public class BarometerNetworkActivity extends Activity implements
 	// Search Locations
 	private ImageButton buttonGoLocation;
 	private EditText editLocation;
+	
+	private ImageButton imageButtonPlay;
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
@@ -852,7 +854,17 @@ public class BarometerNetworkActivity extends Activity implements
 		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
 		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
 		
+		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
+		
+		imageButtonPlay.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				playConditionsAnimation();
+			}
+		});
 		
 		buttonMyLocation.setOnClickListener(new OnClickListener() {
 			
@@ -1183,6 +1195,26 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
+	/*
+	 * The user has requested the animation begin. Fetch
+	 * the data to begin.
+	 */
+	private void playConditionsAnimation() {
+		if(mMap == null) {
+			return;
+		}
+		
+		makeCurrentConditionsAPICall(buildMapCurrentConditionsCall(12));
+	}
+	
+	/**
+	 * The new condition data for animations has been received. 
+	 * Play the animation
+	 */
+	private void beginAnimationWithNewConditions(ArrayList<CbCurrentCondition> animationConditions) {
+		
+	}
+	
 	/**
 	 * Get basic information and format it to display on screen Show the map
 	 * coordinates, number of unique data points visible, etc
@@ -1399,6 +1431,9 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if (activeMode.endsWith("graph")) {
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
+				} else if (activeMode.equals("animation")) {
+					CbApiCall api = buildMapCurrentConditionsCall(12);
+					askForCurrentConditionRecents(api);
 				}
 				
 				break;
@@ -1414,9 +1449,12 @@ public class BarometerNetworkActivity extends Activity implements
 					log("app received null conditions");
 				}
 				
-				addConditionsToMap();
-				
-				
+				if (! activeMode.equals("animation")) {
+					addConditionsToMap();					
+				} else {
+					beginAnimationWithNewConditions(receivedList);
+				}
+
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;

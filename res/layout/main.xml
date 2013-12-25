@@ -389,13 +389,13 @@
         android:paddingTop="5dp"
         android:visibility="gone" >
         
-         <Button
+         <ImageButton
             android:id="@+id/imageButtonPlay"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_menu_light_play"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_menu_light_play"
+             />
         
         
     </LinearLayout>
