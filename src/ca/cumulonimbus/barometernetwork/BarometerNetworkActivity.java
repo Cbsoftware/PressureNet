@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -79,6 +80,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -86,6 +88,7 @@ import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
@@ -186,8 +189,13 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private ImageButton buttonMyLocation;
 	
+	private SeekBar animationProgress;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
+	Handler animationHandler = new Handler();
+	
+	private int animationStep = 0;
 
 	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
 
@@ -856,6 +864,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
 		
+		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
 		
 		imageButtonPlay.setOnClickListener(new OnClickListener() {
@@ -1205,14 +1215,31 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		
 		makeCurrentConditionsAPICall(buildMapCurrentConditionsCall(12));
+		
+		
 	}
 	
 	/**
 	 * The new condition data for animations has been received. 
-	 * Play the animation
+	 * Play the animation. 
 	 */
 	private void beginAnimationWithNewConditions(ArrayList<CbCurrentCondition> animationConditions) {
+		mMap.clear();
+		animationStep = 0;
 		
+		Collections.sort(animationConditions, new CbScience.ConditionTimeComparator());
+		
+		animationHandler.post(new AnimationRunner());
+		
+	}
+	
+	private class AnimationRunner implements Runnable {
+		
+		public void run() {
+			animationProgress.setProgress(animationStep);
+			animationStep++;
+			animationHandler.postDelayed(this, 100);
+		}
 	}
 	
 	/**

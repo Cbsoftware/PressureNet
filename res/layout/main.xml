@@ -388,16 +388,21 @@
         android:paddingRight="5dp"
         android:paddingTop="5dp"
         android:visibility="gone" >
-        
-         <ImageButton
+
+        <ImageButton
             android:id="@+id/imageButtonPlay"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_menu_light_play"
-             />
-        
-        
+            android:src="@drawable/ic_menu_light_play" />
+
+        <SeekBar
+            android:id="@+id/animationProgress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:clickable="false"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 </RelativeLayout>
