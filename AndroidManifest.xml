@@ -82,7 +82,7 @@
             android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
-            android:label="@string/current_conditions"
+            android:label="What's it like outside?"
             android:theme="@style/CustomThemeDialogDark"
             android:exported="true" >
         </activity>
