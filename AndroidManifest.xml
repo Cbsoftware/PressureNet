@@ -41,7 +41,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.DataManagementActivity"
             android:excludeFromRecents="true"
-            android:label="@string/data"
+            android:label="Data cache"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
@@ -100,7 +100,7 @@
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
-            android:label="My Data"
+            android:label="My data"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
