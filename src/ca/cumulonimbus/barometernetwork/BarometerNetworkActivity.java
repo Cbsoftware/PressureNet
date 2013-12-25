@@ -145,7 +145,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> graphRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
-
+	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
+	
 	private int activeAPICallCount = 0;
 
 	boolean dataReceivedToPlot = false;
@@ -1215,30 +1216,76 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		
 		makeCurrentConditionsAPICall(buildMapCurrentConditionsCall(12));
-		
-		
 	}
 	
 	/**
 	 * The new condition data for animations has been received. 
 	 * Play the animation. 
 	 */
-	private void beginAnimationWithNewConditions(ArrayList<CbCurrentCondition> animationConditions) {
+	private void beginAnimationWithNewConditions() {
 		mMap.clear();
 		animationStep = 0;
+		if(conditionAnimationRecents == null) {
+			return;
+		}
+		if(conditionAnimationRecents.size()==0) {
+			return;
+		}
 		
-		Collections.sort(animationConditions, new CbScience.ConditionTimeComparator());
+		Collections.sort(conditionAnimationRecents, new CbScience.ConditionTimeComparator());
+		
+		long timeStart = conditionAnimationRecents.get(0).getTime();
+		long timeEnd = conditionAnimationRecents.get(conditionAnimationRecents.size() - 1).getTime();
+		long timeSpan = timeEnd - timeStart;
+		long frameLength = timeSpan / 100;
+		
+		for (CbCurrentCondition condition : conditionAnimationRecents) {
+			long conditionTime = condition.getTime();
+			long timeOffsetFromStart = conditionTime - timeStart;
+			long frameNumber = timeOffsetFromStart / frameLength;
+			int frame = (int) frameNumber;
+			condition.setAnimateGroupNumber(frame);
+			log("setting condition frame " + frame);
+		}
 		
 		animationHandler.post(new AnimationRunner());
 		
 	}
 	
+	private void displayAnimationFrame(int frame) {
+		for(CbCurrentCondition condition : conditionAnimationRecents) {
+			if(condition.getAnimateGroupNumber() == frame) {
+				LatLng point = new LatLng(
+						condition.getLocation().getLatitude(), condition
+								.getLocation().getLongitude());
+				log("getting layer drawable for condition " + condition.getGeneral_condition());
+				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
+						null);
+				if(drLayer==null) {
+					log("drlayer null, next!");
+					continue;
+				}
+				Drawable draw = getSingleDrawable(drLayer);
+				
+				Bitmap image = drawableToBitmap(draw, null);
+	
+				Marker marker = mMap.addMarker(new MarkerOptions().position(
+						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
+				marker.showInfoWindow();
+				
+			}
+		}
+	}
+	
 	private class AnimationRunner implements Runnable {
 		
 		public void run() {
+			mMap.clear();
+			displayAnimationFrame(animationStep);
+			
 			animationProgress.setProgress(animationStep);
 			animationStep++;
-			animationHandler.postDelayed(this, 100);
+			animationHandler.postDelayed(this, 50);
 		}
 	}
 	
@@ -1479,7 +1526,9 @@ public class BarometerNetworkActivity extends Activity implements
 				if (! activeMode.equals("animation")) {
 					addConditionsToMap();					
 				} else {
-					beginAnimationWithNewConditions(receivedList);
+					conditionAnimationRecents.clear();
+					conditionAnimationRecents = receivedList;
+					beginAnimationWithNewConditions();
 				}
 
 				break;

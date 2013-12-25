@@ -401,8 +401,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:max="100"
-            android:clickable="false"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
 </RelativeLayout>
