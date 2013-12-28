@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -192,6 +193,11 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonMyLocation;
 	
 	private SeekBar animationProgress;
+	private Button buttonAnimationStartDate;
+	private Button buttonAnimationStartTime;
+	private Button buttonAnimationEndDate;
+	private Button buttonAnimationEndTime;
+	
 	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
@@ -271,6 +277,9 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private boolean displayPressure = true;
 	private boolean displayConditions = true;
+	
+	private boolean animationPlaying = false;
+	private AnimationRunner animator = new AnimationRunner();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -868,18 +877,59 @@ public class BarometerNetworkActivity extends Activity implements
 		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
 		
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
-		
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+		buttonAnimationStartDate = (Button) findViewById(R.id.buttonAnimationStartDate);
+		buttonAnimationStartTime = (Button) findViewById(R.id.buttonAnimationStartTime);
+		buttonAnimationEndDate = (Button) findViewById(R.id.buttonAnimationEndDate);
+		buttonAnimationEndTime = (Button) findViewById(R.id.buttonAnimationEndTime);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 		
-		imageButtonPlay.setOnClickListener(new OnClickListener() {
+		initializeAnimationButtons();
+
+		buttonAnimationStartDate.setOnClickListener(new OnClickListener() {
 			
 			@Override
+			public void onClick(View arg0) {
+				
+			}
+		});
+		
+		buttonAnimationStartTime.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				
+			}
+		});
+		
+		buttonAnimationEndDate.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				
+			}
+		});
+		
+		buttonAnimationEndTime.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				
+			}
+		});
+		
+		imageButtonPlay.setOnClickListener(new OnClickListener() {
+
+			@Override
 			public void onClick(View v) {
-				imageButtonPlay.setEnabled(false);
-				imageButtonPlay.setAlpha(.5F);
-				playConditionsAnimation();
+				if(!animationPlaying) {
+					imageButtonPlay.setImageResource(R.drawable.ic_menu_light_pause);
+					playConditionsAnimation();
+				} else {
+					imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+					pauseConditionAnimation();
+				}
 			}
 		});
 		
@@ -1014,6 +1064,10 @@ public class BarometerNetworkActivity extends Activity implements
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
 
+					if(animationPlaying) {
+						pauseConditionAnimation();
+					}
+					
 					removeChartFromLayout();
 
 					// set mode and load data
@@ -1043,6 +1097,10 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					removeChartFromLayout();
 
+					if(animationPlaying) {
+						pauseConditionAnimation();
+					}
+					
 					charts.reset();
 					
 					hoursAgoSelected = 12;
@@ -1082,6 +1140,10 @@ public class BarometerNetworkActivity extends Activity implements
 				} else {
 					activeMode = "sensors";
 
+					if(animationPlaying) {
+						pauseConditionAnimation();
+					}
+					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
@@ -1117,8 +1179,6 @@ public class BarometerNetworkActivity extends Activity implements
 				
 					if(mMap != null) {
 						mMap.clear();
-
-						
 					}
 					
 					// UI switch
@@ -1218,7 +1278,28 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 
-	/*
+	/**
+	 * The user has control over the start and end times of the 
+	 * condition animation. Provide buttons with reasonable defaults
+	 */
+	private void initializeAnimationButtons() {
+		// default to the last 24 hours
+		Calendar startCalendar = Calendar.getInstance();
+		Calendar endCalendar = Calendar.getInstance();
+		
+		startCalendar.add(Calendar.HOUR_OF_DAY, -24);
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("M/d");
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH");
+		
+		buttonAnimationStartDate.setText(dateFormat.format(startCalendar.getTime()));
+		buttonAnimationStartTime.setText(timeFormat.format(startCalendar.getTime()) + ":00");
+		buttonAnimationEndDate.setText(dateFormat.format(endCalendar.getTime()));
+		buttonAnimationEndTime.setText(timeFormat.format(endCalendar.getTime()) + ":00");
+	}
+	
+	
+	/** 
 	 * The user has requested the animation begin. Fetch
 	 * the data to begin.
 	 */
@@ -1235,6 +1316,15 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	/**
+	 * The user wants to stop the animation, either by pressing Pause
+	 * or by changing modes/activities
+	 */
+	private void pauseConditionAnimation() {
+		animationPlaying = false;
+		animationHandler.removeCallbacks(animator);
+	}
+	
+	/**
 	 * The new condition data for animations has been received. 
 	 * Play the animation. 
 	 */
@@ -1247,7 +1337,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if(conditionAnimationRecents.size()==0) {
 			return;
 		}
-		
+		animationPlaying = true;
 		Collections.sort(conditionAnimationRecents, new CbScience.ConditionTimeComparator());
 		
 		long timeStart = conditionAnimationRecents.get(0).getTime();
@@ -1282,7 +1372,7 @@ public class BarometerNetworkActivity extends Activity implements
 			animationMarkerOptions.add(thisMarkerOptions);
 		}
 		
-		animationHandler.post(new AnimationRunner());
+		animationHandler.post(animator);
 		
 	}
 	

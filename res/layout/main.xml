@@ -72,10 +72,10 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/layoutSearchControls"
         android:layout_below="@id/layoutSearchControls"
-        android:background="#CCFFFFFF"
         android:layout_marginTop="12dp"
+        android:background="#CCFFFFFF"
         android:src="@drawable/ic_action_location_found" />
-    
+
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
         style="?android:attr/progressBarStyleHorizontal"
@@ -382,13 +382,13 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingBottom="0dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="5dp"
-        android:visibility="gone"
-        android:gravity="center" >
+        android:visibility="gone" >
 
         <LinearLayout
             android:id="@+id/layoutAnimationHoriz"
@@ -411,11 +411,43 @@
                 android:max="100" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/animationTimeInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Last 12 hours" />
+        <RelativeLayout
+            android:id="@+id/layoutAnimationTimeControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/buttonAnimationStartDate"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true" 
+                android:textColor="#000000"/>
+
+            <Button
+                android:id="@+id/buttonAnimationStartTime"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/buttonAnimationStartDate"
+                android:textColor="#000000" />
+
+            <Button
+                android:id="@+id/buttonAnimationEndTime"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textColor="#000000" />
+
+            <Button
+                android:id="@+id/buttonAnimationEndDate"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" 
+                android:layout_toLeftOf="@id/buttonAnimationEndTime"
+                android:textColor="#000000"/>
+        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>
