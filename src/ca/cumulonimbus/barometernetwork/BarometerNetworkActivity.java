@@ -2219,7 +2219,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDrawable(R.drawable.bg_wea_square));
 		
 		if (CurrentConditionsActivity.isDaytime(condition.getLocation()
-				.getLatitude(), condition.getLocation().getLongitude())) {
+				.getLatitude(), condition.getLocation().getLongitude(), condition.getTime(), condition.getTzoffset())) {
 			weatherBackgroundDrawable = resizeDrawable(this.getResources()
 					.getDrawable(R.drawable.bg_wea_day));
 		} else {
@@ -2233,7 +2233,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude())) {
+					.getLatitude(), condition.getLocation().getLongitude(), condition.getTime(), condition.getTzoffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = this.getResources().getDrawable(

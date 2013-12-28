@@ -270,7 +270,7 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
     public void setCorrectClearIcon(boolean on) {
     	setLastKnownLocation();
     	log("conditions widget location " + mLatitude + ", "  + mLongitude);
-		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude)) {
+		if(CurrentConditionsActivity.isDaytime(mLatitude, mLongitude, System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getOffset(System.currentTimeMillis()))) {
 			// set to Sun icon
 			log("daytime, sunny");
 			RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.conditions_widget_layout);

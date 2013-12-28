@@ -318,7 +318,7 @@ public class NotificationSender extends BroadcastReceiver {
 		int sunDrawable = R.drawable.ic_wea_on_sun;
 		try {
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude())) {
+					.getLatitude(), condition.getLocation().getLongitude(), condition.getTime(), condition.getTzoffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = R.drawable.ic_wea_on_moon1;
