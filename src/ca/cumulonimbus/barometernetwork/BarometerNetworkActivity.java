@@ -223,7 +223,8 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_LOCATION_CHOICE = 2;
 	public static final int REQUEST_MAILED_LOG = 3;
 	public static final int REQUEST_DATA_CHANGED = 4;
-
+	public static final int REQUEST_ANIMATION_PARAMS = 5;
+	
 	/**
 	 * preferences
 	 */
@@ -901,7 +902,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View arg0) {
 				Intent intent = new Intent(getApplicationContext(), ConditionsAnimationSettingsActivity.class);
-				startActivity(intent);
+				startActivityForResult(intent, REQUEST_ANIMATION_PARAMS);
 			}
 		});
 
@@ -2183,6 +2184,11 @@ public class BarometerNetworkActivity extends Activity implements
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
 			}
+		} else if (requestCode == REQUEST_ANIMATION_PARAMS) {
+			// update animation parameters with new data
+			Bundle bundle = data.getExtras();
+			Calendar startDate = (Calendar) bundle.get("startDate");
+			long rangeInMs = (Long) bundle.get("animationRange");
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
