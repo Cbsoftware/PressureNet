@@ -34,7 +34,7 @@
         android:layout_marginRight="12dp"
         android:paddingLeft="24dp"
         android:paddingRight="24dp" 
-        android:max="9" />
+        android:max="5" />
 
     <LinearLayout
         android:id="@+id/conditionAnimationParamButtons"

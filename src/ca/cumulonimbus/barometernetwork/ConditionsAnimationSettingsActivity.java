@@ -30,8 +30,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 	private long rangeInMs = 0;
 	
 	private String[] timeSegments = { "3 hours", "6 hours", "12 hours",
-			"24 hours", "2 days", "3 days", "4 days", "5 days", "6 days",
-			"7 days", };
+			"24 hours", "2 days", "3 days"};
 	
 	private long hourInMs = 1000 * 60 * 60;
 	private long dayInMs = 1000 * 60 * 60 * 24;
@@ -42,11 +41,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			12 * hourInMs,
 			24 * hourInMs,
 			2 * dayInMs,
-			3 * dayInMs,
-			4 * dayInMs,
-			5 * dayInMs,
-			6 * dayInMs,
-			7 * dayInMs
+			3 * dayInMs
 	};
 
 	public class StartDatePickerFragment extends DialogFragment implements
@@ -55,6 +50,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			Calendar c = Calendar.getInstance();
+			System.out.println("conditions animations settings timezone" + c.getTimeZone());
 			int year = c.get(Calendar.YEAR);
 			int month = c.get(Calendar.MONTH);
 			int day = c.get(Calendar.DAY_OF_MONTH);
@@ -90,6 +86,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("startDate", calDate);
 				resultIntent.putExtra("animationRange", rangeInMs);
+				resultIntent.putExtra("requestCode", BarometerNetworkActivity.REQUEST_ANIMATION_PARAMS);
 				setResult(Activity.RESULT_OK, resultIntent);
 				
 				finish();

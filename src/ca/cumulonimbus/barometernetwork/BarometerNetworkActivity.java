@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -20,10 +19,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.TimePickerDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -64,7 +59,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -82,7 +76,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -91,7 +84,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.TimePicker;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
@@ -203,8 +195,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton imageButtonAnimationSettings;
 
 	private Calendar calAnimationStartDate;
-	private Calendar calAnimationEndDate;
-
+	private long animationDurationInMillis = 0;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 	Handler animationHandler = new Handler();
@@ -913,7 +905,14 @@ public class BarometerNetworkActivity extends Activity implements
 				if (!animationPlaying) {
 					imageButtonPlay
 							.setImageResource(R.drawable.ic_menu_light_pause);
-					playConditionsAnimation();
+					if(animationDurationInMillis > 0) {
+						log("animation onclick, duration " + animationDurationInMillis);
+						playConditionsAnimation();
+					} else {
+						log("animation onclick, no duration, default 24h");
+						animationDurationInMillis = 1000 * 60 * 60 * 24;
+						
+					}
 				} else {
 					imageButtonPlay
 							.setImageResource(R.drawable.ic_menu_light_play);
@@ -1273,15 +1272,11 @@ public class BarometerNetworkActivity extends Activity implements
 	 * animation. Provide buttons with reasonable defaults
 	 */
 	private void initializeAnimationButtons() {
-		// default to the last 24 hours
-		calAnimationStartDate = Calendar.getInstance();
-		calAnimationEndDate = Calendar.getInstance();
-
-		calAnimationStartDate.add(Calendar.HOUR_OF_DAY, -24);
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat("M/d");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH");
-
+		long dayInMillis = 1000 * 60 * 60 * 24;
+		// int days = animationDurationInMillis 
+		if(animationDurationInMillis > 0) {
+			calAnimationStartDate.add(Calendar.DAY_OF_MONTH, (int)(animationDurationInMillis / dayInMillis));
+		}
 	}
 
 	/**
@@ -1296,7 +1291,15 @@ public class BarometerNetworkActivity extends Activity implements
 		animationStep = 0;
 		animationProgress.setProgress(0);
 
-		makeCurrentConditionsAPICall(buildMapCurrentConditionsCall(12));
+		// user-specified start and end date
+		if (calAnimationStartDate == null) {
+			calAnimationStartDate = Calendar.getInstance();
+		}
+		
+		long startTime = calAnimationStartDate.getTimeInMillis();
+		long endTime = startTime + animationDurationInMillis; 
+		log("animation start " + startTime + ", + end " + endTime);
+		makeCurrentConditionsAPICall(buildConditionsAnimationCall(startTime, endTime));
 	}
 
 	/**
@@ -1331,6 +1334,11 @@ public class BarometerNetworkActivity extends Activity implements
 		long timeSpan = timeEnd - timeStart;
 		long frameLength = timeSpan / 100;
 
+		if(frameLength == 0) {
+			log("barometernetworkactivity framelength = 0, bail on animation");
+			return;
+		}
+		
 		for (CbCurrentCondition condition : conditionAnimationRecents) {
 			long conditionTime = condition.getTime();
 			long timeOffsetFromStart = conditionTime - timeStart;
@@ -1395,8 +1403,8 @@ public class BarometerNetworkActivity extends Activity implements
 			} else {
 				animationStep = 0;
 				animationProgress.setProgress(animationStep);
-				imageButtonPlay.setEnabled(true);
-				imageButtonPlay.setAlpha(1F);
+				imageButtonPlay.setImageResource(R.id.imageButtonPlay);
+				animationPlaying = false;
 			}
 		}
 	}
@@ -1618,7 +1626,9 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				} else if (activeMode.equals("animation")) {
-					CbApiCall api = buildMapCurrentConditionsCall(12);
+					long startTime = calAnimationStartDate.getTimeInMillis();
+					long endTime = startTime + animationDurationInMillis; 
+					CbApiCall api = buildConditionsAnimationCall(startTime, endTime);	
 					askForCurrentConditionRecents(api);
 				}
 
@@ -2189,6 +2199,10 @@ public class BarometerNetworkActivity extends Activity implements
 			Bundle bundle = data.getExtras();
 			Calendar startDate = (Calendar) bundle.get("startDate");
 			long rangeInMs = (Long) bundle.get("animationRange");
+			calAnimationStartDate = startDate;
+			animationDurationInMillis = rangeInMs;
+			log("barometernetworkactivity receiving animation params: " + calAnimationStartDate + ", " + animationDurationInMillis);
+			
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -2914,6 +2928,40 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
+	private CbApiCall buildConditionsAnimationCall(long startTime, long endTime) {
+		Date start = new Date(startTime);
+		Date end = new Date(endTime);
+		log("building conditions animation call, start : " + start.toLocaleString() + ", end " + end.toLocaleString());
+		CbApiCall api = new CbApiCall();
+
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+
+		if (visibleBound != null) {
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("no map center, bailing");
+			return null;
+		}
+
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setLimit(500);
+		api.setCallType("Conditions");
+		return api;
+	}
+	
 	private CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
 		log("building map conditions call for hours: " + hoursAgo);
 		long startTime = System.currentTimeMillis()
