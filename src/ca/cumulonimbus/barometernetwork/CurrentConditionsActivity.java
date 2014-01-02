@@ -1139,7 +1139,7 @@ public class CurrentConditionsActivity extends Activity {
 		if(tzHoursOffset>0) { 
 			gmtString += "+" + tzHoursOffset;
 		} else if (tzHoursOffset<0){
-			gmtString += "-" + tzHoursOffset;
+			gmtString += tzHoursOffset;
 		}
 		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
 		System.out.println("condition isdaytime? " + latitude +", " + longitude + "," + time + ", " + timeZoneOffset + ", gmtstring " + gmtString);
