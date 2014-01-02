@@ -911,11 +911,11 @@ public class BarometerNetworkActivity extends Activity implements
 								+ animationDurationInMillis);
 						playConditionsAnimation();
 					} else {
-						log("animation onclick, no duration, default 24h");
-						animationDurationInMillis = 1000 * 60 * 60 * 24;
+						log("animation onclick, no duration, default 3h");
+						animationDurationInMillis = 1000 * 60 * 60 * 3;
 						calAnimationStartDate = Calendar.getInstance();
 						calAnimationStartDate.add(Calendar.DAY_OF_MONTH, -1);
-
+						playConditionsAnimation();
 					}
 				} else {
 					imageButtonPlay
@@ -1188,6 +1188,8 @@ public class BarometerNetworkActivity extends Activity implements
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.BOLD);
+					
+
 				}
 			}
 		});
@@ -1325,9 +1327,11 @@ public class BarometerNetworkActivity extends Activity implements
 		mMap.clear();
 		animationStep = 0;
 		if (conditionAnimationRecents == null) {
+			pauseConditionAnimation();
 			return;
 		}
 		if (conditionAnimationRecents.size() == 0) {
+			pauseConditionAnimation();
 			return;
 		}
 		animationPlaying = true;
@@ -1342,6 +1346,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (frameLength == 0) {
 			log("barometernetworkactivity framelength = 0, bail on animation");
+			Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+			animator.stopAndReset();
 			return;
 		}
 
@@ -1393,6 +1399,15 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private class AnimationRunner implements Runnable {
 
+		public void stopAndReset() {
+			log("stoping animation and resetting");
+			animationStep = 0;
+			conditionAnimationRecents.clear();
+			animationProgress.setProgress(animationStep);
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			animationPlaying = false;
+		}
+		
 		public void run() {
 			if (activeMode.equals("animation")) {
 				displayAnimationFrame(animationStep);
@@ -1402,15 +1417,10 @@ public class BarometerNetworkActivity extends Activity implements
 				if (animationStep < 100) {
 					animationHandler.postDelayed(this, 50);
 				} else {
-					conditionAnimationRecents.clear();
-					imageButtonPlay.setEnabled(true);
-					imageButtonPlay.setAlpha(1F);
+					stopAndReset();
 				}
 			} else {
-				animationStep = 0;
-				animationProgress.setProgress(animationStep);
-				imageButtonPlay.setImageResource(R.id.imageButtonPlay);
-				animationPlaying = false;
+				stopAndReset();
 			}
 		}
 	}
@@ -1632,11 +1642,13 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
 				} else if (activeMode.equals("animation")) {
-					long startTime = calAnimationStartDate.getTimeInMillis();
-					long endTime = startTime + animationDurationInMillis;
-					CbApiCall api = buildConditionsAnimationCall(startTime,
-							endTime);
-					askForCurrentConditionRecents(api);
+					if(calAnimationStartDate != null) {
+						long startTime = calAnimationStartDate.getTimeInMillis();
+						long endTime = startTime + animationDurationInMillis;
+						CbApiCall api = buildConditionsAnimationCall(startTime,
+								endTime);
+						askForCurrentConditionRecents(api);
+					}
 				}
 
 				break;
@@ -1829,11 +1841,17 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			askForSettings();
-			// makeLocationAPICalls();
-			makeGlobalMapCall();
-			makeGlobalConditionsMapCall();
+			
 			sendChangeNotification();
 			getStoredPreferences();
+			
+			// Refresh the data unless we're in animation mode
+			if(!activeMode.equals("animation")) {
+				makeGlobalMapCall();
+				makeGlobalConditionsMapCall();
+			}
+			
+			
 		}
 
 		/**
