@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -237,6 +238,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private EditText editLocation;
 
 	private ImageButton imageButtonPlay;
+	private TextView textAnimationInfo;
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
@@ -884,10 +886,9 @@ public class BarometerNetworkActivity extends Activity implements
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
 		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
-
+		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
-
-		initializeAnimationButtons();
 
 		imageButtonAnimationSettings.setOnClickListener(new OnClickListener() {
 
@@ -895,6 +896,12 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View arg0) {
 				Intent intent = new Intent(getApplicationContext(),
 						ConditionsAnimationSettingsActivity.class);
+				
+				intent.putExtra("animationDuration", animationDurationInMillis);
+				if(calAnimationStartDate== null) {
+					calAnimationStartDate = Calendar.getInstance();
+				}
+				intent.putExtra("calAnimationStartDate", calAnimationStartDate.getTimeInMillis());
 				startActivityForResult(intent, REQUEST_ANIMATION_PARAMS);
 			}
 		});
@@ -1177,6 +1184,9 @@ public class BarometerNetworkActivity extends Activity implements
 						mMap.clear();
 					}
 
+					textAnimationInfo.setText("Date range defaults");
+					
+					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
@@ -1271,19 +1281,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		});
-	}
-
-	/**
-	 * The user has control over the start and end times of the condition
-	 * animation. Provide buttons with reasonable defaults
-	 */
-	private void initializeAnimationButtons() {
-		long dayInMillis = 1000 * 60 * 60 * 24;
-		// int days = animationDurationInMillis
-		if (animationDurationInMillis > 0) {
-			calAnimationStartDate.add(Calendar.DAY_OF_MONTH,
-					(int) (animationDurationInMillis / dayInMillis));
-		}
 	}
 
 	/**
@@ -1659,9 +1656,15 @@ public class BarometerNetworkActivity extends Activity implements
 						currentConditionRecents = receivedList;
 					} else {
 						log("app received conditions size 0");
+						if(activeMode.equals("animation")) {
+							Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+							animator.stopAndReset();
+						}
+						break;
 					}
 				} else {
 					log("app received null conditions");
+					break;
 				}
 
 				if (!activeMode.equals("animation")) {
@@ -2231,6 +2234,16 @@ public class BarometerNetworkActivity extends Activity implements
 					log("barometernetworkactivity receiving animation params: "
 							+ calAnimationStartDate + ", "
 							+ animationDurationInMillis);
+					
+					Calendar endDate = (Calendar) calAnimationStartDate.clone();
+					endDate.add(Calendar.MILLISECOND, (int)animationDurationInMillis);
+					SimpleDateFormat dateParamFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+					String animationDurationText = 
+							dateParamFormat.format(new Date(calAnimationStartDate.getTimeInMillis())) + " - " +
+							dateParamFormat.format(new Date(endDate.getTimeInMillis()));
+					textAnimationInfo.setText(animationDurationText);
+					
+				
 				} else {
 					log("barometernetworkactivity data bundle . getExtras is null");
 				}

@@ -44,16 +44,47 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			3 * dayInMs
 	};
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		setContentView(R.layout.conditions_animation_settings);
+
+		Intent intent = getIntent();
+		if (intent.hasExtra("animationDuration")) {
+			rangeInMs = intent.getLongExtra("animationDuration", getRangeInMsFromText(0));
+			if (rangeInMs == 0) {
+				rangeInMs = getRangeInMsFromText(0);
+			}
+			int index = 0;
+			for (long range : timeSegmentsMs) {
+				if (range == rangeInMs) {
+					break;
+				}
+				index++;
+			}
+			seekBar = (SeekBar) findViewById(R.id.seekBarAnimationRange);
+			seekBar.setProgress(index);
+			textRange = (TextView) findViewById(R.id.textViewRangeValue);
+			textRange.setText("Range: " + timeSegments[index]);
+		}
+		
+		if (intent.hasExtra("calAnimationStartDate")) {
+			calDate.setTimeInMillis(intent.getLongExtra("calAnimationStartDate", System.currentTimeMillis()));
+		}
+		
+		setUpUI();
+		super.onCreate(savedInstanceState);
+	}
+
+	
 	public class StartDatePickerFragment extends DialogFragment implements
 			DatePickerDialog.OnDateSetListener {
 
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			Calendar c = Calendar.getInstance();
-			System.out.println("conditions animations settings timezone" + c.getTimeZone());
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
+			System.out.println("conditions animations settings timezone" + calDate.getTimeZone());
+			int year = calDate.get(Calendar.YEAR);
+			int month = calDate.get(Calendar.MONTH);
+			int day = calDate.get(Calendar.DAY_OF_MONTH);
 
 			return new DatePickerDialog(getActivity(), this, year, month, day);
 		}
@@ -79,6 +110,10 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		cancel = (Button) findViewById(R.id.buttonAnimationCancel);
 		okay = (Button) findViewById(R.id.buttonAnimationSet);
 
+		calDate.set(Calendar.HOUR_OF_DAY, 0);
+		calDate.set(Calendar.MINUTE, 0);
+		calDate.set(Calendar.SECOND, 0);
+		
 		okay.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -137,13 +172,8 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 				rangeInMs = getRangeInMsFromText(progress);
 			}
 		});
+	
+		SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
+		startDate.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.conditions_animation_settings);
-		setUpUI();
-		super.onCreate(savedInstanceState);
-	}
-
 }

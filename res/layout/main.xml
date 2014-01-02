@@ -417,6 +417,13 @@
                 android:layout_gravity="center_vertical"
                 android:max="100" />
         </LinearLayout>
+        
+        <TextView 
+            android:id="@+id/textAnimationInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"/>
+        
     </LinearLayout>
 
 </RelativeLayout>
