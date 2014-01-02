@@ -1184,7 +1184,21 @@ public class BarometerNetworkActivity extends Activity implements
 						mMap.clear();
 					}
 
-					textAnimationInfo.setText("Date range defaults");
+					if (calAnimationStartDate == null) {
+						calAnimationStartDate = Calendar.getInstance();
+						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
+						calAnimationStartDate.set(Calendar.MINUTE, 0);
+						calAnimationStartDate.set(Calendar.SECOND, 0);
+						animationDurationInMillis = 1000 * 60 * 60 * 24;
+					}
+					long startTime = calAnimationStartDate.getTimeInMillis();
+					long endTime = startTime + animationDurationInMillis;
+					
+					SimpleDateFormat dateParamFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+					String animationDurationText = 
+							dateParamFormat.format(new Date(startTime)) + "   to   " +
+							dateParamFormat.format(new Date(endTime));
+					textAnimationInfo.setText(animationDurationText);
 					
 					
 					// UI switch
@@ -2239,7 +2253,7 @@ public class BarometerNetworkActivity extends Activity implements
 					endDate.add(Calendar.MILLISECOND, (int)animationDurationInMillis);
 					SimpleDateFormat dateParamFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 					String animationDurationText = 
-							dateParamFormat.format(new Date(calAnimationStartDate.getTimeInMillis())) + " - " +
+							dateParamFormat.format(new Date(calAnimationStartDate.getTimeInMillis())) + "   to   " +
 							dateParamFormat.format(new Date(endDate.getTimeInMillis()));
 					textAnimationInfo.setText(animationDurationText);
 					
