@@ -1470,13 +1470,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private void startCbService() {
 		log("start cbservice");
 		try {
-			if (hasBarometer) {
-				serviceIntent = new Intent(this, CbService.class);
-				startService(serviceIntent);
-				log("app started service");
-			} else {
-				log("app detects no barometer, not starting service");
-			}
+			serviceIntent = new Intent(this, CbService.class);
+			startService(serviceIntent);
+			log("app started service");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
