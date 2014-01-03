@@ -83,6 +83,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -890,6 +891,30 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		animationProgress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				
+				
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+					if(fromUser) {
+						if(fromUser) {
+							animator.showSpecificFrame(progress);
+						}
+					}
+			}
+		});
+		
 		imageButtonAnimationSettings.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -1417,6 +1442,17 @@ public class BarometerNetworkActivity extends Activity implements
 			animationProgress.setProgress(animationStep);
 			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
 			animationPlaying = false;
+		}
+		
+		public void showSpecificFrame(int frameNumber) {
+			pause();
+			displayAnimationFrame(frameNumber);
+		}
+		
+		public void pause() {
+			animationPlaying = false;
+			animationHandler.removeCallbacks(this);
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
 		}
 		
 		public void run() {
