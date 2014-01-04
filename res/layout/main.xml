@@ -390,40 +390,43 @@
         android:paddingTop="5dp"
         android:visibility="gone" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layoutAnimationHoriz"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:layout_height="wrap_content" >
 
             <ImageButton
                 android:id="@+id/imageButtonPlay"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
                 android:src="@drawable/ic_menu_light_play" />
-
-            <ImageButton
+            
+             <ImageButton
                 android:id="@+id/imageButtonAnimationSettings"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_menu_light_settings" />
+                android:src="@drawable/ic_menu_light_settings" 
+                android:layout_alignParentRight="true"/>
 
             <SeekBar
                 android:id="@+id/animationProgress"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:max="100" />
-        </LinearLayout>
-        
-        <TextView 
+                android:layout_toRightOf="@id/imageButtonPlay"
+                android:max="100"
+                android:layout_toLeftOf="@id/imageButtonAnimationSettings"
+                android:paddingTop="6dp"
+                />
+        </RelativeLayout>
+
+        <TextView
             android:id="@+id/textAnimationInfo"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:gravity="center"/>
-        
+            android:gravity="center" />
     </LinearLayout>
 
 </RelativeLayout>
