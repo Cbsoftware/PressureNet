@@ -2,23 +2,21 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <Button
-        android:id="@+id/buttonAnimationStartDate"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+    <DatePicker
+        android:id="@+id/dateAnimationStart"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:padding="6dp"
-        android:text=""
-        android:textColor="#000000"
-        android:textSize="18sp" />
+        android:textSize="18sp" 
+        android:calendarViewShown="false"/>
 
     <TextView
         android:id="@+id/textViewRangeValue"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/buttonAnimationStartDate"
+        android:layout_below="@id/dateAnimationStart"
         android:gravity="center"
         android:padding="6dp"
         android:text="Range: 3 hours"
@@ -32,17 +30,17 @@
         android:layout_below="@id/textViewRangeValue"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
+        android:max="5"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp" 
-        android:max="5" />
+        android:paddingRight="24dp" />
 
     <LinearLayout
         android:id="@+id/conditionAnimationParamButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/seekBarAnimationRange"
         android:layout_gravity="bottom"
-        android:orientation="horizontal" 
-        android:layout_below="@id/seekBarAnimationRange">
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/buttonAnimationCancel"
@@ -51,11 +49,11 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/seekBarAnimationRange"
             android:layout_below="@id/seekBarAnimationRange"
+            android:layout_weight=".45"
             android:padding="6dp"
             android:text="Cancel"
             android:textColor="#000000"
-            android:textSize="16sp"
-			android:layout_weight=".45"/>
+            android:textSize="16sp" />
 
         <View
             android:layout_width="1dip"
@@ -71,11 +69,11 @@
             android:layout_height="wrap_content"
             android:layout_alignRight="@id/seekBarAnimationRange"
             android:layout_below="@id/seekBarAnimationRange"
+            android:layout_weight=".45"
             android:padding="6dp"
             android:text="Okay"
             android:textColor="#000000"
-            android:textSize="16sp" 
-            android:layout_weight=".45"/>
+            android:textSize="16sp" />
     </LinearLayout>
 
 </RelativeLayout>

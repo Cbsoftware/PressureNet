@@ -1,8 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -14,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -22,7 +21,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 
 	private SeekBar seekBar;
 	private TextView textRange;
-	private Button startDate;
+	private DatePicker startDate;
 	private Button cancel;
 	private Button okay;
 	
@@ -94,8 +93,6 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			calDate.set(Calendar.MONTH, month);
 			calDate.set(Calendar.DAY_OF_MONTH, day);
 			
-			SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
-			startDate.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 		}
 	}
 
@@ -106,13 +103,23 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 	private void setUpUI() {
 		seekBar = (SeekBar) findViewById(R.id.seekBarAnimationRange);
 		textRange = (TextView) findViewById(R.id.textViewRangeValue);
-		startDate = (Button) findViewById(R.id.buttonAnimationStartDate);
+		startDate = (DatePicker) findViewById(R.id.dateAnimationStart);
 		cancel = (Button) findViewById(R.id.buttonAnimationCancel);
 		okay = (Button) findViewById(R.id.buttonAnimationSet);
 
 		calDate.set(Calendar.HOUR_OF_DAY, 0);
 		calDate.set(Calendar.MINUTE, 0);
 		calDate.set(Calendar.SECOND, 0);
+		
+		startDate.init(calDate.get(Calendar.YEAR), calDate.get(Calendar.MONTH), calDate.get(Calendar.DAY_OF_MONTH), new OnDateChangedListener() {
+			
+			@Override
+			public void onDateChanged(DatePicker arg0, int year, int month, int day) {
+				calDate.set(Calendar.YEAR, year);
+				calDate.set(Calendar.MONTH, month);
+				calDate.set(Calendar.DAY_OF_MONTH, day);
+			}
+		});
 		
 		okay.setOnClickListener(new OnClickListener() {
 
@@ -172,8 +179,5 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 				rangeInMs = getRangeInMsFromText(progress);
 			}
 		});
-	
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
-		startDate.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 	}
 }
