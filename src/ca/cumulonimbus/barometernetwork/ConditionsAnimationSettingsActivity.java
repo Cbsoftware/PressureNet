@@ -2,6 +2,8 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.util.Calendar;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -180,4 +182,17 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			}
 		});
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance(this).activityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);
+		super.onStop();
+	}
+
 }

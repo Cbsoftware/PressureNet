@@ -96,6 +96,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -178,7 +179,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
-	private TextView textChartTimeInfo;
 	private RelativeLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
@@ -219,6 +219,15 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_DATA_CHANGED = 4;
 	public static final int REQUEST_ANIMATION_PARAMS = 5;
 
+	public static final String GA_CATEGORY_MAIN_APP = "app";
+	public static final String GA_CATEGORY_NOTIFICATIONS = "notifications";
+	public static final String GA_CATEGORY_WIDGET = "widgets";
+	
+	public static final String GA_ACTION_MODE = "mode";
+	public static final String GA_ACTION_SEARCH = "search";
+	public static final String GA_ACTION_BUTTON = "button_press";
+	
+	
 	/**
 	 * preferences
 	 */
@@ -876,7 +885,6 @@ public class BarometerNetworkActivity extends Activity implements
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
 		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
-		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
 		buttonGoBackwards = (ImageButton) findViewById(R.id.buttonGoBackwards);
 		buttonGoForwards = (ImageButton) findViewById(R.id.buttonGoForwards);
 
@@ -936,10 +944,20 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				if (!animationPlaying) {
 					if (animationDurationInMillis > 0) {
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"animation_play", 
+								 1L).build());
 						log("animation onclick, duration "
 								+ animationDurationInMillis);
 						playConditionsAnimation();
 					} else {
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"animation_play", 
+								 0L).build());
 						log("animation onclick, no duration, default 24h");
 						animationDurationInMillis = 1000 * 60 * 60 * 24;
 						calAnimationStartDate = Calendar.getInstance();
@@ -949,6 +967,11 @@ public class BarometerNetworkActivity extends Activity implements
 						playConditionsAnimation();
 					}
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_BUTTON, 
+							"animation_pause", 
+							 null).build());
 					animator.pause();
 				}
 			}
@@ -958,6 +981,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"my_location", 
+						 null).build());
 				goToMyLocation();
 			}
 		});
@@ -968,6 +996,12 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCheckedChanged(CompoundButton arg0,
 							boolean isChecked) {
+						long check = isChecked ? 1 : 0; 
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"show_pressure_check", 
+								 check).build());
 						displayPressure = isChecked;
 						mMap.clear();
 						loadRecents();
@@ -980,6 +1014,12 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCheckedChanged(CompoundButton arg0,
 							boolean isChecked) {
+						long check = isChecked ? 1 : 0; 
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"show_conditions_check", 
+								 check).build());
 						displayConditions = isChecked;
 						mMap.clear();
 						loadRecents();
@@ -990,6 +1030,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"reload_global_data", 
+						 null).build());
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
 				lastGlobalApiCall = System.currentTimeMillis()
@@ -1007,6 +1052,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"graph_go_back", 
+						 null).build());
 				charts.goBack();
 			}
 		});
@@ -1015,6 +1065,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"graph_go_forward", 
+						 null).build());
 				charts.goForward();
 			}
 		});
@@ -1025,6 +1080,12 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				try {
+					long check = isChecked ? 1 : 0; 
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_BUTTON, 
+							"satellite_check", 
+							 check).build());
 					if (isChecked) {
 						mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					} else {
@@ -1075,6 +1136,12 @@ public class BarometerNetworkActivity extends Activity implements
 					addDataToMap();
 					addConditionsToMap();
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"map", 
+							 null).build());
+					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
@@ -1114,6 +1181,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"graph", 
+							 null).build());
+					
 					graphMode.setEnabled(false);
 					graphMode.setTextColor(Color.GRAY);
 					Toast.makeText(getApplicationContext(), "Loading graph…",
@@ -1163,6 +1236,12 @@ public class BarometerNetworkActivity extends Activity implements
 						layoutSensors.setVisibility(View.VISIBLE);
 					}
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"sensors", 
+							 null).build());
+					
 					activeMode = "sensors";
 
 					if (animationPlaying) {
@@ -1200,6 +1279,12 @@ public class BarometerNetworkActivity extends Activity implements
 						layoutAnimation.setVisibility(View.VISIBLE);
 					}
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"animation", 
+							 null).build());
+					
 					activeMode = "animation";
 
 					if (mMap != null) {
@@ -1244,6 +1329,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"search_location_focus", 
+						 null).build());
 				editLocation.setText("");
 				editLocation.setCursorVisible(true);
 			}
@@ -1255,6 +1345,11 @@ public class BarometerNetworkActivity extends Activity implements
 					KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					buttonGoLocation.performClick();
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_SEARCH, 
+							editLocation.getEditableText().toString(), 
+							null).build());
 				}
 				return false;
 			}
@@ -1275,6 +1370,12 @@ public class BarometerNetworkActivity extends Activity implements
 					return;
 				}
 				location = location.trim();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_SEARCH, 
+						location, 
+						null).build());
+				
 				Toast.makeText(getApplicationContext(), "Going to " + location,
 						Toast.LENGTH_SHORT).show();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1349,8 +1450,6 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			beginAnimationWithNewConditions(animationStep);
 		}
-
-		
 	}
 
 	/**
@@ -2113,12 +2212,27 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// submit a single reading
 			sendSingleObservation();
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"send_single_reading", 
+					null).build());
 		} else if (item.getItemId() == R.id.menu_grow_pressurenet) {
 			growPressureNET();
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"spread_the_word", 
+					null).build());
 		} else if (item.getItemId() == R.id.menu_send_feedback) {
 			sendFeedback();
 		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"rate_pressurenet", 
+					null).build());
 		}
 		return super.onOptionsItemSelected(item);
 	}

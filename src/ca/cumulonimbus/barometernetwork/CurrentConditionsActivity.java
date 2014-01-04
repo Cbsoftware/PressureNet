@@ -44,6 +44,7 @@ import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.SunLocation;
 
@@ -1102,6 +1103,16 @@ public class CurrentConditionsActivity extends Activity {
 				buttonThunderstorm.performClick();
 			}
 			updateWidget();
+			if(getIntent().hasExtra("from_widget")) {
+				boolean fromWidget = getIntent().getBooleanExtra("from_widget", false);
+				if(fromWidget) {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							BarometerNetworkActivity.GA_CATEGORY_WIDGET, 
+							BarometerNetworkActivity.GA_ACTION_BUTTON, 
+							"conditions_widget_opened_conditions_activity", 
+							null).build());
+				}
+			}
 		}
 		
 		// Set the initial state: Sunny, no wind

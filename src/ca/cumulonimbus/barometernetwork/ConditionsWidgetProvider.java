@@ -51,14 +51,19 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 
 		Intent conditionsClearIntent = new Intent(mContext, CurrentConditionsActivity.class);
 		conditionsClearIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		conditionsClearIntent.putExtra("from_widget", true);
 		Intent conditionsFogIntent = new Intent(mContext, CurrentConditionsActivity.class);
 		conditionsFogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		conditionsFogIntent.putExtra("from_widget", true);
 		Intent conditionsCloudIntent = new Intent(mContext, CurrentConditionsActivity.class);
 		conditionsCloudIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		conditionsCloudIntent.putExtra("from_widget", true);
 		Intent conditionsPrecipIntent = new Intent(mContext, CurrentConditionsActivity.class);
 		conditionsPrecipIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		conditionsPrecipIntent.putExtra("from_widget", true);
 		Intent conditionsThunderstormIntent = new Intent(mContext, CurrentConditionsActivity.class);
 		conditionsThunderstormIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		conditionsThunderstormIntent.putExtra("from_widget", true);
 		
 		//conditionsIntent.setAction(ACTION_UPDATEUI);
 		// Current Conditions activity likes to know the location in the Intent

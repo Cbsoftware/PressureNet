@@ -4,6 +4,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -46,6 +49,11 @@ public class NotificationSender extends BroadcastReceiver {
 				if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification")) {
 					CbCurrentCondition receivedCondition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification");
 					if(receivedCondition != null) {
+						EasyTracker.getInstance(context).send(MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+								"conditions_notification_delivered", 
+								receivedCondition.getGeneral_condition(), 
+								null).build());
 						deliverConditionNotification(receivedCondition);
 					}
 				} else {
@@ -60,6 +68,7 @@ public class NotificationSender extends BroadcastReceiver {
 			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.tendencyChange")) {
 				String tendencyChange = intent.getStringExtra("ca.cumulonimbus.pressurenetsdk.tendencyChange");
 				deliverNotification(tendencyChange);
+				
 			} else {
 				log("pressure change intent not sent, doesn't have extra");
 			}
@@ -300,6 +309,12 @@ public class NotificationSender extends BroadcastReceiver {
 		// mId allows you to update the
 		// notification later on.
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		
+		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
+				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+				"pressure_notification_delivered", 
+				deliveryMessage, 
+				null).build());
 
 		// save the time
 		SharedPreferences.Editor editor = sharedPreferences.edit();
