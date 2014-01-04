@@ -676,7 +676,8 @@ public class BarometerNetworkActivity extends Activity implements
 							mapMode.performClick();
 							layoutMapInfo.setVisibility(View.GONE);
 						} else if (activeMode.equals("animation")) {
-							conditionAnimationRecents.clear();
+							animator.stop();
+							animator.reset();
 						}
 
 						updateMapInfoText();
@@ -895,7 +896,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				
+			
 				
 			}
 			
@@ -908,9 +909,7 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 					if(fromUser) {
-						if(fromUser) {
-							animator.showSpecificFrame(progress);
-						}
+						animator.showSpecificFrame(progress);	
 					}
 			}
 		});
@@ -936,23 +935,21 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				if (!animationPlaying) {
-					imageButtonPlay
-							.setImageResource(R.drawable.ic_menu_light_pause);
 					if (animationDurationInMillis > 0) {
 						log("animation onclick, duration "
 								+ animationDurationInMillis);
 						playConditionsAnimation();
 					} else {
-						log("animation onclick, no duration, default 3h");
-						animationDurationInMillis = 1000 * 60 * 60 * 3;
+						log("animation onclick, no duration, default 24h");
+						animationDurationInMillis = 1000 * 60 * 60 * 24;
 						calAnimationStartDate = Calendar.getInstance();
 						calAnimationStartDate.add(Calendar.DAY_OF_MONTH, -1);
+						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
+						calAnimationStartDate.set(Calendar.MINUTE, 0);
 						playConditionsAnimation();
 					}
 				} else {
-					imageButtonPlay
-							.setImageResource(R.drawable.ic_menu_light_play);
-					pauseConditionAnimation();
+					animator.pause();
 				}
 			}
 		});
@@ -1093,7 +1090,7 @@ public class BarometerNetworkActivity extends Activity implements
 					animationMode.setTypeface(null, Typeface.NORMAL);
 
 					if (animationPlaying) {
-						pauseConditionAnimation();
+						animator.pause();
 					}
 
 					removeChartFromLayout();
@@ -1126,7 +1123,7 @@ public class BarometerNetworkActivity extends Activity implements
 					removeChartFromLayout();
 
 					if (animationPlaying) {
-						pauseConditionAnimation();
+						animator.pause();
 					}
 
 					charts.reset();
@@ -1169,7 +1166,7 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "sensors";
 
 					if (animationPlaying) {
-						pauseConditionAnimation();
+						animator.pause();
 					}
 
 					// UI switch
@@ -1329,45 +1326,46 @@ public class BarometerNetworkActivity extends Activity implements
 		if (mMap == null) {
 			return;
 		}
-		conditionAnimationRecents.clear();
-		animationMarkerOptions.clear();
-		animationStep = 0;
-		animationProgress.setProgress(0);
+		
+		// If the animation isn't in-progress, start
+		// at the beginning. Otherwise resume.
+		if( (animationStep < 1) || (animationStep >= 99)) { 
+			animationStep = 0;
+			animationProgress.setProgress(0);
+		
+			conditionAnimationRecents.clear();
+			animationMarkerOptions.clear();
+			
+			// user-specified start and end date
+			if (calAnimationStartDate == null) {
+				calAnimationStartDate = Calendar.getInstance();
+			}
 
-		// user-specified start and end date
-		if (calAnimationStartDate == null) {
-			calAnimationStartDate = Calendar.getInstance();
+			long startTime = calAnimationStartDate.getTimeInMillis();
+			long endTime = startTime + animationDurationInMillis;
+			log("animation start " + startTime + ", + end " + endTime);
+			makeCurrentConditionsAPICall(buildConditionsAnimationCall(startTime,
+					endTime));
+		} else {
+			beginAnimationWithNewConditions(animationStep);
 		}
 
-		long startTime = calAnimationStartDate.getTimeInMillis();
-		long endTime = startTime + animationDurationInMillis;
-		log("animation start " + startTime + ", + end " + endTime);
-		makeCurrentConditionsAPICall(buildConditionsAnimationCall(startTime,
-				endTime));
-	}
-
-	/**
-	 * The user wants to stop the animation, either by pressing Pause or by
-	 * changing modes/activities
-	 */
-	private void pauseConditionAnimation() {
-		animationPlaying = false;
-		animationHandler.removeCallbacks(animator);
+		
 	}
 
 	/**
 	 * The new condition data for animations has been received. Play the
 	 * animation.
 	 */
-	private void beginAnimationWithNewConditions() {
+	private void beginAnimationWithNewConditions(int startFrame) {
 		mMap.clear();
-		animationStep = 0;
+		animationStep = startFrame;
 		if (conditionAnimationRecents == null) {
-			pauseConditionAnimation();
+			animator.pause();
 			return;
 		}
 		if (conditionAnimationRecents.size() == 0) {
-			pauseConditionAnimation();
+			animator.pause();
 			return;
 		}
 		animationPlaying = true;
@@ -1383,7 +1381,8 @@ public class BarometerNetworkActivity extends Activity implements
 		if (frameLength == 0) {
 			log("barometernetworkactivity framelength = 0, bail on animation");
 			Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
-			animator.stopAndReset();
+			animator.stop();
+			animator.reset();
 			return;
 		}
 
@@ -1418,6 +1417,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void displayAnimationFrame(int frame) {
+		animationStep = frame;
 		Iterator<CbCurrentCondition> conditionIterator = conditionAnimationRecents
 				.iterator();
 		int num = 0;
@@ -1435,8 +1435,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private class AnimationRunner implements Runnable {
 
-		public void stopAndReset() {
-			log("stoping animation and resetting");
+		public void stop() {
+			log("stoping animation");
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			animationPlaying = false;
+		}
+		
+		public void reset() {
+			log("resetting animation");
 			animationStep = 0;
 			conditionAnimationRecents.clear();
 			animationProgress.setProgress(animationStep);
@@ -1458,16 +1464,17 @@ public class BarometerNetworkActivity extends Activity implements
 		public void run() {
 			if (activeMode.equals("animation")) {
 				displayAnimationFrame(animationStep);
-
+				imageButtonPlay.setImageResource(R.drawable.ic_menu_light_pause);
 				animationProgress.setProgress(animationStep);
 				animationStep++;
 				if (animationStep < 100) {
 					animationHandler.postDelayed(this, 50);
 				} else {
-					stopAndReset();
+					stop();
 				}
 			} else {
-				stopAndReset();
+				stop();
+				reset();
 			}
 		}
 	}
@@ -1700,27 +1707,30 @@ public class BarometerNetworkActivity extends Activity implements
 				if (receivedList != null) {
 					if (receivedList.size() > 0) {
 						currentConditionRecents = receivedList;
+						
+						if (!activeMode.equals("animation")) {
+							addConditionsToMap();
+						} else {
+							conditionAnimationRecents.clear();
+							conditionAnimationRecents = receivedList;
+							beginAnimationWithNewConditions(animationStep);
+						}
 					} else {
 						log("app received conditions size 0");
 						if(activeMode.equals("animation")) {
 							Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
-							animator.stopAndReset();
+							animator.stop();
+							animator.reset();
 						}
 						break;
 					}
+					
 				} else {
 					log("app received null conditions");
 					break;
 				}
 
-				if (!activeMode.equals("animation")) {
-					addConditionsToMap();
-				} else {
-					conditionAnimationRecents.clear();
-					conditionAnimationRecents = receivedList;
-					beginAnimationWithNewConditions();
-				}
-
+				
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
@@ -3216,7 +3226,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 		// addDataToMap();
 
-		startSensorListeners();
+		checkBarometer();
+		
+		if(hasBarometer) {
+			startSensorListeners();
+		}
+			
 		startGettingLocations();
 
 		if (!isCbServiceRunning()) {
