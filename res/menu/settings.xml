@@ -60,14 +60,9 @@
         android:showAsAction="never"
         android:title="Spread the word"/>
     <item
-        android:id="@+id/menu_send_feedback"
-        android:enabled="true"
-        android:showAsAction="never"
-        android:title="Send feedback"/>
-    <item
         android:id="@+id/menu_rate_pressurenet"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Rate pressureNET"/>
+        android:title="Rate &amp; review"/>
 
 </menu>

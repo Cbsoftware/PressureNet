@@ -2220,8 +2220,6 @@ public class BarometerNetworkActivity extends Activity implements
 					BarometerNetworkActivity.GA_ACTION_BUTTON, 
 					"spread_the_word", 
 					null).build());
-		} else if (item.getItemId() == R.id.menu_send_feedback) {
-			sendFeedback();
 		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
 			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
