@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0401084"
-    android:versionName="4.1.8" >
+    android:versionCode="0402033"
+    android:versionName="4.2.3RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -41,7 +41,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.DataManagementActivity"
             android:excludeFromRecents="true"
-            android:label="@string/data"
+            android:label="Data cache"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
@@ -82,7 +82,7 @@
             android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
-            android:label="@string/current_conditions"
+            android:label="What's it like outside?"
             android:theme="@style/CustomThemeDialogDark"
             android:exported="true" >
         </activity>
@@ -100,7 +100,7 @@
             android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
-            android:label="My Data"
+            android:label="My data"
             android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
@@ -148,6 +148,14 @@
 				
 				<category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.ConditionsAnimationSettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Animation Parameters"
+            android:theme="@style/CustomThemeDialog"
+            android:excludeFromRecents="true" >
+            
         </activity>
         
         <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >

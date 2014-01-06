@@ -32,8 +32,8 @@ public class PnDb {
 			+ ") ON CONFLICT REPLACE)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 6; // db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7; TODO: fix this nonsense
-
+	private static final int DATABASE_VERSION = 7; 
+	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.x; TODO: fix this nonsense
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);

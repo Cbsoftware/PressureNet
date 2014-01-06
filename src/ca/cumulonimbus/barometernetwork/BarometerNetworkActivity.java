@@ -7,9 +7,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -79,6 +82,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -86,10 +91,12 @@ import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -142,6 +149,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbObservation> graphRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
+	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
 
 	private int activeAPICallCount = 0;
 
@@ -157,10 +165,12 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button mapMode;
 	private Button graphMode;
 	private Button sensorMode;
+	private Button animationMode;
 
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
+	private LinearLayout layoutAnimation;
 
 	private TextView mapLatitudeMinText;
 	private TextView mapLongitudeMinText;
@@ -169,21 +179,31 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
-	private TextView textChartTimeInfo;
 	private RelativeLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
 
 	private ImageButton buttonGoBackwards;
 	private ImageButton buttonGoForwards;
-	
+
 	private Button reloadGobalData;
-	
+
 	private CheckBox checkShowPressure;
 	private CheckBox checkShowConditions;
-	
+
+	private ImageButton buttonMyLocation;
+
+	private SeekBar animationProgress;
+	private ImageButton imageButtonAnimationSettings;
+
+	private Calendar calAnimationStartDate;
+	private long animationDurationInMillis = 0;
+
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
+	Handler animationHandler = new Handler();
+
+	private int animationStep = 0;
 
 	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
 
@@ -197,7 +217,17 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_LOCATION_CHOICE = 2;
 	public static final int REQUEST_MAILED_LOG = 3;
 	public static final int REQUEST_DATA_CHANGED = 4;
+	public static final int REQUEST_ANIMATION_PARAMS = 5;
 
+	public static final String GA_CATEGORY_MAIN_APP = "app";
+	public static final String GA_CATEGORY_NOTIFICATIONS = "notifications";
+	public static final String GA_CATEGORY_WIDGET = "widgets";
+	
+	public static final String GA_ACTION_MODE = "mode";
+	public static final String GA_ACTION_SEARCH = "search";
+	public static final String GA_ACTION_BUTTON = "button_press";
+	
+	
 	/**
 	 * preferences
 	 */
@@ -217,6 +247,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonGoLocation;
 	private EditText editLocation;
 
+	private ImageButton imageButtonPlay;
+	private TextView textAnimationInfo;
+
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
 	private String activeMode = "map";
@@ -229,7 +262,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private long lastMapDataUpdate = System.currentTimeMillis()
 			- (1000 * 60 * 60);
 
-	
 	private boolean isConnected = false;
 
 	private boolean hasBarometer = true;
@@ -249,12 +281,16 @@ public class BarometerNetworkActivity extends Activity implements
 			"Waning crescent" }; // 7
 
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
-	
+	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
+
 	ChartController charts = new ChartController();
-	
+
 	private boolean displayPressure = true;
 	private boolean displayConditions = true;
-	
+
+	private boolean animationPlaying = false;
+	private AnimationRunner animator = new AnimationRunner();
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -275,61 +311,61 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 	}
-	
+
 	/**
-	 * Create a db object, open and close it.
-	 * Forces a check for upgrades
+	 * Create a db object, open and close it. Forces a check for upgrades
 	 */
 	private void checkDb() {
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();
 		db.close();
 	}
-	
+
 	/**
 	 * Controller for the chart viewing experience. Keep some data cached
 	 */
 	private class ChartController {
 		private int cachedSegments;
 		private int currentSegment;
-		
+
 		/**
-		 * New data is being loaded, so increment the cache count
-		 * and set the current pointer to the most recent value
+		 * New data is being loaded, so increment the cache count and set the
+		 * current pointer to the most recent value
 		 */
 		public void addAndLoadSegment() {
 			cachedSegments++;
 			currentSegment = cachedSegments;
-			
+
 			CbApiCall api = getActiveChartCacheCall();
 			makeAPICall(api);
 		}
-		
+
 		public CbApiCall getActiveChartCacheCall() {
-			long startTime = System.currentTimeMillis() - (currentSegment * 12 * 60 * 60 * 1000);
+			long startTime = System.currentTimeMillis()
+					- (currentSegment * 12 * 60 * 60 * 1000);
 			long endTime = startTime + (12 * 60 * 60 * 1000);
-			
+
 			CbApiCall api = buildMapAPICall(12);
 			api.setStartTime(startTime);
 			api.setEndTime(endTime);
 			api.setLimit(3000);
 			return api;
 		}
-		
+
 		public void loadCachedSegment() {
 			CbApiCall api = getActiveChartCacheCall();
 			askForGraphRecents(api);
-			
+
 		}
-		
+
 		public void reset() {
 			cachedSegments = 0;
 			currentSegment = 0;
 		}
-		
+
 		public void goBack() {
 			currentSegment++;
-			if(currentSegment > cachedSegments) {
+			if (currentSegment > cachedSegments) {
 				addAndLoadSegment();
 			} else {
 				loadCachedSegment();
@@ -337,30 +373,33 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonGoForwards.setEnabled(true);
 			buttonGoForwards.setAlpha(1F);
 		}
-		
+
 		public void goForward() {
 			currentSegment--;
-			if(currentSegment <= 1) {
+			if (currentSegment <= 1) {
 				buttonGoForwards.setEnabled(false);
 				buttonGoForwards.setAlpha(.5F);
 			}
 			loadCachedSegment();
 		}
-		
+
 		public int getCachedSegments() {
 			return cachedSegments;
 		}
+
 		public void setCachedSegments(int cachedSegments) {
 			this.cachedSegments = cachedSegments;
 		}
+
 		public int getCurrentSegment() {
 			return currentSegment;
 		}
+
 		public void setCurrentSegment(int currentSegment) {
 			this.currentSegment = currentSegment;
 		}
 	}
-	
+
 	/**
 	 * Start the network location listener for use outside the SDK
 	 */
@@ -443,13 +482,11 @@ public class BarometerNetworkActivity extends Activity implements
 			mLongitude = longitude;
 		} catch (Exception e) {
 			// everything stays as previous, likely 0
-			Toast.makeText(getApplicationContext(), "Location not found", Toast.LENGTH_SHORT).show();
+			// Toast.makeText(getApplicationContext(), "Location not found",
+			// Toast.LENGTH_SHORT).show();
 		}
 
 	}
-
-
-
 
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
@@ -482,7 +519,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private void displayNetworkOfflineToast() {
 		if (!isConnected) {
 			Toast.makeText(getApplicationContext(),
-					"No network connection. Data won't load.", Toast.LENGTH_LONG).show();
+					"No network connection. Data won't load.",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -495,8 +533,9 @@ public class BarometerNetworkActivity extends Activity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		// when was the last search locations API call?
-		lastSearchLocationsAPICall = sharedPreferences.getLong("lastSearchLocationsAPICall", now - (1000 * 60 * 10));
-		if(now - lastSearchLocationsAPICall > acceptableLocationTimeDifference) {
+		lastSearchLocationsAPICall = sharedPreferences.getLong(
+				"lastSearchLocationsAPICall", now - (1000 * 60 * 10));
+		if (now - lastSearchLocationsAPICall > acceptableLocationTimeDifference) {
 			log("running makeLocationAPICalls");
 			PnDb pn = new PnDb(getApplicationContext());
 			pn.open();
@@ -514,11 +553,12 @@ public class BarometerNetworkActivity extends Activity implements
 				makeAPICall(locationApiCall);
 			}
 			pn.close();
-			
+
 			lastSearchLocationsAPICall = now;
 			// Save the time in prefs
 			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putLong("lastSearchLocationsAPICall", lastSearchLocationsAPICall);
+			editor.putLong("lastSearchLocationsAPICall",
+					lastSearchLocationsAPICall);
 			editor.commit();
 		} else {
 			log("not making locations calls, too soon");
@@ -535,7 +575,8 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		disableReload();
 		// when was the last global API call?
-		lastGlobalApiCall = sharedPreferences.getLong("lastGlobalAPICall", currentTime - (1000 * 60 * 10));
+		lastGlobalApiCall = sharedPreferences.getLong("lastGlobalAPICall",
+				currentTime - (1000 * 60 * 10));
 		if (currentTime - lastGlobalApiCall > (acceptableTimeDiff)) {
 			// System.out.println("making global map api call");
 
@@ -546,7 +587,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLon(180);
 			globalMapCall.setLimit(3000);
 			globalMapCall.setStartTime(System.currentTimeMillis()
-					- (int) (1000 * 60 * 60 * .25));
+					- (int) (1000 * 60 * 10));
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			makeAPICall(globalMapCall);
 
@@ -571,8 +612,9 @@ public class BarometerNetworkActivity extends Activity implements
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		// when was the last search locations API call?
-		lastGlobalConditionsApiCall = sharedPreferences.getLong("lastGlobalConditionsApiCall", now - (1000 * 60 * 10));
-		if(now - lastGlobalConditionsApiCall > acceptableLocationTimeDifference) {
+		lastGlobalConditionsApiCall = sharedPreferences.getLong(
+				"lastGlobalConditionsApiCall", now - (1000 * 60 * 10));
+		if (now - lastGlobalConditionsApiCall > acceptableLocationTimeDifference) {
 			log("making global conditions call");
 			CbApiCall globalMapCall = new CbApiCall();
 			globalMapCall.setMinLat(-90);
@@ -584,10 +626,11 @@ public class BarometerNetworkActivity extends Activity implements
 					- (int) (1000 * 60 * 60 * 2));
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			makeCurrentConditionsAPICall(globalMapCall);
-			
+
 			// Save the time in prefs
 			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putLong("lastGlobalConditionsApiCall", lastGlobalConditionsApiCall);
+			editor.putLong("lastGlobalConditionsApiCall",
+					lastGlobalConditionsApiCall);
 			editor.commit();
 		} else {
 			log("not making conditions global call, too soon");
@@ -604,15 +647,15 @@ public class BarometerNetworkActivity extends Activity implements
 			mMap = ((MapFragment) getFragmentManager().findFragmentById(
 					R.id.map)).getMap();
 
-			if(mMap!=null) {
-				
+			if (mMap != null) {
+
 				mMap.getUiSettings().setZoomControlsEnabled(false);
 				mMap.getUiSettings().setCompassEnabled(false);
-	
+
 				mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
-	
+
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-	
+
 					@Override
 					public void onCameraChange(CameraPosition position) {
 						// change button ability based on zoom level
@@ -623,16 +666,16 @@ public class BarometerNetworkActivity extends Activity implements
 							graphMode.setEnabled(false);
 							graphMode.setTextColor(Color.GRAY);
 						}
-	
+
 						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(editLocation.getWindowToken(),
-								0);
+						imm.hideSoftInputFromWindow(
+								editLocation.getWindowToken(), 0);
 						editLocation.setCursorVisible(false);
-	
+
 						LatLngBounds bounds = mMap.getProjection()
 								.getVisibleRegion().latLngBounds;
 						visibleBound = bounds;
-	
+
 						if (activeMode.equals("graph")) {
 							mapMode.performClick();
 							layoutMapInfo.setVisibility(View.GONE);
@@ -641,13 +684,17 @@ public class BarometerNetworkActivity extends Activity implements
 						} else if (activeMode.equals("sensors")) {
 							mapMode.performClick();
 							layoutMapInfo.setVisibility(View.GONE);
+						} else if (activeMode.equals("animation")) {
+							animator.stop();
+							animator.reset();
 						}
-	
+
 						updateMapInfoText();
 					}
 				});
 			} else {
-				Toast.makeText(getApplicationContext(), "Unable to show map", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Unable to show map",
+						Toast.LENGTH_SHORT).show();
 			}
 
 		}
@@ -664,7 +711,13 @@ public class BarometerNetworkActivity extends Activity implements
 				.getMap();
 
 		// Set default coordinates (centered around the user's location)
+		goToMyLocation();
+	}
 
+	/**
+	 * Use the recent network location to go to the user's location on the map
+	 */
+	public void goToMyLocation() {
 		try {
 			LocationManager lm = (LocationManager) this
 					.getSystemService(Context.LOCATION_SERVICE);
@@ -819,92 +872,226 @@ public class BarometerNetworkActivity extends Activity implements
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
 		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
+		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
+		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
 
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
 		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
-		textChartTimeInfo = (TextView) findViewById(R.id.textChartTime);
 		buttonGoBackwards = (ImageButton) findViewById(R.id.buttonGoBackwards);
 		buttonGoForwards = (ImageButton) findViewById(R.id.buttonGoForwards);
-		
+
 		reloadGobalData = (Button) findViewById(R.id.buttonReloadGlobalData);
-		
+
 		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
 		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
+
+		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
+		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
-		checkShowPressure.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		animationProgress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
-				displayPressure = isChecked;
-				mMap.clear();
-				loadRecents();
+			public void onStopTrackingTouch(SeekBar seekBar) {
+			
+				
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+					if(fromUser) {
+						animator.showSpecificFrame(progress);	
+					}
 			}
 		});
 		
-		checkShowConditions.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
-				displayConditions = isChecked;
-				mMap.clear();
-				loadRecents();
-			}
-		});
-		
-		reloadGobalData.setOnClickListener(new OnClickListener() {
-			
+		imageButtonAnimationSettings.setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View arg0) {
+				Intent intent = new Intent(getApplicationContext(),
+						ConditionsAnimationSettingsActivity.class);
+				
+				intent.putExtra("animationDuration", animationDurationInMillis);
+				if(calAnimationStartDate== null) {
+					calAnimationStartDate = Calendar.getInstance();
+				}
+				intent.putExtra("calAnimationStartDate", calAnimationStartDate.getTimeInMillis());
+				startActivityForResult(intent, REQUEST_ANIMATION_PARAMS);
+			}
+		});
+
+		imageButtonPlay.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (!animationPlaying) {
+					if (animationDurationInMillis > 0) {
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"animation_play", 
+								 1L).build());
+						log("animation onclick, duration "
+								+ animationDurationInMillis);
+						playConditionsAnimation();
+					} else {
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"animation_play", 
+								 0L).build());
+						log("animation onclick, no duration, default 24h");
+						animationDurationInMillis = 1000 * 60 * 60 * 24;
+						calAnimationStartDate = Calendar.getInstance();
+						calAnimationStartDate.add(Calendar.DAY_OF_MONTH, -1);
+						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
+						calAnimationStartDate.set(Calendar.MINUTE, 0);
+						playConditionsAnimation();
+					}
+				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_BUTTON, 
+							"animation_pause", 
+							 null).build());
+					animator.pause();
+				}
+			}
+		});
+
+		buttonMyLocation.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"my_location", 
+						 null).build());
+				goToMyLocation();
+			}
+		});
+
+		checkShowPressure
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton arg0,
+							boolean isChecked) {
+						long check = isChecked ? 1 : 0; 
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"show_pressure_check", 
+								 check).build());
+						displayPressure = isChecked;
+						mMap.clear();
+						loadRecents();
+					}
+				});
+
+		checkShowConditions
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton arg0,
+							boolean isChecked) {
+						long check = isChecked ? 1 : 0; 
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_BUTTON, 
+								"show_conditions_check", 
+								 check).build());
+						displayConditions = isChecked;
+						mMap.clear();
+						loadRecents();
+					}
+				});
+
+		reloadGobalData.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"reload_global_data", 
+						 null).build());
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
-				lastGlobalApiCall = System.currentTimeMillis() - (1000 * 60 * 20);
+				lastGlobalApiCall = System.currentTimeMillis()
+						- (1000 * 60 * 20);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
-				
+
 				makeGlobalMapCall();
 				makeGlobalConditionsMapCall();
 			}
 		});
-		
+
 		buttonGoBackwards.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"graph_go_back", 
+						 null).build());
 				charts.goBack();
 			}
 		});
-	
 
 		buttonGoForwards.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"graph_go_forward", 
+						 null).build());
 				charts.goForward();
 			}
 		});
-		
+
 		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				try {
+					long check = isChecked ? 1 : 0; 
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_BUTTON, 
+							"satellite_check", 
+							 check).build());
 					if (isChecked) {
 						mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					} else {
 						mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 					}
-				} catch(NullPointerException npe) {
+				} catch (NullPointerException npe) {
 					// no map
 				}
 			}
@@ -946,27 +1133,37 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
 					}
-					addDataToMap();
-					addConditionsToMap();
+					loadRecents();
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"map", 
+							 null).build());
+					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					// buttonChartTimeInfo.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+
+					if (animationPlaying) {
+						animator.pause();
+					}
 
 					removeChartFromLayout();
 
 					// set mode and load data
 					activeMode = "map";
-					addDataToMap();
-					addConditionsToMap();
+					loadRecents();
 				}
 
 			}
@@ -982,6 +1179,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"graph", 
+							 null).build());
+					
 					graphMode.setEnabled(false);
 					graphMode.setTextColor(Color.GRAY);
 					Toast.makeText(getApplicationContext(), "Loading graph…",
@@ -990,24 +1193,30 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "graph";
 					removeChartFromLayout();
 
+					if (animationPlaying) {
+						animator.pause();
+					}
+
 					charts.reset();
-					
+
 					hoursAgoSelected = 12;
 
 					log("making api call 12h for graph");
 					CbApiCall api = buildMapAPICall(hoursAgoSelected);
 					api.setLimit(5000);
 					makeAPICall(api);
-					
+
 					charts.addAndLoadSegment();
 
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.BOLD);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
 				}
 
 			}
@@ -1025,22 +1234,109 @@ public class BarometerNetworkActivity extends Activity implements
 						layoutSensors.setVisibility(View.VISIBLE);
 					}
 				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"sensors", 
+							 null).build());
+					
 					activeMode = "sensors";
+
+					if (animationPlaying) {
+						animator.pause();
+					}
 
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
+					layoutAnimation.setVisibility(View.GONE);
 
 					layoutGraphButtons.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.BOLD);
+					animationMode.setTypeface(null, Typeface.NORMAL);
 
 				}
 
+			}
+		});
+
+		animationMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (activeMode.equals("animation")) {
+					// switch to map mode
+					
+					// UI switc
+					layoutGraph.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.BOLD);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+
+					if (animationPlaying) {
+						animator.pause();
+					}
+
+					removeChartFromLayout();
+
+					// set mode and load data
+					activeMode = "map";
+					loadRecents();
+					
+				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"animation", 
+							 null).build());
+					
+					activeMode = "animation";
+
+					if (mMap != null) {
+						mMap.clear();
+					}
+
+					if (calAnimationStartDate == null) {
+						calAnimationStartDate = Calendar.getInstance();
+						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
+						calAnimationStartDate.set(Calendar.MINUTE, 0);
+						calAnimationStartDate.set(Calendar.SECOND, 0);
+						animationDurationInMillis = 1000 * 60 * 60 * 24;
+					}
+					long startTime = calAnimationStartDate.getTimeInMillis();
+					long endTime = startTime + animationDurationInMillis;
+					
+					Calendar end = Calendar.getInstance();
+					end.setTimeInMillis(endTime);
+					
+					textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
+					
+					
+					// UI switch
+					layoutGraph.setVisibility(View.GONE);
+					layoutGraphButtons.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.VISIBLE);
+
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.BOLD);
+					
+
+				}
 			}
 		});
 
@@ -1048,6 +1344,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_BUTTON, 
+						"search_location_focus", 
+						 null).build());
 				editLocation.setText("");
 				editLocation.setCursorVisible(true);
 			}
@@ -1059,6 +1360,11 @@ public class BarometerNetworkActivity extends Activity implements
 					KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					buttonGoLocation.performClick();
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_SEARCH, 
+							editLocation.getEditableText().toString(), 
+							null).build());
 				}
 				return false;
 			}
@@ -1072,14 +1378,19 @@ public class BarometerNetworkActivity extends Activity implements
 				String location = editLocation.getText().toString();
 				if (location.equals("")) {
 					Toast toast = Toast.makeText(getApplicationContext(),
-							"Enter a search location",
-							Toast.LENGTH_SHORT);
+							"Enter a search location", Toast.LENGTH_SHORT);
 					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 					toast.show();
 					focusSearch();
 					return;
 				}
 				location = location.trim();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						GA_CATEGORY_MAIN_APP, 
+						GA_ACTION_SEARCH, 
+						location, 
+						null).build());
+				
 				Toast.makeText(getApplicationContext(), "Going to " + location,
 						Toast.LENGTH_SHORT).show();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1112,8 +1423,8 @@ public class BarometerNetworkActivity extends Activity implements
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
 						Toast.makeText(getApplicationContext(),
-								"Can't search Google Maps",
-								Toast.LENGTH_SHORT).show();
+								"Can't search Google Maps", Toast.LENGTH_SHORT)
+								.show();
 					}
 
 				} catch (IOException ioe) {
@@ -1122,7 +1433,164 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		});
+	}
 
+	/**
+	 * The user has requested the animation begin. Fetch the data to begin.
+	 */
+	private void playConditionsAnimation() {
+		if (mMap == null) {
+			return;
+		}
+		
+		// If the animation isn't in-progress, start
+		// at the beginning. Otherwise resume.
+		if( (animationStep < 1) || (animationStep >= 99)) { 
+			animationStep = 0;
+			animationProgress.setProgress(0);
+		
+			conditionAnimationRecents.clear();
+			animationMarkerOptions.clear();
+			
+			// user-specified start and end date
+			if (calAnimationStartDate == null) {
+				calAnimationStartDate = Calendar.getInstance();
+			}
+
+			long startTime = calAnimationStartDate.getTimeInMillis();
+			long endTime = startTime + animationDurationInMillis;
+			log("animation start " + startTime + ", + end " + endTime);
+			makeCurrentConditionsAPICall(buildConditionsAnimationCall(startTime,
+					endTime));
+		} else {
+			beginAnimationWithNewConditions(animationStep);
+		}
+	}
+
+	/**
+	 * The new condition data for animations has been received. Play the
+	 * animation.
+	 */
+	private void beginAnimationWithNewConditions(int startFrame) {
+		mMap.clear();
+		animationStep = startFrame;
+		if (conditionAnimationRecents == null) {
+			animator.pause();
+			return;
+		}
+		if (conditionAnimationRecents.size() == 0) {
+			animator.pause();
+			return;
+		}
+		animationPlaying = true;
+		Collections.sort(conditionAnimationRecents,
+				new CbScience.ConditionTimeComparator());
+
+		long timeStart = conditionAnimationRecents.get(0).getTime();
+		long timeEnd = conditionAnimationRecents.get(
+				conditionAnimationRecents.size() - 1).getTime();
+		long timeSpan = timeEnd - timeStart;
+		long frameLength = timeSpan / 100;
+
+		if (frameLength == 0) {
+			log("barometernetworkactivity framelength = 0, bail on animation");
+			Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+			animator.stop();
+			animator.reset();
+			return;
+		}
+
+		for (CbCurrentCondition condition : conditionAnimationRecents) {
+			long conditionTime = condition.getTime();
+			long timeOffsetFromStart = conditionTime - timeStart;
+			long frameNumber = timeOffsetFromStart / frameLength;
+			int frame = (int) frameNumber;
+			condition.setAnimateGroupNumber(frame);
+			log("setting condition frame " + frame);
+
+			LatLng point = new LatLng(condition.getLocation().getLatitude(),
+					condition.getLocation().getLongitude());
+			log("getting layer drawable for condition "
+					+ condition.getGeneral_condition());
+			LayerDrawable drLayer = getCurrentConditionDrawable(condition, null);
+			if (drLayer == null) {
+				log("drlayer null, next!");
+				continue;
+			}
+			Drawable draw = getSingleDrawable(drLayer);
+
+			Bitmap image = drawableToBitmap(draw, null);
+			MarkerOptions thisMarkerOptions = new MarkerOptions().position(
+					point).icon(BitmapDescriptorFactory.fromBitmap(image));
+
+			animationMarkerOptions.add(thisMarkerOptions);
+		}
+
+		animationHandler.post(animator);
+
+	}
+
+	private void displayAnimationFrame(int frame) {
+		animationStep = frame;
+		Iterator<CbCurrentCondition> conditionIterator = conditionAnimationRecents
+				.iterator();
+		int num = 0;
+		int e = 10;
+		mMap.clear();
+		while (conditionIterator.hasNext()) {
+			CbCurrentCondition condition = conditionIterator.next();
+			MarkerOptions markerOpts = animationMarkerOptions.get(num);
+			if (Math.abs(condition.getAnimateGroupNumber() - frame) < e) {
+				mMap.addMarker(markerOpts);
+			}
+			num++;
+		}
+	}
+
+	private class AnimationRunner implements Runnable {
+
+		public void stop() {
+			log("stoping animation");
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			animationPlaying = false;
+		}
+		
+		public void reset() {
+			log("resetting animation");
+			animationStep = 0;
+			conditionAnimationRecents.clear();
+			animationProgress.setProgress(animationStep);
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			animationPlaying = false;
+		}
+		
+		public void showSpecificFrame(int frameNumber) {
+			pause();
+			displayAnimationFrame(frameNumber);
+		}
+		
+		public void pause() {
+			animationPlaying = false;
+			animationHandler.removeCallbacks(this);
+			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+		}
+		
+		public void run() {
+			if (activeMode.equals("animation")) {
+				displayAnimationFrame(animationStep);
+				imageButtonPlay.setImageResource(R.drawable.ic_menu_light_pause);
+				animationProgress.setProgress(animationStep);
+				animationStep++;
+				if (animationStep < 100) {
+					animationHandler.postDelayed(this, 50);
+				} else {
+					stop();
+				}
+			} else {
+				stop();
+				reset();
+			}
+		}
 	}
 
 	/**
@@ -1159,13 +1627,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private void startCbService() {
 		log("start cbservice");
 		try {
-			if (hasBarometer) {
-				serviceIntent = new Intent(this, CbService.class);
-				startService(serviceIntent);
-				log("app started service");
-			} else {
-				log("app detects no barometer, not starting service");
-			}
+			serviceIntent = new Intent(this, CbService.class);
+			startService(serviceIntent);
+			log("app started service");
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -1333,36 +1797,57 @@ public class BarometerNetworkActivity extends Activity implements
 				updateAPICount(-1);
 				enableReload();
 				if (activeMode.equals("map")) {
-					CbApiCall api = buildMapAPICall(.5);
+					CbApiCall api = buildMapAPICall(.25);
 					askForRecents(api);
 
-					CbApiCall apiConditions = buildMapCurrentConditionsCall(.5);
+					CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
 					askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
 					CbApiCall api = charts.getActiveChartCacheCall();
 					askForGraphRecents(api);
+				} else if (activeMode.equals("animation")) {
+					if(calAnimationStartDate != null) {
+						long startTime = calAnimationStartDate.getTimeInMillis();
+						long endTime = startTime + animationDurationInMillis;
+						CbApiCall api = buildConditionsAnimationCall(startTime,
+								endTime);
+						askForCurrentConditionRecents(api);
+					}
 				}
-				
+
 				break;
 			case CbService.MSG_CURRENT_CONDITIONS:
 				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
 				if (receivedList != null) {
 					if (receivedList.size() > 0) {
-						currentConditionRecents = receivedList;
+						if (!activeMode.equals("animation")) {
+							currentConditionRecents = receivedList;
+							addConditionsToMap();
+						} else {
+							conditionAnimationRecents.clear();
+							conditionAnimationRecents = receivedList;
+							beginAnimationWithNewConditions(animationStep);
+						}
 					} else {
 						log("app received conditions size 0");
+						if(activeMode.equals("animation")) {
+							Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+							animator.stop();
+							animator.reset();
+						}
+						break;
 					}
+					
 				} else {
 					log("app received null conditions");
+					break;
 				}
-				
-				addConditionsToMap();
-				
+
 				
 				break;
 			case CbService.MSG_CHANGE_NOTIFICATION:
 				String change = (String) msg.obj;
-				//deliverNotification(change);
+				// deliverNotification(change);
 				break;
 			case CbService.MSG_DATA_RESULT:
 				String errors = (String) msg.obj;
@@ -1372,15 +1857,14 @@ public class BarometerNetworkActivity extends Activity implements
 				} else if ((!errors.contains("error")) && (errors.length() > 1)) {
 					String condition = errors;
 					Toast.makeText(getApplicationContext(),
-							"Sent " + condition, Toast.LENGTH_SHORT)
-							.show();
+							"Sent " + condition, Toast.LENGTH_SHORT).show();
 				} else {
 					// pressure toast
 					String toPrint = displayPressureValue(recentPressureReading);
-					Toast.makeText(getApplicationContext(),
-							"Sent " + toPrint, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Sent " + toPrint,
+							Toast.LENGTH_SHORT).show();
 				}
-				askForCurrentConditionRecents(buildMapCurrentConditionsCall(1));
+
 				break;
 			default:
 				log("received default message");
@@ -1388,19 +1872,17 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 	}
-	
-	
 
 	private void enableReload() {
 		reloadGobalData.setEnabled(true);
 		reloadGobalData.setTextColor(Color.BLACK);
 	}
-	
+
 	private void disableReload() {
 		reloadGobalData.setEnabled(false);
 		reloadGobalData.setTextColor(Color.GRAY);
 	}
-	
+
 	/**
 	 * Take the chart away.
 	 */
@@ -1531,11 +2013,17 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			askForSettings();
-			//makeLocationAPICalls();
-			makeGlobalMapCall();
-			makeGlobalConditionsMapCall();
+			
 			sendChangeNotification();
 			getStoredPreferences();
+			
+			// Refresh the data unless we're in animation mode
+			if(!activeMode.equals("animation")) {
+				makeGlobalMapCall();
+				makeGlobalConditionsMapCall();
+			}
+			
+			
 		}
 
 		/**
@@ -1738,17 +2226,29 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// submit a single reading
 			sendSingleObservation();
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"send_single_reading", 
+					null).build());
 		} else if (item.getItemId() == R.id.menu_grow_pressurenet) {
 			growPressureNET();
-		} else if (item.getItemId() == R.id.menu_send_feedback) {
-			sendFeedback();
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"spread_the_word", 
+					null).build());
 		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
-		} 
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"rate_pressurenet", 
+					null).build());
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	/**
 	 * Open the Google Play pressureNET page
 	 */
@@ -1898,13 +2398,86 @@ public class BarometerNetworkActivity extends Activity implements
 				lastGlobalApiCall = System.currentTimeMillis()
 						- (1000 * 60 * 15);
 				// Save the time in prefs
-				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+				SharedPreferences sharedPreferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
 			}
+		} else if (requestCode == REQUEST_ANIMATION_PARAMS) {
+			// update animation parameters with new data
+			if (data != null) {
+				if (data.getExtras() != null) {
+					Bundle bundle = data.getExtras();
+					Calendar startDate = (Calendar) bundle.get("startDate");
+					long rangeInMs = (Long) bundle.get("animationRange");
+					calAnimationStartDate = startDate;
+					animationDurationInMillis = rangeInMs;
+					log("barometernetworkactivity receiving animation params: "
+							+ calAnimationStartDate + ", "
+							+ animationDurationInMillis);
+					
+					Calendar endDate = (Calendar) calAnimationStartDate.clone();
+					endDate.add(Calendar.MILLISECOND, (int)animationDurationInMillis);
+					
+					textAnimationInfo.setText(buildHumanDateRangeFormat(startDate, endDate));
+					
+				
+				} else {
+					log("barometernetworkactivity data bundle . getExtras is null");
+				}
+
+			} else {
+				log("barometernetworkactivity received data intent null:");
+			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	public static String buildHumanDateRangeFormat(Calendar start, Calendar end) {
+		String yearFormat = "";
+		String monthFormat = "MMM ";
+		String dayFormat = "d";
+		String timeFormat = "";
+		
+		boolean showSecondPrefix = true;
+		
+		// if the years are both this year, don't show the value
+		if( (start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) && (start.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR) )) {
+			yearFormat = "";
+			
+			if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH)) {
+				if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
+					showSecondPrefix = false;
+				}
+			}
+		} else {
+			yearFormat = ", yyyy";
+		}
+		
+		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.MINUTE) == 0) {
+			if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
+				timeFormat = " H:mm";
+			} else {
+				timeFormat = "";
+			}
+		} else {
+			timeFormat = " H:mm";
+		}
+		
+		String format = monthFormat + dayFormat + yearFormat + timeFormat;
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		
+		String returnText = "";
+		if(showSecondPrefix) {
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + sdf.format(end.getTimeInMillis());
+		} else {
+			String secondFormat = "H:mm";
+			SimpleDateFormat second = new SimpleDateFormat(secondFormat);
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + second.format(end.getTimeInMillis());
+		}
+		
+		return returnText;
 	}
 
 	private void focusSearch() {
@@ -1996,6 +2569,7 @@ public class BarometerNetworkActivity extends Activity implements
 		MoonPhase mp = new MoonPhase(Calendar.getInstance());
 		return mp.getPhaseIndex();
 	}
+
 	/**
 	 * Create neat drawables for weather conditions depending on the type of
 	 * weather, the time, etc.
@@ -2010,13 +2584,24 @@ public class BarometerNetworkActivity extends Activity implements
 		Drawable weatherBackgroundDrawable = resizeDrawable(this.getResources()
 				.getDrawable(R.drawable.bg_wea_square));
 
+		if (CurrentConditionsActivity.isDaytime(condition.getLocation()
+				.getLatitude(), condition.getLocation().getLongitude(),
+				condition.getTime(), condition.getTzoffset())) {
+			weatherBackgroundDrawable = resizeDrawable(this.getResources()
+					.getDrawable(R.drawable.bg_wea_day));
+		} else {
+			weatherBackgroundDrawable = resizeDrawable(this.getResources()
+					.getDrawable(R.drawable.bg_wea_night));
+		}
+
 		int moonNumber = getMoonPhaseIndex() + 1;
 
 		if (condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			Drawable sunDrawable = this.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude())) {
+					.getLatitude(), condition.getLocation().getLongitude(),
+					condition.getTime(), condition.getTzoffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = this.getResources().getDrawable(
@@ -2231,8 +2816,9 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (condition.getGeneral_condition().equals(
 				getString(R.string.thunderstorm))) {
 			try {
-				double d = Double.parseDouble(condition.getThunderstorm_intensity());
-			} catch(Exception e) {
+				double d = Double.parseDouble(condition
+						.getThunderstorm_intensity());
+			} catch (Exception e) {
 				condition.setThunderstorm_intensity("0");
 			}
 			if (Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) {
@@ -2423,35 +3009,36 @@ public class BarometerNetworkActivity extends Activity implements
 		return bitmapDrawable;
 	}
 
-	private void addConditionsToMap() {		
+	private void addConditionsToMap() {
 		int currentCur = 0;
 		int totalAllowed = 30;
-		
-		
-		if(currentConditionRecents != null) {
-			log("adding current conditions to map: " + currentConditionRecents.size());
+
+		if (currentConditionRecents != null) {
+			log("adding current conditions to map: "
+					+ currentConditionRecents.size());
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
-	
+
 				LatLng point = new LatLng(
 						condition.getLocation().getLatitude(), condition
 								.getLocation().getLongitude());
-				log("getting layer drawable for condition " + condition.getGeneral_condition());
+				log("getting layer drawable for condition "
+						+ condition.getGeneral_condition());
 				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
-				if(drLayer==null) {
+				if (drLayer == null) {
 					log("drlayer null, next!");
 					continue;
 				}
 				Drawable draw = getSingleDrawable(drLayer);
-				
+
 				Bitmap image = drawableToBitmap(draw, null);
-	
+
 				Marker marker = mMap.addMarker(new MarkerOptions().position(
 						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
 				marker.showInfoWindow();
 				conditionsMarkers.add(marker);
-				
+
 				currentCur++;
 				if (currentCur > totalAllowed) {
 					break;
@@ -2466,27 +3053,26 @@ public class BarometerNetworkActivity extends Activity implements
 
 		bringConditionsToFront();
 	}
-	
+
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
 		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
-		if(!displayPressure) {
+		if (!displayPressure) {
 			return;
 		}
-	
-		
+
 		int totalAllowed = 30;
 		int currentObs = 0;
-		
+
 		int maxUpdateFrequency = 1000; // 500ms
 		long now = System.currentTimeMillis();
 
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.bg_pre_marker);
 
-		if(listRecents!=null) {
+		if (listRecents != null) {
 			if (listRecents.size() > 0) {
 				try {
 					if ((now - lastMapDataUpdate) < (maxUpdateFrequency)) {
@@ -2505,27 +3091,31 @@ public class BarometerNetworkActivity extends Activity implements
 							LatLng point = new LatLng(observation.getLocation()
 									.getLatitude(), observation.getLocation()
 									.getLongitude());
-		
-							Bitmap image = drawableToBitmap(drawable, observation);
-		
+
+							Bitmap image = drawableToBitmap(drawable,
+									observation);
+
 							String valueToPrint = displayPressureValue(observation
 									.getObservationValue());
-		
+
 							long timeRecorded = observation.getTime();
 							long timeNow = System.currentTimeMillis();
 							long msAgo = now - timeRecorded;
 							int minutesAgo = (int) (msAgo / (1000 * 60));
-		
-							mMap.addMarker(new MarkerOptions().position(point)
+
+							mMap.addMarker(new MarkerOptions()
+									.position(point)
 									.title(minutesAgo + " minutes ago")
-									.icon(BitmapDescriptorFactory.fromBitmap(image)));
-		
+									.icon(BitmapDescriptorFactory
+											.fromBitmap(image)));
+
 							currentObs++;
 							if (currentObs > totalAllowed) {
 								break;
 							}
 						} catch (Exception e) {
-							log("app error in adddatatomap recents, " + e.getMessage());
+							log("app error in adddatatomap recents, "
+									+ e.getMessage());
 						}
 					}
 					updateMapInfoText();
@@ -2536,23 +3126,22 @@ public class BarometerNetworkActivity extends Activity implements
 			listRecents.clear();
 		} else {
 			log("addDatatomap listrecents is null");
-		}		
+		}
 	}
-	
+
 	private void bringConditionsToFront() {
 		log("posted conditions front");
-	
-		if(conditionsMarkers!=null) {
+
+		if (conditionsMarkers != null) {
 			log("bringing conditions to front " + conditionsMarkers.size());
-			for(Marker marker : conditionsMarkers) {
+			for (Marker marker : conditionsMarkers) {
 				marker.showInfoWindow();
 			}
 		}
 		/*
-		ConditionsMapper mapper = new ConditionsMapper();
-		Handler handler = new Handler();
-		handler.postDelayed(mapper, 100);
-		*/
+		 * ConditionsMapper mapper = new ConditionsMapper(); Handler handler =
+		 * new Handler(); handler.postDelayed(mapper, 100);
+		 */
 	}
 
 	/**
@@ -2612,9 +3201,43 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
+	private CbApiCall buildConditionsAnimationCall(long startTime, long endTime) {
+		Date start = new Date(startTime);
+		Date end = new Date(endTime);
+		log("building conditions animation call, start : "
+				+ start.toLocaleString() + ", end " + end.toLocaleString());
+		CbApiCall api = new CbApiCall();
+
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+
+		if (visibleBound != null) {
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("no map center, bailing");
+			return null;
+		}
+
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setLimit(500);
+		api.setCallType("Conditions");
+		return api;
+	}
+
 	private CbApiCall buildMapCurrentConditionsCall(double hoursAgo) {
-		log("building map conditions call for hours: "
-				+ hoursAgo);
+		log("building map conditions call for hours: " + hoursAgo);
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
@@ -2650,11 +3273,13 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void sendSingleObservation() {
 		// check location and bail/notify if it's unavailable
-		if(mLatitude==0.0) {
-			Toast.makeText(getApplicationContext(), "Can't send data: location unavailable", Toast.LENGTH_LONG).show();
+		if (mLatitude == 0.0) {
+			Toast.makeText(getApplicationContext(),
+					"Can't send data: location unavailable", Toast.LENGTH_LONG)
+					.show();
 			return;
 		}
-		
+
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION,
 					0, 0);
@@ -2678,7 +3303,8 @@ public class BarometerNetworkActivity extends Activity implements
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				log("app can't send new settings, remote exception " + e.getMessage());
+				log("app can't send new settings, remote exception "
+						+ e.getMessage());
 				// e.printStackTrace();
 			}
 		} else {
@@ -2739,12 +3365,13 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void loadRecents() {
-		CbApiCall api = buildMapAPICall(1);
-		if(displayPressure) {
+		CbApiCall api = buildMapAPICall(.25);
+		if (displayPressure) {
 			askForRecents(api);
 		}
-		if(displayConditions) {
-			askForCurrentConditionRecents(api);
+		CbApiCall conditionsAPI = buildMapAPICall(2);
+		if (displayConditions) {
+			askForCurrentConditionRecents(conditionsAPI);
 		}
 	}
 
@@ -2767,12 +3394,17 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
-		//addDataToMap();
+		// addDataToMap();
 
-		startSensorListeners();
+		checkBarometer();
+		
+		if(hasBarometer) {
+			startSensorListeners();
+		}
+			
 		startGettingLocations();
 
-		if(!isCbServiceRunning()) {
+		if (!isCbServiceRunning()) {
 			log("onresume cbservice is not already running, ");
 			startCbService();
 		} else {
@@ -2784,15 +3416,17 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private boolean isCbServiceRunning() {
-	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-	        if (CbService.class.getName().equals(service.service.getClassName())) {
-	            return true;
-	        }
-	    }
-	    return false;
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if (CbService.class.getName()
+					.equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
+
 	@Override
 	protected void onStart() {
 		dataReceivedToPlot = false;
@@ -2906,7 +3540,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void log(String text) {
 		if (PressureNETConfiguration.DEBUG_MODE) {
-			//logToFile(text);
+			// logToFile(text);
 			System.out.println(text);
 		}
 	}
@@ -2921,28 +3555,34 @@ public class BarometerNetworkActivity extends Activity implements
 			Sensor humiditySensor = sm.getDefaultSensor(TYPE_RELATIVE_HUMIDITY);
 
 			if (pressureSensor != null) {
-				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, pressureSensor,SensorManager.SENSOR_DELAY_UI, 1000000);
+				if (android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, pressureSensor,
+							SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
-					sm.registerListener(this, pressureSensor, SensorManager.SENSOR_DELAY_UI);
+					sm.registerListener(this, pressureSensor,
+							SensorManager.SENSOR_DELAY_UI);
 				}
 			} else {
 				recentPressureReading = 0.0;
 			}
 			if (temperatureSensor != null) {
-				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, temperatureSensor,SensorManager.SENSOR_DELAY_UI, 1000000);
+				if (android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, temperatureSensor,
+							SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
-					sm.registerListener(this, temperatureSensor, SensorManager.SENSOR_DELAY_UI);
+					sm.registerListener(this, temperatureSensor,
+							SensorManager.SENSOR_DELAY_UI);
 				}
 			} else {
 				recentTemperatureReading = 1000.0;
 			}
 			if (humiditySensor != null) {
-				if(android.os.Build.VERSION.SDK_INT == 19) {
-					sm.registerListener(this, humiditySensor,SensorManager.SENSOR_DELAY_UI, 1000000);
+				if (android.os.Build.VERSION.SDK_INT == 19) {
+					sm.registerListener(this, humiditySensor,
+							SensorManager.SENSOR_DELAY_UI, 1000000);
 				} else {
-					sm.registerListener(this, humiditySensor, SensorManager.SENSOR_DELAY_UI);
+					sm.registerListener(this, humiditySensor,
+							SensorManager.SENSOR_DELAY_UI);
 				}
 			} else {
 				recentHumidityReading = 1000.0;

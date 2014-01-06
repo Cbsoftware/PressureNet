@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -43,6 +44,7 @@ import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.SunLocation;
 
@@ -281,7 +283,7 @@ public class CurrentConditionsActivity extends Activity {
      * and on/off status. 
      */
     public void setCorrectClearIcon(boolean on) {
-		if(isDaytime(mLatitude, mLongitude)) {
+		if(isDaytime(mLatitude, mLongitude, System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getOffset(System.currentTimeMillis()))) {
 			// set to Sun icon
 			if(on) {
 				buttonSunny.setImageResource(R.drawable.ic_wea_on_sun);
@@ -1079,7 +1081,7 @@ public class CurrentConditionsActivity extends Activity {
 		}
 		
 		// Check sunrise and sunset times to choose Sun vs. Moon
-		if(isDaytime(mLatitude, mLongitude)) {
+		if(isDaytime(mLatitude, mLongitude, System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getOffset(System.currentTimeMillis()))) {
 			// set to Sun icon
 			buttonSunny.setImageResource(R.drawable.ic_wea_sun);
 		} else {
@@ -1101,6 +1103,16 @@ public class CurrentConditionsActivity extends Activity {
 				buttonThunderstorm.performClick();
 			}
 			updateWidget();
+			if(getIntent().hasExtra("from_widget")) {
+				boolean fromWidget = getIntent().getBooleanExtra("from_widget", false);
+				if(fromWidget) {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							BarometerNetworkActivity.GA_CATEGORY_WIDGET, 
+							BarometerNetworkActivity.GA_ACTION_BUTTON, 
+							"conditions_widget_opened_conditions_activity", 
+							null).build());
+				}
+			}
 		}
 		
 		// Set the initial state: Sunny, no wind
@@ -1128,17 +1140,23 @@ public class CurrentConditionsActivity extends Activity {
 	    nMgr.cancel(notifyId);
 	}
 	
-	public static boolean isDaytime(double latitude, double longitude) {
+	public static boolean isDaytime(double latitude, double longitude, long time, long timeZoneOffset) {
 		SunLocation sunLocation = new SunLocation(latitude, longitude);
 		Calendar calendar = Calendar.getInstance();
-		
-		long tzMsOffset = calendar.getTimeZone().getOffset(calendar.getInstance().getTimeInMillis());
-		long tzHoursOffset = tzMsOffset / ( 1000 * 60 * 60);
-		String gmtString = "GMT" + tzHoursOffset;
-		
+		calendar.setTimeInMillis(time);
+		System.out.println("isdaytime tzoffset raw = " + timeZoneOffset);
+		long tzHoursOffset = timeZoneOffset / ( 1000 * 60 * 60);
+		String gmtString = "GMT";
+		if(tzHoursOffset>0) { 
+			gmtString += "+" + tzHoursOffset;
+		} else if (tzHoursOffset<0){
+			gmtString += tzHoursOffset;
+		}
 		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
-		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(Calendar.getInstance());
-		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(Calendar.getInstance());
+		System.out.println("condition isdaytime? " + latitude +", " + longitude + "," + time + ", " + timeZoneOffset + ", gmtstring " + gmtString);
+		calendar.setTimeZone(TimeZone.getTimeZone(gmtString));
+		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(calendar);
+		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(calendar);
 		
 		int sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
 		int sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);

@@ -5,7 +5,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_menu_dark_weather"
         android:showAsAction="ifRoom|withText"
-        android:title="@string/current_conditions"/>
+        android:title="What's it like outside?"/>
     <item
         android:id="@+id/menu_log_viewer"
         android:enabled="true"
@@ -23,7 +23,7 @@
         android:id="@+id/menu_submit_reading"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Submit Reading"
+        android:title="Submit reading"
         android:visible="true"/>
     <item
         android:id="@+id/send_debug_log"
@@ -60,14 +60,9 @@
         android:showAsAction="never"
         android:title="Spread the word"/>
     <item
-        android:id="@+id/menu_send_feedback"
-        android:enabled="true"
-        android:showAsAction="never"
-        android:title="Send feedback"/>
-    <item
         android:id="@+id/menu_rate_pressurenet"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Rate pressureNET"/>
+        android:title="Rate &amp; review"/>
 
 </menu>

@@ -1,0 +1,124 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal" >
+
+    <TextView
+        android:id="@+id/textStartDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="12dp"
+        android:text="Start Date:"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/layoutDateTime"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textStartDate"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonAnimationStartDate"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical"
+            android:layout_weight=".5"
+            android:padding="6dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/buttonAnimationStartTime"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:layout_weight=".5"
+            android:padding="6dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewRangeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutDateTime"
+        android:padding="12dp"
+        android:text="Range:"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textViewRangeValue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewRangeLabel"
+        android:gravity="center"
+        android:padding="6dp"
+        android:text="3 hours"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+    <SeekBar
+        android:id="@+id/seekBarAnimationRange"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewRangeValue"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:max="5"
+        android:padding="6dp" />
+
+    <LinearLayout
+        android:id="@+id/conditionAnimationParamButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seekBarAnimationRange"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonAnimationCancel"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/seekBarAnimationRange"
+            android:layout_below="@id/seekBarAnimationRange"
+            android:layout_weight=".45"
+            android:padding="6dp"
+            android:text="Cancel"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="#888888"
+            android:padding="3dip" />
+
+        <Button
+            android:id="@+id/buttonAnimationSet"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/seekBarAnimationRange"
+            android:layout_below="@id/seekBarAnimationRange"
+            android:layout_weight=".45"
+            android:padding="6dp"
+            android:text="Okay"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>

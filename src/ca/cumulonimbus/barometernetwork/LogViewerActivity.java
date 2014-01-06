@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collections;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -285,6 +286,11 @@ public class LogViewerActivity extends Activity {
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					tab.getText().toString(), 
+					(long)hoursSelected).build());
 			ft.replace(R.id.fragment_container, fragment);
 			getRecents(hoursSelected);
 		}
@@ -391,6 +397,11 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 1;
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"hour_change", 
+						(long)hoursSelected).build());
 				getRecents(1);
 			}
 		});
@@ -404,6 +415,11 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 6;
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"hour_change", 
+						(long)hoursSelected).build());
 				getRecents(6);
 			}
 		});
@@ -416,6 +432,11 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.BOLD);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 24;
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"hour_change", 
+						(long)hoursSelected).build());
 				getRecents(24);
 			}
 		});
@@ -428,6 +449,11 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.BOLD);
 				hoursSelected = 24 * 7;
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"hour_change", 
+						(long)hoursSelected).build());
 				getRecents(24 * 7);
 			}
 		});

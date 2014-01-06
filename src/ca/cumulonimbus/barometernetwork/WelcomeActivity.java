@@ -1,6 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -86,6 +87,8 @@ public class WelcomeActivity extends Activity {
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(), WhatsNewActivity.class);
+				startActivity(intent);
 				finish();
 			}
 		});

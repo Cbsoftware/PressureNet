@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -253,6 +254,11 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				getAllLocalObservations();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"export_data", 
+						null).build());
 			}
 		});
 
@@ -261,6 +267,11 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				clearLocalCache();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"clear_my_data", 
+						null).build());
 			}
 		});
 
@@ -268,6 +279,11 @@ public class DataManagementActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"api_signup", 
+						null).build());
 				// Open Live API sign up
 				Uri uri = Uri
 						.parse(CbConfiguration.API_SIGNUP_URL);
@@ -281,6 +297,11 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				clearAPICache();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"clear_data_cache", 
+						null).build());
 				Intent data = new Intent();
 				if (getParent() == null) {
 				    setResult(Activity.RESULT_OK, data);
