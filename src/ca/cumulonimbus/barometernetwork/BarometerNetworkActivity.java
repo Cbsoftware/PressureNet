@@ -587,7 +587,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLon(180);
 			globalMapCall.setLimit(3000);
 			globalMapCall.setStartTime(System.currentTimeMillis()
-					- (int) (1000 * 60 * 60 * .25));
+					- (int) (1000 * 60 * 10));
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			makeAPICall(globalMapCall);
 
@@ -1781,7 +1781,7 @@ public class BarometerNetworkActivity extends Activity implements
 				updateAPICount(-1);
 				enableReload();
 				if (activeMode.equals("map")) {
-					CbApiCall api = buildMapAPICall(.5);
+					CbApiCall api = buildMapAPICall(.25);
 					askForRecents(api);
 
 					CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
@@ -3352,7 +3352,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void loadRecents() {
-		CbApiCall api = buildMapAPICall(1);
+		CbApiCall api = buildMapAPICall(.25);
 		if (displayPressure) {
 			askForRecents(api);
 		}
