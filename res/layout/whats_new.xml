@@ -13,10 +13,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:padding="4dp"
-            android:text="pressureNET [VERSION]"
+            android:text=""
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
-        
         <TextView
             android:id="@+id/textNewFeatures"
             android:layout_width="wrap_content"
@@ -25,8 +24,7 @@
             android:padding="4dp"
             android:text="NEW FEATURES"
             android:textStyle="bold" />
-        
-        
+
         <TextView
             android:id="@+id/textWhatsNew"
             android:layout_width="wrap_content"
@@ -34,10 +32,9 @@
             android:layout_below="@id/textNewFeatures"
             android:padding="4dp"
             android:paddingTop="16dp"
-            android:text="• Toggle conditions and pressure display\n• Map performance improvements\n• Widget bugfixes"
+            android:text="• Weather animations\n• Weather notification enhancements\n• Nexus 5 sensor fix"
             android:textSize="16dp" />
 
-        <!-- 
         <TextView
             android:id="@+id/textNewSettings"
             android:layout_width="wrap_content"
@@ -45,8 +42,8 @@
             android:layout_below="@id/textWhatsNew"
             android:padding="4dp"
             android:text="NEW SETTINGS"
-            android:textStyle="bold"/>
-        
+            android:textStyle="bold" />
+
         <CheckBox
             android:id="@+id/checkReceiveConditionNotifications"
             android:layout_width="wrap_content"
@@ -56,14 +53,30 @@
             android:text="Receive conditions notifications"
             android:textSize="16dp" />
 
- 		-->
+        <TextView
+            android:id="@+id/textFrequencyMax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/checkReceiveConditionNotifications"
+            android:layout_below="@id/checkReceiveConditionNotifications"
+            android:gravity="center_vertical"
+            android:text="Max. frequency "
+            android:textSize="16dp" />
+
+        <Spinner
+            android:id="@+id/spinnerNotificationFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/checkReceiveConditionNotifications"
+            android:layout_toRightOf="@id/textFrequencyMax"
+            android:gravity="center_vertical" />
 
         <Button
             android:id="@+id/buttonDone"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textWhatsNew"
+            android:layout_below="@id/spinnerNotificationFrequency"
             android:paddingTop="4dp"
             android:text="Done"
             android:textColor="#000000"
