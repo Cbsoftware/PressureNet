@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 public class WhatsNewActivity extends Activity {
 
@@ -83,6 +84,12 @@ public class WhatsNewActivity extends Activity {
 						} else {
 							freq.setEnabled(false);
 						}
+						long check = isChecked ? 1 : 0; 
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+								BarometerNetworkActivity.GA_ACTION_BUTTON, 
+								"whats_new_conditions_notifications_check", 
+								 check).build());
 					}
 				});
 		
@@ -98,8 +105,11 @@ public class WhatsNewActivity extends Activity {
 
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putString("condition_refresh_frequency",text);
-				editor.commit();
-				
+				editor.commit(); 
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						"whats_new_conditions_notifications_freq", 
+						text, null).build());
 			}
 
 			@Override

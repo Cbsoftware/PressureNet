@@ -13,8 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:padding="4dp"
-            android:text=""
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
         <TextView
             android:id="@+id/textNewFeatures"
@@ -59,8 +58,9 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/checkReceiveConditionNotifications"
             android:layout_below="@id/checkReceiveConditionNotifications"
-            android:gravity="center_vertical"
-            android:text="Max. frequency "
+            android:paddingTop="8dp"
+            android:paddingLeft="6dp"
+            android:text="Max. frequency: "
             android:textSize="16dp" />
 
         <Spinner
@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/checkReceiveConditionNotifications"
             android:layout_toRightOf="@id/textFrequencyMax"
-            android:gravity="center_vertical" />
+            android:paddingTop="6dp" />
 
         <Button
             android:id="@+id/buttonDone"
