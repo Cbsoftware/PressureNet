@@ -1133,8 +1133,7 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
 					}
-					addDataToMap();
-					addConditionsToMap();
+					loadRecents();
 				} else {
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
@@ -1164,8 +1163,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					// set mode and load data
 					activeMode = "map";
-					addDataToMap();
-					addConditionsToMap();
+					loadRecents();
 				}
 
 			}
@@ -1804,9 +1802,8 @@ public class BarometerNetworkActivity extends Activity implements
 				ArrayList<CbCurrentCondition> receivedList = (ArrayList<CbCurrentCondition>) msg.obj;
 				if (receivedList != null) {
 					if (receivedList.size() > 0) {
-						currentConditionRecents = receivedList;
-						
 						if (!activeMode.equals("animation")) {
+							currentConditionRecents = receivedList;
 							addConditionsToMap();
 						} else {
 							conditionAnimationRecents.clear();
@@ -3356,8 +3353,9 @@ public class BarometerNetworkActivity extends Activity implements
 		if (displayPressure) {
 			askForRecents(api);
 		}
+		CbApiCall conditionsAPI = buildMapAPICall(2);
 		if (displayConditions) {
-			askForCurrentConditionRecents(api);
+			askForCurrentConditionRecents(conditionsAPI);
 		}
 	}
 
