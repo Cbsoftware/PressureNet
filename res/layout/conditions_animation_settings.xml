@@ -1,38 +1,83 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal" >
 
-    <DatePicker
-        android:id="@+id/dateAnimationStart"
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/textStartDate"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:padding="6dp"
-        android:textSize="18sp" 
-        android:calendarViewShown="false"/>
+        android:text="Start Date:"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/layoutDateTime"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textStartDate"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonAnimationStartDate"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_weight=".5"
+            android:padding="6dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/buttonAnimationStartTime"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:layout_weight=".5"
+            android:padding="6dp"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewRangeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutDateTime"
+        android:padding="6dp"
+        android:text="Range:"
+        android:textColor="#000000"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/textViewRangeValue"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/dateAnimationStart"
+        android:layout_below="@id/textViewRangeLabel"
         android:gravity="center"
         android:padding="6dp"
-        android:text="Range: 3 hours"
+        android:text="3 hours"
         android:textColor="#000000"
-        android:textSize="20sp" />
+        android:textSize="16sp" />
 
     <SeekBar
         android:id="@+id/seekBarAnimationRange"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textViewRangeValue"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
         android:max="5"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp" />
+        android:padding="6dp" />
 
     <LinearLayout
         android:id="@+id/conditionAnimationParamButtons"

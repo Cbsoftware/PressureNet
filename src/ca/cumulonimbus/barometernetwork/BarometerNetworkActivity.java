@@ -1301,11 +1301,10 @@ public class BarometerNetworkActivity extends Activity implements
 					long startTime = calAnimationStartDate.getTimeInMillis();
 					long endTime = startTime + animationDurationInMillis;
 					
-					SimpleDateFormat dateParamFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-					String animationDurationText = 
-							dateParamFormat.format(new Date(startTime)) + "   to   " +
-							dateParamFormat.format(new Date(endTime));
-					textAnimationInfo.setText(animationDurationText);
+					Calendar end = Calendar.getInstance();
+					end.setTimeInMillis(endTime);
+					
+					textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
 					
 					
 					// UI switch
@@ -2407,11 +2406,8 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					Calendar endDate = (Calendar) calAnimationStartDate.clone();
 					endDate.add(Calendar.MILLISECOND, (int)animationDurationInMillis);
-					SimpleDateFormat dateParamFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-					String animationDurationText = 
-							dateParamFormat.format(new Date(calAnimationStartDate.getTimeInMillis())) + "   to   " +
-							dateParamFormat.format(new Date(endDate.getTimeInMillis()));
-					textAnimationInfo.setText(animationDurationText);
+					
+					textAnimationInfo.setText(buildHumanDateRangeFormat(startDate, endDate));
 					
 				
 				} else {
@@ -2423,6 +2419,52 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	public static String buildHumanDateRangeFormat(Calendar start, Calendar end) {
+		String yearFormat = "";
+		String monthFormat = "MMM ";
+		String dayFormat = "d";
+		String timeFormat = "";
+		
+		boolean showSecondPrefix = true;
+		
+		// if the years are both this year, don't show the value
+		if( (start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) && (start.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR) )) {
+			yearFormat = "";
+			
+			if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH)) {
+				if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
+					showSecondPrefix = false;
+				}
+			}
+		} else {
+			yearFormat = ", yyyy";
+		}
+		
+		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.MINUTE) == 0) {
+			if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
+				timeFormat = " H:mm";
+			} else {
+				timeFormat = "";
+			}
+		} else {
+			timeFormat = " H:mm";
+		}
+		
+		String format = monthFormat + dayFormat + yearFormat + timeFormat;
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		
+		String returnText = "";
+		if(showSecondPrefix) {
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + sdf.format(end.getTimeInMillis());
+		} else {
+			String secondFormat = "H:mm";
+			SimpleDateFormat second = new SimpleDateFormat(secondFormat);
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + second.format(end.getTimeInMillis());
+		}
+		
+		return returnText;
 	}
 
 	private void focusSearch() {
