@@ -78,12 +78,18 @@ public class WhatsNewActivity extends Activity {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
-						
+						SharedPreferences settings = PreferenceManager
+								.getDefaultSharedPreferences(getApplicationContext());
+
+						SharedPreferences.Editor editor = settings.edit();
 						if(isChecked) {
 							freq.setEnabled(true);
+							editor.putBoolean("send_condition_notifications",true); 
 						} else {
 							freq.setEnabled(false);
+							editor.putBoolean("send_condition_notifications",false);
 						}
+						editor.commit(); 
 						long check = isChecked ? 1 : 0; 
 						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
