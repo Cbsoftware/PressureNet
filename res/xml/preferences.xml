@@ -39,6 +39,14 @@
             android:key="send_condition_notifications"
             android:summary="Notify when nearby users report weather conditions"
             android:title="Enable condition notifications" />
+          <ListPreference
+            android:defaultValue="1 hour"
+            android:dependency="send_condition_notifications"
+            android:entries="@array/condition_refresh_frequency"
+            android:entryValues="@array/condition_refresh_frequency_values"
+            android:key="condition_refresh_frequency"
+            android:summary="Weather notifications will only be delivered this frequently"
+            android:title="Maximum notification frequency" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="device_prefs"

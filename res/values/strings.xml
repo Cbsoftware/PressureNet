@@ -43,6 +43,20 @@
         <item name="6 hours">6 hours</item>
         <item name="12 hours">12 hours</item>
     </string-array>
+    <string-array name="condition_refresh_frequency">
+        <item name="10 minutes">10 minutes</item>
+        <item name="30 minutes">30 minutes</item>
+        <item name="1 hour">1 hour</item>
+        <item name="6 hours">6 hours</item>
+        <item name="12 hours">12 hours</item>
+    </string-array>
+    <string-array name="condition_refresh_frequency_values">
+        <item name="10 minutes">10 minutes</item>
+        <item name="10 minutes">30 minutes</item>
+        <item name="1 hour">1 hour</item>
+        <item name="6 hours">6 hours</item>
+        <item name="12 hours">12 hours</item>
+    </string-array>
     <string-array name="default_units">
         <item>Millibars (mbar)</item>
         <item>Hectopascals (hPa)</item>

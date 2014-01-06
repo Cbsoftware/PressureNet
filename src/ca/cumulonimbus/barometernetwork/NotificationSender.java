@@ -129,13 +129,15 @@ public class NotificationSender extends BroadcastReceiver {
 		// don't deliver if recently interacted with
 		lastConditionsSubmit = sharedPreferences.getLong(
 				"lastConditionsSubmit", System.currentTimeMillis()
-				- (1000 * 60 * 60 * 10));
+				- (1000 * 60 * 60 * 12));
+		
+		String prefTimeWait = sharedPreferences.getString("condition_refresh_frequency", "1 hour");
 		
 		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
-						- (1000 * 60 * 60 * 10));
+						- (1000 * 60 * 60 * 12));
 		
-		long waitDiff = 1000 * 60 * 60 * 1;
+		long waitDiff = CbService.stringTimeToLongHack(prefTimeWait);
 		
 		if(now - lastConditionsSubmit < waitDiff) {
 			log("bailing on conditions notifications, recently submitted one");
