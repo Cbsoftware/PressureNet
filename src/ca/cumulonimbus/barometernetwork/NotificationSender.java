@@ -148,7 +148,7 @@ public class NotificationSender extends BroadcastReceiver {
 			return;
 		}
 
-		String deliveryMessage = "What's it like where you are?";
+		String deliveryMessage = "What's it like outside?";
 		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
@@ -168,11 +168,41 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
-				icon = R.drawable.ic_wea_on_rain1;
-				politeReportText = "Rain";
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = "Light rain";
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_rain2;
+					politeReportText = "Moderate rain";
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_rain3;
+					politeReportText = "Heavy rain";
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = "Rain";
+				}
 			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
-				icon = R.drawable.ic_wea_on_snow1;
-				politeReportText = "Snow";
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = "Light snow";
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_snow2;
+					politeReportText = "Moderate snow";
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_snow3;
+					politeReportText = "Heavy snow";
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = "Snow";
+				}
 			} else {
 				icon = R.drawable.ic_wea_on_precip;
 			}
@@ -181,11 +211,10 @@ public class NotificationSender extends BroadcastReceiver {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning1;
 		}
-		
 	
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle("Someone reported: " + politeReportText).setContentText(deliveryMessage);
+				.setContentTitle(politeReportText + " nearby").setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
