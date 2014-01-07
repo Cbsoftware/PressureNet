@@ -379,7 +379,8 @@
             android:id="@+id/nexus5layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="gone" 
+            android:gravity="center_horizontal|center_vertical">
         
 	       <TextView
 	           android:id="@+id/textNexus5Bug"
@@ -391,16 +392,13 @@
 	       
 	       <Button 
 	           android:id="@+id/nexus5ReadMore"
-	           android:layout_width="wrap_content"
+	           android:layout_width="fill_parent"
 	           android:layout_height="wrap_content"
 	           android:textColor="@android:color/black"
 	           android:text="More info"
 	           android:layout_below="@id/textNexus5Bug"
-	           android:layout_alignLeft="@id/textNexus5Bug"
-               style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-               android:paddingLeft="20dp"
-               android:paddingRight="20dp"
-               android:layout_marginLeft="12dp"/>
+	           android:gravity="center_horizontal|center_vertical"
+               style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
 
 	 
 	       	           

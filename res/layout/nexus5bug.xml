@@ -1,31 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="center_horizontal|center_vertical" >
+    android:layout_height="fill_parent">
 
-    <TextView
-        android:id="@+id/nexus5Desciption"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/nexus5bugFull" />
-
-    <LinearLayout
+     <LinearLayout
         android:id="@+id/nexus5BugButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/nexus5Desciption"
         android:layout_gravity="bottom"
-        android:orientation="horizontal" >
-
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true" >
         <Button
             android:id="@+id/buttonCloseBug"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".45"
-            android:padding="6dp"
+            android:layout_weight=".49"
             android:text="Close"
-            android:textColor="#000000"
+            android:textColor="@android:color/black"
             android:textSize="16sp" />
 
         <View
@@ -39,11 +30,33 @@
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight=".45"
-            android:padding="6dp"
+            android:layout_weight=".49"
             android:text="Star the Issue"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
     </LinearLayout>
 
+       <View
+        android:id="@+id/sepBelowRange"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#D8D8D8"
+        android:paddingTop="6dp"
+        android:layout_above="@id/nexus5BugButtons" />
+    
+     <ScrollView
+        android:id="@+id/parentScrollBugText"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/sepBelowRange" >
+
+        <TextView
+            android:id="@+id/nexus5Desciption"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:text="@string/nexus5bugFull" />
+    </ScrollView>
+    
+    
 </RelativeLayout>
