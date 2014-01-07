@@ -3528,6 +3528,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// TODO: fix default value hack
 		if (recentTemperatureReading != 1000) {
 			String toPrint = displayTemperatureValue(recentTemperatureReading);
+			buttonThermometer.setVisibility(View.VISIBLE);
 			buttonThermometer.setText(toPrint);
 		} else {
 			buttonThermometer.setText("No thermometer detected.");
@@ -3536,6 +3537,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (recentHumidityReading != 1000) {
 			String toPrint = displayHumidityValue(recentHumidityReading);
+			buttonHygrometer.setVisibility(View.VISIBLE);
 			buttonHygrometer.setText(toPrint);
 		} else {
 			buttonHygrometer.setText("No hygrometer detected.");
