@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0402033"
-    android:versionName="4.2.3RC" >
+    android:versionCode="0402043"
+    android:versionName="4.2.4RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -152,7 +152,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.ConditionsAnimationSettingsActivity"
             android:configChanges="orientation|screenSize"
-            android:label="Animation Parameters"
+            android:label="Animation settings"
             android:theme="@style/CustomThemeDialog"
             android:excludeFromRecents="true" >
             
