@@ -143,5 +143,8 @@
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">pressureNET Data</string>
     <string name="locationName">Location Name</string>
-
+	<string name="nexus5bugwarning">NOTICE: There\'s an Android bug that causes sensor
+	    failure on the Nexus 5. Restarting fixes it temporarily. We\'re working on a fix ASAP.</string>
+	<string name="nexus5bugFull">NOTICE: There\'s an Android bug that causes sensor
+	    failure on the Nexus 5. Restarting fixes it temporarily. We\'re working on a fix ASAP.</string>
 </resources>

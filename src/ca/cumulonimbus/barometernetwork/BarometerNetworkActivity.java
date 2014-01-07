@@ -52,6 +52,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -196,6 +197,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private SeekBar animationProgress;
 	private ImageButton imageButtonAnimationSettings;
 
+	private RelativeLayout nexus5layout;
+	private Button nexus5ReadMore;
+	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
 
@@ -898,8 +902,20 @@ public class BarometerNetworkActivity extends Activity implements
 		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
 		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
 		
+		nexus5layout = (RelativeLayout) findViewById(R.id.nexus5layout);
+		nexus5ReadMore = (Button) findViewById(R.id.nexus5ReadMore);
+		
 		mapMode.setTypeface(null, Typeface.BOLD);
 
+		nexus5ReadMore.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(getApplicationContext(), Nexus5Bug.class);
+				startActivity(intent);
+			}
+		});
+	
 		animationProgress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -1259,6 +1275,14 @@ public class BarometerNetworkActivity extends Activity implements
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.BOLD);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					
+					if(Build.MODEL.equals("Nexus 5")) {
+						nexus5layout.setVisibility(View.VISIBLE);
+					} else {
+						nexus5layout.setVisibility(View.GONE);
+					}
+					
+					
 
 				}
 
@@ -3507,14 +3531,15 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonThermometer.setText(toPrint);
 		} else {
 			buttonThermometer.setText("No thermometer detected.");
+			buttonThermometer.setVisibility(View.GONE);
 		}
 
 		if (recentHumidityReading != 1000) {
 			String toPrint = displayHumidityValue(recentHumidityReading);
 			buttonHygrometer.setText(toPrint);
-
 		} else {
 			buttonHygrometer.setText("No hygrometer detected.");
+			buttonHygrometer.setVisibility(View.GONE);
 		}
 
 	}

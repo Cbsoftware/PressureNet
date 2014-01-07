@@ -374,6 +374,38 @@
             android:drawableLeft="@drawable/ic_menu_light_hygrometer"
             android:text="No hygrometer detected"
             android:textColor="@android:color/black" />
+        
+        <RelativeLayout
+            android:id="@+id/nexus5layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+        
+	       <TextView
+	           android:id="@+id/textNexus5Bug"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:text="@string/nexus5bugwarning"
+	           android:textColor="@android:color/black"
+	           android:textAppearance="?android:attr/textAppearanceSmall" />
+	       
+	       <Button 
+	           android:id="@+id/nexus5ReadMore"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:textColor="@android:color/black"
+	           android:text="More info"
+	           android:layout_below="@id/textNexus5Bug"
+	           android:layout_alignLeft="@id/textNexus5Bug"
+               style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+               android:paddingLeft="20dp"
+               android:paddingRight="20dp"
+               android:layout_marginLeft="12dp"/>
+
+	 
+	       	           
+        </RelativeLayout>
+        
     </LinearLayout>
 
     <LinearLayout

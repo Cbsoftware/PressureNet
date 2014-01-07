@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal|center_vertical" >
+
+    <TextView
+        android:id="@+id/nexus5Desciption"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nexus5bugFull" />
+
+    <LinearLayout
+        android:id="@+id/nexus5BugButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nexus5Desciption"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/buttonCloseBug"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:padding="6dp"
+            android:text="Close"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:background="#D8D8D8" />
+
+        <Button
+            android:id="@+id/nexus5StarTheIssue"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:padding="6dp"
+            android:text="Star the Issue"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</RelativeLayout>
