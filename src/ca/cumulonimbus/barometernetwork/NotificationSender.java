@@ -4,6 +4,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -46,6 +49,11 @@ public class NotificationSender extends BroadcastReceiver {
 				if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification")) {
 					CbCurrentCondition receivedCondition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification");
 					if(receivedCondition != null) {
+						EasyTracker.getInstance(context).send(MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+								"conditions_notification_delivered", 
+								receivedCondition.getGeneral_condition(), 
+								null).build());
 						deliverConditionNotification(receivedCondition);
 					}
 				} else {
@@ -60,6 +68,7 @@ public class NotificationSender extends BroadcastReceiver {
 			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.tendencyChange")) {
 				String tendencyChange = intent.getStringExtra("ca.cumulonimbus.pressurenetsdk.tendencyChange");
 				deliverNotification(tendencyChange);
+				
 			} else {
 				log("pressure change intent not sent, doesn't have extra");
 			}
@@ -120,13 +129,15 @@ public class NotificationSender extends BroadcastReceiver {
 		// don't deliver if recently interacted with
 		lastConditionsSubmit = sharedPreferences.getLong(
 				"lastConditionsSubmit", System.currentTimeMillis()
-				- (1000 * 60 * 60 * 10));
+				- (1000 * 60 * 60 * 12));
+		
+		String prefTimeWait = sharedPreferences.getString("condition_refresh_frequency", "1 hour");
 		
 		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
-						- (1000 * 60 * 60 * 10));
+						- (1000 * 60 * 60 * 12));
 		
-		long waitDiff = 1000 * 60 * 60 * 1;
+		long waitDiff = CbService.stringTimeToLongHack(prefTimeWait);
 		
 		if(now - lastConditionsSubmit < waitDiff) {
 			log("bailing on conditions notifications, recently submitted one");
@@ -137,7 +148,7 @@ public class NotificationSender extends BroadcastReceiver {
 			return;
 		}
 
-		String deliveryMessage = "What's it like where you are?";
+		String deliveryMessage = "What's it like outside?";
 		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
@@ -157,11 +168,41 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
-				icon = R.drawable.ic_wea_on_rain1;
-				politeReportText = "Rain";
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = "Light rain";
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_rain2;
+					politeReportText = "Moderate rain";
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_rain3;
+					politeReportText = "Heavy rain";
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = "Rain";
+				}
 			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
-				icon = R.drawable.ic_wea_on_snow1;
-				politeReportText = "Snow";
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = "Light snow";
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_snow2;
+					politeReportText = "Moderate snow";
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_snow3;
+					politeReportText = "Heavy snow";
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = "Snow";
+				}
 			} else {
 				icon = R.drawable.ic_wea_on_precip;
 			}
@@ -170,11 +211,10 @@ public class NotificationSender extends BroadcastReceiver {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning1;
 		}
-		
 	
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle("Someone reported: " + politeReportText).setContentText(deliveryMessage);
+				.setContentTitle(politeReportText + " nearby").setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
@@ -300,6 +340,12 @@ public class NotificationSender extends BroadcastReceiver {
 		// mId allows you to update the
 		// notification later on.
 		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		
+		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
+				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+				"pressure_notification_delivered", 
+				deliveryMessage, 
+				null).build());
 
 		// save the time
 		SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -316,9 +362,11 @@ public class NotificationSender extends BroadcastReceiver {
 	private int getResIdForClearIcon(CbCurrentCondition condition) {
 		int moonNumber = getMoonPhaseIndex();
 		int sunDrawable = R.drawable.ic_wea_on_sun;
-		try {
-			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude())) {
+		LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+		Location location = lm.getLastKnownLocation("network");
+		if(location != null) {
+			if (!CurrentConditionsActivity.isDaytime(location
+					.getLatitude(), location.getLongitude(), System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getRawOffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = R.drawable.ic_wea_on_moon1;
@@ -349,9 +397,8 @@ public class NotificationSender extends BroadcastReceiver {
 					break;
 				}
 			}
-		} catch (NullPointerException npe) {
-			
 		}
+		
 		return sunDrawable;
 	}
 	

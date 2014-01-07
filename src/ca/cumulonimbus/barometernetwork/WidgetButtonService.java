@@ -8,6 +8,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -83,6 +86,11 @@ public class WidgetButtonService extends Service {
 	
 	private void sendSingleObservation() {
 		if (mBound) {
+			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+					BarometerNetworkActivity.GA_CATEGORY_WIDGET, 
+					BarometerNetworkActivity.GA_ACTION_BUTTON, 
+					"small_widget_sending_single_observation", 
+					null).build());
 			log("widget sending single observation");
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
 			try {

@@ -7,8 +7,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="autoupdate"
-            android:summary="Let pressureNET submit data automatically"
-            android:title="Enable Auto-Submit" />
+            android:title="Enable auto-submit" />
 
         <ListPreference
             android:defaultValue="10 minutes"
@@ -16,15 +15,13 @@
             android:entries="@array/refresh_frequency"
             android:entryValues="@array/refresh_frequency_values"
             android:key="autofrequency"
-            android:summary="Define how frequently data is collected"
-            android:title="Auto-Submit Frequency" />
+            android:title="    Auto-submit frequency"/>
         <ListPreference
             android:defaultValue="Us, Researchers and Forecasters"
             android:entries="@array/privacy_settings"
             android:entryValues="@array/privacy_settings"
             android:key="sharing_preference"
-            android:summary="Define data sharing preference"
-            android:title="Share with" />
+            android:title="Share with…" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="notification_preferences"
@@ -38,7 +35,14 @@
             android:defaultValue="false"
             android:key="send_condition_notifications"
             android:summary="Notify when nearby users report weather conditions"
-            android:title="Enable condition notifications" />
+            android:title="Enable weather notifications" />
+          <ListPreference
+            android:defaultValue="1 hour"
+            android:dependency="send_condition_notifications"
+            android:entries="@array/condition_refresh_frequency"
+            android:entryValues="@array/condition_refresh_frequency_values"
+            android:key="condition_refresh_frequency"
+            android:title="    Weather notification frequency" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="device_prefs"
@@ -46,7 +50,6 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="use_gps"
-            android:summary="Attempt GPS for locations"
             android:title="Use GPS" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -62,24 +65,21 @@
             android:entries="@array/default_units"
             android:entryValues="@array/default_units"
             android:key="units"
-            android:summary="Pick your preferred pressure unit"
-            android:title="Pressure Unit" />
+            android:title="Pressure unit" />
         <!--
         <ListPreference
             android:defaultValue="Meters (m)"
             android:entries="@array/distance_units"
             android:entryValues="@array/distance_units"
             android:key="distance_units"
-            android:summary="Pick your preferred distance unit"
-            android:title="Distance Unit" />
+            android:title="Distance unit" />
         -->
         <ListPreference
             android:defaultValue="Celsius (°C)"
             android:entries="@array/temperature_units"
             android:entryValues="@array/temperature_units"
             android:key="temperature_units"
-            android:summary="Pick your preferred temperature unit"
-            android:title="Temperature Unit" />
+            android:title="Temperature unit" />
     </PreferenceCategory>
     <!--
     <PreferenceCategory
