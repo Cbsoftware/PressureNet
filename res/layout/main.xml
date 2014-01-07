@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:background="#CCFFFFFF"
-            android:src="@drawable/ic_menu_light_locations"
+            android:src="@drawable/ic_locations"
             android:textColor="@android:color/black"
             android:visibility="visible" />
 
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:background="#CCFFFFFF"
-            android:src="@drawable/ic_menu_light_search"
+            android:src="@drawable/ic_search"
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
@@ -180,7 +180,7 @@
                 android:layout_alignParentLeft="true"
                 android:enabled="true"
                 android:padding="4dp"
-                android:src="@drawable/ic_menu_graph_back" />
+                android:src="@drawable/ic_graph_back" />
 
             <TextView
                 android:id="@+id/textChartTime"
@@ -200,7 +200,7 @@
                 android:alpha=".5"
                 android:enabled="false"
                 android:padding="4dp"
-                android:src="@drawable/ic_menu_graph_forward" />
+                android:src="@drawable/ic_graph_forward" />
         </RelativeLayout>
     </LinearLayout>
 
