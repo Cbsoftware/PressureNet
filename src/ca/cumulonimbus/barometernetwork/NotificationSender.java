@@ -362,9 +362,11 @@ public class NotificationSender extends BroadcastReceiver {
 	private int getResIdForClearIcon(CbCurrentCondition condition) {
 		int moonNumber = getMoonPhaseIndex();
 		int sunDrawable = R.drawable.ic_wea_on_sun;
-		try {
-			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude(), condition.getTime(), condition.getTzoffset())) {
+		LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+		Location location = lm.getLastKnownLocation("network");
+		if(location != null) {
+			if (!CurrentConditionsActivity.isDaytime(location
+					.getLatitude(), location.getLongitude(), System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getRawOffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = R.drawable.ic_wea_on_moon1;
@@ -395,9 +397,8 @@ public class NotificationSender extends BroadcastReceiver {
 					break;
 				}
 			}
-		} catch (NullPointerException npe) {
-			
 		}
+		
 		return sunDrawable;
 	}
 	
