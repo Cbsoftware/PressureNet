@@ -1321,7 +1321,8 @@ public class BarometerNetworkActivity extends Activity implements
 					end.setTimeInMillis(endTime);
 					
 					textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
-					
+					animationStep = 0;
+					animationProgress.setProgress(0);
 					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
@@ -2455,7 +2456,7 @@ public class BarometerNetworkActivity extends Activity implements
 			yearFormat = ", yyyy";
 		}
 		
-		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.MINUTE) == 0) {
+		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.HOUR) == 0) {
 			if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
 				timeFormat = " H:mm";
 			} else {
