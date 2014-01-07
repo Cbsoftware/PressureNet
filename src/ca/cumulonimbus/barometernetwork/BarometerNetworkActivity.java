@@ -2456,7 +2456,7 @@ public class BarometerNetworkActivity extends Activity implements
 			yearFormat = ", yyyy";
 		}
 		
-		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.HOUR) == 0) {
+		if(start.get(Calendar.HOUR_OF_DAY) == 0 && end.get(Calendar.HOUR_OF_DAY) == 0) {
 			if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
 				timeFormat = " H:mm";
 			} else {

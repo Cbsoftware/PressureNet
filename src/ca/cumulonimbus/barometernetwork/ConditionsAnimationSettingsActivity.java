@@ -176,10 +176,11 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		}
 		
 		formattedTime = sdfTime.format(start.getTimeInMillis());
-		
-		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.HOUR) == 0) {
+		/*
+		if( (start.get(Calendar.HOUR_OF_DAY) == 0) && (end.get(Calendar.HOUR_OF_DAY) == 0)) {
 			formattedTime = "";
 		}
+		*/
 		
 		return formattedTime;
 	}
@@ -195,10 +196,11 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		}
 		
 		formattedTime = sdfTime.format(end.getTimeInMillis());
-		
-		if(start.get(Calendar.HOUR) == 0 && end.get(Calendar.HOUR) == 0) {
+		/*
+		if ((start.get(Calendar.HOUR_OF_DAY) == 0) && (end.get(Calendar.HOUR_OF_DAY) == 0)) {
 			formattedTime = "";
 		}
+		*/
 		
 		return formattedTime;
 	}
