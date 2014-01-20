@@ -1875,21 +1875,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// deliverNotification(change);
 				break;
 			case CbService.MSG_DATA_RESULT:
-				String errors = (String) msg.obj;
-				if (errors.contains("error")) {
-					Toast.makeText(getApplicationContext(),
-							"Error sending data", Toast.LENGTH_SHORT).show();
-				} else if ((!errors.contains("error")) && (errors.length() > 1)) {
-					String condition = errors;
-					Toast.makeText(getApplicationContext(),
-							"Sent " + condition, Toast.LENGTH_SHORT).show();
-				} else {
-					// pressure toast
-					String toPrint = displayPressureValue(recentPressureReading);
-					Toast.makeText(getApplicationContext(), "Sent " + toPrint,
-							Toast.LENGTH_SHORT).show();
-				}
-
+				// Used to be a Toast notification, now handled in NotificationSender
 				break;
 			default:
 				log("received default message");
