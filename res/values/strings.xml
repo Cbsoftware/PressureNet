@@ -97,7 +97,7 @@
     </string-array>
 
     <string name="welcomeToPressureNET">Welcome to pressureNET</string>
-    <string name="appAndSharingDescritption">pressureNET is an open source global barometer network. 
+    <string name="appAndSharingDescritption">pressureNET is a global network of crowdsourced atmospheric sensors that collect weather data. 
         We intend to improve weather forecasting by increasing inputs into weather models. 
         \n\nIt is important that our users contribute data. The data we collect is the location
         of your device, the time, and your atmospheric pressure. We will share this data only according to your wishes,
