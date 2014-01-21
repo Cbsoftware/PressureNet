@@ -10,7 +10,6 @@ import com.google.analytics.tracking.android.MapBuilder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,7 @@ import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbService;
+import ca.cumulonimbus.pressurenetsdk.CbService; 
 
 public class NotificationSender extends BroadcastReceiver {
 
@@ -233,13 +232,13 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch (Exception e) {
 
 		}
-
+		
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 		resultIntent.putExtra("initial", initial);
 
-		TaskStackBuilder stackBuilder = TaskStackBuilder
+		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
 				.create(mContext);
 
 		stackBuilder.addNextIntent(resultIntent);
@@ -255,7 +254,7 @@ public class NotificationSender extends BroadcastReceiver {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong("lastConditionTime", now);
 		editor.commit();
-
+		
 	}
 	
 
@@ -329,7 +328,7 @@ public class NotificationSender extends BroadcastReceiver {
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 
-		TaskStackBuilder stackBuilder = TaskStackBuilder
+		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
 				.create(mContext);
 
 		stackBuilder.addNextIntent(resultIntent);
