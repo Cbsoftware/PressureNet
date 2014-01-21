@@ -159,6 +159,8 @@
 	    • Reduce frequency of data collection in Settings \n
 	    • Turn off Auto-submit in Settings\n
 	    • Send us feedback so we can continue investigation.\n
+	    \nPlease note that we have also reduced the frequency that the Nexus 5 access the sensor, even if you change this in Settings, to mitigate the issue.
+	    \n
 	    \n
 	    Thanks for understanding!
 	    </string>
