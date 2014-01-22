@@ -1364,6 +1364,15 @@ public class BarometerNetworkActivity extends Activity implements
 			long startTime = calAnimationStartDate.getTimeInMillis();
 			long endTime = startTime + animationDurationInMillis;
 			log("animation start " + startTime + ", + end " + endTime);
+			long timeSpan = endTime - startTime;
+			if(timeSpan > (1000 * 60 * 60 * 24)) {
+				log("send toast");
+				Toast.makeText(getApplicationContext(), "Preparing animation...", Toast.LENGTH_SHORT).show();
+			} else {
+				log("don't send toast");
+			}
+			
+			
 			makeCurrentConditionsAPICall(buildConditionsAnimationCall(startTime,
 					endTime));
 		} else {
@@ -1403,7 +1412,7 @@ public class BarometerNetworkActivity extends Activity implements
 			animator.reset();
 			return;
 		}
-
+		
 		for (CbCurrentCondition condition : conditionAnimationRecents) {
 			long conditionTime = condition.getTime();
 			long timeOffsetFromStart = conditionTime - timeStart;
