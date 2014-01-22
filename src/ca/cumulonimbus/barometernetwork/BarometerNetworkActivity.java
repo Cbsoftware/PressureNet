@@ -150,7 +150,6 @@ public class BarometerNetworkActivity extends Activity implements
 	CbSettingsHandler activeSettings;
 
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
-	private ArrayList<CbObservation> graphRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbStats> statsRecents = new ArrayList<CbStats>();
@@ -183,12 +182,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
-	private RelativeLayout layoutGraphButtons;
 
 	private CheckBox satelliteView;
-
-	private ImageButton buttonGoBackwards;
-	private ImageButton buttonGoForwards;
 
 	private Button reloadGobalData;
 
@@ -291,13 +286,13 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
 	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
 
-	ChartController charts = new ChartController();
-
 	private boolean displayPressure = true;
 	private boolean displayConditions = true;
 
 	private boolean animationPlaying = false;
 	private AnimationRunner animator = new AnimationRunner();
+	
+	Message statsMsg = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -327,85 +322,6 @@ public class BarometerNetworkActivity extends Activity implements
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();
 		db.close();
-	}
-
-	/**
-	 * Controller for the chart viewing experience. Keep some data cached
-	 */
-	private class ChartController {
-		private int cachedSegments;
-		private int currentSegment;
-
-		/**
-		 * New data is being loaded, so increment the cache count and set the
-		 * current pointer to the most recent value
-		 */
-		public void addAndLoadSegment() {
-			cachedSegments++;
-			currentSegment = cachedSegments;
-
-			CbApiCall api = getActiveChartCacheCall();
-			makeAPICall(api);
-		}
-
-		public CbApiCall getActiveChartCacheCall() {
-			long startTime = System.currentTimeMillis()
-					- (currentSegment * 12 * 60 * 60 * 1000);
-			long endTime = startTime + (12 * 60 * 60 * 1000);
-
-			CbApiCall api = buildMapAPICall(12);
-			api.setStartTime(startTime);
-			api.setEndTime(endTime);
-			api.setLimit(3000);
-			return api;
-		}
-
-		public void loadCachedSegment() {
-			CbApiCall api = getActiveChartCacheCall();
-			askForGraphRecents(api);
-
-		}
-
-		public void reset() {
-			cachedSegments = 0;
-			currentSegment = 0;
-		}
-
-		public void goBack() {
-			currentSegment++;
-			if (currentSegment > cachedSegments) {
-				addAndLoadSegment();
-			} else {
-				loadCachedSegment();
-			}
-			buttonGoForwards.setEnabled(true);
-			buttonGoForwards.setAlpha(1F);
-		}
-
-		public void goForward() {
-			currentSegment--;
-			if (currentSegment <= 1) {
-				buttonGoForwards.setEnabled(false);
-				buttonGoForwards.setAlpha(.5F);
-			}
-			loadCachedSegment();
-		}
-
-		public int getCachedSegments() {
-			return cachedSegments;
-		}
-
-		public void setCachedSegments(int cachedSegments) {
-			this.cachedSegments = cachedSegments;
-		}
-
-		public int getCurrentSegment() {
-			return currentSegment;
-		}
-
-		public void setCurrentSegment(int currentSegment) {
-			this.currentSegment = currentSegment;
-		}
 	}
 
 	/**
@@ -687,8 +603,7 @@ public class BarometerNetworkActivity extends Activity implements
 						visibleBound = bounds;
 
 						if (activeMode.equals("graph")) {
-							mapMode.performClick();
-							layoutMapInfo.setVisibility(View.GONE);
+							createAndShowChart();
 						} else if (activeMode.equals("map")) {
 							loadRecents();
 						} else if (activeMode.equals("sensors")) {
@@ -895,10 +810,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
-		layoutGraphButtons = (RelativeLayout) findViewById(R.id.layoutGraphButtons);
-		buttonGoBackwards = (ImageButton) findViewById(R.id.buttonGoBackwards);
-		buttonGoForwards = (ImageButton) findViewById(R.id.buttonGoForwards);
-
 		reloadGobalData = (Button) findViewById(R.id.buttonReloadGlobalData);
 
 		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
@@ -1071,32 +982,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		buttonGoBackwards.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_BUTTON, 
-						"graph_go_back", 
-						 null).build());
-				charts.goBack();
-			}
-		});
-
-		buttonGoForwards.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_BUTTON, 
-						"graph_go_forward", 
-						 null).build());
-				charts.goForward();
-			}
-		});
-
 		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
@@ -1166,7 +1051,6 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
-					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
@@ -1200,7 +1084,6 @@ public class BarometerNetworkActivity extends Activity implements
 				int visible = layoutGraph.getVisibility();
 				if (visible == View.VISIBLE) {
 					layoutGraph.setVisibility(View.GONE);
-					layoutGraphButtons.setVisibility(View.GONE);
 				} else {
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
@@ -1208,8 +1091,6 @@ public class BarometerNetworkActivity extends Activity implements
 							"graph", 
 							 null).build());
 					
-					Toast.makeText(getApplicationContext(), "Loading graphÉ",
-							Toast.LENGTH_LONG).show();
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
 					removeChartFromLayout();
@@ -1218,15 +1099,11 @@ public class BarometerNetworkActivity extends Activity implements
 						animator.pause();
 					}
 
-					charts.reset();
-
 					hoursAgoSelected = 72;
 
 					log("making api call 72h for graph");
 					CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
 					makeStatsAPICall(api);
-
-					//charts.addAndLoadSegment();
 
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -1268,12 +1145,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
-					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
 					layoutAnimation.setVisibility(View.GONE);
-
-					layoutGraphButtons.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
@@ -1302,7 +1176,6 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					// UI switc
 					layoutGraph.setVisibility(View.GONE);
-					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
@@ -1354,7 +1227,6 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
-					layoutGraphButtons.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.VISIBLE);
@@ -1692,12 +1564,12 @@ public class BarometerNetworkActivity extends Activity implements
 	 * 
 	 * @param apiCall
 	 */
-	private void askForGraphRecents(CbApiCall apiCall) {
+	private void askForGraphRecents(CbStatsAPICall apiCall) {
 		if (mBound) {
 			log("asking for graph recents");
 
 			Message msg = Message.obtain(null,
-					CbService.MSG_GET_API_RECENTS_FOR_GRAPH, apiCall);
+					CbService.MSG_MAKE_STATS_CALL, apiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -1810,16 +1682,24 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				break;
 			case CbService.MSG_API_RECENTS:
-				listRecents = (ArrayList<CbObservation>) msg.obj;
-				addDataToMap();
-				addConditionsToMap();
 				if (activeMode.equals("graph")) {
+					statsRecents = (ArrayList<CbStats>) msg.obj;
 					createAndShowChart();
+				} else {
+					listRecents = (ArrayList<CbObservation>) msg.obj;
+					addDataToMap();
+					addConditionsToMap();
 				}
 				break;
-			case CbService.MSG_API_RECENTS_FOR_GRAPH:
-				graphRecents = (ArrayList<CbObservation>) msg.obj;
-				createAndShowChart();
+			case CbService.MSG_STATS:
+				log("app receiving stats");
+				try {
+					statsRecents = (ArrayList<CbStats>) msg.obj;
+					log("size " + statsRecents.size());
+					createAndShowChart();
+				} catch(Exception e) {
+					log("msg_stats e " + e.getMessage());
+				}
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
@@ -1832,8 +1712,7 @@ public class BarometerNetworkActivity extends Activity implements
 					CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
 					askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
-					CbApiCall api = charts.getActiveChartCacheCall();
-					askForGraphRecents(api);
+					createAndShowChart();
 				} else if (activeMode.equals("animation")) {
 					if(calAnimationStartDate != null) {
 						long startTime = calAnimationStartDate.getTimeInMillis();
@@ -1921,31 +1800,24 @@ public class BarometerNetworkActivity extends Activity implements
 			log("createandshowchart called outside of graph mode");
 			return;
 		}
-		if (graphRecents == null) {
-			log("graph recents null RETURNING, no chart");
+		if (statsRecents == null) {
+			log("stats recents null RETURNING, no chart");
 			return;
-		} else if (graphRecents.size() == 0) {
-			log("graph recents 0, RETURNING, no chart");
+		} else if (statsRecents.size() == 0) {
+			log("stats recents 0, RETURNING, no chart");
 			return;
 		}
 
 		// draw chart
-		log("plotting... " + graphRecents.size());
-		Chart chart = new Chart(getApplicationContext());
+		log("plotting... " + statsRecents.size());
+		StatsChart chart = new StatsChart(getApplicationContext());
 
 		// set units according to preference
-		ArrayList<CbObservation> displayRecents = new ArrayList<CbObservation>();
-		for (CbObservation ob : graphRecents) {
-			double rawValue = ob.getObservationValue();
+		ArrayList<CbStats> displayRecents = new ArrayList<CbStats>();
+		for (CbStats stat : statsRecents) {
+			double mean = stat.getMean();
 
-			PressureUnit unit = new PressureUnit(preferencePressureUnit);
-			unit.setValue(rawValue);
-			unit.setAbbreviation(preferencePressureUnit);
-			double pressureInPreferredUnit = unit.convertToPreferredUnit();
-
-			ob.setObservationUnit(preferencePressureUnit);
-			ob.setObservationValue(pressureInPreferredUnit);
-			displayRecents.add(ob);
+			displayRecents.add(stat);
 		}
 
 		View chartView = chart.drawChart(displayRecents);
@@ -2009,7 +1881,6 @@ public class BarometerNetworkActivity extends Activity implements
 			log("chartlayout null");
 			return;
 		}
-		layoutGraphButtons.setVisibility(View.VISIBLE);
 		// TODO: bring the chart back
 		mainLayout.addView(chartView);
 	}
@@ -3392,13 +3263,13 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private void makeStatsAPICall(CbStatsAPICall apiCall) {
 		if (mBound) {
-			Message msg = Message.obtain(null, CbService.MSG_MAKE_STATS_CALL,
+			statsMsg = Message.obtain(null, CbService.MSG_MAKE_STATS_CALL,
 					apiCall);
 			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
+				statsMsg.replyTo = mMessenger;
+				mService.send(statsMsg);
 			} catch (RemoteException e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 			}
 		} else {
 			log("make api call; app failed api call; data management error: not bound");
