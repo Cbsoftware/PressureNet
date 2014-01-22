@@ -97,7 +97,7 @@
     </string-array>
 
     <string name="welcomeToPressureNET">Welcome to pressureNET</string>
-    <string name="appAndSharingDescritption">pressureNET is an open source global barometer network. 
+    <string name="appAndSharingDescritption">pressureNET is a global network of crowdsourced atmospheric sensors that collect weather data. 
         We intend to improve weather forecasting by increasing inputs into weather models. 
         \n\nIt is important that our users contribute data. The data we collect is the location
         of your device, the time, and your atmospheric pressure. We will share this data only according to your wishes,
@@ -143,5 +143,25 @@
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">pressureNET Data</string>
     <string name="locationName">Location Name</string>
-
+	<string name="nexus5bugwarning">NOTICE: There\'s an Android bug that causes sensor
+	    failure on the Nexus 5. Restarting fixes it temporarily. We\'re working on a fix ASAP.</string>
+	    
+	<string name="nexus5bugFull">There\'s a bug in Android 4.4 on the Nexus 5 that causes occasional sensor failure. 
+	    It occurs after significant background access to the barometer inside the Nexus 5 and causes other sensors to silently fail: 
+	    the gyroscope, compass, barometer and other sensors may stop working after a while. You might notice that automatic screen rotation
+	    stops working, for example, after running pressureNET for a few days.
+	    
+	    \n\nRebooting your phone will fix the issue temporarily, and all sensors will work again - until they eventually fail. We\'re working hard to fix this,
+	    but the core problem seems to be in Android itself. Below, you can open the Google Code Issue and Star it, giving it attention for a faster fix.
+	    
+	    \n\nIf you want to keep running pressureNET but notice frequent sensor failure, there are a few things you can try:
+	    \n\n
+	    • Reduce frequency of data collection in Settings \n
+	    • Turn off Auto-submit in Settings\n
+	    • Send us feedback so we can continue investigation.\n
+	    \nPlease note that we have also reduced the frequency that the Nexus 5 access the sensor, even if you change this in Settings, to mitigate the issue.
+	    \n
+	    \n
+	    Thanks for understanding!
+	    </string>
 </resources>

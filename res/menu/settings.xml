@@ -3,13 +3,13 @@
     <item
         android:id="@+id/menu_current_conditions"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_dark_weather"
+        android:icon="@drawable/ic_current"
         android:showAsAction="ifRoom|withText"
         android:title="What's it like outside?"/>
     <item
         android:id="@+id/menu_log_viewer"
         android:enabled="true"
-        android:icon="@drawable/ic_menu_dark_stats"
+        android:icon="@drawable/ic_logs"
         android:showAsAction="ifRoom|withText"
         android:title="My data"
         android:visible="true"/>

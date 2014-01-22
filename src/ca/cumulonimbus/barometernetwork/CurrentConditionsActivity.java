@@ -1158,8 +1158,16 @@ public class CurrentConditionsActivity extends Activity {
 		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(calendar);
 		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(calendar);
 		
-		int sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
-		int sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);
+		// Make a reasonable guess about sunset/sunrise in case
+		// the actual data isn't available for some reason
+		int sunriseHour = 7;
+		int sunsetHour = 20;
+		try {
+			sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
+			sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);
+		} catch (NullPointerException npe) {
+			// TODO: investigate how this could be null
+		}
 		int nowHour = calendar.get(Calendar.HOUR_OF_DAY);
 		
 		return (nowHour >= sunriseHour) && (nowHour <= sunsetHour);

@@ -31,6 +31,11 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 	private Button startTime;
 	private Button cancel;
 	private Button okay;
+	
+	private TextView textPreviewStartDate;
+	private TextView textPreviewEndDate;
+	private TextView textPreviewStartTime;
+	private TextView textPreviewEndTime;
 
 	Calendar calDate = Calendar.getInstance();
 	private long rangeInMs = 0;
@@ -72,16 +77,17 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 
 		calDate.setTimeInMillis(intent.getLongExtra(
 					"calAnimationStartDate", System.currentTimeMillis()));
-		
-		String yearFormat = ", yyyy";
-		if(calDate.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR)) {
-			yearFormat = "";
-		}
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("MMM d" + yearFormat);
+				
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
 		startDate.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 		
 		SimpleDateFormat sdfTime = new SimpleDateFormat("H:mm");
+		
+		if(!DateFormat.is24HourFormat(getApplicationContext())) {
+			sdfTime = new SimpleDateFormat("h:mm a");
+		} else {
+			sdfTime = new SimpleDateFormat("HH:mm");
+		}
 		startTime.setText(sdfTime.format(new Date(calDate.getTimeInMillis())));
 		
 		updatePreview();
@@ -108,7 +114,7 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			calDate.set(Calendar.MONTH, month);
 			calDate.set(Calendar.DAY_OF_MONTH, day);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
 			startDate.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 			
 			updatePreview();
@@ -132,6 +138,13 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 			calDate.set(Calendar.MINUTE, minute);
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
+			
+			if(!DateFormat.is24HourFormat(getActivity())) {
+				sdf = new SimpleDateFormat("h:mm a");
+			} else {
+				sdf = new SimpleDateFormat("HH:mm");
+			}
+			
 			startTime.setText(sdf.format(new Date(calDate.getTimeInMillis())));
 			
 			updatePreview();
@@ -142,10 +155,92 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		Calendar endDate = (Calendar) calDate.clone();
 		endDate.add(Calendar.MILLISECOND, (int)rangeInMs);
 		
-		String formattedDates = BarometerNetworkActivity.buildHumanDateRangeFormat(calDate, endDate);
-		setTitle(formattedDates);
+		String formattedStartDate = buildHumanStartDateFormat(calDate, endDate);
+		String formattedEndDate = buildHumanEndDateFormat(calDate, endDate);
+		textPreviewStartDate.setText(formattedStartDate);
+		textPreviewStartTime.setText(getHumanStartTime(calDate, endDate));
+		
+		textPreviewEndDate.setText(formattedEndDate);
+		textPreviewEndTime.setText(getHumanEndTime(endDate, endDate));
+		
 	}
 
+	private String getHumanStartTime(Calendar start, Calendar end) {
+		SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+		String formattedTime = "";
+		
+		if(!DateFormat.is24HourFormat(getApplicationContext())) {
+			sdfTime = new SimpleDateFormat("h:mm a");
+		} else {
+			sdfTime = new SimpleDateFormat("HH:mm");
+		}
+		
+		formattedTime = sdfTime.format(start.getTimeInMillis());
+		/*
+		if( (start.get(Calendar.HOUR_OF_DAY) == 0) && (end.get(Calendar.HOUR_OF_DAY) == 0)) {
+			formattedTime = "";
+		}
+		*/
+		
+		return formattedTime;
+	}
+	
+	private String getHumanEndTime(Calendar start, Calendar end) {
+		SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm");
+		String formattedTime = "";
+		
+		if(!DateFormat.is24HourFormat(getApplicationContext())) {
+			sdfTime = new SimpleDateFormat("h:mm a");
+		} else {
+			sdfTime = new SimpleDateFormat("HH:mm");
+		}
+		
+		formattedTime = sdfTime.format(end.getTimeInMillis());
+		/*
+		if ((start.get(Calendar.HOUR_OF_DAY) == 0) && (end.get(Calendar.HOUR_OF_DAY) == 0)) {
+			formattedTime = "";
+		}
+		*/
+		
+		return formattedTime;
+	}
+	
+	private String buildHumanStartDateFormat(Calendar start, Calendar end) {
+		String yearFormat = "";
+		String monthFormat = "MMM ";
+		String dayFormat = "d";
+		
+		// if the years are both this year, don't show the value
+		if( (start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) && (start.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR) )) {
+			yearFormat = "";
+		} else {
+			yearFormat = ", yyyy";
+		}
+		
+		String format = monthFormat + dayFormat + yearFormat;
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		
+		return sdf.format(start.getTimeInMillis());
+	}
+	
+	private String buildHumanEndDateFormat(Calendar start, Calendar end) {
+		String yearFormat = "";
+		String monthFormat = "MMM ";
+		String dayFormat = "d";
+		
+		// if the years are both this year, don't show the value
+		if( (start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) && (start.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR) )) {
+			yearFormat = "";
+		} else {
+			yearFormat = ", yyyy";
+		}
+		
+		String format = monthFormat + dayFormat + yearFormat;
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		
+		return sdf.format(end.getTimeInMillis());
+	}
+	
 	private long getRangeInMsFromText(int indexText) {
 		return timeSegmentsMs[indexText];
 	}
@@ -158,6 +253,11 @@ public class ConditionsAnimationSettingsActivity extends Activity {
 		cancel = (Button) findViewById(R.id.buttonAnimationCancel);
 		okay = (Button) findViewById(R.id.buttonAnimationSet);
 
+		textPreviewStartDate = (TextView) findViewById(R.id.textStartDateSummary);
+		textPreviewStartTime = (TextView) findViewById(R.id.textStartTimeSummary);
+		textPreviewEndDate = (TextView) findViewById(R.id.textEndDateSummary);
+		textPreviewEndTime = (TextView) findViewById(R.id.textEndTimeSummary);
+		
 		okay.setOnClickListener(new OnClickListener() {
 
 			@Override

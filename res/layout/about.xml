@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:paddingTop="32dp"
-            android:src="@drawable/ic_logo" />
+            android:src="@drawable/ic_logo_pn" />
 
         <TextView
             android:id="@+id/textPressureNET"

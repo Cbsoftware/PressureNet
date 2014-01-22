@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:background="#CCFFFFFF"
-            android:src="@drawable/ic_menu_light_locations"
+            android:src="@drawable/ic_locations"
             android:textColor="@android:color/black"
             android:visibility="visible" />
 
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="51dp"
             android:background="#CCFFFFFF"
-            android:src="@drawable/ic_menu_light_search"
+            android:src="@drawable/ic_search"
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
@@ -180,7 +180,7 @@
                 android:layout_alignParentLeft="true"
                 android:enabled="true"
                 android:padding="4dp"
-                android:src="@drawable/ic_menu_graph_back" />
+                android:src="@drawable/ic_graph_back" />
 
             <TextView
                 android:id="@+id/textChartTime"
@@ -200,7 +200,7 @@
                 android:alpha=".5"
                 android:enabled="false"
                 android:padding="4dp"
-                android:src="@drawable/ic_menu_graph_forward" />
+                android:src="@drawable/ic_graph_forward" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -374,6 +374,36 @@
             android:drawableLeft="@drawable/ic_menu_light_hygrometer"
             android:text="No hygrometer detected"
             android:textColor="@android:color/black" />
+        
+        <RelativeLayout
+            android:id="@+id/nexus5layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" 
+            android:gravity="center_horizontal|center_vertical">
+        
+	       <TextView
+	           android:id="@+id/textNexus5Bug"
+	           android:layout_width="wrap_content"
+	           android:layout_height="wrap_content"
+	           android:text="@string/nexus5bugwarning"
+	           android:textColor="@android:color/black"
+	           android:textAppearance="?android:attr/textAppearanceSmall" />
+	       
+	       <Button 
+	           android:id="@+id/nexus5ReadMore"
+	           android:layout_width="fill_parent"
+	           android:layout_height="wrap_content"
+	           android:textColor="@android:color/black"
+	           android:text="More info"
+	           android:layout_below="@id/textNexus5Bug"
+	           android:gravity="center_horizontal|center_vertical"
+               style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
+
+	 
+	       	           
+        </RelativeLayout>
+        
     </LinearLayout>
 
     <LinearLayout

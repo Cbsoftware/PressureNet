@@ -10,30 +10,54 @@ import com.google.analytics.tracking.android.MapBuilder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbService;
+import ca.cumulonimbus.pressurenetsdk.CbService; 
 
 public class NotificationSender extends BroadcastReceiver {
 
 	Context mContext;
-	public static final int NOTIFICATION_ID = 101325;
+	public static final int PRESSURE_NOTIFICATION_ID  = 101325;
+	public static final int CONDITION_NOTIFICATION_ID = 100012;
 	
 	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
 			- (1000 * 60 * 60);
 	private long lastConditionsSubmit = System.currentTimeMillis() 
 			- (1000 * 60 * 60 * 4);
 	
+	Handler notificationHandler = new Handler();
+	
 	public NotificationSender() {
 		super();
+	}
+	
+	public class NotificationCanceler implements Runnable {
+
+		Context cancelContext;
+		int id;
+		
+		public NotificationCanceler (Context context, int notID) {
+			cancelContext = context;
+			id = notID;
+		}
+		
+		@Override
+		public void run() {
+			 if (cancelContext!=null) {
+				 String ns = Context.NOTIFICATION_SERVICE;
+				 NotificationManager nMgr = (NotificationManager) cancelContext.getSystemService(ns);
+				 nMgr.cancel(id);
+			 }
+		}
+		
 	}
 	
 	@Override
@@ -233,13 +257,13 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch (Exception e) {
 
 		}
-
+		
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 		resultIntent.putExtra("initial", initial);
 
-		TaskStackBuilder stackBuilder = TaskStackBuilder
+		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
 				.create(mContext);
 
 		stackBuilder.addNextIntent(resultIntent);
@@ -249,13 +273,17 @@ public class NotificationSender extends BroadcastReceiver {
 		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the
 		// notification later on.
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		mNotificationManager.notify(CONDITION_NOTIFICATION_ID, mBuilder.build());
 
+		// Cancel the notification 2 hours later
+		NotificationCanceler cancel = new NotificationCanceler(mContext, CONDITION_NOTIFICATION_ID);
+		notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 2);
+		
 		// save the time
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong("lastConditionTime", now);
 		editor.commit();
-
+		
 	}
 	
 
@@ -329,7 +357,7 @@ public class NotificationSender extends BroadcastReceiver {
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 
-		TaskStackBuilder stackBuilder = TaskStackBuilder
+		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
 				.create(mContext);
 
 		stackBuilder.addNextIntent(resultIntent);
@@ -339,7 +367,11 @@ public class NotificationSender extends BroadcastReceiver {
 		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the
 		// notification later on.
-		mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+		mNotificationManager.notify(PRESSURE_NOTIFICATION_ID, mBuilder.build());
+		
+		// Cancel the notification 2 hours later
+		NotificationCanceler cancel = new NotificationCanceler(mContext, PRESSURE_NOTIFICATION_ID);
+		notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 12);
 		
 		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
 				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
@@ -362,9 +394,11 @@ public class NotificationSender extends BroadcastReceiver {
 	private int getResIdForClearIcon(CbCurrentCondition condition) {
 		int moonNumber = getMoonPhaseIndex();
 		int sunDrawable = R.drawable.ic_wea_on_sun;
-		try {
-			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
-					.getLatitude(), condition.getLocation().getLongitude(), condition.getTime(), condition.getTzoffset())) {
+		LocationManager lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+		Location location = lm.getLastKnownLocation("network");
+		if(location != null) {
+			if (!CurrentConditionsActivity.isDaytime(location
+					.getLatitude(), location.getLongitude(), System.currentTimeMillis(), Calendar.getInstance().getTimeZone().getRawOffset())) {
 				switch (moonNumber) {
 				case 1:
 					sunDrawable = R.drawable.ic_wea_on_moon1;
@@ -395,9 +429,8 @@ public class NotificationSender extends BroadcastReceiver {
 					break;
 				}
 			}
-		} catch (NullPointerException npe) {
-			
 		}
+		
 		return sunDrawable;
 	}
 	
