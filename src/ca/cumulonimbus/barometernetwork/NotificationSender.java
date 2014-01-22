@@ -315,15 +315,21 @@ public class NotificationSender extends BroadcastReceiver {
 
 		String first = tendencyChange.split(",")[0];
 		String second = tendencyChange.split(",")[1];
+		
+		int smallIconId = R.drawable.ic_launcher;
 
 		if ((first.contains("Rising")) && (second.contains("Falling"))) {
 			deliveryMessage = "The pressure is dropping";
+			smallIconId = R.drawable.ic_stat_notify_falling;
 		} else if ((first.contains("Steady")) && (second.contains("Falling"))) {
 			deliveryMessage = "The pressure is dropping";
+			smallIconId = R.drawable.ic_stat_notify_falling;
 		} else if ((first.contains("Steady")) && (second.contains("Rising"))) {
 			deliveryMessage = "The pressure is rising";
+			smallIconId = R.drawable.ic_stat_notify_rising;
 		} else if ((first.contains("Falling")) && (second.contains("Rising"))) {
 			deliveryMessage = "The pressure is rising";
+			smallIconId = R.drawable.ic_stat_notify_rising;
 		} else {
 			deliveryMessage = "The pressure is steady";
 			// don't deliver this message
@@ -332,7 +338,7 @@ public class NotificationSender extends BroadcastReceiver {
 		}
 
 		Notification.Builder mBuilder = new Notification.Builder(
-				mContext).setSmallIcon(R.drawable.ic_launcher)
+				mContext).setSmallIcon(smallIconId)
 				.setContentTitle("pressureNET").setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
