@@ -32,7 +32,7 @@ public class StatsChart {
 	private String mAppDir = "";
 
 	private int textSize = 20;
-	private float pointSize = 5f;
+	private float pointSize = 1f;
 
 	public StatsChart(Context ctx) {
 		context = ctx;
@@ -50,23 +50,23 @@ public class StatsChart {
 			switch(displayMetrics.densityDpi){
 		     case DisplayMetrics.DENSITY_LOW:
 		    	 textSize = 12;
-		    	 pointSize = 2f;
+		    	 pointSize = 1f;
 		         break;
 		     case DisplayMetrics.DENSITY_MEDIUM:
 		    	 textSize = 16;
-		    	 pointSize = 3f;
+		    	 pointSize = 1f;
 		    	 break;
 		     case DisplayMetrics.DENSITY_HIGH:
 		    	 textSize = 18;
-		    	 pointSize = 4f;
+		    	 pointSize = 1f;
 		    	 break;
 		     case DisplayMetrics.DENSITY_XHIGH:
 		    	 textSize = 20;
-		    	 pointSize = 5f;
+		    	 pointSize = 1f;
                  break;
 		     case DisplayMetrics.DENSITY_XXHIGH:
 		    	 textSize = 26;
-		    	 pointSize = 7f;
+		    	 pointSize = 1f;
                  break;
 		     default:
 		    	 break;
@@ -89,7 +89,9 @@ public class StatsChart {
 
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		r.setColor(colors[0]);
-		r.setPointStyle(styles[0]);
+		r.setPointStyle(PointStyle.CIRCLE);
+		r.setLineWidth(2);
+		r.setPointStrokeWidth(1);
 		renderer.addSeriesRenderer(r);
 
 	}
@@ -188,7 +190,7 @@ public class StatsChart {
 		XYMultipleSeriesDataset dataset = buildDataset(titles, statsList);
 		int total = dataset.getSeriesCount();
 
-		return ChartFactory.getScatterChartView(context, dataset, renderer);
+		return ChartFactory.getLineChartView(context, dataset, renderer);
 
 	}
 
@@ -216,8 +218,6 @@ public class StatsChart {
 			dates[0] = new Date(obs.getTimeStamp());
 
 			values[0] = obs.getMean();
-			
-			log(dates[0] +" " + values[0]);
 
 			xValues.add(dates);
 			yValues.add(values);

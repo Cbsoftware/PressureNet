@@ -1095,6 +1095,8 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutGraph.setVisibility(View.VISIBLE);
 					activeMode = "graph";
 					removeChartFromLayout();
+					
+					mMap.clear();
 
 					if (animationPlaying) {
 						animator.pause();
