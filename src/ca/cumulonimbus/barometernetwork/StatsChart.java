@@ -90,12 +90,11 @@ public class StatsChart {
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		r.setColor(colors[0]);
 		r.setPointStyle(PointStyle.CIRCLE);
-		r.setLineWidth(2);
-		r.setPointStrokeWidth(1);
+		r.setLineWidth(4);
+		r.setPointStrokeWidth(2);
 		renderer.addSeriesRenderer(r);
-
 	}
-
+	
 	/**
 	 * Builds an XY multiple series renderer.
 	 * 
@@ -120,7 +119,7 @@ public class StatsChart {
 		// System.out.println("drawing chart " + obsList.size() +
 		// " data points");
 
-		if (statsList.size() < 2) {
+		if (statsList.size() <= 2) {
 			Toast.makeText(context, "There's no data to plot",
 					Toast.LENGTH_SHORT).show();
 		}
@@ -139,11 +138,17 @@ public class StatsChart {
 		double minObservation = 1200;
 		double maxObservation = 0;
 		long minTime = System.currentTimeMillis();
-
 		long maxTime = System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7);
-
+		
 		int i = 0;
 		for(CbStats stat : statsList) {
+			if (i>0) {
+				double previous = yValues[i-1];
+				if (Math.abs(stat.getMean() - previous) > 30) {
+					stat.setMean(previous);
+				}
+			}
+			
 			xValues[i] = new Date(stat.getTimeStamp());
 			yValues[i] = stat.getMean();
 		
