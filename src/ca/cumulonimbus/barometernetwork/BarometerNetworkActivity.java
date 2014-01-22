@@ -95,6 +95,8 @@ import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
+import ca.cumulonimbus.pressurenetsdk.CbStats;
+import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -151,6 +153,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<CbObservation> graphRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
+	private ArrayList<CbStats> statsRecents = new ArrayList<CbStats>();
 
 	private int activeAPICallCount = 0;
 
@@ -674,15 +677,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 					@Override
 					public void onCameraChange(CameraPosition position) {
-						// change button ability based on zoom level
-						if (position.zoom >= 9) {
-							graphMode.setEnabled(true);
-							graphMode.setTextColor(Color.BLACK);
-						} else {
-							graphMode.setEnabled(false);
-							graphMode.setTextColor(Color.GRAY);
-						}
-
 						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 						imm.hideSoftInputFromWindow(
 								editLocation.getWindowToken(), 0);
@@ -1214,8 +1208,6 @@ public class BarometerNetworkActivity extends Activity implements
 							"graph", 
 							 null).build());
 					
-					graphMode.setEnabled(false);
-					graphMode.setTextColor(Color.GRAY);
 					Toast.makeText(getApplicationContext(), "Loading graph…",
 							Toast.LENGTH_LONG).show();
 					layoutGraph.setVisibility(View.VISIBLE);
@@ -1228,14 +1220,13 @@ public class BarometerNetworkActivity extends Activity implements
 
 					charts.reset();
 
-					hoursAgoSelected = 12;
+					hoursAgoSelected = 72;
 
-					log("making api call 12h for graph");
-					CbApiCall api = buildMapAPICall(hoursAgoSelected);
-					api.setLimit(5000);
-					makeAPICall(api);
+					log("making api call 72h for graph");
+					CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
+					makeStatsAPICall(api);
 
-					charts.addAndLoadSegment();
+					//charts.addAndLoadSegment();
 
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -2021,9 +2012,6 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutGraphButtons.setVisibility(View.VISIBLE);
 		// TODO: bring the chart back
 		mainLayout.addView(chartView);
-
-		graphMode.setEnabled(true);
-		graphMode.setTextColor(Color.BLACK);
 	}
 
 	/**
@@ -3224,6 +3212,39 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setLimit(500);
 		return api;
 	}
+	
+	private CbStatsAPICall buildStatsAPICall(double hoursAgo) {
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbStatsAPICall api = new CbStatsAPICall();
+
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+
+		if (visibleBound != null) {
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("no map center, bailing on map call");
+			return api;
+		}
+
+		api.setMinLatitude(minLat);
+		api.setMaxLatitude(maxLat);
+		api.setMinLongitude(minLon);
+		api.setMaxLongitude(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setLogDuration("hourly");
+		return api;
+	}
 
 	private CbApiCall buildConditionsAnimationCall(long startTime, long endTime) {
 		Date start = new Date(startTime);
@@ -3363,6 +3384,21 @@ public class BarometerNetworkActivity extends Activity implements
 			} catch (RemoteException e) {
 				// e.printStackTrace();
 				updateAPICount(-1);
+			}
+		} else {
+			log("make api call; app failed api call; data management error: not bound");
+		}
+	}
+	
+	private void makeStatsAPICall(CbStatsAPICall apiCall) {
+		if (mBound) {
+			Message msg = Message.obtain(null, CbService.MSG_MAKE_STATS_CALL,
+					apiCall);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
 			}
 		} else {
 			log("make api call; app failed api call; data management error: not bound");
