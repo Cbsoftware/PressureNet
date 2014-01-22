@@ -652,7 +652,14 @@ public class CurrentConditionsActivity extends Activity {
 		setContentView(R.layout.current_conditions);
 		log("currentconditions oncreate");
 		bindCbService();
-
+		try {
+		 String ns = Context.NOTIFICATION_SERVICE;
+		 NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+		 nMgr.cancel(NotificationSender.CONDITION_NOTIFICATION_ID);
+		} catch(Exception e) {
+			
+		}
+		
 		condition = new CbCurrentCondition();
 		
 		buttonSunny = (ImageButton) findViewById(R.id.buttonSunny);
@@ -726,6 +733,11 @@ public class CurrentConditionsActivity extends Activity {
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastConditionsSubmit", lastConditionsSubmit);
 				editor.commit();
+				
+				PnDb pn = new PnDb(getApplicationContext());
+				pn.open();
+				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
+				pn.close();
 				
 				finish();
 			}

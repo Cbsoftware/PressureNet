@@ -1,11 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -14,13 +10,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbService; 
+import ca.cumulonimbus.pressurenetsdk.CbService;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 public class NotificationSender extends BroadcastReceiver {
 
@@ -140,6 +140,23 @@ public class NotificationSender extends BroadcastReceiver {
 		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 	
+	public boolean wasRecentlyDelivered(CbCurrentCondition condition) {
+		PnDb pn = new PnDb(mContext);
+		pn.open();
+		Cursor recentDeliveries = pn.fetchRecentDeliveries();
+		boolean delivered = false;
+		while(recentDeliveries.moveToNext()) {
+			String general = recentDeliveries.getString(1);
+			if(condition.getGeneral_condition().equals(general)) {
+				log("recently delivered: " + general);
+				delivered = true;
+			}
+		}
+		pn.close();
+		
+		return delivered;
+	}
+	
 	/**
 	 * Send an Android notification to the user about nearby users
 	 * reporting current conditions.
@@ -171,7 +188,22 @@ public class NotificationSender extends BroadcastReceiver {
 			log("bailing on conditions notification, not 1h wait yet");
 			return;
 		}
-
+		
+		if(wasRecentlyDelivered(condition)) {
+			return;
+		}
+		
+		if(condition!=null) {
+			if(condition.getLocation()!=null) {
+				PnDb pn = new PnDb(mContext);
+				pn.open();
+				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
+				pn.close();
+			}
+		} else {
+			return;
+		}
+			
 		String deliveryMessage = "What's it like outside?";
 		
 		// feed it with the initial condition

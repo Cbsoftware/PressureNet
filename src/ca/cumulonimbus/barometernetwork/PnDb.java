@@ -94,7 +94,20 @@ public class PnDb {
 				null, null, null, null, null);
 	}
 
-	
+
+
+	/**
+	 * Fetch recent condition delivery
+	 * 
+	 * @return
+	 */
+	public Cursor fetchRecentDeliveries() {
+		return mDB.query(CONDITIONS_DELIVERED, new String[] { KEY_ROW_ID,
+				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME },
+				KEY_TIME + " > " + (System.currentTimeMillis() - (1000 * 60 * 60 * 2)), null, null, null, null);
+	}
+
+
 	/**
 	 * Fetch every location
 	 * 
