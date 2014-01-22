@@ -65,7 +65,7 @@ public class WhatsNewActivity extends Activity {
 		}
 		pressureNETVersion.setText("pressureNET " + versionName);
 
-		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", false));
+		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", true));
 		if(checkReceiveConditionNotifications.isChecked()) {
 			freq.setEnabled(true);
 		} else {
