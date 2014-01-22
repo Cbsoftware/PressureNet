@@ -144,11 +144,14 @@ public class StatsChart {
 		for(CbStats stat : statsList) {
 			xValues[i] = new Date(stat.getTimeStamp());
 			yValues[i] = stat.getMean();
-			if (stat.getMin() < minObservation) {
-				minObservation = stat.getMin();
+		
+			//log(xValues[i] + " " + yValues[i]);
+			
+			if (stat.getMean() < minObservation) {
+				minObservation = stat.getMean();
 			}
-			if (stat.getMax() > maxObservation) {
-				maxObservation = stat.getMax();
+			if (stat.getMean() > maxObservation) {
+				maxObservation = stat.getMean();
 			}
 			if (stat.getTimeStamp() < minTime) {
 				minTime = stat.getTimeStamp();
@@ -213,6 +216,8 @@ public class StatsChart {
 			dates[0] = new Date(obs.getTimeStamp());
 
 			values[0] = obs.getMean();
+			
+			log(dates[0] +" " + values[0]);
 
 			xValues.add(dates);
 			yValues.add(values);

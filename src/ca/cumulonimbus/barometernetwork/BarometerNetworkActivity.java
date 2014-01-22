@@ -603,7 +603,8 @@ public class BarometerNetworkActivity extends Activity implements
 						visibleBound = bounds;
 
 						if (activeMode.equals("graph")) {
-							createAndShowChart();
+							CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
+							makeStatsAPICall(api);
 						} else if (activeMode.equals("map")) {
 							loadRecents();
 						} else if (activeMode.equals("sensors")) {
@@ -1812,15 +1813,7 @@ public class BarometerNetworkActivity extends Activity implements
 		log("plotting... " + statsRecents.size());
 		StatsChart chart = new StatsChart(getApplicationContext());
 
-		// set units according to preference
-		ArrayList<CbStats> displayRecents = new ArrayList<CbStats>();
-		for (CbStats stat : statsRecents) {
-			double mean = stat.getMean();
-
-			displayRecents.add(stat);
-		}
-
-		View chartView = chart.drawChart(displayRecents);
+		View chartView = chart.drawChart(statsRecents);
 
 		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
 
