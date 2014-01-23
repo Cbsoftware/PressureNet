@@ -31,7 +31,7 @@
             android:layout_below="@id/textNewFeatures"
             android:padding="4dp"
             android:paddingTop="16dp"
-            android:text="• Weather animations\n• Weather notification enhancements\n• Nexus 5 sensor fix"
+            android:text="• Stastical graphs\n• Informative notification icons\n• Bug fixes"
             android:textSize="16dp" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/textWhatsNew"
             android:padding="4dp"
-            android:text="NEW SETTINGS"
+            android:text="RECENT SETTINGS UPDATES"
             android:textStyle="bold" />
 
         <CheckBox

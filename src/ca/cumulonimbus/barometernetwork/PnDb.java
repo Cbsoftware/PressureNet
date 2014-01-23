@@ -12,13 +12,18 @@ public class PnDb {
 
 	// Tables
 	public static final String SEARCH_LOCATIONS_TABLE = "pn_searchlocations";
-
+	public static final String CONDITIONS_DELIVERED = "conditions_delivered";
+	
 	// Search Locations Fields
 	public static final String KEY_ROW_ID = "_id";
 	public static final String KEY_SEARCH_TEXT = "search_text";
 	public static final String KEY_LATITUDE = "latitude";
 	public static final String KEY_LONGITUDE = "longitude";
 	public static final String KEY_LAST_CALL = "last_api_call";
+	
+	// Conditions fields
+	public static final String KEY_TIME = "time";
+	public static final String KEY_CONDITION = "condition";
 
 	private Context mContext;
 
@@ -30,10 +35,16 @@ public class PnDb {
 			+ " text not null, " + KEY_LATITUDE + " real not null, "
 			+ KEY_LONGITUDE + " text not null, " + KEY_LAST_CALL + " real, UNIQUE (" + KEY_SEARCH_TEXT
 			+ ") ON CONFLICT REPLACE)";
+	
+	private static final String CONDITIONS_DELIVERED_TABLE_CREATE = "create table "
+			+ CONDITIONS_DELIVERED
+			+ " (_id integer primary key autoincrement, " + KEY_CONDITION
+			+ " text not null, " + KEY_LATITUDE + " real not null, "
+			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 7; 
-	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.x; TODO: fix this nonsense
+	private static final int DATABASE_VERSION = 8; 
+	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6; TODO: fix this nonsense
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -47,6 +58,57 @@ public class PnDb {
 	
 	
 	/**
+	 * Add new condition delivery
+
+	 * @return
+	 */
+	public long addDelivery(String condition, double latitude, double longitude, long time) {
+
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_CONDITION, condition);
+		initialValues.put(KEY_LATITUDE, latitude);
+		initialValues.put(KEY_LONGITUDE, longitude);
+		initialValues.put(KEY_TIME, time);
+
+		return mDB.insert(CONDITIONS_DELIVERED, null, initialValues);
+	}
+
+	/**
+	 * Delete old condition deliveries to keep the table small
+	 */
+	public void deleteOldDeliveries() {
+		long ancientConditionMsAgo = 1000 * 60 * 2;
+		mDB.execSQL("delete from " + CONDITIONS_DELIVERED + " where " + 
+		KEY_TIME + "<" + ancientConditionMsAgo);
+	}
+	
+	
+	/**
+	 * Fetch every condition delivery
+	 * 
+	 * @return
+	 */
+	public Cursor fetchAllDeliveries() {
+		return mDB.query(CONDITIONS_DELIVERED, new String[] { KEY_ROW_ID,
+				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME },
+				null, null, null, null, null);
+	}
+
+
+
+	/**
+	 * Fetch recent condition delivery
+	 * 
+	 * @return
+	 */
+	public Cursor fetchRecentDeliveries() {
+		return mDB.query(CONDITIONS_DELIVERED, new String[] { KEY_ROW_ID,
+				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME },
+				KEY_TIME + " > " + (System.currentTimeMillis() - (1000 * 60 * 60 * 2)), null, null, null, null);
+	}
+
+
+	/**
 	 * Fetch every location
 	 * 
 	 * @return
@@ -56,7 +118,7 @@ public class PnDb {
 				KEY_SEARCH_TEXT, KEY_LATITUDE, KEY_LONGITUDE, KEY_LAST_CALL },
 				null, null, null, null, null);
 	}
-
+	
 	/**
 	 * Update location
 	 * 
@@ -75,11 +137,8 @@ public class PnDb {
 	}
 
 	public void deleteLocation(long rowId) {
-
 		mDB.execSQL("delete from " + SEARCH_LOCATIONS_TABLE + " where " + 
 		KEY_ROW_ID + "=" + rowId);
-		
-	
 	}
 	
 
@@ -135,14 +194,20 @@ public class PnDb {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
+			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
 
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// Build upgrade mechanism
-			// db.execSQL("DROP TABLE IF EXISTS " + SEARCH_LOCATIONS_TABLE);
-			// onCreate(db);
+			
+			// If upgrading from 4.2.5 to 4.2.6,
+			// users get a fix for https://github.com/Cbsoftware/pressureNET/issues/119
+			// Database table creation to support fix.
+			if ((oldVersion <= 7) && (newVersion == 8)) {
+				db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
+			}
 			
 			showWhatsNew();
 		}

@@ -652,7 +652,14 @@ public class CurrentConditionsActivity extends Activity {
 		setContentView(R.layout.current_conditions);
 		log("currentconditions oncreate");
 		bindCbService();
-
+		try {
+		 String ns = Context.NOTIFICATION_SERVICE;
+		 NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+		 nMgr.cancel(NotificationSender.CONDITION_NOTIFICATION_ID);
+		} catch(Exception e) {
+			
+		}
+		
 		condition = new CbCurrentCondition();
 		
 		buttonSunny = (ImageButton) findViewById(R.id.buttonSunny);
@@ -726,6 +733,11 @@ public class CurrentConditionsActivity extends Activity {
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastConditionsSubmit", lastConditionsSubmit);
 				editor.commit();
+				
+				PnDb pn = new PnDb(getApplicationContext());
+				pn.open();
+				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
+				pn.close();
 				
 				finish();
 			}
@@ -1144,7 +1156,6 @@ public class CurrentConditionsActivity extends Activity {
 		SunLocation sunLocation = new SunLocation(latitude, longitude);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(time);
-		System.out.println("isdaytime tzoffset raw = " + timeZoneOffset);
 		long tzHoursOffset = timeZoneOffset / ( 1000 * 60 * 60);
 		String gmtString = "GMT";
 		if(tzHoursOffset>0) { 
@@ -1153,13 +1164,20 @@ public class CurrentConditionsActivity extends Activity {
 			gmtString += tzHoursOffset;
 		}
 		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
-		System.out.println("condition isdaytime? " + latitude +", " + longitude + "," + time + ", " + timeZoneOffset + ", gmtstring " + gmtString);
 		calendar.setTimeZone(TimeZone.getTimeZone(gmtString));
 		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(calendar);
 		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(calendar);
 		
-		int sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
-		int sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);
+		// Make a reasonable guess about sunset/sunrise in case
+		// the actual data isn't available for some reason
+		int sunriseHour = 7;
+		int sunsetHour = 20;
+		try {
+			sunriseHour = officialSunrise.get(Calendar.HOUR_OF_DAY);
+			sunsetHour = officialSunset.get(Calendar.HOUR_OF_DAY);
+		} catch (NullPointerException npe) {
+			// TODO: investigate how this could be null
+		}
 		int nowHour = calendar.get(Calendar.HOUR_OF_DAY);
 		
 		return (nowHour >= sunriseHour) && (nowHour <= sunsetHour);
