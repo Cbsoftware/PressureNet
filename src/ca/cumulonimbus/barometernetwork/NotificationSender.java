@@ -481,6 +481,9 @@ public class NotificationSender extends BroadcastReceiver {
 	}
 	
 	private void log(String message) {
-		System.out.println(message);
+		if(PressureNETConfiguration.DEBUG_MODE) {
+    		//logToFile(message);
+    		System.out.println(message);
+    	}
 	}
 }

@@ -1156,7 +1156,6 @@ public class CurrentConditionsActivity extends Activity {
 		SunLocation sunLocation = new SunLocation(latitude, longitude);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(time);
-		System.out.println("isdaytime tzoffset raw = " + timeZoneOffset);
 		long tzHoursOffset = timeZoneOffset / ( 1000 * 60 * 60);
 		String gmtString = "GMT";
 		if(tzHoursOffset>0) { 
@@ -1165,7 +1164,6 @@ public class CurrentConditionsActivity extends Activity {
 			gmtString += tzHoursOffset;
 		}
 		SunriseSunsetCalculator sunCalculator = new SunriseSunsetCalculator(sunLocation, gmtString);
-		System.out.println("condition isdaytime? " + latitude +", " + longitude + "," + time + ", " + timeZoneOffset + ", gmtstring " + gmtString);
 		calendar.setTimeZone(TimeZone.getTimeZone(gmtString));
 		Calendar officialSunrise = sunCalculator.getOfficialSunriseCalendarForDate(calendar);
 		Calendar officialSunset = sunCalculator.getOfficialSunsetCalendarForDate(calendar);
