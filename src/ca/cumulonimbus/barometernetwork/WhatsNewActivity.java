@@ -32,7 +32,6 @@ public class WhatsNewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.whats_new);
 		String versionName = "";
-		pressureNETVersion = (TextView) findViewById(R.id.textWhatsNewTitle);
 		done = (Button) findViewById(R.id.buttonDone);
 		freq = (Spinner) findViewById(R.id.spinnerNotificationFrequency);
 		checkReceiveConditionNotifications = (CheckBox) findViewById(R.id.checkReceiveConditionNotifications);
@@ -63,8 +62,8 @@ public class WhatsNewActivity extends Activity {
 		} catch (NameNotFoundException nnfe) {
 
 		}
-		pressureNETVersion.setText("pressureNET " + versionName);
-
+		setTitle("pressureNET " + versionName);
+		
 		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", true));
 		if(checkReceiveConditionNotifications.isChecked()) {
 			freq.setEnabled(true);
