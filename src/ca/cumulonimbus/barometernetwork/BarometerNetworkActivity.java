@@ -269,7 +269,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean hasBarometer = true;
 
 	private LocationManager networkLocationManager;
-	private LocationManager gpsLocationManager;
 	private LocationListener locationListener;
 
 	private long lastSubmitStart = 0;
@@ -329,9 +328,6 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void startAppLocationListener() {
 		networkLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if(preferenceUseGPS) {
-			gpsLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		}
 		startGettingLocations();
 	}
 
@@ -346,12 +342,8 @@ public class BarometerNetworkActivity extends Activity implements
 				if (networkLocationManager != null) {
 					networkLocationManager.removeUpdates(locationListener);
 				}
-				if (gpsLocationManager != null) {
-					gpsLocationManager.removeUpdates(locationListener);
-				}
 			}
 			networkLocationManager = null;
-			gpsLocationManager = null;
 			return true;
 		} catch (Exception e) {
 			// e.printStackTrace();
@@ -388,10 +380,6 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			networkLocationManager.requestLocationUpdates(
 					LocationManager.NETWORK_PROVIDER, 1000 * 60 * 5, 300,
-					locationListener);
-			
-			networkLocationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 1000 * 60 * 5, 300,
 					locationListener);
 		} catch (Exception e) {
 			// e.printStackTrace();
