@@ -43,8 +43,9 @@ public class PnDb {
 			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 8; 
+	private static final int DATABASE_VERSION = 9; 
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6; TODO: fix this nonsense
+	// 9 = 4.2.7
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -205,7 +206,7 @@ public class PnDb {
 			// If upgrading from 4.2.5 to 4.2.6,
 			// users get a fix for https://github.com/Cbsoftware/pressureNET/issues/119
 			// Database table creation to support fix.
-			if ((oldVersion <= 7) && (newVersion == 8)) {
+			if ((oldVersion <= 7) && (newVersion >= 8)) {
 				db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
 			}
 			
