@@ -426,12 +426,19 @@
             android:layout_height="wrap_content"
             android:gravity="center" >
 
+        	<CheckBox
+                android:id="@+id/checkAddPhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.33"
+                android:text="Photo" />
+            
             <Button
                 android:id="@+id/buttonCancelCondition"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="0.33"
                 android:text="@string/cancel_condition" />
 
             <Button
@@ -439,7 +446,7 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="0.33"
                 android:enabled="false"
                 android:text="@string/send_condition" />
         </LinearLayout>

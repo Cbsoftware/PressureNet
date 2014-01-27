@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -30,10 +31,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -102,6 +105,8 @@ public class CurrentConditionsActivity extends Activity {
 	private ScrollView scrollClouds;
 	private ScrollView scrollFoggy;
 	
+	private CheckBox addPhoto;
+	
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
 	private CbCurrentCondition condition;
@@ -118,6 +123,24 @@ public class CurrentConditionsActivity extends Activity {
 	private long lastConditionsSubmit = 0;
 
 	private boolean sending = false;
+	
+	static final int REQUEST_IMAGE_CAPTURE = 1;
+
+	private void dispatchTakePictureIntent() {
+	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+	        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+	    }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+	        Bundle extras = data.getExtras();
+	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+	        //mImageView.setImageBitmap(imageBitmap);
+	    }
+	}
 	
 	@Override
 	protected void onStart() {
@@ -714,6 +737,7 @@ public class CurrentConditionsActivity extends Activity {
 		scrollClouds = (ScrollView) findViewById(R.id.scrollClouds);
 		scrollFoggy = (ScrollView) findViewById(R.id.scrollFog);
 		
+		addPhoto = (CheckBox) findViewById(R.id.checkAddPhoto);
 		
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
@@ -721,6 +745,11 @@ public class CurrentConditionsActivity extends Activity {
 				sending = true;
 				saveCondition();
 				sendCondition();
+				
+				// take photo?
+				if(addPhoto.isChecked()) {
+					dispatchTakePictureIntent();
+				}
 				
 				updateWidget();
 				

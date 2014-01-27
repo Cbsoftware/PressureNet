@@ -13,6 +13,7 @@ public class PnDb {
 	// Tables
 	public static final String SEARCH_LOCATIONS_TABLE = "pn_searchlocations";
 	public static final String CONDITIONS_DELIVERED = "conditions_delivered";
+	public static final String SKY_PHOTOS = "sky_photos";
 	
 	// Search Locations Fields
 	public static final String KEY_ROW_ID = "_id";
@@ -24,6 +25,9 @@ public class PnDb {
 	// Conditions fields
 	public static final String KEY_TIME = "time";
 	public static final String KEY_CONDITION = "condition";
+	
+	// Sky photos fields
+	public static final String KEY_IMAGE_FILENAME = "image_filename";
 
 	private Context mContext;
 
@@ -43,9 +47,11 @@ public class PnDb {
 			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 9; 
-	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6; TODO: fix this nonsense
+	private static final int DATABASE_VERSION = 10; 
+	// TODO: fix this nonsense
+	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
+	// 10 = 4.3.0
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -209,6 +215,12 @@ public class PnDb {
 			if ((oldVersion <= 7) && (newVersion >= 8)) {
 				db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
 			}
+			
+			// add a table to store info about sky photos
+			if ((oldVersion <= 9) && (newVersion>=10)) {
+				
+			}
+			
 			
 			showWhatsNew();
 		}
