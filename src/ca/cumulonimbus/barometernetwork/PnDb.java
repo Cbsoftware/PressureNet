@@ -97,8 +97,8 @@ public class PnDb {
 	 * @return
 	 */
 	public Cursor fetchLocalRecentSkyPhotos(double minLat, double maxLat, double minLon, double maxLon, long timeAgo) {
-		return mDB.query(CONDITIONS_DELIVERED, new String[] { KEY_ROW_ID,
-				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_THUMBNAIL },
+		return mDB.query(SKY_PHOTOS, new String[] { KEY_ROW_ID,
+				KEY_IMAGE_FILENAME, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_THUMBNAIL },
 				KEY_TIME + " > ? and " + 
 				KEY_LATITUDE + " > ? and " + 
 				KEY_LATITUDE + " < ? and " +
@@ -269,10 +269,10 @@ public class PnDb {
 			}
 			
 			// add a table to store info about sky photos
-			//if ((oldVersion <= 9) && (newVersion>=10)) {
-			db.execSQL("DROP TABLE " + SKY_PHOTOS);
+			if ((oldVersion <= 9) && (newVersion>=10)) {
+				db.execSQL("DROP TABLE " + SKY_PHOTOS);
 				db.execSQL(SKY_PHOTOS_TABLE_CREATE);
-			//}
+			}
 			
 			
 			showWhatsNew();

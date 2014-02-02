@@ -144,27 +144,33 @@ public class CurrentConditionsActivity extends Activity {
 	        
 	        log("current conditions receiving sky photo on activity result");
 	        
-	        // Prepare image for storage
-	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] b = baos.toByteArray();
-            String encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
-            byte[] byteArray = Base64.decode(encodedImageString, Base64.DEFAULT);
+	        try {
+		        // Prepare image for storage
+		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+	            byte[] b = baos.toByteArray();
+	            String encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
+	            byte[] byteArray = Base64.decode(encodedImageString, Base64.DEFAULT);
+		        
+	            // Guess location: TODO: implement a better method
+	            LocationManager lm = (LocationManager) this
+						.getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				double latitude = loc.getLatitude();
+				double longitude = loc.getLongitude();
 	        
-            // Guess location: TODO: implement a better method
-            LocationManager lm = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			double latitude = loc.getLatitude();
-			double longitude = loc.getLongitude();
-        
-	        PnDb db = new PnDb(getApplicationContext());
-	        db.open();
-	        long id = db.addSkyPhoto("filename", latitude, longitude, System.currentTimeMillis(), byteArray);
-	        db.close();
-	        
-	        log("current conditions added sky photo ID " + id);
+		        PnDb db = new PnDb(getApplicationContext());
+		        db.open();
+		        long id = db.addSkyPhoto("filename", latitude, longitude, System.currentTimeMillis(), byteArray);
+		        db.close();
+		        
+		        log("current conditions added sky photo ID " + id);
+	        } catch (Exception e) {
+	        	if(e!=null) {
+	        		log(e.getMessage() + " error in storing photo");
+	        	}
+	        }
 	        
 	        //Toast.makeText(getApplicationContext(), "Added image ID " + id, Toast.LENGTH_LONG).show();
 	        //mImageView.setImageBitmap(imageBitmap);

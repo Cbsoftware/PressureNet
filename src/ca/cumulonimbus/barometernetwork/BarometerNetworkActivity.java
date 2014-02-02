@@ -2122,6 +2122,8 @@ public class BarometerNetworkActivity extends Activity implements
 					null).build());
 		} else if (item.getItemId() == R.id.menu_sky_photos) {
 			Intent skyIntent = new Intent(getApplicationContext(), SkyPhotosActivity.class);
+			skyIntent.putExtra("latitude", mLatitude);
+			skyIntent.putExtra("longitude", mLongitude);
 			startActivity(skyIntent);
 		}
 		return super.onOptionsItemSelected(item);
