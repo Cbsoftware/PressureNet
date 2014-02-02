@@ -2120,6 +2120,9 @@ public class BarometerNetworkActivity extends Activity implements
 					BarometerNetworkActivity.GA_ACTION_BUTTON, 
 					"rate_pressurenet", 
 					null).build());
+		} else if (item.getItemId() == R.id.menu_sky_photos) {
+			Intent skyIntent = new Intent(getApplicationContext(), SkyPhotosActivity.class);
+			startActivity(skyIntent);
 		}
 		return super.onOptionsItemSelected(item);
 	}

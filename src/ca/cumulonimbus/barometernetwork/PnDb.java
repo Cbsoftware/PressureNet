@@ -28,6 +28,11 @@ public class PnDb {
 	
 	// Sky photos fields
 	public static final String KEY_IMAGE_FILENAME = "image_filename";
+	// KEY_TIME
+	// KEY_LATITUDE
+	// KEY_LONGITUDE
+	public static final String KEY_THUMBNAIL = "image_thumbnail";
+	
 
 	private Context mContext;
 
@@ -45,13 +50,20 @@ public class PnDb {
 			+ " (_id integer primary key autoincrement, " + KEY_CONDITION
 			+ " text not null, " + KEY_LATITUDE + " real not null, "
 			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
+	
+	private static final String SKY_PHOTOS_TABLE_CREATE = "create table "
+			+ SKY_PHOTOS
+			+ " (_id integer primary key autoincrement, " + KEY_IMAGE_FILENAME
+			+ " text not null, " + KEY_LATITUDE + " real not null, "
+			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real, " + KEY_THUMBNAIL + " blob)";
+
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 10; 
+	private static final int DATABASE_VERSION = 12; 
 	// TODO: fix this nonsense
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
-	// 10 = 4.3.0
+	// 10-12 = 4.3.0
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -61,6 +73,46 @@ public class PnDb {
 
 	public void close() {
 		mDbHelper.close();
+	}
+	
+	
+	/**
+	 * Add new sky photo
+
+	 * @return
+	 */
+	public long addSkyPhoto(String filename, double latitude, double longitude, long time, byte[] thumb) {
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_IMAGE_FILENAME, filename);
+		initialValues.put(KEY_LATITUDE, latitude);
+		initialValues.put(KEY_LONGITUDE, longitude);
+		initialValues.put(KEY_TIME, time);
+		initialValues.put(KEY_THUMBNAIL, thumb);
+		return mDB.insert(SKY_PHOTOS, null, initialValues);
+	}
+
+	/**
+	 * Fetch local, recent sky photos
+	 *  
+	 * @return
+	 */
+	public Cursor fetchLocalRecentSkyPhotos(double minLat, double maxLat, double minLon, double maxLon, long timeAgo) {
+		return mDB.query(CONDITIONS_DELIVERED, new String[] { KEY_ROW_ID,
+				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_THUMBNAIL },
+				KEY_TIME + " > ? and " + 
+				KEY_LATITUDE + " > ? and " + 
+				KEY_LATITUDE + " < ? and " +
+				KEY_LONGITUDE +" > ? and " +
+				KEY_LONGITUDE +" < ?", 
+				new String[] {timeAgo + "", minLat + "", maxLat + "", minLon + "", maxLon + ""}, null, null, null);
+	}
+	
+
+	/**
+	 * Delete a sky photo
+	 */
+	public void deleteSkyPhoto(int id) {
+		mDB.execSQL("delete from " + SKY_PHOTOS + " where " + KEY_ROW_ID + "=" + id);
 	}
 	
 	
@@ -202,7 +254,7 @@ public class PnDb {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
 			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
-
+			db.execSQL(SKY_PHOTOS_TABLE_CREATE);
 		}
 
 		@Override
@@ -217,9 +269,10 @@ public class PnDb {
 			}
 			
 			// add a table to store info about sky photos
-			if ((oldVersion <= 9) && (newVersion>=10)) {
-				
-			}
+			//if ((oldVersion <= 9) && (newVersion>=10)) {
+			db.execSQL("DROP TABLE " + SKY_PHOTOS);
+				db.execSQL(SKY_PHOTOS_TABLE_CREATE);
+			//}
 			
 			
 			showWhatsNew();

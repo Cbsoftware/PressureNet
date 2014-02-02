@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -33,6 +35,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings.Secure;
+import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -138,7 +141,34 @@ public class CurrentConditionsActivity extends Activity {
 	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 	        Bundle extras = data.getExtras();
 	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+	        
+	        log("current conditions receiving sky photo on activity result");
+	        
+	        // Prepare image for storage
+	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
+            byte[] byteArray = Base64.decode(encodedImageString, Base64.DEFAULT);
+	        
+            // Guess location: TODO: implement a better method
+            LocationManager lm = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			double latitude = loc.getLatitude();
+			double longitude = loc.getLongitude();
+        
+	        PnDb db = new PnDb(getApplicationContext());
+	        db.open();
+	        long id = db.addSkyPhoto("filename", latitude, longitude, System.currentTimeMillis(), byteArray);
+	        db.close();
+	        
+	        log("current conditions added sky photo ID " + id);
+	        
+	        //Toast.makeText(getApplicationContext(), "Added image ID " + id, Toast.LENGTH_LONG).show();
 	        //mImageView.setImageBitmap(imageBitmap);
+	        finish();
 	    }
 	}
 	
@@ -746,11 +776,6 @@ public class CurrentConditionsActivity extends Activity {
 				saveCondition();
 				sendCondition();
 				
-				// take photo?
-				if(addPhoto.isChecked()) {
-					dispatchTakePictureIntent();
-				}
-				
 				updateWidget();
 				
 				// save the time
@@ -768,7 +793,13 @@ public class CurrentConditionsActivity extends Activity {
 				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
 				pn.close();
 				
-				finish();
+				// take photo?
+				if(addPhoto.isChecked()) {
+					dispatchTakePictureIntent();
+				} else {
+					finish();
+				}
+				
 			}
 		});
 		

@@ -111,6 +111,18 @@
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
+            android:name="ca.cumulonimbus.barometernetwork.SkyPhotosActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Sky photos"
+            android:theme="@style/CustomTheme"
+            android:excludeFromRecents="true" 
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+        </activity>
+        
+        <activity
             android:name="ca.cumulonimbus.barometernetwork.PNDVActivity"
             android:excludeFromRecents="true"
             android:label="@string/pndv"
@@ -167,6 +179,7 @@
             android:excludeFromRecents="true" >
         </activity>
         
+     
         <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
             <intent-filter>
                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
