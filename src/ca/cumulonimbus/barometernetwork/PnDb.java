@@ -104,7 +104,8 @@ public class PnDb {
 				KEY_LATITUDE + " < ? and " +
 				KEY_LONGITUDE +" > ? and " +
 				KEY_LONGITUDE +" < ?", 
-				new String[] {timeAgo + "", minLat + "", maxLat + "", minLon + "", maxLon + ""}, null, null, null);
+				new String[] {timeAgo + "", minLat + "", maxLat + "", minLon + "", maxLon + ""},
+				null, null, KEY_TIME);
 	}
 	
 
