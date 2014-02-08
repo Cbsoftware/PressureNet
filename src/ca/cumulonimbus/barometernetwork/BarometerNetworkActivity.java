@@ -91,6 +91,7 @@ import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbExternalWeatherData;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -312,6 +313,15 @@ public class BarometerNetworkActivity extends Activity implements
 		showWelcomeActivity();
 		setUpActionBar();
 		checkDb();
+		callExternalAPIs();
+	}
+	
+	/**
+	 * Retrieve data from other weather services
+	 */
+	private void callExternalAPIs() {
+		CbExternalWeatherData external = new CbExternalWeatherData();
+		external.getCurrentTemperatureForLocation(mLatitude, mLongitude);
 	}
 
 	/**
