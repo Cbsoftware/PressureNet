@@ -172,6 +172,13 @@
             android:excludeFromRecents="true" >
         </activity>
          <activity
+            android:name="ca.cumulonimbus.barometernetwork.MSLPActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Mean Sea-Level Pressure"
+            android:theme="@style/CustomThemeDialog"
+            android:excludeFromRecents="true" >
+        </activity>
+         <activity
             android:name="ca.cumulonimbus.barometernetwork.Nexus5Bug"
             android:configChanges="orientation|screenSize"
             android:label="Nexus 5 sensor bug"

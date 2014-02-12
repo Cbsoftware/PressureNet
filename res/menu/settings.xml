@@ -5,7 +5,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_current"
         android:showAsAction="ifRoom|withText"
-        android:title="What's it like outside?"/>
+        android:title="What&apos;s it like outside?"/>
     <item
         android:id="@+id/menu_log_viewer"
         android:enabled="true"
@@ -13,11 +13,17 @@
         android:showAsAction="ifRoom|withText"
         android:title="My data"
         android:visible="true"/>
-     <item
+    <item
         android:id="@+id/menu_sky_photos"
         android:enabled="true"
         android:showAsAction="never"
         android:title="Sky photos"
+        android:visible="true"/>
+    <item
+        android:id="@+id/menu_mslp"
+        android:enabled="true"
+        android:showAsAction="never"
+        android:title="MSLP"
         android:visible="true"/>
     <item
         android:id="@+id/menu_data_management"
@@ -70,4 +76,5 @@
         android:enabled="true"
         android:showAsAction="never"
         android:title="Tell your friends!"/>
+
 </menu>

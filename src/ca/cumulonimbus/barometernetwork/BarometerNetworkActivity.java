@@ -320,8 +320,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Retrieve data from other weather services
 	 */
 	private void callExternalAPIs() {
-		CbExternalWeatherData external = new CbExternalWeatherData();
-		external.getCurrentTemperatureForLocation(mLatitude, mLongitude);
+	
 	}
 
 	/**
@@ -2135,6 +2134,10 @@ public class BarometerNetworkActivity extends Activity implements
 			skyIntent.putExtra("latitude", mLatitude);
 			skyIntent.putExtra("longitude", mLongitude);
 			startActivity(skyIntent);
+		} else if (item.getItemId() == R.id.menu_mslp) {
+			Intent mslpIntent = new Intent(getApplicationContext(), MSLPActivity.class);
+			
+			startActivity(mslpIntent);
 		}
 		return super.onOptionsItemSelected(item);
 	}
