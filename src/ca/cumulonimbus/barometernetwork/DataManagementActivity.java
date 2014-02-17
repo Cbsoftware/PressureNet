@@ -10,13 +10,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -38,6 +37,9 @@ import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+
 public class DataManagementActivity extends Activity {
 
 	Button buttonExportMyData;
@@ -52,24 +54,26 @@ public class DataManagementActivity extends Activity {
 	Messenger mService = null;
 
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
-	
+
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
-	
+
 	private String mAppDir = "";
+
+	Context context;
 	
 	@Override
 	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this); 
+		EasyTracker.getInstance(this).activityStart(this);
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
+		EasyTracker.getInstance(this).activityStop(this);
 		super.onStop();
 	}
-	
+
 	private void clearLocalCache() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_CLEAR_LOCAL_CACHE,
@@ -78,7 +82,7 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
 			log("dm error: not bound");
@@ -101,21 +105,21 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
 			log("dm getlocalobs error: not bound");
 		}
 	}
-	
-	public void log(String message) { 
-		if(PressureNETConfiguration.DEBUG_MODE) {
+
+	public void log(String message) {
+		if (PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
-			//logToFile(message);
+			// logToFile(message);
 		}
 	}
 
-	public void logToFile(String message ) {
+	public void logToFile(String message) {
 		try {
 			OutputStream output = new FileOutputStream(mAppDir + "/log.txt",
 					true);
@@ -123,12 +127,12 @@ public class DataManagementActivity extends Activity {
 			output.write(logString.getBytes());
 			output.close();
 		} catch (FileNotFoundException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		} catch (IOException ioe) {
-			//ioe.printStackTrace();
+			// ioe.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Prepare to write a log to SD card. Not used unless logging enabled.
 	 */
@@ -140,10 +144,10 @@ public class DataManagementActivity extends Activity {
 
 			}
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 	}
-	
+
 	private void askForCacheCounts() {
 		if (mBound) {
 			Message msg = Message.obtain(null, CbService.MSG_COUNT_API_CACHE,
@@ -152,10 +156,10 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
-			//log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 
@@ -167,10 +171,10 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
-			//log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 
@@ -182,10 +186,10 @@ public class DataManagementActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
-			//log("error: not bound");
+			// log("error: not bound");
 		}
 	}
 
@@ -194,7 +198,7 @@ public class DataManagementActivity extends Activity {
 			mService = new Messenger(service);
 			mBound = true;
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
-			//log("dm bound");
+			// log("dm bound");
 			askForUserCounts();
 			askForCacheCounts();
 		}
@@ -233,6 +237,7 @@ public class DataManagementActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.data_management);
+		context = this;
 		checkStorage();
 		buttonExportMyData = (Button) findViewById(R.id.buttonExportMyData);
 		buttonClearMyData = (Button) findViewById(R.id.buttonClearMyData);
@@ -254,11 +259,11 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				getAllLocalObservations();
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"export_data", 
-						null).build());
+				EasyTracker.getInstance(getApplicationContext()).send(
+						MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP,
+								BarometerNetworkActivity.GA_ACTION_BUTTON,
+								"export_data", null).build());
 			}
 		});
 
@@ -266,12 +271,35 @@ public class DataManagementActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				clearLocalCache();
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"clear_my_data", 
-						null).build());
+				new AlertDialog.Builder(context)
+						.setIcon(null)
+						.setTitle("Clear local data?")
+						.setMessage(
+								"Are you sure you want to clear your local, cached data?")
+						.setPositiveButton("Yes",
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										clearLocalCache();
+									}
+
+								}).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										
+									}
+
+								}).show();
+
+				EasyTracker.getInstance(getApplicationContext()).send(
+						MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP,
+								BarometerNetworkActivity.GA_ACTION_BUTTON,
+								"clear_my_data", null).build());
 			}
 		});
 
@@ -279,14 +307,13 @@ public class DataManagementActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"api_signup", 
-						null).build());
+				EasyTracker.getInstance(getApplicationContext()).send(
+						MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP,
+								BarometerNetworkActivity.GA_ACTION_BUTTON,
+								"api_signup", null).build());
 				// Open Live API sign up
-				Uri uri = Uri
-						.parse(CbConfiguration.API_SIGNUP_URL);
+				Uri uri = Uri.parse(CbConfiguration.API_SIGNUP_URL);
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 				startActivity(intent);
 			}
@@ -297,22 +324,22 @@ public class DataManagementActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				clearAPICache();
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"clear_data_cache", 
-						null).build());
+				EasyTracker.getInstance(getApplicationContext()).send(
+						MapBuilder.createEvent(
+								BarometerNetworkActivity.GA_CATEGORY_MAIN_APP,
+								BarometerNetworkActivity.GA_ACTION_BUTTON,
+								"clear_data_cache", null).build());
 				Intent data = new Intent();
 				if (getParent() == null) {
-				    setResult(Activity.RESULT_OK, data);
+					setResult(Activity.RESULT_OK, data);
 				} else {
-				    getParent().setResult(Activity.RESULT_OK, data);
+					getParent().setResult(Activity.RESULT_OK, data);
 				}
 			}
 		});
 
 		bindCbService();
-	
+
 		setUpFiles();
 	}
 
@@ -323,31 +350,31 @@ public class DataManagementActivity extends Activity {
 	}
 
 	/**
-	 * Check the available storage options.
-	 * Used for logging to SD card.
+	 * Check the available storage options. Used for logging to SD card.
 	 */
 	public void checkStorage() {
 		String state = Environment.getExternalStorageState();
 
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
-		    // We can read and write the media
-		    mExternalStorageAvailable = mExternalStorageWriteable = true;
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
 		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-		    // We can only read the media
-		    mExternalStorageAvailable = true;
-		    mExternalStorageWriteable = false;
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
 		} else {
-		    // Something else is wrong. It may be one of many other states, but all we need
-		    //  to know is we can neither read nor write
-		    mExternalStorageAvailable = mExternalStorageWriteable = false;
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 	}
-	
+
 	/**
 	 * Handle messages and communication with CbService
 	 * 
 	 * @author jacob
-	 *
+	 * 
 	 */
 	class IncomingHandler extends Handler {
 		@Override
@@ -356,7 +383,7 @@ public class DataManagementActivity extends Activity {
 			switch (msg.what) {
 			case CbService.MSG_COUNT_LOCAL_OBS_TOTALS:
 				int count = msg.arg1;
-				if(count==1) {
+				if (count == 1) {
 					measurement = "measurement.";
 				}
 				textMyData.setText("You have recorded and stored " + count
@@ -365,48 +392,50 @@ public class DataManagementActivity extends Activity {
 			case CbService.MSG_COUNT_API_CACHE_TOTALS:
 				int countCache = msg.arg1;
 				measurement = "measurements";
-				if(countCache==1) {
+				if (countCache == 1) {
 					measurement = "measurement";
 				}
-				textDataCache.setText("You have cached " + countCache
-						+ " " + measurement + " from our servers.");
+				textDataCache.setText("You have cached " + countCache + " "
+						+ measurement + " from our servers.");
 				break;
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 
 				log("dma receiving local recents size " + recents.size());
-				
-				
-				if(mExternalStorageWriteable) {
-					File export = new File(Environment.getExternalStorageDirectory(), "pressureNET-export.csv");
+
+				if (mExternalStorageWriteable) {
+					File export = new File(
+							Environment.getExternalStorageDirectory(),
+							"pressureNET-export.csv");
 					try {
-				        BufferedWriter out = new BufferedWriter(new FileWriter(export.getAbsolutePath(), false));
-				        out.write("Time,Pressure,Latitude,Longitude\n");
-				        for (CbObservation obs : recents) {
+						BufferedWriter out = new BufferedWriter(new FileWriter(
+								export.getAbsolutePath(), false));
+						out.write("Time,Pressure,Latitude,Longitude\n");
+						for (CbObservation obs : recents) {
 							String data = obs.getTime() + ","
 									+ obs.getObservationValue() + ","
 									+ obs.getLocation().getLatitude() + ","
 									+ obs.getLocation().getLongitude() + "\n";
 							out.write(data);
 						}
-				        out.close();
+						out.close();
 
-				    } catch (Exception e) {
-				    	Toast.makeText(
-								getApplicationContext(),
-								"Couldn't save data", Toast.LENGTH_LONG).show();	
-				    }
-					
+					} catch (Exception e) {
+						Toast.makeText(getApplicationContext(),
+								"Couldn't save data", Toast.LENGTH_LONG).show();
+					}
+
 					Toast.makeText(
 							getApplicationContext(),
-							"Saved " 
-									+ recents.size() + " data points to " + export.getAbsolutePath(), Toast.LENGTH_LONG).show();					
-					
+							"Saved " + recents.size() + " data points to "
+									+ export.getAbsolutePath(),
+							Toast.LENGTH_LONG).show();
+
 				} else {
 					Toast.makeText(
 							getApplicationContext(),
 							"Can't save data, storage not available"
-									+ recents.size(), Toast.LENGTH_LONG).show();					
+									+ recents.size(), Toast.LENGTH_LONG).show();
 				}
 
 				break;
@@ -415,17 +444,18 @@ public class DataManagementActivity extends Activity {
 			}
 		}
 	}
-	
+
 	/**
 	 * Checks if external storage is available for read and write
+	 * 
 	 * @return
 	 */
 	public boolean isExternalStorageWritable() {
-	    String state = Environment.getExternalStorageState();
-	    if (Environment.MEDIA_MOUNTED.equals(state)) {
-	        return true;
-	    }
-	    return false;
+		String state = Environment.getExternalStorageState();
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			return true;
+		}
+		return false;
 	}
 
 }
