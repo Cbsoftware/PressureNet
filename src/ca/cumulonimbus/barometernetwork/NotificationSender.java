@@ -369,12 +369,24 @@ public class NotificationSender extends BroadcastReceiver {
 			return;
 		}
 
-		Notification.Builder mBuilder = new Notification.Builder(
-				mContext).setSmallIcon(smallIconId)
-				.setContentTitle("pressureNET").setContentText(deliveryMessage);
+		// View graph button
+		Intent intent = new Intent(mContext, LogViewerActivity.class);
+		PendingIntent graphIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
+
 		// Creates an explicit intent for an activity
+		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
+				.create(mContext);
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		Notification.Builder mBuilder = new Notification.Builder(
+				mContext).setSmallIcon(smallIconId)
+				.setContentTitle("pressureNET").setContentText(deliveryMessage)
+				.addAction(R.drawable.ic_menu_dark_stats, "View graph", graphIntent)
+				.addAction(R.drawable.ic_menu_dark_weather, "What's it like outside?", resultPendingIntent);
+		
 		// Current Conditions activity likes to know the location in the Intent
 		double notificationLatitude = 0.0;
 		double notificationLongitude = 0.0;
@@ -395,12 +407,8 @@ public class NotificationSender extends BroadcastReceiver {
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 
-		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
-				.create(mContext);
-
 		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
+		
 		mBuilder.setContentIntent(resultPendingIntent);
 		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the
