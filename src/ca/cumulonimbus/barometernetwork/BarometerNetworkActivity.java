@@ -90,6 +90,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
+import ca.cumulonimbus.pressurenetsdk.CbContributions;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
@@ -202,6 +203,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private RelativeLayout nexus5layout;
 	private Button nexus5ReadMore;
+	
+	private TextView textMyContributions;
 	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
@@ -831,6 +834,8 @@ public class BarometerNetworkActivity extends Activity implements
 		nexus5ReadMore = (Button) findViewById(R.id.nexus5ReadMore);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
+		
+		textMyContributions = (TextView) findViewById(R.id.textMyContributions);
 		
 		buttonSatellite.setOnClickListener(new OnClickListener() {
 			
@@ -1887,6 +1892,10 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_DATA_RESULT:
 				// Used to be a Toast notification, now handled in NotificationSender
+				break;
+			case CbService.MSG_CONTRIBUTIONS:
+				CbContributions contrib = (CbContributions) msg.obj;
+				textMyContributions.setText(contrib.getPressureAllTime() + " all time pressure contributions");
 				break;
 			default:
 				log("received default message");
