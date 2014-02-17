@@ -295,26 +295,31 @@ public class NotificationSender extends BroadcastReceiver {
 		resultIntent.putExtra("cancelNotification", true);
 		resultIntent.putExtra("initial", initial);
 
-		android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
-				.create(mContext);
-
-		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		mBuilder.setContentIntent(resultPendingIntent);
-		NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-		// mId allows you to update the
-		// notification later on.
-		mNotificationManager.notify(CONDITION_NOTIFICATION_ID, mBuilder.build());
-
-		// Cancel the notification 2 hours later
-		NotificationCanceler cancel = new NotificationCanceler(mContext, CONDITION_NOTIFICATION_ID);
-		notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 2);
+		try {
 		
-		// save the time
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putLong("lastConditionTime", now);
-		editor.commit();
+			android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
+					.create(mContext);
+	
+			stackBuilder.addNextIntent(resultIntent);
+			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+			// mId allows you to update the
+			// notification later on.
+			mNotificationManager.notify(CONDITION_NOTIFICATION_ID, mBuilder.build());
+	
+			// Cancel the notification 2 hours later
+			NotificationCanceler cancel = new NotificationCanceler(mContext, CONDITION_NOTIFICATION_ID);
+			notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 2);
+			
+			// save the time
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putLong("lastConditionTime", now);
+			editor.commit();
+		} catch(NoSuchMethodError nsme) {
+			// 
+		}
 		
 	}
 	
