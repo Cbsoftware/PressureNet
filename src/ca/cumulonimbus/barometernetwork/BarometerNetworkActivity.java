@@ -192,10 +192,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonWeather;
 
 	private ImageButton reloadGobalData;
-
-	private CheckBox checkShowPressure;
-	private CheckBox checkShowConditions;
-
 	private ImageButton buttonMyLocation;
 
 	private SeekBar animationProgress;
@@ -204,7 +200,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private RelativeLayout nexus5layout;
 	private Button nexus5ReadMore;
 	
-	private TextView textMyContributions;
+	private TextView textPressureContributions;
+	private TextView textConditionContributions;
 	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
@@ -835,7 +832,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
 		
-		textMyContributions = (TextView) findViewById(R.id.textMyContributions);
+		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
+		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
 		
 		buttonSatellite.setOnClickListener(new OnClickListener() {
 			
@@ -1895,7 +1893,13 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_CONTRIBUTIONS:
 				CbContributions contrib = (CbContributions) msg.obj;
-				textMyContributions.setText(contrib.getPressureAllTime() + " all time pressure contributions");
+				String pressureContributions = contrib.getPressureAllTime() + " total\n" +
+						contrib.getPressureLast24h() + " in the last day\n" +
+						contrib.getPressureLast7d() + " in the last week\n";
+				String conditionContributions = contrib.getConditionsAllTime() + " total\n" + 
+						contrib.getConditionsLastWeek() + " in the last week";
+				textPressureContributions.setText(pressureContributions);
+				textConditionContributions.setText(conditionContributions);
 				break;
 			default:
 				log("received default message");

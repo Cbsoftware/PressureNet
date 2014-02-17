@@ -336,16 +336,45 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:visibility="gone" >
+  		<RelativeLayout
+            android:id="@+id/layoutContribDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
             <TextView
-                android:id="@+id/textMyContributions"
+                android:id="@+id/textContribPressureTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
                 android:padding="4dp"
-                android:text="My contributions" />
+                android:text="Pressure" 
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"/>
+            <TextView
+                android:id="@+id/textContribConditionsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="Current Conditions" 
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"/>
+            <TextView
+                android:id="@+id/textContribPressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text=""
+                android:layout_below="@id/textContribPressureTitle"
+                android:layout_alignLeft="@id/textContribPressureTitle" />
+            <TextView
+                android:id="@+id/textContribConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text=""
+                android:layout_below="@id/textContribConditionsTitle"
+                android:layout_alignRight="@id/textContribConditionsTitle"/>
+            </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
