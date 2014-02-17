@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -60,8 +59,6 @@ public class LogViewerActivity extends Activity {
 	private String preferenceUnit;
 	
 	private int hoursSelected = 6;
-	
-	ProgressDialog pd;
 
 	class IncomingHandler extends Handler {
 		@Override
@@ -72,7 +69,6 @@ public class LogViewerActivity extends Activity {
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 				Collections.sort(recents,
 						new CbScience.TimeComparator());
-				pd.dismiss();
 				try {
 
 					String rawLog = "";
@@ -219,12 +215,6 @@ public class LogViewerActivity extends Activity {
 		oneWeek.setTextColor(Color.GRAY);
 		
 		if (mBound) {
-			if((hoursAgo > 1) && (hoursAgo<100)) {
-				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", hoursAgo + " hours of data",true,true,null);
-			} else if(hoursAgo>100) {
-				// TODO: fix hack '1 week'
-				pd = ProgressDialog.show(LogViewerActivity.this,"Loading", "1 week of data",true,true,null);
-			}
 			MessageSender message = new MessageSender();
 			message.execute("");
 		} else {
