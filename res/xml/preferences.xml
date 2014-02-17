@@ -66,14 +66,12 @@
             android:entryValues="@array/default_units"
             android:key="units"
             android:title="Pressure unit" />
-        <!--
         <ListPreference
             android:defaultValue="Meters (m)"
             android:entries="@array/distance_units"
             android:entryValues="@array/distance_units"
             android:key="distance_units"
             android:title="Distance unit" />
-        -->
         <ListPreference
             android:defaultValue="Celsius (°C)"
             android:entries="@array/temperature_units"

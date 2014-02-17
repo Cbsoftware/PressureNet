@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="8dp" >
+
+    <EditText
+        android:id="@+id/editAltitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="100" />
+
+    <Button
+        android:id="@+id/buttonDistanceUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/editAltitude"
+        android:text="m" />
+    
+    <EditText
+        android:id="@+id/editTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editAltitude"
+        android:text="15" />
+
+    <Button
+        android:id="@+id/buttonTemperatureUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/editTemperature"
+        android:layout_alignTop="@id/editTemperature"
+        android:text="°C" />
+  
+     <Button
+        android:id="@+id/buttonGoMSLP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTemperature"
+        android:text="Go" />
+    
+    <TextView
+        android:id="@+id/textShowMSLP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/buttonGoMSLP"
+        android:layout_toRightOf="@id/buttonGoMSLP"
+        android:text="Adjusted pressure" />
+
+</RelativeLayout>
