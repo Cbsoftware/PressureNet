@@ -1083,7 +1083,29 @@ public class BarometerNetworkActivity extends Activity implements
 
 				int visible = layoutGraph.getVisibility();
 				if (visible == View.VISIBLE) {
+					// switch to map mode
+					
+					// UI switc
 					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.BOLD);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+
+					if (animationPlaying) {
+						animator.pause();
+					}
+
+					removeChartFromLayout();
+
+					// set mode and load data
+					activeMode = "map";
+					loadRecents();
+					
 				} else {
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
@@ -1126,12 +1148,27 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				if (activeMode.equals("sensors")) {
-					int visible = layoutSensors.getVisibility();
-					if (visible == View.VISIBLE) {
-						layoutSensors.setVisibility((View.GONE));
-					} else {
-						layoutSensors.setVisibility(View.VISIBLE);
+					// switch to map mode
+					
+					// UI switc
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.BOLD);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+
+					if (animationPlaying) {
+						animator.pause();
 					}
+
+					// set mode and load data
+					activeMode = "map";
+					loadRecents();
+										
 				} else {
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
