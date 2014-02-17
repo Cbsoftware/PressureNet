@@ -1070,9 +1070,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				if (activeMode.equals("contribute")) {
-					// switch to map mode
-					
-					// UI switch
+					// UI switch to map
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutMapControls.setVisibility(View.GONE);
@@ -1080,12 +1078,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 					
-					mapMode.setTypeface(null, Typeface.NORMAL);
+					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.BOLD);
-					
+					contributeMode.setTypeface(null, Typeface.NORMAL);
+										
 					if (animationPlaying) {
 						animator.pause();
 					}
@@ -3050,7 +3048,8 @@ public class BarometerNetworkActivity extends Activity implements
 						condition.getLocation().getLatitude(), condition
 								.getLocation().getLongitude());
 				log("getting layer drawable for condition "
-						+ condition.getGeneral_condition());
+						+ condition.getGeneral_condition() + " id " + condition.getUser_id());
+				
 				LayerDrawable drLayer = getCurrentConditionDrawable(condition,
 						null);
 				if (drLayer == null) {
