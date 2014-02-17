@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="visible" >
-
+        
         <ImageButton
             android:id="@+id/buttonSearchLocations"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -65,15 +65,22 @@
             android:visibility="visible" />
     </LinearLayout>
 
+    <View
+        android:id="@+id/searchDiv"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:background="#CCCCCC"
+        android:layout_below="@id/layoutSearchControls" />     
+    
       <LinearLayout
         android:id="@+id/layoutMapControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="invisible"
-        android:layout_below="@id/layoutSearchControls"
+        android:layout_below="@id/searchDiv"
         android:layout_alignLeft="@id/layoutSearchControls" >
-    
+       
 	    <ImageButton
 	        android:id="@+id/buttonReloadGlobalData"
 	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"

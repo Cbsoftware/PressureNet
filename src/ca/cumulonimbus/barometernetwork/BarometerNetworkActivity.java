@@ -1095,7 +1095,7 @@ public class BarometerNetworkActivity extends Activity implements
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
 							GA_ACTION_MODE, 
-							"sensors", 
+							"contribute", 
 							 null).build());
 					
 					activeMode = "contribute";
@@ -1117,6 +1117,8 @@ public class BarometerNetworkActivity extends Activity implements
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
 					contributeMode.setTypeface(null, Typeface.BOLD);
+					
+					askForContributionData();
 				}
 			}
 		});
@@ -1432,6 +1434,26 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		});
+	}
+	
+	/**
+	 * Get simple counts from the database
+	 * to tell the user how much they've contributed
+	 */
+	private void askForContributionData() {
+		if (mBound) {
+			log("asking for contribution data");
+			Message msg = Message.obtain(null,
+					CbService.MSG_GET_CONTRIBUTIONS, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
 	}
 
 	/**
