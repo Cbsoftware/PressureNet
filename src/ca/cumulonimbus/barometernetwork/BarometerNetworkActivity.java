@@ -166,6 +166,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ProgressBar progressAPI;
 
 	private Button mapMode;
+	private Button contributeMode;
 	private Button graphMode;
 	private Button sensorMode;
 	private Button animationMode;
@@ -174,6 +175,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
 	private LinearLayout layoutAnimation;
+	private LinearLayout layoutContribute;
 
 	private LinearLayout layoutMapControls;
 	
@@ -799,6 +801,7 @@ public class BarometerNetworkActivity extends Activity implements
 		mapLongitudeMaxText = (TextView) findViewById(R.id.longitudeValueMaxMapInfoText);
 
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
+		contributeMode = (Button) findViewById(R.id.buttonContributeMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
 		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
 		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
@@ -808,7 +811,8 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
-
+		layoutContribute = (LinearLayout) findViewById(R.id.layoutContribute);
+		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 
@@ -1034,6 +1038,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.GONE);
 
 					// buttonChartTimeInfo.setVisibility(View.GONE);
 
@@ -1041,6 +1046,7 @@ public class BarometerNetworkActivity extends Activity implements
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1056,6 +1062,65 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
+		contributeMode.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (activeMode.equals("contribute")) {
+					// switch to map mode
+					
+					// UI switch
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.GONE);
+					
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.BOLD);
+					
+					if (animationPlaying) {
+						animator.pause();
+					}
+
+					// set mode and load data
+					activeMode = "contribute";
+					loadRecents();
+										
+				} else {
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_MODE, 
+							"sensors", 
+							 null).build());
+					
+					activeMode = "contribute";
+
+					if (animationPlaying) {
+						animator.pause();
+					}
+
+					// UI switch
+					layoutGraph.setVisibility(View.GONE);
+					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
+					layoutSensors.setVisibility(View.GONE);
+					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.VISIBLE);
+
+					mapMode.setTypeface(null, Typeface.NORMAL);
+					graphMode.setTypeface(null, Typeface.NORMAL);
+					sensorMode.setTypeface(null, Typeface.NORMAL);
+					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.BOLD);
+				}
+			}
+		});
+		
 		graphMode.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -1071,11 +1136,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.GONE);
 					
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1115,11 +1182,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
-
+					layoutContribute.setVisibility(View.GONE);
+					
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.BOLD);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 				}
 
 			}
@@ -1138,11 +1207,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.GONE);
 					
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1171,11 +1242,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
 					layoutAnimation.setVisibility(View.GONE);
-
+					layoutContribute.setVisibility(View.GONE);
+					
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.BOLD);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 					
 					if(Build.MODEL.equals("Nexus 5")) {
 						nexus5layout.setVisibility(View.VISIBLE);
@@ -1183,10 +1256,7 @@ public class BarometerNetworkActivity extends Activity implements
 						nexus5layout.setVisibility(View.GONE);
 					}
 					
-					
-
 				}
-
 			}
 		});
 
@@ -1203,11 +1273,13 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
+					layoutContribute.setVisibility(View.GONE);
 					
 					mapMode.setTypeface(null, Typeface.BOLD);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.NORMAL);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1255,13 +1327,14 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.VISIBLE);
+					layoutContribute.setVisibility(View.GONE);
 
 					mapMode.setTypeface(null, Typeface.NORMAL);
 					graphMode.setTypeface(null, Typeface.NORMAL);
 					sensorMode.setTypeface(null, Typeface.NORMAL);
 					animationMode.setTypeface(null, Typeface.BOLD);
+					contributeMode.setTypeface(null, Typeface.NORMAL);
 					
-
 				}
 			}
 		});
