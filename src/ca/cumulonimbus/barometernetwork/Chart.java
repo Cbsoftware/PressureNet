@@ -170,8 +170,8 @@ public class Chart {
 		log("sd is " + standardDeviation);
 		// remove outliers from the list
 		// (2 std away from the mean) 
-		double min = yMean - (standardDeviation*2);
-		double max = yMean + (standardDeviation*2);
+		double min = yMean - (standardDeviation*3);
+		double max = yMean + (standardDeviation*3);
 		ArrayList<CbObservation> toRemove = new ArrayList<CbObservation>();
 		for(CbObservation  obs : obsList) {
 			double v = obs.getObservationValue();
