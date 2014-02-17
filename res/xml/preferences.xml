@@ -15,13 +15,17 @@
             android:entries="@array/refresh_frequency"
             android:entryValues="@array/refresh_frequency_values"
             android:key="autofrequency"
-            android:title="    Auto-submit frequency"/>
+            android:title="    Auto-submit frequency" />
         <ListPreference
             android:defaultValue="Us, Researchers and Forecasters"
             android:entries="@array/privacy_settings"
             android:entryValues="@array/privacy_settings"
             android:key="sharing_preference"
             android:title="Share with…" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="mslp_on"
+            android:title="Adjust to mean Sea-level pressure" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="notification_preferences"
@@ -31,12 +35,13 @@
             android:key="send_notifications"
             android:summary="Notify when the pressure changes"
             android:title="Enable pressure notifications" />
-          <CheckBoxPreference
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="send_condition_notifications"
             android:summary="Notify when nearby users report weather conditions"
             android:title="Enable weather notifications" />
-          <ListPreference
+
+        <ListPreference
             android:defaultValue="1 hour"
             android:dependency="send_condition_notifications"
             android:entries="@array/condition_refresh_frequency"

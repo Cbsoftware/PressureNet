@@ -242,6 +242,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceSendNotifications;
 	private boolean preferenceUseGPS;
 	private boolean preferenceWhenCharging;
+	private boolean preferenceMSLP;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -689,6 +690,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units",
 				"millibars");
+		preferenceMSLP = sharedPreferences.getBoolean("mslp_on", true);
 		preferenceTemperatureUnit = sharedPreferences.getString(
 				"temperature_units", "Celsius (¡C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
@@ -3394,6 +3396,10 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private String displayPressureValue(double value) {
+		if(preferenceMSLP) {
+			value = CbScience.calculateMSLP(100, 15 + 273.15);
+		}
+		
 		DecimalFormat df = new DecimalFormat("####.0");
 		PressureUnit unit = new PressureUnit(preferencePressureUnit);
 		unit.setValue(value);
@@ -3423,7 +3429,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void updateVisibleReading() {
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
-
+		
 		if (recentPressureReading != 0.0) {
 			String toPrint = displayPressureValue(recentPressureReading);
 			if (toPrint.length() > 2) {
