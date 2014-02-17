@@ -186,7 +186,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private CheckBox satelliteView;
 
-	private Button reloadGobalData;
+	private ImageButton reloadGobalData;
 
 	private CheckBox checkShowPressure;
 	private CheckBox checkShowConditions;
@@ -810,7 +810,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
 
-		reloadGobalData = (Button) findViewById(R.id.buttonReloadGlobalData);
+		reloadGobalData = (ImageButton) findViewById(R.id.buttonReloadGlobalData);
 
 		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
 		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
@@ -1780,12 +1780,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void enableReload() {
 		reloadGobalData.setEnabled(true);
-		reloadGobalData.setTextColor(Color.BLACK);
+		reloadGobalData.setImageAlpha(255);
 	}
 
 	private void disableReload() {
 		reloadGobalData.setEnabled(false);
-		reloadGobalData.setTextColor(Color.GRAY);
+		reloadGobalData.setImageAlpha(100);
 	}
 
 	/**
