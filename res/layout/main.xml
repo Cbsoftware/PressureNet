@@ -65,29 +65,60 @@
             android:visibility="visible" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/buttonReloadGlobalData"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:background="#CCFFFFFF"
-        android:src="@drawable/ic_menu_light_refresh" 
-        android:layout_marginTop="12dp"
-        android:layout_below="@id/layoutSearchControls"
-        android:layout_alignLeft="@id/layoutSearchControls"
-        />
-    
-    <ImageButton
-        android:id="@+id/buttonMyLocation"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-        android:layout_width="wrap_content"
+      <LinearLayout
+        android:id="@+id/layoutMapControls"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@id/layoutSearchControls"
+        android:orientation="horizontal"
+        android:visibility="invisible"
         android:layout_below="@id/layoutSearchControls"
-        android:layout_marginTop="12dp"
-        android:background="#CCFFFFFF"
-        android:src="@drawable/ic_action_location_found" />
-
+        android:layout_alignLeft="@id/layoutSearchControls" >
+    
+	    <ImageButton
+	        android:id="@+id/buttonReloadGlobalData"
+	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:background="#CCFFFFFF"
+	        android:src="@drawable/ic_menu_light_refresh" 
+	        android:layout_weight=".2" />
+    
+	     <ImageButton
+	        android:id="@+id/buttonToggleSatellite"
+	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#CCFFFFFF"
+	        android:src="@drawable/ic_menu_light_star"
+	        android:layout_weight=".2" />
+	     
+	     <ImageButton
+	        android:id="@+id/buttonTogglePressure"
+	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#CCFFFFFF"
+	        android:src="@drawable/ic_menu_light_barometer"
+	        android:layout_weight=".2" />
+	     
+	     <ImageButton
+	        android:id="@+id/buttonToggleWeather"
+	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#CCFFFFFF"
+	        android:src="@drawable/ic_menu_light_weather"
+	        android:layout_weight=".2" />
+	    
+	    <ImageButton
+	        android:id="@+id/buttonMyLocation"
+	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="#CCFFFFFF"
+	        android:src="@drawable/ic_action_location_found"
+	        android:layout_weight=".2" />
+	</LinearLayout>
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
         style="?android:attr/progressBarStyleHorizontal"
@@ -233,16 +264,6 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/dataPointsLabelMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/longitudeLabelMapInfoText"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/imageDataPointsMapInfoText"
-                android:text="Data Points"
-                android:textSize="16sp" />
-
-            <TextView
                 android:id="@+id/latitudeValueMinMapInfoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -258,30 +279,6 @@
                 android:layout_below="@id/latitudeValueMinMapInfoText"
                 android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/dataPointsValueMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/longitudeValueMinMapInfoText"
-                android:textSize="16sp" />
-
-            <CheckBox
-                android:id="@+id/checkSatellite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/dataPointsValueMapInfoText"
-                android:text="Satellite view" />
-
-            <CheckBox
-                android:id="@+id/checkPressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/checkSatellite"
-                android:checked="true"
-                android:text="Show pressure data" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -306,15 +303,7 @@
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
 
-            <CheckBox
-                android:id="@+id/checkConditions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:checked="true"
-                android:text="Show conditions" />
-        </RelativeLayout>
+          </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout

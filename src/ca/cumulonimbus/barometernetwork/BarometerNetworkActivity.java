@@ -91,7 +91,6 @@ import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbExternalWeatherData;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -176,15 +175,18 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutSensors;
 	private LinearLayout layoutAnimation;
 
+	private LinearLayout layoutMapControls;
+	
 	private TextView mapLatitudeMinText;
 	private TextView mapLongitudeMinText;
 	private TextView mapLatitudeMaxText;
 	private TextView mapLongitudeMaxText;
-	private TextView mapDataPointsText;
 
 	private ImageButton buttonSearchLocations;
 
-	private CheckBox satelliteView;
+	private ImageButton buttonSatellite;
+	private ImageButton buttonPressure;
+	private ImageButton buttonWeather;
 
 	private ImageButton reloadGobalData;
 
@@ -289,7 +291,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private boolean displayPressure = true;
 	private boolean displayConditions = true;
-
+	private boolean displaySatellite = false;
+	
 	private boolean animationPlaying = false;
 	private AnimationRunner animator = new AnimationRunner();
 	
@@ -608,6 +611,7 @@ public class BarometerNetworkActivity extends Activity implements
 						} else if (activeMode.equals("sensors")) {
 							mapMode.performClick();
 							layoutMapInfo.setVisibility(View.GONE);
+							layoutMapControls.setVisibility(View.GONE);
 						} else if (activeMode.equals("animation")) {
 							animator.stop();
 							animator.reset();
@@ -793,7 +797,6 @@ public class BarometerNetworkActivity extends Activity implements
 		mapLongitudeMinText = (TextView) findViewById(R.id.longitudeValueMinMapInfoText);
 		mapLatitudeMaxText = (TextView) findViewById(R.id.latitudeValueMaxMapInfoText);
 		mapLongitudeMaxText = (TextView) findViewById(R.id.longitudeValueMaxMapInfoText);
-		mapDataPointsText = (TextView) findViewById(R.id.dataPointsValueMapInfoText);
 
 		mapMode = (Button) findViewById(R.id.buttonMapMode);
 		graphMode = (Button) findViewById(R.id.buttonGraphMode);
@@ -801,6 +804,7 @@ public class BarometerNetworkActivity extends Activity implements
 		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
+		layoutMapControls = (LinearLayout) findViewById(R.id.layoutMapControls);
 		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
@@ -808,12 +812,11 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 
-		satelliteView = (CheckBox) findViewById(R.id.checkSatellite);
-
+		buttonSatellite = (ImageButton) findViewById(R.id.buttonToggleSatellite);
+		buttonPressure = (ImageButton) findViewById(R.id.buttonTogglePressure);
+		buttonWeather = (ImageButton) findViewById(R.id.buttonToggleWeather);
+		
 		reloadGobalData = (ImageButton) findViewById(R.id.buttonReloadGlobalData);
-
-		checkShowPressure = (CheckBox) findViewById(R.id.checkPressure);
-		checkShowConditions = (CheckBox) findViewById(R.id.checkConditions);
 
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
@@ -824,7 +827,40 @@ public class BarometerNetworkActivity extends Activity implements
 		nexus5ReadMore = (Button) findViewById(R.id.nexus5ReadMore);
 		
 		mapMode.setTypeface(null, Typeface.BOLD);
+		
+		buttonSatellite.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				displaySatellite = !displaySatellite;
+				if (displaySatellite) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+				} else {
+					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				}
+			}
+		});
 
+		buttonPressure.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				displayPressure = !displayPressure;
+				mMap.clear();
+				loadRecents();
+			}
+		});
+	
+		buttonWeather.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				displayConditions = !displayConditions;
+				mMap.clear();
+				loadRecents();
+			}
+		});
+		
 		nexus5ReadMore.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -923,43 +959,7 @@ public class BarometerNetworkActivity extends Activity implements
 				goToMyLocation();
 			}
 		});
-
-		checkShowPressure
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-					@Override
-					public void onCheckedChanged(CompoundButton arg0,
-							boolean isChecked) {
-						long check = isChecked ? 1 : 0; 
-						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-								GA_CATEGORY_MAIN_APP, 
-								GA_ACTION_BUTTON, 
-								"show_pressure_check", 
-								 check).build());
-						displayPressure = isChecked;
-						mMap.clear();
-						loadRecents();
-					}
-				});
-
-		checkShowConditions
-				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-					@Override
-					public void onCheckedChanged(CompoundButton arg0,
-							boolean isChecked) {
-						long check = isChecked ? 1 : 0; 
-						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-								GA_CATEGORY_MAIN_APP, 
-								GA_ACTION_BUTTON, 
-								"show_conditions_check", 
-								 check).build());
-						displayConditions = isChecked;
-						mMap.clear();
-						loadRecents();
-					}
-				});
-
+		
 		reloadGobalData.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -981,30 +981,7 @@ public class BarometerNetworkActivity extends Activity implements
 				makeGlobalConditionsMapCall();
 			}
 		});
-
-		satelliteView.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				try {
-					long check = isChecked ? 1 : 0; 
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_BUTTON, 
-							"satellite_check", 
-							 check).build());
-					if (isChecked) {
-						mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-					} else {
-						mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-					}
-				} catch (NullPointerException npe) {
-					// no map
-				}
-			}
-		});
-
+		
 		editLocation.setOnFocusChangeListener(new OnFocusChangeListener() {
 
 			@Override
@@ -1038,8 +1015,10 @@ public class BarometerNetworkActivity extends Activity implements
 					int visible = layoutMapInfo.getVisibility();
 					if (visible == View.VISIBLE) {
 						layoutMapInfo.setVisibility(View.GONE);
+						layoutMapControls.setVisibility(View.GONE);
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
+						layoutMapControls.setVisibility(View.VISIBLE);
 					}
 					loadRecents();
 				} else {
@@ -1052,6 +1031,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.VISIBLE);
+					layoutMapControls.setVisibility(View.VISIBLE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 
@@ -1088,6 +1068,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switc
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 					
@@ -1131,6 +1112,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					layoutGraph.setVisibility(View.VISIBLE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 
@@ -1153,6 +1135,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switc
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 					
@@ -1185,6 +1168,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.VISIBLE);
 					layoutAnimation.setVisibility(View.GONE);
 
@@ -1216,6 +1200,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switc
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 					
@@ -1267,6 +1252,7 @@ public class BarometerNetworkActivity extends Activity implements
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.VISIBLE);
 
@@ -1567,7 +1553,6 @@ public class BarometerNetworkActivity extends Activity implements
 		mapLatitudeMaxText.setText(maxLatitude);
 		mapLongitudeMinText.setText(minLongitude);
 		mapLongitudeMaxText.setText(maxLongitude);
-		mapDataPointsText.setText(visibleCount + "");
 	}
 
 	/**
@@ -2288,6 +2273,7 @@ public class BarometerNetworkActivity extends Activity implements
 			if (data != null) {
 				mapMode.performClick();
 				layoutMapInfo.setVisibility(View.GONE);
+				layoutMapControls.setVisibility(View.GONE);
 				long rowId = data.getLongExtra("location_id", -1L);
 				if (rowId >= 1) {
 					PnDb pn = new PnDb(getApplicationContext());
@@ -2309,6 +2295,7 @@ public class BarometerNetworkActivity extends Activity implements
 						}
 					}
 					layoutMapInfo.setVisibility(View.GONE);
+					layoutMapControls.setVisibility(View.GONE);
 				} else if (rowId == -2L) {
 					log("onactivityresult -2");
 					Toast toast = Toast.makeText(getApplicationContext(),
