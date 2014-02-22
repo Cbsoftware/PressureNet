@@ -5,15 +5,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +37,9 @@ import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
 
 public class LogViewerActivity extends Activity {
 	
@@ -330,6 +331,10 @@ public class LogViewerActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.logviewer);
 		bindCbService();
+		
+		 String ns = Context.NOTIFICATION_SERVICE;
+		 NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+		 nMgr.cancel(NotificationSender.PRESSURE_NOTIFICATION_ID);
 		
 		Fragment allLogFrags = new LogViewerFragment();
 		FragmentManager fragmentManager = getFragmentManager();

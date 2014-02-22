@@ -383,16 +383,6 @@ public class NotificationSender extends BroadcastReceiver {
 				.create(mContext);
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
-		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		
-		Notification.Builder mBuilder = new Notification.Builder(
-				mContext).setSmallIcon(smallIconId)
-				.setContentTitle("pressureNET").setContentText(deliveryMessage)
-				.addAction(R.drawable.ic_menu_dark_stats, "View graph", graphIntent)
-				.addAction(R.drawable.ic_menu_dark_weather, "What's it like outside?", resultPendingIntent);
-		
 		// Current Conditions activity likes to know the location in the Intent
 		double notificationLatitude = 0.0;
 		double notificationLongitude = 0.0;
@@ -408,11 +398,20 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch (Exception e) {
 
 		}
-
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
-
+		stackBuilder.addNextIntent(resultIntent);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		Notification.Builder mBuilder = new Notification.Builder(
+				mContext).setSmallIcon(smallIconId)
+				.setContentTitle("pressureNET").setContentText(deliveryMessage)
+				.addAction(R.drawable.ic_menu_dark_stats, "View graph", graphIntent)
+				.addAction(R.drawable.ic_menu_dark_weather, "Report weather", resultPendingIntent);
+		
+		
 		stackBuilder.addNextIntent(resultIntent);
 		
 		mBuilder.setContentIntent(resultPendingIntent);

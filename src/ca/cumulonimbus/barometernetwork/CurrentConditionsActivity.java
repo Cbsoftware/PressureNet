@@ -1144,7 +1144,7 @@ public class CurrentConditionsActivity extends Activity {
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
 	    	if(mLatitude == 0.0) {
-				Toast.makeText(getApplicationContext(), "No location available,  can't send condition", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "No location available,  can't send condition", Toast.LENGTH_LONG).show();
 				finish();
 				
 	    	}
