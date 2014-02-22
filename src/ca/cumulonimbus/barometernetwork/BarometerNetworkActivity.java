@@ -830,8 +830,6 @@ public class BarometerNetworkActivity extends Activity implements
 		nexus5layout = (RelativeLayout) findViewById(R.id.nexus5layout);
 		nexus5ReadMore = (Button) findViewById(R.id.nexus5ReadMore);
 		
-		//mapMode.setTypeface(null, Typeface.BOLD);
-		
 		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
 		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
 		
@@ -1033,14 +1031,16 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				int visible = layoutMapInfo.getVisibility();
 				if (activeMode.equals("map")) {
-					int visible = layoutMapInfo.getVisibility();
 					if (visible == View.VISIBLE) {
 						layoutMapInfo.setVisibility(View.GONE);
 						layoutMapControls.setVisibility(View.GONE);
+						mapMode.setBackgroundColor(Color.TRANSPARENT);
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
 						layoutMapControls.setVisibility(View.VISIBLE);
+						mapMode.setBackgroundColor(Color.parseColor("#0099CC"));
 					}
 					loadRecents();
 				} else {
@@ -1058,15 +1058,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 
-					// buttonChartTimeInfo.setVisibility(View.GONE);
-
-					/*
-					mapMode.setTypeface(null, Typeface.BOLD);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
+					mapMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+					sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
+					contributeMode.setBackgroundColor(Color.TRANSPARENT);
+					
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1086,6 +1083,13 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				if (activeMode.equals("contribute")) {
+					int visible = layoutContribute.getVisibility();
+					if (visible == View.VISIBLE) {
+						contributeMode.setBackgroundColor(Color.TRANSPARENT);
+					} else {
+						contributeMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					}
+					
 					// UI switch to map
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
@@ -1094,20 +1098,18 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 				
-					/*
-					mapMode.setTypeface(null, Typeface.BOLD);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					 */
-										
+					mapMode.setBackgroundColor(Color.TRANSPARENT);
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+					sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
+					
+
 					if (animationPlaying) {
 						animator.pause();
 					}
 
 					// set mode and load data
-					activeMode = "contribute";
+					activeMode = "map";
 					loadRecents();
 										
 				} else {
@@ -1131,14 +1133,14 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.VISIBLE);
 
-					/*
-					mapMode.setTypeface(null, Typeface.NORMAL);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.BOLD);
-					*/
+					mapMode.setBackgroundColor(Color.TRANSPARENT);
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+					sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
+					contributeMode.setBackgroundColor(Color.parseColor("#0099CC"));
 					askForContributionData();
+					
+					loadRecents();
 				}
 			}
 		});
@@ -1147,27 +1149,20 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-
 				int visible = layoutGraph.getVisibility();
 				if (visible == View.VISIBLE) {
 					// switch to map mode
 					
-					// UI switc
+					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
-					
-					/*
-					mapMode.setTypeface(null, Typeface.BOLD);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
 
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+				
 					if (animationPlaying) {
 						animator.pause();
 					}
@@ -1208,15 +1203,12 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 					
-					/*
-					mapMode.setTypeface(null, Typeface.NORMAL);
-					graphMode.setTypeface(null, Typeface.BOLD);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
+					mapMode.setBackgroundColor(Color.TRANSPARENT);
+					graphMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
+					contributeMode.setBackgroundColor(Color.TRANSPARENT);
 				}
-
 			}
 		});
 
@@ -1227,7 +1219,14 @@ public class BarometerNetworkActivity extends Activity implements
 				if (activeMode.equals("sensors")) {
 					// switch to map mode
 					
-					// UI switc
+					int visible = layoutSensors.getVisibility();
+					if (visible == View.VISIBLE) {
+						sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					} else {
+						sensorMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					}
+					
+					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutMapControls.setVisibility(View.GONE);
@@ -1235,13 +1234,6 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 					
-					/*
-					mapMode.setTypeface(null, Typeface.BOLD);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1272,13 +1264,11 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 					
-					/*
-					mapMode.setTypeface(null, Typeface.NORMAL);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.BOLD);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
+					mapMode.setBackgroundColor(Color.TRANSPARENT);
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+					sensorMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
+					contributeMode.setBackgroundColor(Color.TRANSPARENT);
 					
 					if(Build.MODEL.equals("Nexus 5")) {
 						nexus5layout.setVisibility(View.VISIBLE);
@@ -1286,6 +1276,7 @@ public class BarometerNetworkActivity extends Activity implements
 						nexus5layout.setVisibility(View.GONE);
 					}
 					
+					loadRecents();
 				}
 			}
 		});
@@ -1297,21 +1288,14 @@ public class BarometerNetworkActivity extends Activity implements
 				if (activeMode.equals("animation")) {
 					// switch to map mode
 					
-					// UI switc
+					// UI switch
 					layoutGraph.setVisibility(View.GONE);
 					layoutMapInfo.setVisibility(View.GONE);
 					layoutMapControls.setVisibility(View.GONE);
 					layoutSensors.setVisibility(View.GONE);
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
-					
-					/*
-					mapMode.setTypeface(null, Typeface.BOLD);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.NORMAL);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
+					animationMode.setBackgroundColor(Color.TRANSPARENT);
 
 					if (animationPlaying) {
 						animator.pause();
@@ -1361,13 +1345,11 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.VISIBLE);
 					layoutContribute.setVisibility(View.GONE);
 
-					/*
-					mapMode.setTypeface(null, Typeface.NORMAL);
-					graphMode.setTypeface(null, Typeface.NORMAL);
-					sensorMode.setTypeface(null, Typeface.NORMAL);
-					animationMode.setTypeface(null, Typeface.BOLD);
-					contributeMode.setTypeface(null, Typeface.NORMAL);
-					*/
+					mapMode.setBackgroundColor(Color.TRANSPARENT);
+					graphMode.setBackgroundColor(Color.TRANSPARENT);
+					sensorMode.setBackgroundColor(Color.TRANSPARENT);
+					animationMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					contributeMode.setBackgroundColor(Color.TRANSPARENT);
 					
 				}
 			}

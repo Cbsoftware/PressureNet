@@ -64,67 +64,71 @@
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
-
-    <View
-        android:id="@+id/searchDiv"
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="#CCCCCC"
-        android:layout_below="@id/layoutSearchControls" />     
     
       <LinearLayout
         android:id="@+id/layoutMapControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:visibility="invisible"
-        android:layout_below="@id/searchDiv"
+        android:layout_below="@id/layoutSearchControls"
         android:layout_alignLeft="@id/layoutSearchControls" >
-       
-	    <ImageButton
-	        android:id="@+id/buttonReloadGlobalData"
-	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" 
-	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_refresh" 
-	        android:layout_weight=".2" />
-    
-	     <ImageButton
-	        android:id="@+id/buttonToggleSatellite"
-	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_satellite"
-	        android:layout_weight=".2" />
-	     
-	     <ImageButton
-	        android:id="@+id/buttonTogglePressure"
-	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_pressure"
-	        android:layout_weight=".2" />
-	     
-	     <ImageButton
-	        android:id="@+id/buttonToggleWeather"
-	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_conditions"
-	        android:layout_weight=".2" />
+           <View
+	        android:id="@+id/searchDiv"
+	        android:layout_width="match_parent"
+	        android:layout_height="1dip"
+	        android:background="#004455"
+	        android:layout_below="@id/layoutSearchControls" />    
+           <LinearLayout
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="horizontal">
+          
+		    <ImageButton
+		        android:id="@+id/buttonReloadGlobalData"
+		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content" 
+		        android:background="#CCFFFFFF"
+		        android:src="@drawable/ic_refresh" 
+		        android:layout_weight=".2" />
 	    
-	    <ImageButton
-	        android:id="@+id/buttonMyLocation"
-	        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_location_found"
-	        android:layout_weight=".2" />
+		     <ImageButton
+		        android:id="@+id/buttonToggleSatellite"
+		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="#CCFFFFFF"
+		        android:src="@drawable/ic_satellite"
+		        android:layout_weight=".2" />
+		     
+		     <ImageButton
+		        android:id="@+id/buttonTogglePressure"
+		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="#CCFFFFFF"
+		        android:src="@drawable/ic_pressure"
+		        android:layout_weight=".2" />
+		     
+		     <ImageButton
+		        android:id="@+id/buttonToggleWeather"
+		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="#CCFFFFFF"
+		        android:src="@drawable/ic_conditions"
+		        android:layout_weight=".2" />
+		    
+		    <ImageButton
+		        android:id="@+id/buttonMyLocation"
+		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="#CCFFFFFF"
+		        android:src="@drawable/ic_location_found"
+		        android:layout_weight=".2" />
+		  </LinearLayout>
 	</LinearLayout>
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
@@ -151,8 +155,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:src="@drawable/ic_map"
-            android:background="#0099CC"/>
+            android:src="@drawable/ic_map"/>
         
         <ImageButton
             android:id="@+id/buttonContributeMode"
