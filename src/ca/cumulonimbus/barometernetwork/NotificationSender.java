@@ -383,6 +383,7 @@ public class NotificationSender extends BroadcastReceiver {
 				.create(mContext);
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
+		stackBuilder.addNextIntent(resultIntent);
 		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		
