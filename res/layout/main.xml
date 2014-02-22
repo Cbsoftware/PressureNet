@@ -87,7 +87,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content" 
 	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_menu_light_refresh" 
+	        android:src="@drawable/ic_refresh" 
 	        android:layout_weight=".2" />
     
 	     <ImageButton
@@ -96,7 +96,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_menu_light_star"
+	        android:src="@drawable/ic_satellite"
 	        android:layout_weight=".2" />
 	     
 	     <ImageButton
@@ -105,7 +105,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_menu_light_barometer"
+	        android:src="@drawable/ic_pressure"
 	        android:layout_weight=".2" />
 	     
 	     <ImageButton
@@ -114,7 +114,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_menu_light_weather"
+	        android:src="@drawable/ic_conditions"
 	        android:layout_weight=".2" />
 	    
 	    <ImageButton
@@ -123,7 +123,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:background="#CCFFFFFF"
-	        android:src="@drawable/ic_action_location_found"
+	        android:src="@drawable/ic_location_found"
 	        android:layout_weight=".2" />
 	</LinearLayout>
     <ProgressBar
@@ -144,15 +144,14 @@
         android:orientation="horizontal"
         android:visibility="visible" >
         
-        <Button
+        <ImageButton
             android:id="@+id/buttonMapMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:text="M"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_map"/>
 
         <View
             android:layout_width="1dip"
@@ -161,15 +160,14 @@
             android:background="#888888"
             android:padding="3dip" />
         
-        <Button
+        <ImageButton
             android:id="@+id/buttonContributeMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:text="C"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_con_stats"/>
 
         <View
             android:layout_width="1dip"
@@ -178,15 +176,14 @@
             android:background="#888888"
             android:padding="3dip" />
         
-        <Button
+        <ImageButton
             android:id="@+id/buttonGraphMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:text="G"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_graph" />
 
         <View
             android:layout_width="1dip"
@@ -195,15 +192,14 @@
             android:background="#888888"
             android:padding="3dip" />
 
-        <Button
+        <ImageButton
             android:id="@+id/buttonSensorMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:text="S"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_sensors" />
 
         <View
             android:layout_width="1dip"
@@ -212,15 +208,14 @@
             android:background="#888888"
             android:padding="3dip" />
 
-        <Button
+        <ImageButton
             android:id="@+id/buttonAnimationMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:text="A"
-            android:textColor="@android:color/black" />
+            android:src="@drawable/ic_play" />
     </LinearLayout>
 
     <LinearLayout
