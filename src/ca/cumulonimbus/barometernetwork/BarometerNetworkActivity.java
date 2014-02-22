@@ -1835,6 +1835,7 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_STATS:
 				log("app receiving stats");
+				updateAPICount(-1);
 				try {
 					statsRecents = (ArrayList<CbStats>) msg.obj;
 					log("size " + statsRecents.size());
@@ -3441,6 +3442,7 @@ public class BarometerNetworkActivity extends Activity implements
 			try {
 				statsMsg.replyTo = mMessenger;
 				mService.send(statsMsg);
+				updateAPICount(1);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
