@@ -6,34 +6,24 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <TextView
-            android:id="@+id/textWhatsNewTitle"
+	   <TextView
+		       android:id="@+id/textWhatsNewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:textSize="18dp"
-            android:text="Urgent bugfix release"
             android:paddingLeft="18dp"
-            android:paddingTop="14dp"/>
-
-        <TextView
-            android:id="@+id/textNewFeatures"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textWhatsNewTitle"
-            android:paddingLeft="18dp"
-            android:text="NEW FROM 4.2.6"
+            android:text="WHAT'S NEW"
             android:paddingTop="8dp"
             android:textStyle="bold" />
-
+        
         <TextView
             android:id="@+id/textWhatsNew"
             android:layout_width="wrap_content"
+            android:layout_below="@id/textWhatsNewTitle"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textNewFeatures"
             android:paddingLeft="18dp"
             android:paddingTop="4dp"
-            android:text="• Stastical graphs\n• Informative notification icons\n• Bug fixes"
+            android:text="• UI Refresh\n• Actionable notifications\n• Contribution stats"
             android:textSize="16dp" />
 
         <TextView
