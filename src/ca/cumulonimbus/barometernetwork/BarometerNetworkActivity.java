@@ -2105,17 +2105,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	/**
-	 * Delete user data
-	 */
-	private void deleteUserData() {
-		// show a dialog, listen for its response.
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(getResources().getString(R.string.deleteWarning))
-				.setPositiveButton("Continue", dialogDeleteClickListener)
-				.setNegativeButton("Cancel", dialogDeleteClickListener).show();
-	}
-
 	DialogInterface.OnClickListener dialogDeleteClickListener = new DialogInterface.OnClickListener() {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
