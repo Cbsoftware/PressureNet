@@ -108,7 +108,7 @@ public class CurrentConditionsActivity extends Activity {
 	private ScrollView scrollClouds;
 	private ScrollView scrollFoggy;
 	
-	private CheckBox addPhoto;
+	// private CheckBox addPhoto;
 	
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
@@ -773,7 +773,7 @@ public class CurrentConditionsActivity extends Activity {
 		scrollClouds = (ScrollView) findViewById(R.id.scrollClouds);
 		scrollFoggy = (ScrollView) findViewById(R.id.scrollFog);
 		
-		addPhoto = (CheckBox) findViewById(R.id.checkAddPhoto);
+		// addPhoto = (CheckBox) findViewById(R.id.checkAddPhoto);
 		
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
@@ -800,11 +800,12 @@ public class CurrentConditionsActivity extends Activity {
 				pn.close();
 				
 				// take photo?
-				if(addPhoto.isChecked()) {
+				/*if(addPhoto.isChecked()) {
 					dispatchTakePictureIntent();
-				} else {
-					finish();
-				}
+				} */
+				
+				finish();
+				
 				
 			}
 		});

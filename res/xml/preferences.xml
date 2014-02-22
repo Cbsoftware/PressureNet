@@ -22,10 +22,12 @@
             android:entryValues="@array/privacy_settings"
             android:key="sharing_preference"
             android:title="Share with…" />
+       <!-- 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="mslp_on"
             android:title="Adjust to mean Sea-level pressure" />
+       -->
     </PreferenceCategory>
     <PreferenceCategory
         android:key="notification_preferences"

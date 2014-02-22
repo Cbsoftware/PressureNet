@@ -246,7 +246,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceSendNotifications;
 	private boolean preferenceUseGPS;
 	private boolean preferenceWhenCharging;
-	private boolean preferenceMSLP;
+	// private boolean preferenceMSLP;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -696,7 +696,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units",
 				"millibars");
-		preferenceMSLP = sharedPreferences.getBoolean("mslp_on", true);
+		// preferenceMSLP = sharedPreferences.getBoolean("mslp_on", true);
 		preferenceTemperatureUnit = sharedPreferences.getString(
 				"temperature_units", "Celsius (¡C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
@@ -1061,7 +1061,6 @@ public class BarometerNetworkActivity extends Activity implements
 					activeMode = "map";
 					loadRecents();
 				}
-
 			}
 		});
 
@@ -2259,7 +2258,7 @@ public class BarometerNetworkActivity extends Activity implements
 					BarometerNetworkActivity.GA_ACTION_BUTTON, 
 					"rate_pressurenet", 
 					null).build());
-		} else if (item.getItemId() == R.id.menu_sky_photos) {
+		} /*else if (item.getItemId() == R.id.menu_sky_photos) {
 			Intent skyIntent = new Intent(getApplicationContext(), SkyPhotosActivity.class);
 			skyIntent.putExtra("latitude", mLatitude);
 			skyIntent.putExtra("longitude", mLongitude);
@@ -2268,7 +2267,7 @@ public class BarometerNetworkActivity extends Activity implements
 			Intent mslpIntent = new Intent(getApplicationContext(), MSLPActivity.class);
 			
 			startActivity(mslpIntent);
-		}
+		} */
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -3527,9 +3526,10 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private String displayPressureValue(double value) {
+		/*
 		if(preferenceMSLP) {
 			value = CbScience.calculateMSLP(100, 15 + 273.15);
-		}
+		}*/
 		
 		DecimalFormat df = new DecimalFormat("####.0");
 		PressureUnit unit = new PressureUnit(preferencePressureUnit);
