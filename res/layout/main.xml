@@ -151,14 +151,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:src="@drawable/ic_map"/>
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
+            android:src="@drawable/ic_map"
+            android:background="#0099CC"/>
         
         <ImageButton
             android:id="@+id/buttonContributeMode"
@@ -169,13 +163,6 @@
             android:layout_weight=".19"
             android:src="@drawable/ic_con_stats"/>
 
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
-        
         <ImageButton
             android:id="@+id/buttonGraphMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -185,13 +172,6 @@
             android:layout_weight=".19"
             android:src="@drawable/ic_graph" />
 
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
-
         <ImageButton
             android:id="@+id/buttonSensorMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -200,13 +180,6 @@
             android:layout_gravity="left"
             android:layout_weight=".19"
             android:src="@drawable/ic_sensors" />
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:background="#888888"
-            android:padding="3dip" />
 
         <ImageButton
             android:id="@+id/buttonAnimationMode"

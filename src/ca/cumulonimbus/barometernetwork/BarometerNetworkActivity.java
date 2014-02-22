@@ -835,6 +835,8 @@ public class BarometerNetworkActivity extends Activity implements
 		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
 		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
 		
+		setInitialMapButtonStates();
+		
 		buttonSatellite.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -842,8 +844,11 @@ public class BarometerNetworkActivity extends Activity implements
 				displaySatellite = !displaySatellite;
 				if (displaySatellite) {
 					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+					restoreSatelliteButton();
 				} else {
 					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+					
+					dimSatelliteButton();
 				}
 			}
 		});
@@ -853,6 +858,11 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				displayPressure = !displayPressure;
+				if(displayPressure) {
+					restoreBarometerButton();
+				} else {
+					dimBarometerButton();
+				}
 				mMap.clear();
 				loadRecents();
 			}
@@ -863,6 +873,11 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				displayConditions = !displayConditions;
+				if(displayConditions) {
+					restoreWeatherButton();
+				} else {
+					dimWeatherButton();
+				}
 				mMap.clear();
 				loadRecents();
 			}
@@ -1929,9 +1944,37 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void disableReload() {
 		reloadGobalData.setEnabled(false);
-		reloadGobalData.setImageAlpha(100);
+		reloadGobalData.setImageAlpha(255);
+	}
+	
+	private void dimSatelliteButton() {
+		buttonSatellite.setImageAlpha(100);
 	}
 
+	private void restoreSatelliteButton() {
+		buttonSatellite.setImageAlpha(255);
+	}
+	
+	private void dimBarometerButton() {
+		buttonPressure.setImageAlpha(100);
+	}
+
+	private void restoreBarometerButton() {
+		buttonPressure.setImageAlpha(255);
+	}
+	
+	private void dimWeatherButton() {
+		buttonWeather.setImageAlpha(100);
+	}
+
+	private void restoreWeatherButton() {
+		buttonWeather.setImageAlpha(255);
+	}
+
+	private void setInitialMapButtonStates() {
+		dimSatelliteButton();
+	}
+	
 	/**
 	 * Take the chart away.
 	 */
