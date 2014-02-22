@@ -206,6 +206,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
 
+	private Button inviteFriends;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 	Handler animationHandler = new Handler();
@@ -833,7 +835,24 @@ public class BarometerNetworkActivity extends Activity implements
 		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
 		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
 		
+		inviteFriends = (Button) findViewById(R.id.inviteFriends);
+		
 		setInitialMapButtonStates();
+		
+		
+		inviteFriends.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				growPressureNET();
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"invite_your_friends", 
+						null).build());	
+			}
+		});
+		
 		
 		buttonSatellite.setOnClickListener(new OnClickListener() {
 			

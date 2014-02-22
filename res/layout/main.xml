@@ -313,39 +313,51 @@
             android:id="@+id/layoutContribDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp" >
+            android:padding="12dp"
+             >
             <TextView
                 android:id="@+id/textContribPressureTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:text="Sensor data contributions" 
                 android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"/>
+                android:layout_alignParentLeft="true"
+/>
             <TextView
                 android:id="@+id/textContribConditionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:text="Weather contributions" 
                 android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+/>
             <TextView
                 android:id="@+id/textContribPressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:text=""
                 android:layout_below="@id/textContribPressureTitle"
-                android:layout_alignLeft="@id/textContribPressureTitle" />
+                android:layout_alignLeft="@id/textContribPressureTitle"/>
             <TextView
                 android:id="@+id/textContribConditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
                 android:text=""
                 android:layout_below="@id/textContribConditionsTitle"
                 android:layout_alignLeft="@id/textContribConditionsTitle"/>
+            
+            <Button
+                android:id="@+id/inviteFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invite your friends!"
+                android:layout_below="@id/textContribPressure"
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/ic_menu_light_share"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_centerInParent="true"/>
+           	
             </RelativeLayout>
     </LinearLayout>
 
