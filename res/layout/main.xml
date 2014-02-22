@@ -228,10 +228,7 @@
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
         android:orientation="horizontal"
-        android:paddingBottom="0dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="5dp"
+		android:padding="12dp"
         android:visibility="gone" >
 
         <RelativeLayout
@@ -382,8 +379,8 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:drawableLeft="@drawable/ic_menu_light_barometer"
-	            android:textColor="@android:color/black" />
-	
+	            android:textColor="@android:color/black"
+	            android:layout_weight=".33" />
 	        <Button
 	            android:id="@+id/imageButtonThermometer"
 	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -391,7 +388,8 @@
 	            android:layout_height="wrap_content"
 	            android:drawableLeft="@drawable/ic_menu_light_thermometer"
 	            android:text="No thermometer detected"
-	            android:textColor="@android:color/black" />
+	            android:textColor="@android:color/black"
+	            android:layout_weight=".33" />
 	
 	        <Button
 	            android:id="@+id/imageButtonHygrometer"
@@ -400,7 +398,8 @@
 	            android:layout_height="wrap_content"
 	            android:drawableLeft="@drawable/ic_menu_light_hygrometer"
 	            android:text="No hygrometer detected"
-	            android:textColor="@android:color/black" />
+	            android:textColor="@android:color/black"
+	            android:layout_weight=".33" />
 	      </LinearLayout>
         
         <RelativeLayout
@@ -459,7 +458,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:src="@drawable/ic_menu_light_play" />
+                android:src="@drawable/ic_play" />
             
              <ImageButton
                 android:id="@+id/imageButtonAnimationSettings"
