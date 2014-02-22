@@ -1905,11 +1905,12 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_CONTRIBUTIONS:
 				CbContributions contrib = (CbContributions) msg.obj;
-				String pressureContributions = contrib.getPressureAllTime() + " total\n" +
-						contrib.getPressureLast24h() + " in the last day\n" +
-						contrib.getPressureLast7d() + " in the last week\n";
-				String conditionContributions = contrib.getConditionsAllTime() + " total\n" + 
-						contrib.getConditionsLastWeek() + " in the last week";
+				DecimalFormat df = new DecimalFormat("#,###,###");
+				String pressureContributions = df.format(contrib.getPressureAllTime()) + " total\n" +
+						df.format(contrib.getPressureLast24h()) + " in the last day\n" +
+						df.format(contrib.getPressureLast7d()) + " in the last week\n";
+				String conditionContributions = df.format(contrib.getConditionsAllTime()) + " total\n" + 
+						df.format(contrib.getConditionsLastWeek()) + " in the last week";
 				textPressureContributions.setText(pressureContributions);
 				textConditionContributions.setText(conditionContributions);
 				break;
@@ -2409,6 +2410,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (requestCode == REQUEST_LOCATION_CHOICE) {
 			if (data != null) {
 				mapMode.performClick();
+				mapMode.setBackgroundColor(Color.TRANSPARENT);
 				layoutMapInfo.setVisibility(View.GONE);
 				layoutMapControls.setVisibility(View.GONE);
 				long rowId = data.getLongExtra("location_id", -1L);
