@@ -1614,7 +1614,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		public void stop() {
 			log("stoping animation");
-			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
 			animationPlaying = false;
 		}
 		
@@ -1623,7 +1623,7 @@ public class BarometerNetworkActivity extends Activity implements
 			animationStep = 0;
 			conditionAnimationRecents.clear();
 			animationProgress.setProgress(animationStep);
-			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
 			animationPlaying = false;
 		}
 		
@@ -1635,13 +1635,13 @@ public class BarometerNetworkActivity extends Activity implements
 		public void pause() {
 			animationPlaying = false;
 			animationHandler.removeCallbacks(this);
-			imageButtonPlay.setImageResource(R.drawable.ic_menu_light_play);
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
 		}
 		
 		public void run() {
 			if (activeMode.equals("animation")) {
 				displayAnimationFrame(animationStep);
-				imageButtonPlay.setImageResource(R.drawable.ic_menu_light_pause);
+				imageButtonPlay.setImageResource(R.drawable.ic_pause);
 				animationProgress.setProgress(animationStep);
 				animationStep++;
 				if (animationStep < 100) {
