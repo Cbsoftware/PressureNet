@@ -1059,7 +1059,7 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						layoutMapInfo.setVisibility(View.VISIBLE);
 						layoutMapControls.setVisibility(View.VISIBLE);
-						mapMode.setBackgroundColor(Color.parseColor("#0099CC"));
+						mapMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					}
 					loadRecents();
 				} else {
@@ -1077,7 +1077,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutAnimation.setVisibility(View.GONE);
 					layoutContribute.setVisibility(View.GONE);
 
-					mapMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					mapMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					graphMode.setBackgroundColor(Color.TRANSPARENT);
 					sensorMode.setBackgroundColor(Color.TRANSPARENT);
 					animationMode.setBackgroundColor(Color.TRANSPARENT);
@@ -1106,7 +1106,7 @@ public class BarometerNetworkActivity extends Activity implements
 					if (visible == View.VISIBLE) {
 						contributeMode.setBackgroundColor(Color.TRANSPARENT);
 					} else {
-						contributeMode.setBackgroundColor(Color.parseColor("#0099CC"));
+						contributeMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					}
 					
 					// UI switch to map
@@ -1156,7 +1156,7 @@ public class BarometerNetworkActivity extends Activity implements
 					graphMode.setBackgroundColor(Color.TRANSPARENT);
 					sensorMode.setBackgroundColor(Color.TRANSPARENT);
 					animationMode.setBackgroundColor(Color.TRANSPARENT);
-					contributeMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					contributeMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					askForContributionData();
 					
 					loadRecents();
@@ -1223,7 +1223,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutContribute.setVisibility(View.GONE);
 					
 					mapMode.setBackgroundColor(Color.TRANSPARENT);
-					graphMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					graphMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					sensorMode.setBackgroundColor(Color.TRANSPARENT);
 					animationMode.setBackgroundColor(Color.TRANSPARENT);
 					contributeMode.setBackgroundColor(Color.TRANSPARENT);
@@ -1242,7 +1242,7 @@ public class BarometerNetworkActivity extends Activity implements
 					if (visible == View.VISIBLE) {
 						sensorMode.setBackgroundColor(Color.TRANSPARENT);
 					} else {
-						sensorMode.setBackgroundColor(Color.parseColor("#0099CC"));
+						sensorMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					}
 					
 					// UI switch
@@ -1285,7 +1285,7 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					mapMode.setBackgroundColor(Color.TRANSPARENT);
 					graphMode.setBackgroundColor(Color.TRANSPARENT);
-					sensorMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					sensorMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					animationMode.setBackgroundColor(Color.TRANSPARENT);
 					contributeMode.setBackgroundColor(Color.TRANSPARENT);
 					
@@ -1367,7 +1367,7 @@ public class BarometerNetworkActivity extends Activity implements
 					mapMode.setBackgroundColor(Color.TRANSPARENT);
 					graphMode.setBackgroundColor(Color.TRANSPARENT);
 					sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					animationMode.setBackgroundColor(Color.parseColor("#0099CC"));
+					animationMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					contributeMode.setBackgroundColor(Color.TRANSPARENT);
 					
 				}
