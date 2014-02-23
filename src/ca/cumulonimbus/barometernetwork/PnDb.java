@@ -76,7 +76,7 @@ public class PnDb {
 	}
 	
 	
-	/**
+	/**z
 	 * Add new sky photo
 
 	 * @return
@@ -255,7 +255,6 @@ public class PnDb {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
 			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
-			db.execSQL(SKY_PHOTOS_TABLE_CREATE);
 		}
 
 		@Override
@@ -269,11 +268,13 @@ public class PnDb {
 				db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
 			}
 			
+			/*
 			// add a table to store info about sky photos
 			if ((oldVersion <= 9) && (newVersion>=10)) {
 				db.execSQL("DROP TABLE " + SKY_PHOTOS);
 				db.execSQL(SKY_PHOTOS_TABLE_CREATE);
 			}
+			*/
 			
 			
 			showWhatsNew();
