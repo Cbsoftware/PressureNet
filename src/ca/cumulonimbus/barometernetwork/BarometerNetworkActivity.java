@@ -275,7 +275,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean isConnected = false;
 
 	private boolean hasBarometer = true;
-
+	private boolean hasThermometer = false;
+	private boolean hasHygrometer = false;
+	
 	private LocationManager networkLocationManager;
 	private LocationListener locationListener;
 
@@ -309,7 +311,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		setContentView(R.layout.main);
 		checkNetwork();
-		checkBarometer();
+		checkSensors();
 		setLastKnownLocation();
 		startAppLocationListener();
 		startLog();
@@ -322,6 +324,12 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
+	}
+	
+	private void checkSensors() {
+		checkBarometer();
+		checkThermometer();
+		checkHygrometer();
 	}
 	
 	/**
@@ -439,6 +447,36 @@ public class BarometerNetworkActivity extends Activity implements
 		return hasBarometer;
 	}
 
+	/**
+	 * Check if we have a thermometer.
+	 */
+	private boolean checkThermometer() {
+		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		Sensor temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+		if(temp==null) {
+			hasThermometer = false;
+		} else {
+			hasThermometer = true;
+		}
+		return hasThermometer;
+	}
+	
+	/**
+	 * Check if we have a hygrometer.
+	 */
+	private boolean checkHygrometer() {
+		SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		Sensor humid = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+		if(humid==null) {
+			hasHygrometer = false;
+		} else {
+			hasHygrometer = true;
+		}
+		return hasHygrometer;
+	}
+
+
+	
 	/**
 	 * Check if we're online
 	 */
@@ -3539,7 +3577,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		// addDataToMap();
 
-		checkBarometer();
+		checkSensors();
 		
 		if(hasBarometer) {
 			startSensorListeners();
@@ -3631,7 +3669,7 @@ public class BarometerNetworkActivity extends Activity implements
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
-		if (recentPressureReading != 0.0) {
+		if (hasBarometer) {
 			String toPrint = displayPressureValue(recentPressureReading);
 			if (toPrint.length() > 2) {
 				buttonBarometer.setText(toPrint);
@@ -3648,23 +3686,30 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonBarometer.setText("No barometer detected.");
 		}
 
-		// TODO: fix default value hack
-		if (recentTemperatureReading != 1000) {
+		if (hasThermometer) {
 			String toPrint = displayTemperatureValue(recentTemperatureReading);
 			buttonThermometer.setVisibility(View.VISIBLE);
 			buttonThermometer.setText(toPrint);
 		} else {
 			buttonThermometer.setText("No thermometer detected.");
-			buttonThermometer.setVisibility(View.GONE);
+			buttonThermometer.setVisibility(View.INVISIBLE);
 		}
 
-		if (recentHumidityReading != 1000) {
+		if (hasHygrometer) {
 			String toPrint = displayHumidityValue(recentHumidityReading);
 			buttonHygrometer.setVisibility(View.VISIBLE);
 			buttonHygrometer.setText(toPrint);
 		} else {
 			buttonHygrometer.setText("No hygrometer detected.");
+			buttonHygrometer.setVisibility(View.INVISIBLE);
+		}
+		
+		if ( (!hasBarometer) && (!hasHygrometer) && (!hasThermometer) ) {
+			buttonBarometer.setVisibility(View.VISIBLE);
+			buttonThermometer.setVisibility(View.GONE);
 			buttonHygrometer.setVisibility(View.GONE);
+			
+			buttonBarometer.setText("No atmosphere sensors detected");
 		}
 
 	}
