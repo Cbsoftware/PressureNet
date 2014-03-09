@@ -860,9 +860,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displaySatellite = !displaySatellite;
 				if (displaySatellite) {
+					displayMapToast("Satellite view");
 					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					restoreSatelliteButton();
 				} else {
+					displayMapToast("Map view");
 					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 					
 					dimSatelliteButton();
@@ -876,8 +878,10 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayPressure = !displayPressure;
 				if(displayPressure) {
+					displayMapToast("Showing pressure data");
 					restoreBarometerButton();
 				} else {
+					displayMapToast("Hiding pressure data");
 					dimBarometerButton();
 				}
 				mMap.clear();
@@ -891,8 +895,10 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayConditions = !displayConditions;
 				if(displayConditions) {
+					displayMapToast("Showing weather conditions");
 					restoreWeatherButton();
 				} else {
+					displayMapToast("Hiding weather conditions");
 					dimWeatherButton();
 				}
 				mMap.clear();
@@ -990,6 +996,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
+				displayMapToast("Going to your location");
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 						GA_CATEGORY_MAIN_APP, 
 						GA_ACTION_BUTTON, 
@@ -1003,6 +1010,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
+				displayMapToast("Refreshing...");
+				
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 						GA_CATEGORY_MAIN_APP, 
 						GA_ACTION_BUTTON, 
@@ -1015,7 +1024,7 @@ public class BarometerNetworkActivity extends Activity implements
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
-
+				
 				makeGlobalMapCall();
 				makeGlobalConditionsMapCall();
 			}
@@ -1346,6 +1355,7 @@ public class BarometerNetworkActivity extends Activity implements
 						calAnimationStartDate.set(Calendar.SECOND, 0);
 						animationDurationInMillis = 1000 * 60 * 60 * 24;
 					}
+					
 					long startTime = calAnimationStartDate.getTimeInMillis();
 					long endTime = startTime + animationDurationInMillis;
 					
@@ -1467,6 +1477,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		});
+	}
+	
+	private void displayMapToast(String message) {
+		Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+		toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 300);
+		toast.show();
 	}
 	
 	/**
