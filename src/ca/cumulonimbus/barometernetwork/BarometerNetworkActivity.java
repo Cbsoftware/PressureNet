@@ -1459,10 +1459,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				String location = editLocation.getText().toString().trim();
 				if (location.equals("")) {
-					Toast toast = Toast.makeText(getApplicationContext(),
-							"Enter a search location", Toast.LENGTH_SHORT);
-					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-					toast.show();
+					displayMapToast("Enter a search location");
 					focusSearch();
 					return;
 				}
@@ -2500,6 +2497,7 @@ public class BarometerNetworkActivity extends Activity implements
 						if (lat != 0) {
 							editLocation.setText(search,
 									TextView.BufferType.EDITABLE);
+							displayMapToast("Going to " + search);
 							moveMapTo(lat, lon);
 						}
 					}
@@ -2507,11 +2505,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 				} else if (rowId == -2L) {
 					log("onactivityresult -2");
-					Toast toast = Toast.makeText(getApplicationContext(),
-							"No saved locations. Enter a location.",
-							Toast.LENGTH_SHORT);
-					toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-					toast.show();
+					displayMapToast("No saved locations. Enter a location.");
 
 					focusSearch();
 				} else {
