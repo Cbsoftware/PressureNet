@@ -1457,7 +1457,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 
-				String location = editLocation.getText().toString();
+				String location = editLocation.getText().toString().trim();
 				if (location.equals("")) {
 					Toast toast = Toast.makeText(getApplicationContext(),
 							"Enter a search location", Toast.LENGTH_SHORT);
@@ -1466,15 +1466,6 @@ public class BarometerNetworkActivity extends Activity implements
 					focusSearch();
 					return;
 				}
-				location = location.trim();
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_SEARCH, 
-						location, 
-						null).build());
-				
-				Toast.makeText(getApplicationContext(), "Going to " + location,
-						Toast.LENGTH_SHORT).show();
 				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
 				editLocation.setCursorVisible(false);
@@ -1483,6 +1474,8 @@ public class BarometerNetworkActivity extends Activity implements
 					List<Address> addr = geocode.getFromLocationName(location,
 							2);
 					if (addr.size() > 0) {
+						displayMapToast("Going to " + location);
+						
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
 						double longitude = ad.getLongitude();
@@ -1491,6 +1484,12 @@ public class BarometerNetworkActivity extends Activity implements
 						SearchLocation loc = new SearchLocation(location,
 								latitude, longitude);
 						searchedLocations.add(loc);
+						
+						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+								GA_CATEGORY_MAIN_APP, 
+								GA_ACTION_SEARCH, 
+								location, 
+								null).build());
 
 						PnDb pn = new PnDb(getApplicationContext());
 						pn.open();
@@ -1504,13 +1503,11 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall conditionApi = buildMapCurrentConditionsCall(2);
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
-						Toast.makeText(getApplicationContext(),
-								"Can't search Google Maps", Toast.LENGTH_SHORT)
-								.show();
+						displayMapToast("No search results found");
 					}
 
 				} catch (IOException ioe) {
-					// ioe.printStackTrace();
+					displayMapToast("Unable to search Google Maps");
 				}
 
 			}
