@@ -1258,6 +1258,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					hoursAgoSelected = 72;
 
+					displayMapToast("Loading graph");
 					log("making api call 72h for graph");
 					CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
 					makeStatsAPICall(api);
@@ -1974,10 +1975,11 @@ public class BarometerNetworkActivity extends Activity implements
 				CbContributions contrib = (CbContributions) msg.obj;
 				DecimalFormat df = new DecimalFormat("#,###,###");
 				String pressureContributions = df.format(contrib.getPressureAllTime()) + " total\n" +
-						df.format(contrib.getPressureLast24h()) + " in the last day\n" +
-						df.format(contrib.getPressureLast7d()) + " in the last week\n";
+						df.format(contrib.getPressureLast7d()) + " in the last week\n" +
+						df.format(contrib.getPressureLast24h()) + " in the last day";
 				String conditionContributions = df.format(contrib.getConditionsAllTime()) + " total\n" + 
-						df.format(contrib.getConditionsLastWeek()) + " in the last week";
+						df.format(contrib.getConditionsLastWeek()) + " in the last week\n" +
+						df.format(contrib.getConditionsLastDay()) + " in the last day";
 				textPressureContributions.setText(pressureContributions);
 				textConditionContributions.setText(conditionContributions);
 				break;
@@ -2054,6 +2056,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		} else if (statsRecents.size() == 0) {
 			log("stats recents 0, RETURNING, no chart");
+			displayMapToast("Can't display graph, no data was returned");
 			return;
 		}
 
@@ -3179,7 +3182,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	// Put a bunch of barometer readings and current conditions on the map.
 	private void addDataToMap() {
-		// TODO: add delay so that the map isn't fully refreshed every touch
 		log("add data to map");
 
 		if (!displayPressure) {

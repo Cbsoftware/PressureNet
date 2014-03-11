@@ -319,6 +319,7 @@
                 android:text="Sensor data contributions" 
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
+                android:textStyle="bold"
 />
             <TextView
                 android:id="@+id/textContribConditionsTitle"
@@ -327,6 +328,7 @@
                 android:text="Weather contributions" 
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
+                android:textStyle="bold"
 />
             <TextView
                 android:id="@+id/textContribPressure"
