@@ -216,6 +216,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
 
+	private boolean locationAvailable = true;
+	
 	double recentPressureReading = 0.0;
 	double recentTemperatureReading = 1000; // TODO: fix default value hack
 	double recentHumidityReading = 1000;
@@ -428,12 +430,18 @@ public class BarometerNetworkActivity extends Activity implements
 			double longitude = loc.getLongitude();
 			mLatitude = latitude;
 			mLongitude = longitude;
+			
+			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+			buttonMyLocation.setImageAlpha(255);
+			locationAvailable = true;
 		} catch (Exception e) {
 			// everything stays as previous, likely 0
 			// Toast.makeText(getApplicationContext(), "Location not found",
 			// Toast.LENGTH_SHORT).show();
+			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+			buttonMyLocation.setImageAlpha(100);
+			locationAvailable = false;
 		}
-
 	}
 
 	/**
@@ -1034,13 +1042,17 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
-				displayMapToast("Going to your location");
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_BUTTON, 
-						"my_location", 
-						 null).build());
-				goToMyLocation();
+				if(locationAvailable) {
+					displayMapToast("Going to your location");
+					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+							GA_CATEGORY_MAIN_APP, 
+							GA_ACTION_BUTTON, 
+							"my_location", 
+							 null).build());
+					goToMyLocation(); 
+				} else {
+					displayMapToast("Location services not available");
+				}
 			}
 		});
 		
@@ -3585,7 +3597,7 @@ public class BarometerNetworkActivity extends Activity implements
 			log("onresume cbservice is already running");
 		}
 		bindCbService();
-
+		setLastKnownLocation();
 		editLocation.setText("");
 	}
 
