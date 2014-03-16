@@ -97,18 +97,18 @@
     </string-array>
 
     <string name="welcomeToPressureNET">Welcome to pressureNET</string>
-    <string name="appAndSharingDescritption">pressureNET is a global network of crowdsourced atmospheric sensors that collect weather data. 
-        We\'ll improve weather forecasting by using this new data source to run new weather models. You can help us validate our forecasts
-        by telling us what the weather is like where you are. Thank you for joining this effort; we need your help to succeed! 
-        The more people that use pressureNET, the better it gets, so tell your friends! 
-        \n\nThis app periodically collects some data from your device: location, time, and your atmospheric pressure. We\'ll share this data only according to your wishes.
-        You can change your prefence below or at any time through Settings. Thank you!</string>
-    <string name="appDescritptionNoBarometer">pressureNET is a global network of crowdsourced atmospheric sensors that collect weather data. 
-        We\'ll improve weather forecasting by using this new data source to run new weather models. You can help us validate our forecasts
-        by telling us what the weather is like where you are. Thank you for joining this effort; we need your help to succeed! 
-        The more people that use pressureNET, the better it gets, so tell your friends! 
-        \n\nWe\'re not detecting a barometer on your device so we won\'t collect any data in the background. When you submit the weather conditions, we\'ll
-        share that data according to your wishes. You can change your prefence below or at any time through Settings. Thank you!</string>
+    <string name="appAndSharingDescritption">You\'re helping us make a better weather forecast!
+        \n\nWe\'re using the barometer inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
+        by telling us what the weather is actually like where you are.  
+        \n\nThis app periodically collects sensor data: your location and your atmospheric pressure. We\'ll share this data according to your wishes,
+        which you can change below or through Settings.
+        \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
+    <string name="appDescritptionNoBarometer">You\'re helping us make a better weather forecast!
+        \n\nWe\'re using the barometer inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
+        by telling us what the weather is actually like where you are.  
+        \n\Your device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
+        which you can change below or through Settings.
+        \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
     <string name="sunny">Clear</string>

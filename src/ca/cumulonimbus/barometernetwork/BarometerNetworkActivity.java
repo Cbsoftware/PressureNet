@@ -2262,12 +2262,12 @@ public class BarometerNetworkActivity extends Activity implements
 		editor.putInt("runCount", runCount + 1);
 		editor.commit();
 
-		//if (runCount == 0) {
+		if (runCount == 0) {
 
 			Intent intent = new Intent(this,
 					ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
 			startActivityForResult(intent, 0);
-		//}
+		}
 	}
 
 	/**
