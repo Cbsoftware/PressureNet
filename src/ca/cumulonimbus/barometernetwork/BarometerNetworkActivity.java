@@ -166,11 +166,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ProgressBar progressAPI;
 
-	private ImageButton mapMode;
-	private ImageButton contributeMode;
-	private ImageButton graphMode;
-	private ImageButton sensorMode;
-	private ImageButton animationMode;
+	private Button mapMode;
+	private Button contributeMode;
+	private Button graphMode;
+	private Button sensorMode;
+	private Button animationMode;
 
 	private LinearLayout layoutMapInfo;
 	private LinearLayout layoutGraph;
@@ -848,11 +848,11 @@ public class BarometerNetworkActivity extends Activity implements
 		mapLatitudeMaxText = (TextView) findViewById(R.id.latitudeValueMaxMapInfoText);
 		mapLongitudeMaxText = (TextView) findViewById(R.id.longitudeValueMaxMapInfoText);
 
-		mapMode = (ImageButton) findViewById(R.id.buttonMapMode);
-		contributeMode = (ImageButton) findViewById(R.id.buttonContributeMode);
-		graphMode = (ImageButton) findViewById(R.id.buttonGraphMode);
-		sensorMode = (ImageButton) findViewById(R.id.buttonSensorMode);
-		animationMode = (ImageButton) findViewById(R.id.buttonAnimationMode);
+		mapMode = (Button) findViewById(R.id.buttonMapMode);
+		contributeMode = (Button) findViewById(R.id.buttonContributeMode);
+		graphMode = (Button) findViewById(R.id.buttonGraphMode);
+		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
+		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
 
 		layoutMapInfo = (LinearLayout) findViewById(R.id.layoutMapInformation);
 		layoutMapControls = (LinearLayout) findViewById(R.id.layoutMapControls);
@@ -2262,12 +2262,12 @@ public class BarometerNetworkActivity extends Activity implements
 		editor.putInt("runCount", runCount + 1);
 		editor.commit();
 
-		if (runCount == 0) {
+		//if (runCount == 0) {
 
 			Intent intent = new Intent(this,
 					ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
 			startActivityForResult(intent, 0);
-		}
+		//}
 	}
 
 	/**

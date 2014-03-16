@@ -148,50 +148,71 @@
         android:orientation="horizontal"
         android:visibility="visible" >
         
-        <ImageButton
+        <Button
             android:id="@+id/buttonMapMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:src="@drawable/ic_map"/>
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_map"
+            android:text="Map"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            />
         
-        <ImageButton
+        <Button
             android:id="@+id/buttonContributeMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:src="@drawable/ic_con_stats"/>
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_sensors"
+            android:text="Info"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/buttonGraphMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:src="@drawable/ic_graph" />
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_graph"
+            android:text="Graph"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"/>
 
-        <ImageButton
+        <Button
             android:id="@+id/buttonSensorMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:layout_weight=".19"
-            android:src="@drawable/ic_sensors" />
+            android:drawableTop="@drawable/ic_sensors"
+            android:visibility="gone"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
 
-        <ImageButton
+        <Button
             android:id="@+id/buttonAnimationMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:src="@drawable/ic_play" />
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_play"
+            android:text="Animate"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -304,75 +325,12 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-  		<RelativeLayout
-            android:id="@+id/layoutContribDetails"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="12dp"
-             >
-            <TextView
-                android:id="@+id/textContribPressureTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sensor data contributions" 
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:textStyle="bold"
-/>
-            <TextView
-                android:id="@+id/textContribConditionsTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Weather contributions" 
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:textStyle="bold"
-/>
-            <TextView
-                android:id="@+id/textContribPressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:layout_below="@id/textContribPressureTitle"
-                android:layout_alignLeft="@id/textContribPressureTitle"/>
-            <TextView
-                android:id="@+id/textContribConditions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:layout_below="@id/textContribConditionsTitle"
-                android:layout_alignLeft="@id/textContribConditionsTitle"/>
-            
-            <Button
-                android:id="@+id/inviteFriends"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Invite your friends!"
-                android:layout_below="@id/textContribPressure"
-                android:textColor="#000000"
-                android:drawableLeft="@drawable/ic_share"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_centerInParent="true"/>
-           	
-            </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutSensorInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
         android:orientation="vertical"
-        android:padding="12dp"
         android:visibility="gone" >
-
-           <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        
+        <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content">
         
 	        <Button
 	            android:id="@+id/imageButtonBarometer"
@@ -430,11 +388,71 @@
 	           android:layout_below="@id/textNexus5Bug"
 	           android:gravity="center_horizontal|center_vertical"
                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
-
-	 
-	       	           
-        </RelativeLayout>
+        </RelativeLayout>   
         
+  		<RelativeLayout
+            android:id="@+id/layoutContribDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+             >
+            <TextView
+                android:id="@+id/textContribPressureTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sensor data contributions" 
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textContribConditionsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weather contributions" 
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textContribPressure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_below="@id/textContribPressureTitle"
+                android:layout_alignLeft="@id/textContribPressureTitle"/>
+            <TextView
+                android:id="@+id/textContribConditions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_below="@id/textContribConditionsTitle"
+                android:layout_alignLeft="@id/textContribConditionsTitle"/>
+            
+            <Button
+                android:id="@+id/inviteFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Invite your friends!"
+                android:layout_below="@id/textContribPressure"
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/ic_share"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_centerInParent="true"/>
+           	
+            </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutSensorInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#CCFFFFFF"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="gone" >
+
+       
     </LinearLayout>
 
     <LinearLayout
