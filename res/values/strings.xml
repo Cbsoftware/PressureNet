@@ -104,9 +104,9 @@
         which you can change below or through Settings.
         \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
     <string name="appDescritptionNoBarometer">You\'re helping us make a better weather forecast!
-        \n\nWe\'re using the barometer inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
+        \n\nWe\'re using sensors inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
         by telling us what the weather is actually like where you are.  
-        \n\Your device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
+        \n\nYour device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
         which you can change below or through Settings.
         \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
