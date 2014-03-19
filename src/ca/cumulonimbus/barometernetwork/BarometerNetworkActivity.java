@@ -202,6 +202,8 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private TextView textPressureContributions;
 	private TextView textConditionContributions;
+	private TextView textContribPressureTitle;
+	private TextView textContribConditionsTitle;
 	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
@@ -880,6 +882,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
 		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
+		textContribPressureTitle = (TextView) findViewById(R.id.textContribPressureTitle);
+		textContribConditionsTitle = (TextView) findViewById(R.id.textContribConditionsTitle);
 		
 		inviteFriends = (Button) findViewById(R.id.inviteFriends);
 		
@@ -3718,7 +3722,13 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			buttonBarometer.setText("No atmosphere sensors detected");
 			
+			textContribPressureTitle.setVisibility(View.GONE);
+			textPressureContributions.setVisibility(View.GONE);
 			
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)textContribConditionsTitle.getLayoutParams();
+			params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+			textContribConditionsTitle.setLayoutParams(params);
 		}
 
 	}

@@ -431,7 +431,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Invite your friends!"
-                android:layout_below="@id/textContribPressure"
+                android:layout_below="@id/textContribConditions"
                 android:textColor="#000000"
                 android:drawableLeft="@drawable/ic_share"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
