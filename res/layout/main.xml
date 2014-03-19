@@ -347,7 +347,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:drawableLeft="@drawable/ic_thermometer"
-	            android:text="No thermometer detected"
+	            android:text=""
 	            android:textColor="@android:color/black"
 	            android:layout_centerInParent="true"
 	             />
@@ -358,7 +358,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:drawableLeft="@drawable/ic_hygrometer"
-	            android:text="No hygrometer detected"
+	            android:text=""
 	            android:textColor="@android:color/black"
 	            android:layout_alignParentRight="true"
 	             />
@@ -394,13 +394,12 @@
             android:id="@+id/layoutContribDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
-             >
+            android:padding="12dp">
             <TextView
                 android:id="@+id/textContribPressureTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sensor data contributions" 
+                android:text="Sensor contributions" 
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:textStyle="bold"/>

@@ -1517,7 +1517,9 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 
 				} catch (IOException ioe) {
-					displayMapToast("Unable to search Google Maps");
+					displayMapToast(ioe.getMessage());
+					ioe.printStackTrace();
+					//displayMapToast("Unable to search Google Maps");
 				}
 
 			}
@@ -3583,6 +3585,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// addDataToMap();
 
 		checkSensors();
+		updateVisibleReading();
 		
 		if(hasBarometer) {
 			startSensorListeners();
@@ -3671,6 +3674,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Display visible reading to the user
 	 */
 	private void updateVisibleReading() {
+		checkSensors();
 		preferencePressureUnit = getUnitPreference();
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
@@ -3685,10 +3689,10 @@ public class BarometerNetworkActivity extends Activity implements
 				TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 				actionBarTextView.setTextColor(Color.WHITE);
 			} else {
-				buttonBarometer.setText("No barometeer detected.");
+				//buttonBarometer.setText("No barometeer detected.");
 			}
 		} else {
-			buttonBarometer.setText("No barometer detected.");
+			//buttonBarometer.setText("No barometer detected.");
 		}
 
 		if (hasThermometer) {
@@ -3696,7 +3700,6 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonThermometer.setVisibility(View.VISIBLE);
 			buttonThermometer.setText(toPrint);
 		} else {
-			buttonThermometer.setText("No thermometer detected.");
 			buttonThermometer.setVisibility(View.INVISIBLE);
 		}
 
@@ -3705,7 +3708,6 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonHygrometer.setVisibility(View.VISIBLE);
 			buttonHygrometer.setText(toPrint);
 		} else {
-			buttonHygrometer.setText("No hygrometer detected.");
 			buttonHygrometer.setVisibility(View.INVISIBLE);
 		}
 		
@@ -3715,6 +3717,8 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonHygrometer.setVisibility(View.GONE);
 			
 			buttonBarometer.setText("No atmosphere sensors detected");
+			
+			
 		}
 
 	}
