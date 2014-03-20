@@ -2,28 +2,105 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="fill_parent">
 
+    <LinearLayout
+        android:id="@+id/modeSelectionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="#EEEEEE"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+        
+        <Button
+            android:id="@+id/buttonMapMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_map"
+            android:text="Map"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            />
+        
+        <Button
+            android:id="@+id/buttonContributeMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_sensors"
+            android:text="Info"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"/>
+
+        <Button
+            android:id="@+id/buttonGraphMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_graph"
+            android:text="Graph"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"/>
+
+        <Button
+            android:id="@+id/buttonSensorMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".19"
+            android:drawableTop="@drawable/ic_sensors"
+            android:visibility="gone"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
+
+        <Button
+            android:id="@+id/buttonAnimationMode"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight=".25"
+            android:drawableTop="@drawable/ic_play"
+            android:text="Animate"
+            android:textColor="#004455"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
+    </LinearLayout>
+    
     <LinearLayout
         android:id="@+id/layoutMap"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@id/modeSelectionLayout"
         android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/layoutMapContainer"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
+            android:layout_height="wrap_content" >
 
             <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
-
+    
     <LinearLayout
         android:id="@+id/layoutSearchControls"
         android:layout_width="fill_parent"
@@ -137,83 +214,6 @@
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
         android:progressDrawable="@drawable/progress" />
-
-    <LinearLayout
-        android:id="@+id/modeSelectionLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/layoutMap"
-        android:layout_gravity="bottom"
-        android:background="#CCFFFFFF"
-        android:orientation="horizontal"
-        android:visibility="visible" >
-        
-        <Button
-            android:id="@+id/buttonMapMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_map"
-            android:text="Map"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp"
-            />
-        
-        <Button
-            android:id="@+id/buttonContributeMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_sensors"
-            android:text="Info"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp"/>
-
-        <Button
-            android:id="@+id/buttonGraphMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_graph"
-            android:text="Graph"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp"/>
-
-        <Button
-            android:id="@+id/buttonSensorMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:drawableTop="@drawable/ic_sensors"
-            android:visibility="gone"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp" />
-
-        <Button
-            android:id="@+id/buttonAnimationMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_play"
-            android:text="Animate"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
-            android:paddingBottom="8dp" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layoutGraph"
