@@ -308,6 +308,8 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	Message statsMsg = null;
 
+	private boolean isPrimaryApp = true;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -330,24 +332,24 @@ public class BarometerNetworkActivity extends Activity implements
 		callExternalAPIs();
 	}
 	
-	private void runTests() {
-		printDebugDatabaseInfo();
-	}
-	
-	private void printDebugDatabaseInfo() {
+	private void askIfPrimary() {
 		if (mBound) {
-			log("SDKTESTS: app asking for debug database info");
+			log("app asking if primary");
 			Message msg = Message.obtain(null,
-					CbService.MSG_GET_DATABASE_INFO, 0, 0);
+					CbService.MSG_GET_PRIMARY_APP, 0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				log("SDKTESTS: remote exception");
+				// e.printStackTrace();
 			}
 		} else {
-			log("SDKTESTS: not bound");
+			// log("error: not bound");
 		}
+	}
+	
+	private void runTests() {
+		askIfPrimary();
 	}
 	
 	/**
@@ -2024,6 +2026,13 @@ public class BarometerNetworkActivity extends Activity implements
 						df.format(contrib.getConditionsLastDay()) + " in the last day";
 				textPressureContributions.setText(pressureContributions);
 				textConditionContributions.setText(conditionContributions);
+				break;
+			case CbService.MSG_IS_PRIMARY:
+				if (msg.arg1 == 1) {
+					isPrimaryApp = true;
+				} else {
+					isPrimaryApp = false;
+				}
 				break;
 			default:
 				log("received default message");
