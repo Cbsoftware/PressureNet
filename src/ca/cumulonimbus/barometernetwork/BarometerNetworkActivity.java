@@ -330,6 +330,29 @@ public class BarometerNetworkActivity extends Activity implements
 		callExternalAPIs();
 	}
 	
+	private void runTests() {
+		printDebugDatabaseInfo();
+	}
+	
+	private void printDebugDatabaseInfo() {
+		if (mBound) {
+			log("SDKTESTS: app asking for debug database info");
+			Message msg = Message.obtain(null,
+					CbService.MSG_GET_DATABASE_INFO, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				log("SDKTESTS: remote exception");
+			}
+		} else {
+			log("SDKTESTS: not bound");
+		}
+	}
+	
+	/**
+	 * Establish which sensors we can access
+	 */
 	private void checkSensors() {
 		checkBarometer();
 		checkThermometer();
@@ -1113,6 +1136,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				runTests();
 				int visible = layoutMapInfo.getVisibility();
 				if (activeMode.equals("map")) {
 					if (visible == View.VISIBLE) {
