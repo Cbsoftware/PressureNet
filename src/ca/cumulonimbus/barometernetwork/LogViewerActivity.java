@@ -19,6 +19,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -60,7 +61,7 @@ public class LogViewerActivity extends Activity {
 	private String preferenceUnit;
 	
 	private int hoursSelected = 6;
-
+	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -78,7 +79,7 @@ public class LogViewerActivity extends Activity {
 						c.setTimeInMillis(obs.getTime());
 						String dateString = c.getTime().toLocaleString();
 						DecimalFormat df = new DecimalFormat("####.00000");
-						String valueString = df.format(convertedPressureValue(obs.getObservationValue()));
+						String valueString = df.format(convertedPressureValue(obs));
 						rawLog += dateString + ": " + valueString + "\n";
 					}
 					
@@ -101,7 +102,16 @@ public class LogViewerActivity extends Activity {
 							double rawValue = ob.getObservationValue();
 							
 							PressureUnit unit = new PressureUnit(preferenceUnit);
-							unit.setValue(rawValue);
+							SharedPreferences sharedPreferences = PreferenceManager
+									.getDefaultSharedPreferences(getApplicationContext());
+							boolean mslp = sharedPreferences.getBoolean("mslp", false);
+
+							if(mslp) {
+								unit.setValue(CbScience.estimateMSLP(rawValue, ob.getLocation().getAltitude(), 15));
+							} else {
+								unit.setValue(rawValue);
+							}
+							
 							unit.setAbbreviation(preferenceUnit);
 							double pressureInPreferredUnit = unit
 									.convertToPreferredUnit();
@@ -173,8 +183,20 @@ public class LogViewerActivity extends Activity {
 				mConnection, Context.BIND_AUTO_CREATE);
 
 	}
-	public double convertedPressureValue(double value) {
+	
+	public double convertedPressureValue(CbObservation obs) {
+		double value = obs.getObservationValue();
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		boolean mslp = sharedPreferences.getBoolean("mslp", false);
+		if(mslp) {
+			if(obs.getLocation().getAltitude()!=0) {
+				value = CbScience.estimateMSLP(value, obs.getLocation().getAltitude(), 15);
+			}
+		}
+		
 		PressureUnit unit = new PressureUnit(preferenceUnit);
+		
 		unit.setValue(value);
 		unit.setAbbreviation(preferenceUnit);
 		return unit.convertToPreferredUnit();

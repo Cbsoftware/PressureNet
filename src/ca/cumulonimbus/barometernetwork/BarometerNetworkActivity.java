@@ -1792,9 +1792,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	/**
-	 * Query the database for locally stored observations
-	 * 
-	 * @param apiCall
+	 * Query the Service for best location
 	 */
 	private void askForBestLocation() {
 		if (mBound) {
