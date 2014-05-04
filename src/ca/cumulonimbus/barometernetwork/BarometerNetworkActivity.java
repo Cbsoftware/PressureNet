@@ -3672,7 +3672,7 @@ public class BarometerNetworkActivity extends Activity implements
 			String toPrint = displayPressureValue(recentPressureReading);
 			if (toPrint.length() > 2) {
 				DecimalFormat df = new DecimalFormat("##");
-				buttonBarometer.setText("MSLP (alt " + df.format(bestLocation.getAltitude()) + "m): " + displayPressureValue(CbScience.estimateMSLP(recentPressureReading, bestLocation.getAltitude(), 15)));
+				buttonBarometer.setText("MSLP (" + df.format(bestLocation.getAltitude()) + "m): " + displayPressureValue(CbScience.estimateMSLP(recentPressureReading, bestLocation.getAltitude(), 15)));
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()
