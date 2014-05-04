@@ -27,9 +27,10 @@ public class MSLPActivity extends Activity {
 	private double altitude = 0; // elevation + height
 	private double elevation = 0; // sea-level to ground-level
 	private double height = 0; // distance above ground level
-
+	private double pressure = 990;
+	
 	public double pressureCalculation(double altitude, double temperature) {
-		return CbScience.calculateMSLP(altitude, temperature);
+		return CbScience.estimateMSLP(pressure, altitude, temperature);
 	}
 
 	private void setUpUI() {

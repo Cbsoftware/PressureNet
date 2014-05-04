@@ -119,6 +119,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	double mLatitude = 0.0;
 	double mLongitude = 0.0;
+	double mAltitude = 0.0;
 	double mReading = 0.0;
 	double mTimeOfReading = 0.0;
 	float mReadingAccuracy = 0.0f;
@@ -282,9 +283,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean hasThermometer = false;
 	private boolean hasHygrometer = false;
 	
-	private LocationManager networkLocationManager;
-	private LocationListener locationListener;
-
 	private long lastSubmitStart = 0;
 
 	private static final String moon_phase_name[] = { "New Moon", // 0
@@ -319,7 +317,6 @@ public class BarometerNetworkActivity extends Activity implements
 		checkNetwork();
 		checkSensors();
 		setLastKnownLocation();
-		startAppLocationListener();
 		startLog();
 		getStoredPreferences();
 		setUpMap();
@@ -376,72 +373,7 @@ public class BarometerNetworkActivity extends Activity implements
 		db.open();
 		db.close();
 	}
-
-	/**
-	 * Start the network location listener for use outside the SDK
-	 */
-	private void startAppLocationListener() {
-		networkLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		startGettingLocations();
-	}
-
-	/**
-	 * Stop all location listeners
-	 * 
-	 * @return
-	 */
-	public boolean stopGettingLocations() {
-		try {
-			if (locationListener != null) {
-				if (networkLocationManager != null) {
-					networkLocationManager.removeUpdates(locationListener);
-				}
-			}
-			networkLocationManager = null;
-			return true;
-		} catch (Exception e) {
-			// e.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * Get the user's location from the location service
-	 * 
-	 * @return
-	 */
-	public boolean startGettingLocations() {
-		locationListener = new LocationListener() {
-			public void onLocationChanged(Location location) {
-				bestLocation = location;
-				mLatitude = location.getLatitude();
-				mLongitude = location.getLongitude();
-			}
-
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-			}
-
-			public void onProviderEnabled(String provider) {
-			}
-
-			public void onProviderDisabled(String provider) {
-			}
-		};
-
-		// Register the listener with the Location Manager to receive location
-		// updates
-		try {
-			networkLocationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 1000 * 60 * 5, 300,
-					locationListener);
-		} catch (Exception e) {
-			// e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
+	
 	/**
 	 * Update local location data with the last known location.
 	 */
@@ -455,8 +387,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 			double latitude = loc.getLatitude();
 			double longitude = loc.getLongitude();
+			double altitude = loc.getAltitude();
 			mLatitude = latitude;
 			mLongitude = longitude;
+			mAltitude = altitude;
 			
 			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 			buttonMyLocation.setImageAlpha(255);
@@ -1856,6 +1790,28 @@ public class BarometerNetworkActivity extends Activity implements
 			// log("error: not bound");
 		}
 	}
+	
+	/**
+	 * Query the database for locally stored observations
+	 * 
+	 * @param apiCall
+	 */
+	private void askForBestLocation() {
+		if (mBound) {
+			log("app asking for best location");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_LOCATION, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+
 
 	public void unBindCbService() {
 		if (mBound) {
@@ -2194,6 +2150,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			sendChangeNotification();
 			getStoredPreferences();
+			askForBestLocation();
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
@@ -2358,10 +2315,9 @@ public class BarometerNetworkActivity extends Activity implements
 							.getSystemService(Context.LOCATION_SERVICE);
 					Location loc = lm
 							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					double latitude = loc.getLatitude();
-					double longitude = loc.getLongitude();
-					mLatitude = latitude;
-					mLongitude = longitude;
+					mLatitude = loc.getLatitude();
+					mLongitude = loc.getLongitude();
+					mAltitude = loc.getAltitude();
 					mLocationAccuracy = loc.getAccuracy();
 				}
 
@@ -3271,8 +3227,7 @@ public class BarometerNetworkActivity extends Activity implements
 							Bitmap image = drawableToBitmap(drawable,
 									observation);
 
-							String valueToPrint = displayPressureValue(observation
-									.getObservationValue());
+							String valueToPrint = displayPressureValue(CbScience.estimateMSLP(observation.getObservationValue(), observation.getLocation().getAltitude(), 15)); 
 
 							long timeRecorded = observation.getTime();
 							long timeNow = System.currentTimeMillis();
@@ -3605,7 +3560,6 @@ public class BarometerNetworkActivity extends Activity implements
 	protected void onPause() {
 		super.onPause();
 		unBindCbService();
-		stopGettingLocations();
 		stopSensorListeners();
 	}
 
@@ -3619,6 +3573,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
+		askForBestLocation();
+		
 		// addDataToMap();
 
 		checkSensors();
@@ -3627,8 +3583,6 @@ public class BarometerNetworkActivity extends Activity implements
 		if(hasBarometer) {
 			startSensorListeners();
 		}
-			
-		startGettingLocations();
 
 		if (!isCbServiceRunning()) {
 			log("onresume cbservice is not already running, ");
@@ -3674,7 +3628,6 @@ public class BarometerNetworkActivity extends Activity implements
 	protected void onDestroy() {
 		dataReceivedToPlot = false;
 		unBindCbService();
-		stopGettingLocations();
 		super.onDestroy();
 	}
 
@@ -3718,7 +3671,8 @@ public class BarometerNetworkActivity extends Activity implements
 		if (hasBarometer) {
 			String toPrint = displayPressureValue(recentPressureReading);
 			if (toPrint.length() > 2) {
-				buttonBarometer.setText(toPrint);
+				DecimalFormat df = new DecimalFormat("##");
+				buttonBarometer.setText("MSLP (alt " + df.format(bestLocation.getAltitude()) + "m): " + displayPressureValue(CbScience.estimateMSLP(recentPressureReading, bestLocation.getAltitude(), 15)));
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()
