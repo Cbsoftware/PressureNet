@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0403034"
-    android:versionName="4.3.3" >
+    android:versionCode="0403041"
+    android:versionName="4.3.4" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -38,6 +38,7 @@
             android:enabled="true" >
             <intent-filter>
                 <action android:name="ca.cumulonimbus.pressurenetsdk.ACTION_SEND_MEASUREMENT" />
+                <action android:name="ca.cumulonimbus.pressurenetsdk.ACTION_REGISTER" />
             </intent-filter>
         </service>
         <activity android:name="org.achartengine.GraphicalActivity" />
