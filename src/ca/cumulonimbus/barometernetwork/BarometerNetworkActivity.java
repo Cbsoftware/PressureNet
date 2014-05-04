@@ -253,7 +253,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceSendNotifications;
 	private boolean preferenceUseGPS;
 	private boolean preferenceWhenCharging;
-	// private boolean preferenceMSLP;
+	private boolean preferenceMSLP;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -705,7 +705,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units",
 				"millibars");
-		// preferenceMSLP = sharedPreferences.getBoolean("mslp_on", true);
+		preferenceMSLP = sharedPreferences.getBoolean("mslp", false);
 		preferenceTemperatureUnit = sharedPreferences.getString(
 				"temperature_units", "Celsius (¡C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
@@ -3632,10 +3632,9 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private String displayPressureValue(double value) {
-		/*
 		if(preferenceMSLP) {
-			value = CbScience.calculateMSLP(100, 15 + 273.15);
-		}*/
+			value = CbScience.estimateMSLP(value, bestLocation.getAltitude(), 15);
+		}
 		
 		DecimalFormat df = new DecimalFormat("####.0");
 		PressureUnit unit = new PressureUnit(preferencePressureUnit);
@@ -3672,7 +3671,7 @@ public class BarometerNetworkActivity extends Activity implements
 			String toPrint = displayPressureValue(recentPressureReading);
 			if (toPrint.length() > 2) {
 				DecimalFormat df = new DecimalFormat("##");
-				buttonBarometer.setText("MSLP (" + df.format(bestLocation.getAltitude()) + "m): " + displayPressureValue(CbScience.estimateMSLP(recentPressureReading, bestLocation.getAltitude(), 15)));
+				buttonBarometer.setText(displayPressureValue(recentPressureReading));
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()
