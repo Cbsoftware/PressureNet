@@ -3038,7 +3038,7 @@ public class BarometerNetworkActivity extends Activity implements
 		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
 				drawable.getIntrinsicHeight());
 
-		String display = displayPressureValue(obs.getObservationValue());
+		String display = displayPressureValue(obs.getObservationValue(), obs.getLocation().getAltitude());
 		if (display.contains(" ")) {
 			display = display.split(" ")[0];
 		}
@@ -3225,7 +3225,8 @@ public class BarometerNetworkActivity extends Activity implements
 							Bitmap image = drawableToBitmap(drawable,
 									observation);
 
-							String valueToPrint = displayPressureValue(CbScience.estimateMSLP(observation.getObservationValue(), observation.getLocation().getAltitude(), 15)); 
+							
+							// String valueToPrint = displayPressureValue(CbScience.estimateMSLP(observation.getObservationValue(), observation.getLocation().getAltitude(), 15)); 
 
 							long timeRecorded = observation.getTime();
 							long timeNow = System.currentTimeMillis();
@@ -3629,9 +3630,9 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onDestroy();
 	}
 
-	private String displayPressureValue(double value) {
+	private String displayPressureValue(double value, double altitude) {
 		if(preferenceMSLP) {
-			value = CbScience.estimateMSLP(value, bestLocation.getAltitude(), 15);
+			value = CbScience.estimateMSLP(value, altitude, 15);
 		}
 		
 		DecimalFormat df = new DecimalFormat("####.0");
@@ -3666,10 +3667,10 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
 		if (hasBarometer) {
-			String toPrint = displayPressureValue(recentPressureReading);
+			String toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
 			if (toPrint.length() > 2) {
 				DecimalFormat df = new DecimalFormat("##");
-				buttonBarometer.setText(displayPressureValue(recentPressureReading));
+				buttonBarometer.setText(displayPressureValue(recentPressureReading, bestLocation.getAltitude()));
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()
