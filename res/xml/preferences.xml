@@ -85,24 +85,19 @@
             android:key="temperature_units"
             android:title="Temperature unit" />
     </PreferenceCategory>
-    <!--
     <PreferenceCategory
-        android:key="calibration_prefs"
-        android:title="Calibration" >
+        android:key="social_prefs"
+        android:title="Social" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="manual_altitude_calibration"
-            android:summary="Adjust display pressure to Mean Sea Level Pressure based on your altitude"
-            android:title="Manually Calibrate Altitude" />
-
-        <EditTextPreference
-            android:defaultValue="0"
-            android:dependency="manual_altitude_calibration"
-            android:inputType="number"
-            android:key="manual_altitude_in_km"
-            android:summary="Enter your approximate altitude in kilometers."
-            android:title="Altitude (km)" />
+            android:key="enable_social"
+            android:summary="Share Current Conditions to Twitter"
+            android:title="Enable Social Sharing" />
+  		<CheckBoxPreference
+            android:defaultValue="false"
+            android:key="assume_social"
+            android:summary="Auto-toggle twitter to yes"
+            android:title="Always share"
+            android:dependency="enable_social" />
     </PreferenceCategory>
-    -->
-
 </PreferenceScreen>

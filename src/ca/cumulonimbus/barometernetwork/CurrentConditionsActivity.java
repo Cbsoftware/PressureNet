@@ -82,6 +82,7 @@ public class CurrentConditionsActivity extends Activity {
 	private ImageButton buttonLightFog;
 	private ImageButton buttonModerateFog;
 	private ImageButton buttonHeavyFog;
+	private ImageButton buttonTwitter;
 	
 	private TextView textGeneralDescription;
 	private TextView textWindyDescription;
@@ -128,6 +129,20 @@ public class CurrentConditionsActivity extends Activity {
 	private boolean sending = false;
 	
 	static final int REQUEST_IMAGE_CAPTURE = 1;
+	
+	private boolean shareToTwitter = false;
+	
+	private boolean sharingEnabled() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		return sharedPreferences.getBoolean("enable_social", true);
+	}
+	
+	private boolean socialAssumed() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		return sharedPreferences.getBoolean("assume_social", true);
+	}
 
 	private void dispatchTakePictureIntent() {
 	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -747,6 +762,7 @@ public class CurrentConditionsActivity extends Activity {
 		buttonLightFog = (ImageButton) findViewById(R.id.buttonFoggy1);
 		buttonModerateFog = (ImageButton) findViewById(R.id.buttonFoggy2);
 		buttonHeavyFog = (ImageButton) findViewById(R.id.buttonFoggy3);
+		buttonTwitter = (ImageButton) findViewById(R.id.buttonTwitter);
 		
 		imageHrGeneral = (ImageView) findViewById(R.id.hrGeneral);
 		imageHrPrecipitation = (ImageView) findViewById(R.id.hrPrecipitation);
@@ -1128,6 +1144,21 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		});
 		
+		buttonTwitter.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				shareToTwitter = !shareToTwitter;
+				if(shareToTwitter) {
+					turnSocialOn();	
+				} else {
+					turnSocialOff();
+				}
+				
+				
+			}
+		});
+		
 		// Start adding the data for our current condition
 		Intent intent = getIntent();
 			
@@ -1194,6 +1225,13 @@ public class CurrentConditionsActivity extends Activity {
 			}
 		}
 		
+		// Show or hide social icons
+		if(sharingEnabled()) {
+			showSocialIcons();
+		} else {
+			hideSocialIcons();
+		}
+		
 		// Set the initial state: Sunny, no wind
 		// Or guess from pressure data
 		//condition.setGeneral_condition(getString(R.string.sunny));
@@ -1205,7 +1243,27 @@ public class CurrentConditionsActivity extends Activity {
 		//condition.setWindy(0 + "");
 	}
 	
+	private void showSocialIcons() {
+		buttonTwitter.setVisibility(View.VISIBLE);
+		
+		if(socialAssumed()) {
+			turnSocialOn();
+		} else {
+			turnSocialOff();
+		}
+	}
 	
+	private void hideSocialIcons() { 
+		buttonTwitter.setVisibility(View.GONE);
+	}
+	
+	private void turnSocialOn() {
+		buttonTwitter.setImageResource(R.drawable.ic_wea_on_sun);
+	}
+	
+	private void turnSocialOff() {
+		buttonTwitter.setImageResource(R.drawable.ic_wea_sun);
+	}
 	
 	@Override
 	protected void onDestroy() {
