@@ -400,7 +400,7 @@ public class BarometerNetworkActivity extends Activity implements
 			// Toast.makeText(getApplicationContext(), "Location not found",
 			// Toast.LENGTH_SHORT).show();
 			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-			buttonMyLocation.setImageAlpha(100);
+			// buttonMyLocation.setImageAlpha(100);
 			locationAvailable = false;
 		}
 	}
