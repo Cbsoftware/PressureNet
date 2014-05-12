@@ -86,7 +86,17 @@ public class WhatsNewActivity extends Activity {
 		setTitle("pressureNET " + versionName);
 		
 		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", true));
+		SharedPreferences settings = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
 
+		SharedPreferences.Editor editor = settings.edit();
+		if(checkReceiveConditionNotifications.isChecked()) {
+			editor.putBoolean("send_condition_notifications",true); 
+		} else {
+			editor.putBoolean("send_condition_notifications",false);
+		}
+		editor.commit(); 
+		
 		
 		checkReceiveConditionNotifications
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
