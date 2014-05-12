@@ -146,6 +146,7 @@ public class WidgetButtonService extends Service {
 			case CbService.MSG_LOCAL_RECENTS:
 				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
 				RemoteViews remoteView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.small_widget_layout);
+				CbObservation mostRecent = new CbObservation();
 				if(recents == null) {
 					break;
 				}
@@ -158,6 +159,7 @@ public class WidgetButtonService extends Service {
 				}
 				try {
 					mReading = recents.get(recents.size() - 1).getObservationValue();
+					mostRecent = recents.get(recents.size() - 1);
 				} catch (NullPointerException npe ) {
 					break;
 				}
@@ -190,6 +192,11 @@ public class WidgetButtonService extends Service {
 			    		String abbrev = settings.getString("units", "mbar"); 
 			    		mUnit = new PressureUnit(abbrev);
 			    		double val = Double.valueOf(message);
+			    		
+			    		if(settings.getBoolean("mslp", false)) {
+			    			val = CbScience.estimateMSLP(val, mostRecent.getLocation().getAltitude(), 15);
+			    		}
+			    		
 			    		mUnit.setValue(val);
 			    		String toPrint = mUnit.getDisplayText();
 			    		toPrint = toPrint.replace(" ", "\n");
