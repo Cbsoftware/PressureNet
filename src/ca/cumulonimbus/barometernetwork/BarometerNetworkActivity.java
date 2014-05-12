@@ -3703,10 +3703,19 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
 		if (hasBarometer) {
-			String toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
+			String toPrint = "";
+			if(bestLocation!=null) {
+				toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
+			} else {
+				toPrint = displayPressureValue(recentPressureReading, 0);
+			}
 			if (toPrint.length() > 2) {
 				DecimalFormat df = new DecimalFormat("##");
-				buttonBarometer.setText(displayPressureValue(recentPressureReading, bestLocation.getAltitude()));
+				if(bestLocation!=null) {
+					buttonBarometer.setText(displayPressureValue(recentPressureReading, bestLocation.getAltitude()));
+				} else {
+					buttonBarometer.setText(displayPressureValue(recentPressureReading, 0));
+				}
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()

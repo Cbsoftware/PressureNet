@@ -42,6 +42,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -113,7 +114,7 @@ public class CurrentConditionsActivity extends Activity {
 	private ImageView imageHrWindy;
 	
 	
-	private ScrollView scrollGeneral;
+	private HorizontalScrollView scrollGeneral;
 	private ScrollView scrollWind;
 	private ScrollView scrollPrecipitation;
 	private ScrollView scrollPrecipitationAmount;
@@ -146,6 +147,9 @@ public class CurrentConditionsActivity extends Activity {
 	static final int REQUEST_IMAGE_CAPTURE = 1;
 	
 	private boolean shareToTwitter = false;
+	
+	private boolean precipStateSelected = false;
+	private boolean extremeStateSelected = false;
 	
 	private boolean sharingEnabled() {
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -421,6 +425,8 @@ public class CurrentConditionsActivity extends Activity {
     		hrExtreme.setVisibility(View.GONE);
     		layoutExtreme.setVisibility(View.GONE);
     		textExtremeDescription.setVisibility(View.GONE);
+        	// And enable the submit button
+        	buttonSendCondition.setEnabled(true);
     		
     		this.condition.setGeneral_condition(getString(R.string.sunny));
     	} else if(condition.equals(getString(R.string.foggy))) {
@@ -444,6 +450,8 @@ public class CurrentConditionsActivity extends Activity {
     		hrExtreme.setVisibility(View.GONE);
     		layoutExtreme.setVisibility(View.GONE);
     		textExtremeDescription.setVisibility(View.GONE);
+        	// And enable the submit button
+        	buttonSendCondition.setEnabled(true);
     		
     		this.condition.setGeneral_condition(getString(R.string.foggy));
     		this.condition.setFog_thickness(getString(R.string.light_fog));
@@ -469,6 +477,9 @@ public class CurrentConditionsActivity extends Activity {
     		layoutExtreme.setVisibility(View.GONE);
     		textExtremeDescription.setVisibility(View.GONE);
     		
+        	// And enable the submit button
+        	buttonSendCondition.setEnabled(true);
+    		
     		this.condition.setGeneral_condition(getString(R.string.cloudy));
     		this.condition.setCloud_type(getString(R.string.mostly_cloudy));
     	} else if(condition.equals(getString(R.string.precipitation))) {
@@ -490,9 +501,14 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		
-    		hrExtreme.setVisibility(View.GONE);
-    		layoutExtreme.setVisibility(View.GONE);
-    		textExtremeDescription.setVisibility(View.GONE);
+        	// And disable the submit button
+    		if(!precipStateSelected) {
+    			buttonSendCondition.setEnabled(false);
+    		}
+    		
+    		//hrExtreme.setVisibility(View.GONE);
+    		//layoutExtreme.setVisibility(View.GONE);
+    		//textExtremeDescription.setVisibility(View.GONE);
     		
     		this.condition.setGeneral_condition(getString(R.string.precipitation));
     		this.condition.setPrecipitation_type(getString(R.string.rain));
@@ -514,6 +530,9 @@ public class CurrentConditionsActivity extends Activity {
     		layoutExtreme.setVisibility(View.GONE);
     		textExtremeDescription.setVisibility(View.GONE);
     		
+        	// And enable the submit button
+        	buttonSendCondition.setEnabled(true);
+    		
     		this.condition.setGeneral_condition(getString(R.string.thunderstorm));
     		this.condition.setThunderstorm_intensity(getString(R.string.infrequentLightning));
     	} else if(condition.equals(getString(R.string.extreme))) {
@@ -532,6 +551,11 @@ public class CurrentConditionsActivity extends Activity {
     		textExtremeDescription.setVisibility(View.VISIBLE);
     		hrExtreme.setVisibility(View.VISIBLE);
 
+    		if(!extremeStateSelected) {
+    			// And disable the submit button
+    			buttonSendCondition.setEnabled(false);
+    		}
+        	
     		this.condition.setGeneral_condition(getString(R.string.extreme));
     	}
     	
@@ -540,8 +564,6 @@ public class CurrentConditionsActivity extends Activity {
     	// Whichever one is chosen, show windy
     	//scrollWind.setVisibility(View.VISIBLE);
     	textWindyDescription.setVisibility(View.VISIBLE);
-    	// And enable the submit button
-    	buttonSendCondition.setEnabled(true);
     }
 
     /**
@@ -577,6 +599,9 @@ public class CurrentConditionsActivity extends Activity {
     	buttonFlooding.setImageResource(R.drawable.ic_wea_flooding);
     	buttonDuststorm.setImageResource(R.drawable.ic_wea_dust);
     	
+    	// And enable the submit button
+    	buttonSendCondition.setEnabled(true);
+    	extremeStateSelected = true;
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.flooding))) {
@@ -637,6 +662,8 @@ public class CurrentConditionsActivity extends Activity {
     		buttonHeavyPrecip.setImageResource(R.drawable.ic_wea_hail3);
     	}
     	
+    	precipStateSelected = true;
+    	
     	double value = 0.0;
 		String printValue = "Minimal " + condition.getPrecipitation_type();
 		switchActivePrecipitationAmount("low");
@@ -679,7 +706,8 @@ public class CurrentConditionsActivity extends Activity {
     	buttonSnow.setImageResource(R.drawable.ic_wea_snow3);
     	buttonHail.setImageResource(R.drawable.ic_wea_hail3);
     	
-    	
+    	// And enable the submit button
+    	buttonSendCondition.setEnabled(true);
     	
     	// Turn the new one on
     	if(precipCondition.equals(getString(R.string.rain))) {
@@ -873,7 +901,7 @@ public class CurrentConditionsActivity extends Activity {
 		textFoggyDescription = (TextView) findViewById(R.id.foggyDescription);
 		textExtremeDescription = (TextView) findViewById(R.id.extremeDescription);
 		
-		scrollGeneral = (ScrollView) findViewById(R.id.scrollGeneralCondition);
+		scrollGeneral = (HorizontalScrollView) findViewById(R.id.scrollGeneralCondition);
 		//scrollWind = (ScrollView) findViewById(R.id.scrollWindy);
 		scrollPrecipitation = (ScrollView) findViewById(R.id.scrollPrecip);
 		scrollPrecipitationAmount = (ScrollView) findViewById(R.id.scrollPrecipAmount);

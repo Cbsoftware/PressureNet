@@ -8,10 +8,11 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <ScrollView
+        <HorizontalScrollView
             android:id="@+id/scrollGeneralCondition"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:scrollbars="none" >
 
             <LinearLayout
                 android:id="@+id/layoutGeneral"
@@ -68,7 +69,7 @@
                     android:src="@drawable/ic_wea_severe"
                     android:text="@string/extreme" />
             </LinearLayout>
-        </ScrollView>
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/generalDescription"
@@ -500,7 +501,8 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_wea_twitter"
                 android:text="Twitter"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:layout_weight=".33" />
             
             <Button
                 android:id="@+id/buttonCancelCondition"
@@ -509,7 +511,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.33"
                 android:text="@string/cancel_condition" />
-
+        	
             <Button
                 android:id="@+id/buttonSendCondition"
                 style="?android:attr/buttonBarButtonStyle"
