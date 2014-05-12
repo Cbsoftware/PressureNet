@@ -150,6 +150,7 @@ public class CurrentConditionsActivity extends Activity {
 	
 	private boolean precipStateSelected = false;
 	private boolean extremeStateSelected = false;
+	private boolean lightningStateSelected = false;
 	
 	private boolean sharingEnabled() {
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -409,9 +410,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
-    		scrollLightning.setVisibility(View.GONE);
-    		textLightningDescription.setVisibility(View.GONE);
-    		imageHrLightning.setVisibility(View.GONE);
+
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
     		imageHrPrecipitationAmount.setVisibility(View.GONE);
@@ -421,6 +420,12 @@ public class CurrentConditionsActivity extends Activity {
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
+    		
+    		if(!lightningStateSelected) {
+    			scrollLightning.setVisibility(View.GONE);
+    			textLightningDescription.setVisibility(View.GONE);
+    			imageHrLightning.setVisibility(View.GONE);
+    		}
 
     		hrExtreme.setVisibility(View.GONE);
     		layoutExtreme.setVisibility(View.GONE);
@@ -434,9 +439,11 @@ public class CurrentConditionsActivity extends Activity {
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
-    		scrollLightning.setVisibility(View.GONE);
-    		textLightningDescription.setVisibility(View.GONE);
-    		imageHrLightning.setVisibility(View.GONE);
+    		if(!lightningStateSelected) {
+    			scrollLightning.setVisibility(View.GONE);
+    			textLightningDescription.setVisibility(View.GONE);
+    			imageHrLightning.setVisibility(View.GONE);
+    		}
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
     		imageHrPrecipitationAmount.setVisibility(View.GONE);
@@ -462,9 +469,11 @@ public class CurrentConditionsActivity extends Activity {
     		imageHrPrecipitation.setVisibility(View.GONE);
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
-    		imageHrPrecipitationAmount.setVisibility(View.GONE);
-    		scrollLightning.setVisibility(View.GONE);
-    		textLightningDescription.setVisibility(View.GONE);
+    		if(!lightningStateSelected) {
+    			scrollLightning.setVisibility(View.GONE);
+    			textLightningDescription.setVisibility(View.GONE);
+    			imageHrLightning.setVisibility(View.GONE);
+    		}
     		imageHrLightning.setVisibility(View.GONE);
     		textCloudyDescription.setVisibility(View.VISIBLE);
     		imageHrCloudy.setVisibility(View.VISIBLE);    		
@@ -491,10 +500,12 @@ public class CurrentConditionsActivity extends Activity {
     		imageHrCloudy.setVisibility(View.GONE);
     		scrollClouds.setVisibility(View.GONE);
     		buttonPrecipitation.setImageResource(R.drawable.ic_wea_on_precip);
-    		textLightningDescription.setVisibility(View.GONE);
-    		imageHrLightning.setVisibility(View.GONE);
+    		if(!lightningStateSelected) {
+    			scrollLightning.setVisibility(View.GONE);
+    			textLightningDescription.setVisibility(View.GONE);
+    			imageHrLightning.setVisibility(View.GONE);
+    		}
     		imageHrFoggy.setVisibility(View.GONE);
-    		scrollLightning.setVisibility(View.GONE);
     		// Precipitation initialization
     		// buttonRain.setImageResource(R.drawable.ic_on_rain3);
     		// textPrecipitationDescription.setText(getString(R.string.rain));
@@ -536,9 +547,11 @@ public class CurrentConditionsActivity extends Activity {
     		this.condition.setGeneral_condition(getString(R.string.thunderstorm));
     		this.condition.setThunderstorm_intensity(getString(R.string.infrequentLightning));
     	} else if(condition.equals(getString(R.string.extreme))) {
-    		scrollLightning.setVisibility(View.GONE);
-    		textLightningDescription.setVisibility(View.GONE);
-    		imageHrLightning.setVisibility(View.GONE);
+    		if(!lightningStateSelected) {
+    			scrollLightning.setVisibility(View.GONE);
+    			textLightningDescription.setVisibility(View.GONE);
+    			imageHrLightning.setVisibility(View.GONE);
+    		}
     		buttonExtreme.setImageResource(R.drawable.ic_wea_on_severe);
     		textCloudyDescription.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
@@ -790,6 +803,8 @@ public class CurrentConditionsActivity extends Activity {
     	buttonFrequentLightning.setImageResource(R.drawable.ic_wea_lightning2);
     	buttonHeavyLightning.setImageResource(R.drawable.ic_wea_lightning3);
 
+    	
+    	lightningStateSelected = true;
     	
     	// Turn the new one on
     	if(value.equals(getString(R.string.infrequentLightning))) {
