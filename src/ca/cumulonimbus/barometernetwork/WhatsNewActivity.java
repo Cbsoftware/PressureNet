@@ -1,20 +1,24 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.net.URLEncoder;
+import java.util.List;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -24,8 +28,8 @@ public class WhatsNewActivity extends Activity {
 
 	TextView pressureNETVersion;
 	Button done;
-	Spinner freq;
 	CheckBox checkReceiveConditionNotifications;
+	CheckBox checkEnableSocial;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,28 +37,45 @@ public class WhatsNewActivity extends Activity {
 		setContentView(R.layout.whats_new);
 		String versionName = "";
 		done = (Button) findViewById(R.id.buttonDone);
-		freq = (Spinner) findViewById(R.id.spinnerNotificationFrequency);
 		checkReceiveConditionNotifications = (CheckBox) findViewById(R.id.checkReceiveConditionNotifications);
+		checkEnableSocial = (CheckBox) findViewById(R.id.checkEnableSocial);
 
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
 
-		ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter
-				.createFromResource(this, R.array.condition_refresh_frequency,
-						android.R.layout.simple_spinner_item);
-		adapterSharing
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		freq.setAdapter(adapterSharing);
-		String[] timeArray = getResources().getStringArray(
-				R.array.condition_refresh_frequency_values);
-		String time = prefs.getString("condition_refresh_frequency", "1 hour");
-		int positionTime = 0;
-		for (int i = 0; i < timeArray.length; i++) {
-			if (timeArray[i].equals(time)) {
-				positionTime = i;
+		PackageManager pkManager = getPackageManager();
+		try {
+			boolean twitterInstalled = false;
+			String tweetUrl = 
+				    String.format("https://twitter.com/intent/tweet?text=%s&url=%s",
+				        URLEncoder.encode(""), URLEncoder.encode("https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork"));
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
+			List<ResolveInfo> matches = getPackageManager().queryIntentActivities(intent, 0);
+			for (ResolveInfo info : matches) {
+			    if (info.activityInfo.packageName.toLowerCase().startsWith("com.twitter")) {
+			        intent.setPackage(info.activityInfo.packageName);
+			        twitterInstalled = true;
+			    }
 			}
+
+		    if (twitterInstalled)   {
+		    	System.out.println("twitter installed");
+		    	checkEnableSocial.setChecked(true);
+		    	SharedPreferences.Editor editor =  prefs.edit();
+		    	editor.putBoolean("enable_social", true);
+		    	editor.commit();
+		    	
+		    } else {
+		    	System.out.println("twitter not installed");
+		    	checkEnableSocial.setChecked(false);
+		    	SharedPreferences.Editor editor =  prefs.edit();
+		    	editor.putBoolean("enable_social", false);
+		    	editor.commit();
+		    }
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		freq.setSelection(positionTime);
+		
 
 		try {
 			versionName = this.getPackageManager().getPackageInfo(
@@ -65,11 +86,7 @@ public class WhatsNewActivity extends Activity {
 		setTitle("pressureNET " + versionName);
 		
 		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", true));
-		if(checkReceiveConditionNotifications.isChecked()) {
-			freq.setEnabled(true);
-		} else {
-			freq.setEnabled(false);
-		}
+
 		
 		checkReceiveConditionNotifications
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -82,10 +99,8 @@ public class WhatsNewActivity extends Activity {
 
 						SharedPreferences.Editor editor = settings.edit();
 						if(isChecked) {
-							freq.setEnabled(true);
 							editor.putBoolean("send_condition_notifications",true); 
 						} else {
-							freq.setEnabled(false);
 							editor.putBoolean("send_condition_notifications",false);
 						}
 						editor.commit(); 
@@ -98,31 +113,28 @@ public class WhatsNewActivity extends Activity {
 					}
 				});
 		
-		freq.setOnItemSelectedListener(new OnItemSelectedListener() {
+		checkEnableSocial.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int position, long id) {
-				String text = freq.getSelectedItem().toString();
-				
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
 				SharedPreferences settings = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
 
 				SharedPreferences.Editor editor = settings.edit();
-				editor.putString("condition_refresh_frequency",text);
+				if(isChecked) {
+					editor.putBoolean("enable_social",true); 
+				} else {
+					editor.putBoolean("enable_social",false);
+				}
 				editor.commit(); 
+				long check = isChecked ? 1 : 0; 
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						"whats_new_conditions_notifications_freq", 
-						text, null).build());
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"enable_social", 
+						 check).build());
 			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				
-				
-			}
-		
 		});
 
 		done.setOnClickListener(new OnClickListener() {
