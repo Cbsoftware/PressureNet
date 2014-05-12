@@ -267,7 +267,7 @@ public class NotificationSender extends BroadcastReceiver {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning2;
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) {
-			initial = "extreme";
+			initial = "severe";
 			icon = R.drawable.ic_wea_on_severe;
 			if(condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
 				icon = R.drawable.ic_wea_on_flooding;

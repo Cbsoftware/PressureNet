@@ -1380,6 +1380,8 @@ public class CurrentConditionsActivity extends Activity {
 				buttonPrecipitation.performClick();
 			} else if(state.equals("thunderstorm")) {
 				buttonThunderstorm.performClick();
+			} else if(state.equals("severe")) {
+				buttonExtreme.performClick();
 			}
 			updateWidget();
 			if(getIntent().hasExtra("from_widget")) {

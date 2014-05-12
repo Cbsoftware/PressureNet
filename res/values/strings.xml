@@ -145,7 +145,7 @@
     <string name="wildfire">Wildfire</string>
     <string name="tropicalstorm">Tropical storm</string>
     <string name="tornado">Tornado</string>
-    <string name="extreme">Extreme</string>
+    <string name="extreme">Severe</string>
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">pressureNET Data</string>
     <string name="locationName">Location Name</string>
