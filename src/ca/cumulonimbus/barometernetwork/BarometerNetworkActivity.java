@@ -2975,8 +2975,44 @@ public class BarometerNetworkActivity extends Activity implements
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			}
-		} else {
-
+		} else if (condition.getGeneral_condition().equals(
+				getString(R.string.extreme))) {
+			if (condition.getUser_comment().equals(getString(R.string.flooding))) {
+				Drawable floodingDrawable = this.getResources()
+						.getDrawable(R.drawable.ic_wea_col_flooding);
+				Drawable[] layers = { weatherBackgroundDrawable,
+						resizeDrawable(floodingDrawable) };
+				LayerDrawable layerDrawable = new LayerDrawable(layers);
+				return layerDrawable;
+			} else if (condition.getUser_comment().equals(getString(R.string.wildfire))) {
+				Drawable fireDrawable = this.getResources()
+						.getDrawable(R.drawable.ic_wea_col_fire);
+				Drawable[] layers = { weatherBackgroundDrawable,
+						resizeDrawable(fireDrawable) };
+				LayerDrawable layerDrawable = new LayerDrawable(layers);
+				return layerDrawable;
+			} else if (condition.getUser_comment().equals(getString(R.string.tornado))) {
+				Drawable tornadoDrawable = this.getResources()
+						.getDrawable(R.drawable.ic_wea_col_tornado);
+				Drawable[] layers = { weatherBackgroundDrawable,
+						resizeDrawable(tornadoDrawable) };
+				LayerDrawable layerDrawable = new LayerDrawable(layers);
+				return layerDrawable;
+			} else if (condition.getUser_comment().equals(getString(R.string.duststorm))) {
+				Drawable dustDrawable = this.getResources()
+						.getDrawable(R.drawable.ic_wea_col_dust);
+				Drawable[] layers = { weatherBackgroundDrawable,
+						resizeDrawable(dustDrawable) };
+				LayerDrawable layerDrawable = new LayerDrawable(layers);
+				return layerDrawable;
+			} else if (condition.getUser_comment().equals(getString(R.string.tropicalstorm))) {
+				Drawable tropicalDrawable = this.getResources()
+						.getDrawable(R.drawable.ic_wea_col_tropical_storm);
+				Drawable[] layers = { weatherBackgroundDrawable,
+						resizeDrawable(tropicalDrawable) };
+				LayerDrawable layerDrawable = new LayerDrawable(layers);
+				return layerDrawable;
+			}
 		}
 
 		return null;
