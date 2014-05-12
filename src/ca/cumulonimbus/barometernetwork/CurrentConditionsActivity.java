@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,10 +24,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -39,9 +42,9 @@ import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,6 +87,14 @@ public class CurrentConditionsActivity extends Activity {
 	private ImageButton buttonHeavyFog;
 	private ImageButton buttonTwitter;
 	
+	private ImageButton buttonExtreme;
+	private ImageButton buttonFlooding;
+	private ImageButton buttonFire;
+	private ImageButton buttonTornado;
+	private ImageButton buttonTropicalStorm;
+	private ImageButton buttonDuststorm;
+	
+	
 	private TextView textGeneralDescription;
 	private TextView textWindyDescription;
 	private TextView textPrecipitationDescription;
@@ -91,6 +102,7 @@ public class CurrentConditionsActivity extends Activity {
 	private TextView textLightningDescription;
 	private TextView textCloudyDescription;
 	private TextView textFoggyDescription;
+	private TextView textExtremeDescription;
 	
 	private ImageView imageHrGeneral;
 	private ImageView imageHrPrecipitation;
@@ -108,6 +120,9 @@ public class CurrentConditionsActivity extends Activity {
 	private ScrollView scrollLightning;
 	private ScrollView scrollClouds;
 	private ScrollView scrollFoggy;
+	private LinearLayout layoutExtreme;
+	
+	private ImageView hrExtreme;
 	
 	// private CheckBox addPhoto;
 	
@@ -382,7 +397,7 @@ public class CurrentConditionsActivity extends Activity {
     	buttonCloudy.setImageResource(R.drawable.ic_wea_cloud);
     	buttonPrecipitation.setImageResource(R.drawable.ic_wea_precip);
     	buttonThunderstorm.setImageResource(R.drawable.ic_wea_r_l0);
-    	
+    	buttonExtreme.setImageResource(R.drawable.ic_wea_severe);    	
     	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.sunny))) {
@@ -402,6 +417,10 @@ public class CurrentConditionsActivity extends Activity {
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
     		imageHrCloudy.setVisibility(View.GONE);
+
+    		hrExtreme.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+    		textExtremeDescription.setVisibility(View.GONE);
     		
     		this.condition.setGeneral_condition(getString(R.string.sunny));
     	} else if(condition.equals(getString(R.string.foggy))) {
@@ -422,6 +441,10 @@ public class CurrentConditionsActivity extends Activity {
     		imageHrFoggy.setVisibility(View.VISIBLE);
     		imageHrCloudy.setVisibility(View.GONE);
     		
+    		hrExtreme.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+    		textExtremeDescription.setVisibility(View.GONE);
+    		
     		this.condition.setGeneral_condition(getString(R.string.foggy));
     		this.condition.setFog_thickness(getString(R.string.light_fog));
     	} else if(condition.equals(getString(R.string.cloudy))) {
@@ -441,6 +464,10 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
+    		
+    		hrExtreme.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+    		textExtremeDescription.setVisibility(View.GONE);
     		
     		this.condition.setGeneral_condition(getString(R.string.cloudy));
     		this.condition.setCloud_type(getString(R.string.mostly_cloudy));
@@ -463,6 +490,10 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		
+    		hrExtreme.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+    		textExtremeDescription.setVisibility(View.GONE);
+    		
     		this.condition.setGeneral_condition(getString(R.string.precipitation));
     		this.condition.setPrecipitation_type(getString(R.string.rain));
     		this.condition.setPrecipitation_amount(0);
@@ -477,13 +508,37 @@ public class CurrentConditionsActivity extends Activity {
     		scrollFoggy.setVisibility(View.GONE);
     		textFoggyDescription.setVisibility(View.GONE);
     		imageHrFoggy.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+
+    		hrExtreme.setVisibility(View.GONE);
+    		layoutExtreme.setVisibility(View.GONE);
+    		textExtremeDescription.setVisibility(View.GONE);
     		
     		this.condition.setGeneral_condition(getString(R.string.thunderstorm));
     		this.condition.setThunderstorm_intensity(getString(R.string.infrequentLightning));
+    	} else if(condition.equals(getString(R.string.extreme))) {
+    		scrollLightning.setVisibility(View.GONE);
+    		textLightningDescription.setVisibility(View.GONE);
+    		imageHrLightning.setVisibility(View.GONE);
+    		buttonExtreme.setImageResource(R.drawable.ic_wea_on_severe);
+    		textCloudyDescription.setVisibility(View.GONE);
+    		imageHrCloudy.setVisibility(View.GONE);
+    		scrollClouds.setVisibility(View.GONE);
+    		scrollFoggy.setVisibility(View.GONE);
+    		textFoggyDescription.setVisibility(View.GONE);
+    		imageHrFoggy.setVisibility(View.GONE);
+    		
+    		layoutExtreme.setVisibility(View.VISIBLE);
+    		textExtremeDescription.setVisibility(View.VISIBLE);
+    		hrExtreme.setVisibility(View.VISIBLE);
+
+    		this.condition.setGeneral_condition(getString(R.string.extreme));
     	}
     	
+    	
+    	
     	// Whichever one is chosen, show windy
-    	scrollWind.setVisibility(View.VISIBLE);
+    	//scrollWind.setVisibility(View.VISIBLE);
     	textWindyDescription.setVisibility(View.VISIBLE);
     	// And enable the submit button
     	buttonSendCondition.setEnabled(true);
@@ -507,6 +562,34 @@ public class CurrentConditionsActivity extends Activity {
     		buttonModerateFog.setImageResource(R.drawable.ic_wea_on_fog2);
     	} else if(foggy.equals(getString(R.string.heavy_fog))) {
     		buttonHeavyFog.setImageResource(R.drawable.ic_wea_on_fog3);
+    	} 
+    }
+    
+    /**
+     * Change the buttons on the UI. Extreme
+     * @param condition
+     */
+    private void switchActiveExtreme(String condition) {
+    	// Turn everything off
+    	buttonTornado.setImageResource(R.drawable.ic_wea_tornado);
+    	buttonTropicalStorm.setImageResource(R.drawable.ic_wea_tropical_storm);
+    	buttonFire.setImageResource(R.drawable.ic_wea_fire);
+    	buttonFlooding.setImageResource(R.drawable.ic_wea_flooding);
+    	buttonDuststorm.setImageResource(R.drawable.ic_wea_dust);
+    	
+    	
+    	
+    	// Turn the new one on
+    	if(condition.equals(getString(R.string.flooding))) {
+    		buttonFlooding.setImageResource(R.drawable.ic_wea_on_flooding);
+    	} else if(condition.equals(getString(R.string.wildfire))) {
+    		buttonFire.setImageResource(R.drawable.ic_wea_on_fire);
+    	} else if(condition.equals(getString(R.string.tornado))) {
+    		buttonTornado.setImageResource(R.drawable.ic_wea_on_tornado);
+    	} else if(condition.equals(getString(R.string.duststorm))) {
+    		buttonDuststorm.setImageResource(R.drawable.ic_wea_on_dust);
+    	} else if(condition.equals(getString(R.string.tropicalstorm))) {
+    		buttonTropicalStorm.setImageResource(R.drawable.ic_wea_on_tropical_storm);
     	} 
     }
     
@@ -764,6 +847,15 @@ public class CurrentConditionsActivity extends Activity {
 		buttonHeavyFog = (ImageButton) findViewById(R.id.buttonFoggy3);
 		buttonTwitter = (ImageButton) findViewById(R.id.buttonTwitter);
 		
+		buttonExtreme = (ImageButton) findViewById(R.id.buttonExtreme);
+		buttonTornado = (ImageButton) findViewById(R.id.buttonTornado);
+		buttonTropicalStorm = (ImageButton) findViewById(R.id.buttonTropicalStorm);
+		buttonFire = (ImageButton) findViewById(R.id.buttonWildfire);
+		buttonFlooding = (ImageButton) findViewById(R.id.buttonFlooding);
+		buttonDuststorm = (ImageButton) findViewById(R.id.buttonDuststorm);
+		
+		layoutExtreme = (LinearLayout) findViewById(R.id.layoutExtreme);
+		
 		imageHrGeneral = (ImageView) findViewById(R.id.hrGeneral);
 		imageHrPrecipitation = (ImageView) findViewById(R.id.hrPrecipitation);
 		imageHrFoggy = (ImageView) findViewById(R.id.hrFoggy);
@@ -780,16 +872,75 @@ public class CurrentConditionsActivity extends Activity {
 		textPrecipitationAmountDescription = (TextView) findViewById(R.id.precipitationAmountDescription);
 		textCloudyDescription = (TextView) findViewById(R.id.cloudyDescription);
 		textFoggyDescription = (TextView) findViewById(R.id.foggyDescription);
+		textExtremeDescription = (TextView) findViewById(R.id.extremeDescription);
 		
 		scrollGeneral = (ScrollView) findViewById(R.id.scrollGeneralCondition);
-		scrollWind = (ScrollView) findViewById(R.id.scrollWindy);
+		//scrollWind = (ScrollView) findViewById(R.id.scrollWindy);
 		scrollPrecipitation = (ScrollView) findViewById(R.id.scrollPrecip);
 		scrollPrecipitationAmount = (ScrollView) findViewById(R.id.scrollPrecipAmount);
 		scrollLightning = (ScrollView) findViewById(R.id.scrollLightning);
 		scrollClouds = (ScrollView) findViewById(R.id.scrollClouds);
 		scrollFoggy = (ScrollView) findViewById(R.id.scrollFog);
 		
+		hrExtreme = (ImageView) findViewById(R.id.hrExtreme);
+		
 		// addPhoto = (CheckBox) findViewById(R.id.checkAddPhoto);
+			
+		buttonDuststorm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.duststorm);
+				switchActiveExtreme(value);
+				condition.setUser_comment(value);
+				textExtremeDescription.setText(value);
+			}
+		});
+		
+		
+		buttonFlooding.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.flooding);
+				switchActiveExtreme(value);
+				condition.setUser_comment(value);
+				textExtremeDescription.setText(value);
+			}
+		});
+		
+		buttonFire.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.wildfire);
+				switchActiveExtreme(value);
+				condition.setUser_comment(value);
+				textExtremeDescription.setText(value);
+			}
+		});
+		
+		buttonTropicalStorm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.tropicalstorm);
+				switchActiveExtreme(value);
+				condition.setUser_comment(value);
+				textExtremeDescription.setText(value);
+			}
+		});
+		
+		buttonTornado.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value = getString(R.string.tornado);
+				switchActiveExtreme(value);
+				condition.setUser_comment(value);
+				textExtremeDescription.setText(value);
+			}
+		});
 		
 		buttonSendCondition.setOnClickListener(new OnClickListener() {
 			@Override
@@ -819,6 +970,14 @@ public class CurrentConditionsActivity extends Activity {
 				/*if(addPhoto.isChecked()) {
 					dispatchTakePictureIntent();
 				} */
+				
+				// send to twitter?
+				if(shareToTwitter) {
+					sendTwitterIntent();
+					
+				} else {
+					log("current conditions not sharing to twitter");
+				}
 				
 				finish();
 				
@@ -886,6 +1045,17 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				String value = getString(R.string.thunderstorm);
+				switchActiveGeneral(value);
+				condition.setGeneral_condition(value);
+				textGeneralDescription.setText(value);
+			}
+		});
+		
+		buttonExtreme.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String value =  getString(R.string.extreme);
 				switchActiveGeneral(value);
 				condition.setGeneral_condition(value);
 				textGeneralDescription.setText(value);
@@ -1243,6 +1413,46 @@ public class CurrentConditionsActivity extends Activity {
 		//condition.setWindy(0 + "");
 	}
 	
+	private void sendTwitterIntent() {
+		log("current conditions sharing to twitter");
+
+		String twitterCondition = "";
+		String tweet = "";
+		if(condition.getGeneral_condition().equals(getString(R.string.rain))) {
+			twitterCondition = "raining";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
+			twitterCondition = "cloudy";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
+			twitterCondition = "foggy";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.thunderstorm))) {
+			twitterCondition = "thunderstorming";
+		} else if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
+			twitterCondition = "clear";
+		} 
+		
+		if(condition.getGeneral_condition().equals("Extreme")) {
+			tweet = "#" + condition.getUser_comment() + " near me, what's it like where you are? #PressureNet ";
+		} else {
+			tweet = "It's #" + twitterCondition + " near me, what's it like where you are? #PressureNet ";
+		}
+		
+		
+		String tweetUrl = 
+		    String.format("https://twitter.com/intent/tweet?text=%s&url=%s",
+		        URLEncoder.encode(tweet), URLEncoder.encode("https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork"));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
+
+		// Narrow down to official Twitter app, if available:
+		List<ResolveInfo> matches = getPackageManager().queryIntentActivities(intent, 0);
+		for (ResolveInfo info : matches) {
+		    if (info.activityInfo.packageName.toLowerCase().startsWith("com.twitter")) {
+		        intent.setPackage(info.activityInfo.packageName);
+		    }
+		}
+
+		startActivity(intent);
+	}
+	
 	private void showSocialIcons() {
 		buttonTwitter.setVisibility(View.VISIBLE);
 		
@@ -1258,11 +1468,13 @@ public class CurrentConditionsActivity extends Activity {
 	}
 	
 	private void turnSocialOn() {
-		buttonTwitter.setImageResource(R.drawable.ic_wea_on_sun);
+		shareToTwitter = true;
+		buttonTwitter.setImageResource(R.drawable.ic_wea_on_twitter);
 	}
 	
 	private void turnSocialOff() {
-		buttonTwitter.setImageResource(R.drawable.ic_wea_sun);
+		shareToTwitter = false;
+		buttonTwitter.setImageResource(R.drawable.ic_wea_twitter);
 	}
 	
 	@Override

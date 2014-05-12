@@ -140,6 +140,12 @@
     <string name="light_fog">Light Fog</string>
     <string name="moderate_fog">Moderate Fog</string>
     <string name="heavy_fog">Heavy Fog</string>
+    <string name="flooding">Flooding</string>
+    <string name="duststorm">Dust storm</string>
+    <string name="wildfire">Wildfire</string>
+    <string name="tropicalstorm">Tropical storm</string>
+    <string name="tornado">Tornado</string>
+    <string name="extreme">Extreme</string>
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">pressureNET Data</string>
     <string name="locationName">Location Name</string>

@@ -67,23 +67,35 @@
             android:entryValues="@array/default_units"
             android:key="units"
             android:title="Pressure unit" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="mslp"
-            android:summary="Estimate MSLP adjustment"
-            android:title="Mean Sea-Level Pressure" />
-        <ListPreference
-            android:defaultValue="Meters (m)"
-            android:entries="@array/distance_units"
-            android:entryValues="@array/distance_units"
-            android:key="distance_units"
-            android:title="Distance unit" />
         <ListPreference
             android:defaultValue="Celsius (°C)"
             android:entries="@array/temperature_units"
             android:entryValues="@array/temperature_units"
             android:key="temperature_units"
             android:title="Temperature unit" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="mslp_settings"
+        android:title="Mean Sea-Level Pressure" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="mslp"
+            android:summary="Estimate MSLP adjustment"
+            android:title="Mean Sea-Level Pressure" />
+<!-- 
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="manual_elevation"
+            android:summary="Override GPS elevation"
+            android:title="Use Manual Elevation" />
+        <EditTextPreference
+            android:key="elevation_in_m"
+            android:defaultValue="0"
+            android:summary="Elevation in Meters"
+            android:title="Elevation"
+            android:dialogTitle="Elevation (m)"
+            android:inputType="number" />
+             -->
     </PreferenceCategory>
     <PreferenceCategory
         android:key="social_prefs"

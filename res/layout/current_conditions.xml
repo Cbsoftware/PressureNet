@@ -59,6 +59,14 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_wea_r_l0"
                     android:text="@string/thunderstorm" />
+                
+                <ImageButton
+                    android:id="@+id/buttonExtreme"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_wea_severe"
+                    android:text="Extreme" />
             </LinearLayout>
         </ScrollView>
 
@@ -357,58 +365,51 @@
             android:src="@drawable/bg_hr"
             android:visibility="gone" />
 
-        <ScrollView
-            android:id="@+id/scrollWindy"
-            android:layout_width="fill_parent"
+        <LinearLayout
+            android:id="@+id/layoutWindy"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" >
+            android:gravity="center" >
 
-            <LinearLayout
-                android:id="@+id/layoutWindy"
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/buttonIsCalm"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center" >
+                android:src="@drawable/ic_wea_wind0"
+                android:text="@string/calm" />
 
-                <ImageButton
-                    android:id="@+id/buttonIsCalm"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_wea_wind0"
-                    android:text="@string/calm" />
+            <ImageButton
+                android:id="@+id/buttonIsWindy1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_wind1"
+                android:text="@string/windyOne" />
 
-                <ImageButton
-                    android:id="@+id/buttonIsWindy1"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_wea_wind1"
-                    android:text="@string/windyOne" />
+            <ImageButton
+                android:id="@+id/buttonIsWindy2"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_wind2"
+                android:text="@string/windyTwo" />
 
-                <ImageButton
-                    android:id="@+id/buttonIsWindy2"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_wea_wind2"
-                    android:text="@string/windyTwo" />
-
-                <ImageButton
-                    android:id="@+id/buttonIsWindy3"
-                    style="?android:attr/buttonBarButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_wea_wind3"
-                    android:text="@string/windyThree" />
-            </LinearLayout>
-        </ScrollView>
+            <ImageButton
+                android:id="@+id/buttonIsWindy3"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_wind3"
+                android:text="@string/windyThree" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/windyDescription"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/hrWindy"
@@ -418,8 +419,74 @@
             android:padding="5dp"
             android:scaleType="fitXY"
             android:src="@drawable/bg_hr"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/layoutExtreme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="gone" >
+
+            <ImageButton
+                android:id="@+id/buttonFlooding"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_flooding"
+                android:text="@string/flooding" />
+
+            <ImageButton
+                android:id="@+id/buttonWildfire"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_fire"
+                android:text="@string/wildfire" />
+
+            <ImageButton
+                android:id="@+id/buttonTornado"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_tornado"
+                android:text="@string/tornado" />
+
+            <ImageButton
+                android:id="@+id/buttonDuststorm"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_dust"
+                android:text="@string/duststorm" />
+            
+             <ImageButton
+                android:id="@+id/buttonTropicalStorm"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_wea_tropical_storm"
+                android:text="@string/tropicalstorm" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/extremeDescription"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:visibility="gone" />
 
+        <ImageView
+            android:id="@+id/hrExtreme"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/bg_hr"
+            android:visibility="gone" />
+        
+        
         <LinearLayout
             android:id="@+id/layoutFinish"
             android:layout_width="match_parent"
@@ -431,10 +498,10 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_wea_sun"
+                android:src="@drawable/ic_wea_twitter"
                 android:text="Twitter"
                 android:visibility="gone" />
-
+            
             <Button
                 android:id="@+id/buttonCancelCondition"
                 style="?android:attr/buttonBarButtonStyle"
