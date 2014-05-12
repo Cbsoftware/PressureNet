@@ -59,11 +59,12 @@ public class PnDb {
 
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 12; 
+	private static final int DATABASE_VERSION = 13; 
 	// TODO: fix this nonsense
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
 	// 10-12 = 4.3.0
+	// 13 = 4.4
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
