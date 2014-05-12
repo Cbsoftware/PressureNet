@@ -578,7 +578,6 @@ public class CurrentConditionsActivity extends Activity {
     	buttonDuststorm.setImageResource(R.drawable.ic_wea_dust);
     	
     	
-    	
     	// Turn the new one on
     	if(condition.equals(getString(R.string.flooding))) {
     		buttonFlooding.setImageResource(R.drawable.ic_wea_on_flooding);
@@ -1430,7 +1429,7 @@ public class CurrentConditionsActivity extends Activity {
 			twitterCondition = "clear";
 		} 
 		
-		if(condition.getGeneral_condition().equals("Extreme")) {
+		if(condition.getGeneral_condition().equals(getString(R.string.extreme))) {
 			tweet = "#" + condition.getUser_comment() + " near me, what's it like where you are? #PressureNet ";
 		} else {
 			tweet = "It's #" + twitterCondition + " near me, what's it like where you are? #PressureNet ";
