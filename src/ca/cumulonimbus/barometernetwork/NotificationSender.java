@@ -265,8 +265,27 @@ public class NotificationSender extends BroadcastReceiver {
 			
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
-			icon = R.drawable.ic_wea_on_lightning1;
-		}
+			icon = R.drawable.ic_wea_on_lightning2;
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) {
+			initial = "extreme";
+			icon = R.drawable.ic_wea_on_severe;
+			if(condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
+				icon = R.drawable.ic_wea_on_flooding;
+				politeReportText = "Flooding";
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.wildfire))) {
+				icon = R.drawable.ic_wea_on_fire;
+				politeReportText = "Wildfire";
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tornado))) {
+				icon = R.drawable.ic_wea_on_tornado;
+				politeReportText = "Tornado";
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.duststorm))) {
+				icon = R.drawable.ic_wea_on_dust;
+				politeReportText = "Duststorm";
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tropicalstorm))) {
+				icon = R.drawable.ic_wea_on_tropical_storm;
+				politeReportText = "Tropical storm";
+			}
+		} 
 	
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)

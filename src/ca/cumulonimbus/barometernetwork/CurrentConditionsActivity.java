@@ -156,7 +156,7 @@ public class CurrentConditionsActivity extends Activity {
 	private boolean socialAssumed() {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
-		return sharedPreferences.getBoolean("assume_social", true);
+		return sharedPreferences.getBoolean("assume_social", false);
 	}
 
 	private void dispatchTakePictureIntent() {
