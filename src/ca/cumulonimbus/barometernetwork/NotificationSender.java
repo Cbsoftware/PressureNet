@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 import com.google.analytics.tracking.android.EasyTracker;
@@ -199,12 +200,35 @@ public class NotificationSender extends BroadcastReceiver {
 				pn.open();
 				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
 				pn.close();
+			} else {
+				log("condition out for notification has no location, bailing");
+				//return;
 			}
 		} else {
 			return;
 		}
 			
 		String deliveryMessage = "What's it like outside?";
+		
+		// Current Conditions activity likes to know the location in the Intent
+		// Also needed for Haversine calculation
+		double notificationLatitude = 0.0;
+		double notificationLongitude = 0.0;
+		try {
+			LocationManager lm = (LocationManager) mContext
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (loc.getLatitude() != 0) {
+				notificationLatitude = loc.getLatitude();
+				notificationLongitude = loc.getLongitude();
+			}
+		} catch (Exception e) {
+
+		}
+		
+		log("haversine inputs: " + notificationLatitude + " " + notificationLongitude + " " + condition.getLat() + " " + condition.getLon());
+		double distance = CbScience.haversine(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
 		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
@@ -287,27 +311,15 @@ public class NotificationSender extends BroadcastReceiver {
 			}
 		} 
 	
+		DecimalFormat df = new DecimalFormat("##.#");
+		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle(politeReportText + " nearby").setContentText(deliveryMessage);
+				.setContentTitle(politeReportText + " " + df.format(distance) + "km away" ).setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
-		// Current Conditions activity likes to know the location in the Intent
-		double notificationLatitude = 0.0;
-		double notificationLongitude = 0.0;
-		try {
-			LocationManager lm = (LocationManager) mContext
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if (loc.getLatitude() != 0) {
-				notificationLatitude = loc.getLatitude();
-				notificationLongitude = loc.getLongitude();
-			}
-		} catch (Exception e) {
 
-		}
 		
 		resultIntent.putExtra("latitude", notificationLatitude);
 		resultIntent.putExtra("longitude", notificationLongitude);
