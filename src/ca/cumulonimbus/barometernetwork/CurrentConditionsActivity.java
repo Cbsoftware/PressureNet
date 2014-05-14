@@ -467,6 +467,7 @@ public class CurrentConditionsActivity extends Activity {
     		scrollPrecipitation.setVisibility(View.GONE);
     		textPrecipitationDescription.setVisibility(View.GONE);
     		imageHrPrecipitation.setVisibility(View.GONE);
+    		imageHrPrecipitationAmount.setVisibility(View.GONE);
     		scrollPrecipitationAmount.setVisibility(View.GONE);
     		textPrecipitationAmountDescription.setVisibility(View.GONE);
     		if(!lightningStateSelected) {
