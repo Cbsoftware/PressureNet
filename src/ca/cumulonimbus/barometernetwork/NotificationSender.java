@@ -229,6 +229,8 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		log("haversine inputs: " + notificationLatitude + " " + notificationLongitude + " " + condition.getLat() + " " + condition.getLon());
 		double distance = CbScience.haversine(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
+		double angle = CbScience.angleEstimate(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
+		log("notification location " + distance + " " + angle);
 		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
@@ -315,7 +317,7 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle(politeReportText + " " + df.format(distance) + "km away" ).setContentText(deliveryMessage);
+				.setContentTitle(politeReportText + " " + df.format(distance) + "km " + CbScience.englishDirection(angle)).setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
