@@ -1473,7 +1473,9 @@ public class CurrentConditionsActivity extends Activity {
 			twitterCondition = "thunderstorming";
 		} else if(condition.getGeneral_condition().equals(getString(R.string.sunny))) {
 			twitterCondition = "clear";
-		} 
+		} else {
+			twitterCondition = condition.getGeneral_condition();
+		}
 		
 		if(condition.getGeneral_condition().equals(getString(R.string.extreme))) {
 			tweet = "#" + condition.getUser_comment() + " near me, what's it like where you are? #PressureNet ";
@@ -1603,7 +1605,7 @@ public class CurrentConditionsActivity extends Activity {
 	@Override
 	protected void onPause() {
 		if(!sending) {
-			condition.setGeneral_condition("");
+			// condition.setGeneral_condition("");
 		}
 		updateWidget();
 		unBindCbService();
