@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
@@ -23,7 +24,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 
-public class NotificationSender extends BroadcastReceiver {
+public class NotificationSender extends BroadcastReceiver implements MediaPlayer.OnPreparedListener {
 
 	Context mContext;
 	public static final int PRESSURE_NOTIFICATION_ID  = 101325;
@@ -35,6 +36,25 @@ public class NotificationSender extends BroadcastReceiver {
 			- (1000 * 60 * 60 * 4);
 	
 	Handler notificationHandler = new Handler();
+	
+	
+	private void prepMedia() {
+		mMediaPlayer = MediaPlayer.create(mContext, R.raw.thunderstorm1);
+		mMediaPlayer.setOnPreparedListener(this);
+        //mMediaPlayer.prepareAsync(); // prepare async to not block main thread
+	}
+
+	MediaPlayer mMediaPlayer = null;
+	
+	@Override
+	public void onPrepared(MediaPlayer mp) {
+		// TODO Auto-generated method stub
+		testSound();
+	}
+	
+	private void testSound() {
+		mMediaPlayer.start(); // no need to call prepare(); create() does that for you
+	}
 	
 	public NotificationSender() {
 		super();
@@ -207,7 +227,7 @@ public class NotificationSender extends BroadcastReceiver {
 		} else {
 			return;
 		}
-			
+		
 		String deliveryMessage = "What's it like outside?";
 		
 		// Current Conditions activity likes to know the location in the Intent
@@ -292,6 +312,7 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning2;
+			prepMedia();
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) {
 			initial = "severe";
 			icon = R.drawable.ic_wea_on_severe;
