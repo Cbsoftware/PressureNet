@@ -205,6 +205,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView textConditionContributions;
 	private TextView textContribPressureTitle;
 	private TextView textContribConditionsTitle;
+
+	private Button buttonAltitudeOverride;
+	private TextView textAltitude;
 	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
@@ -844,10 +847,22 @@ public class BarometerNetworkActivity extends Activity implements
 		textContribPressureTitle = (TextView) findViewById(R.id.textContribPressureTitle);
 		textContribConditionsTitle = (TextView) findViewById(R.id.textContribConditionsTitle);
 		
+		buttonAltitudeOverride = (Button) findViewById(R.id.buttonAltitudeOverride);
+		textAltitude = (TextView) findViewById(R.id.textAltitude);
+		
 		inviteFriends = (Button) findViewById(R.id.inviteFriends);
 		
 		setInitialMapButtonStates();
 		
+		buttonAltitudeOverride.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {				
+				Intent intent = new Intent(getApplicationContext(), AltitudeActivity.class);
+				startActivity(intent);
+			}
+		
+		});
 		
 		inviteFriends.setOnClickListener(new OnClickListener() {
 			
@@ -1709,6 +1724,16 @@ public class BarometerNetworkActivity extends Activity implements
 		mapLongitudeMinText.setText(minLongitude);
 		mapLongitudeMaxText.setText(maxLongitude);
 	}
+	
+	/**
+	 * Show the latest location data
+	 */
+	private void updateLocationDisplay() {
+		if(bestLocation!=null) {
+			DecimalFormat df = new DecimalFormat("##");
+			textAltitude.setText( df.format(bestLocation.getAltitude()) + "m");
+		}
+	}
 
 	/**
 	 * Initiate the CbService
@@ -1863,6 +1888,7 @@ public class BarometerNetworkActivity extends Activity implements
 				if (bestLocation != null) {
 					log("Client Received from service "
 							+ bestLocation.getLatitude());
+					updateLocationDisplay();
 				} else {
 					log("location null");
 				}
@@ -3614,6 +3640,8 @@ public class BarometerNetworkActivity extends Activity implements
 
 		checkSensors();
 		updateVisibleReading();
+		
+		updateLocationDisplay();
 		
 		if(hasBarometer) {
 			startSensorListeners();

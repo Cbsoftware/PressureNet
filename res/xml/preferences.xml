@@ -73,6 +73,12 @@
             android:entryValues="@array/temperature_units"
             android:key="temperature_units"
             android:title="Temperature unit" />
+        <ListPreference
+            android:defaultValue="Meters (m)"
+            android:entries="@array/distance_units"
+            android:entryValues="@array/distance_units"
+            android:key="distance_units"
+            android:title="Distance unit" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="mslp_settings"

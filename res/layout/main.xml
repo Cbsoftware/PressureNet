@@ -363,6 +363,33 @@
 	            android:layout_alignParentRight="true"
 	             />
 	      </RelativeLayout>
+	      
+        <RelativeLayout
+            android:id="@+id/layoutAltitudeDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp">
+	        
+        	<ImageView android:id="@+id/iconAltitude"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:src="@drawable/ic_up"
+        	    android:layout_alignParentLeft="true" />
+        	
+        	<TextView android:id="@+id/textAltitude"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:text=""
+        	    android:layout_toRightOf="@id/iconAltitude"/>
+        	
+        	<Button android:id="@+id/buttonAltitudeOverride"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:text="Override"
+          	    android:layout_toRightOf="@id/textAltitude"/>
+        	    
+            
+		</RelativeLayout>
         
         <RelativeLayout
             android:id="@+id/nexus5layout"
