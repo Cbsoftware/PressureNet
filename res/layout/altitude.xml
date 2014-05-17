@@ -15,7 +15,8 @@
             android:layout_height="wrap_content"
             android:minEms="6"
             android:padding="12dp"
-            android:layout_weight=".5" />
+            android:layout_weight=".5"
+            android:inputType="number" />
 
         <Spinner
             android:id="@+id/spinDistanceUnit"

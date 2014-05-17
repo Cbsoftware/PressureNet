@@ -19,7 +19,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,7 +35,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -47,7 +45,6 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -68,16 +65,15 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -259,6 +255,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean preferenceUseGPS;
 	private boolean preferenceWhenCharging;
 	private boolean preferenceMSLP;
+	private String preferenceDistanceUnit;
 
 	private GoogleMap mMap;
 	private LatLngBounds visibleBound;
@@ -710,6 +707,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units",
 				"millibars");
+		preferenceDistanceUnit = sharedPreferences.getString("distance_units", "Meters (m)");
 		preferenceMSLP = sharedPreferences.getBoolean("mslp", false);
 		preferenceTemperatureUnit = sharedPreferences.getString(
 				"temperature_units", "Celsius (¡C)");
@@ -862,15 +860,29 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {				
 				Intent intent = new Intent(getApplicationContext(), AltitudeActivity.class);
 				if(customAltitude != 0.0) {
-					intent.putExtra("altitude", bestLocation.getAltitude());
+					intent.putExtra("altitude", altitudeInPrefUnit(customAltitude));
 				} else {
 					if(bestLocation!=null) {
-						intent.putExtra("altitude", bestLocation.getAltitude());
+						intent.putExtra("altitude", altitudeInPrefUnit(bestLocation.getAltitude()));
 					}
 				} 
 				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
+		});
 		
+		buttonAltitudeOverride.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(v.isPressed()) {
+					v.setBackground(getResources().getDrawable(R.drawable.override_pressed));
+					buttonAltitudeOverride.setTextColor(Color.rgb(255, 255, 255));
+				} else {
+					v.setBackground(getResources().getDrawable(R.drawable.override));
+					buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+				}
+				return false;
+			}
 		});
 		
 		inviteFriends.setOnClickListener(new OnClickListener() {
@@ -1739,14 +1751,14 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void updateLocationDisplay() {
 		if (customAltitude!=0) {
-			DecimalFormat df = new DecimalFormat("##");
-			textAltitude.setText( df.format(customAltitude));
+			textAltitude.setText( displayAltitudeValue(customAltitude));
 		} else {
 			if(bestLocation!=null) {
-				DecimalFormat df = new DecimalFormat("##");
-				textAltitude.setText( df.format(bestLocation.getAltitude()));
+				textAltitude.setText(displayAltitudeValue(bestLocation.getAltitude()));
 			}
 		}
+		buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
+		buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
 	}
 
 	/**
@@ -2596,6 +2608,18 @@ public class BarometerNetworkActivity extends Activity implements
 				if (data.getExtras() != null) {
 					Bundle bundle = data.getExtras();
 					double newAltitude = (Double) bundle.get("altitude");
+					
+					// TODO: fix this hack and unit handling in general
+					getStoredPreferences();
+					if(preferenceDistanceUnit.contains("Meter")) {
+						// newAltitude = newAltitude;
+					} else if(preferenceDistanceUnit.contains("Feet")) {
+						newAltitude = DistanceUnit.ftToM(newAltitude);
+					} else if(preferenceDistanceUnit.contains("Kilometer")) {
+						newAltitude = DistanceUnit.kmToM(newAltitude);			
+					} else if(preferenceDistanceUnit.contains("Mile")) {
+						newAltitude = DistanceUnit.miToM(newAltitude);			
+					}
 					
 					log("bestlocation altitude " + bestLocation.getAltitude());
 					bestLocation.setAltitude(newAltitude);
@@ -3713,6 +3737,24 @@ public class BarometerNetworkActivity extends Activity implements
 		super.onDestroy();
 	}
 
+	private String displayAltitudeValue(double altitude) {
+		DecimalFormat df = new DecimalFormat("##.#");
+		DistanceUnit unit = new DistanceUnit(preferenceDistanceUnit);
+		unit.setValue(altitude);
+		unit.setAbbreviation(preferenceDistanceUnit);
+		double distanceInPreferredUnit = unit.convertToPreferredUnit();
+		return df.format(distanceInPreferredUnit) + " " + unit.fullToAbbrev();
+	}
+	
+	private double altitudeInPrefUnit(double altitude) {
+		DistanceUnit unit = new DistanceUnit(preferenceDistanceUnit);
+		unit.setValue(altitude);
+		unit.setAbbreviation(preferenceDistanceUnit);
+		double distanceInPreferredUnit = unit.convertToPreferredUnit();
+		return distanceInPreferredUnit;
+	}
+	
+	
 	private String displayPressureValue(double value, double altitude) {
 		if(preferenceMSLP) {
 			value = CbScience.estimateMSLP(value, altitude, 15);

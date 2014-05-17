@@ -9,7 +9,19 @@ public class DistanceUnit {
 	double valueInMeters;
 	String abbrev;
 	
-	private String fullToAbbrev() {
+	public static double kmToM(double km) {
+		return km * 1000;
+	}
+	
+	public static double ftToM(double ft) {
+		return ft / 3.28084;
+	}
+	
+	public static double miToM(double mi) {
+		return mi / 0.000621371;
+	}
+	
+	public String fullToAbbrev() {
 		if(abbrev.contains("(m)")) {
 			return "m";
 		} else if(abbrev.contains("(km)")) {
@@ -23,7 +35,7 @@ public class DistanceUnit {
 		}
 	}
 	
-	public double convertToPreferredUnit(String unit) {
+	public double convertToPreferredUnit() {
 		try {
 			if(abbrev.equals("m")) {
 				return valueInMeters;
@@ -42,7 +54,7 @@ public class DistanceUnit {
 	}
 	
 	public String getDisplayText() {
-		double accurateVal = convertToPreferredUnit(abbrev);
+		double accurateVal = convertToPreferredUnit();
 		DecimalFormat df = new DecimalFormat("##.0");
 		String formatted = df.format(accurateVal);
 		String abb = fullToAbbrev();
