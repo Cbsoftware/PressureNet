@@ -2621,9 +2621,9 @@ public class BarometerNetworkActivity extends Activity implements
 						newAltitude = DistanceUnit.miToM(newAltitude);			
 					}
 					
-					log("bestlocation altitude " + bestLocation.getAltitude());
-					bestLocation.setAltitude(newAltitude);
-					log("new bestlocation altitude " + bestLocation.getAltitude());
+					//log("bestlocation altitude " + bestLocation.getAltitude());
+					//bestLocation.setAltitude(newAltitude);
+					//log("new bestlocation altitude " + bestLocation.getAltitude());
 					
 					customAltitude = newAltitude;
 					log("app received custom altitude " + customAltitude);

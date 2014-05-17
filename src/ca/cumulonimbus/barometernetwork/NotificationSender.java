@@ -167,6 +167,7 @@ public class NotificationSender extends BroadcastReceiver {
 	private void deliverConditionNotification(CbCurrentCondition condition) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
+
 		long now = System.currentTimeMillis();
 		// don't deliver if recently interacted with
 		lastConditionsSubmit = sharedPreferences.getLong(
@@ -232,6 +233,8 @@ public class NotificationSender extends BroadcastReceiver {
 		double angle = CbScience.angleEstimate(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
 		log("notification location " + distance + " " + angle);
 		
+		String vectorString = "nearby";
+		
 		// feed it with the initial condition
 		// clear, fog, cloud, precip, thunderstorm
 		String initial = "";
@@ -247,8 +250,10 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.cloudy))) {
 			initial = "cloud";
 			icon = R.drawable.ic_wea_on_cloud;
+			//vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
+			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
 				switch((int)condition.getPrecipitation_amount()) {
 				case 0:
@@ -292,9 +297,11 @@ public class NotificationSender extends BroadcastReceiver {
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm))) {
 			initial = "thunderstorm";
 			icon = R.drawable.ic_wea_on_lightning2;
+			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) {
 			initial = "severe";
 			icon = R.drawable.ic_wea_on_severe;
+			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 			if(condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
 				icon = R.drawable.ic_wea_on_flooding;
 				politeReportText = "Flooding";
@@ -312,12 +319,10 @@ public class NotificationSender extends BroadcastReceiver {
 				politeReportText = "Tropical storm";
 			}
 		} 
-	
-		DecimalFormat df = new DecimalFormat("##.#");
 		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle(politeReportText + " " + df.format(distance) + "km " + CbScience.englishDirection(angle)).setContentText(deliveryMessage);
+				.setContentTitle(politeReportText + " " + vectorString).setContentText(deliveryMessage);
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				CurrentConditionsActivity.class);
@@ -356,7 +361,19 @@ public class NotificationSender extends BroadcastReceiver {
 		
 	}
 	
-
+	private String displayDistance(double distance) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Meters (m)");
+		DecimalFormat df = new DecimalFormat("##.#");
+		DistanceUnit unit = new DistanceUnit(preferredDistanceUnit);
+		unit.setValue(distance);
+		unit.setAbbreviation(preferredDistanceUnit);
+		double distanceInPreferredUnit = unit.convertToPreferredUnit();
+		return df.format(distanceInPreferredUnit) + " " + unit.fullToAbbrev();
+	}
+	
+	
 	/**
 	 * Send an Android notification to the user with a notice of pressure
 	 * tendency change.

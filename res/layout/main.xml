@@ -375,7 +375,7 @@
                 android:layout_height="wrap_content"
                 android:text="Altitude: "
                 android:textStyle="bold"
-				android:paddingLeft="12dp" />
+				android:paddingLeft="6dp" />
 
             <TextView
                 android:id="@+id/textAltitude"
