@@ -1,31 +1,70 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-    <EditText android:id="@+id/editAltitude"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/altitudeEditLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"/>
-    
-    <Spinner android:id="@+id/spinDistanceUnit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
-    
-    <Button android:id="@+id/cancelAltitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
+        android:orientation="horizontal" >
 
-    <Button android:id="@+id/okayAltitude"
-        android:layout_width="wrap_content"
+        <EditText
+            android:id="@+id/editAltitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minEms="6"
+            android:padding="12dp"
+            android:layout_weight=".5" />
+
+        <Spinner
+            android:id="@+id/spinDistanceUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_weight=".5" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/altitude_sep"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@id/spinDistanceUnit"
+        android:layout_gravity="center_vertical"
+        android:background="#D8D8D8"
+        android:paddingTop="12dip" />
+
+    <LinearLayout
+        android:id="@+id/altitudeButtonsLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="OK"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
-        
-</RelativeLayout>
+        android:layout_below="@id/altitude_sep"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/cancelAltitude"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:text="Cancel"
+            android:textColor="#000000" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_vertical"
+            android:background="#D8D8D8" />
+
+        <Button
+            android:id="@+id/okayAltitude"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:text="OK"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+</LinearLayout>

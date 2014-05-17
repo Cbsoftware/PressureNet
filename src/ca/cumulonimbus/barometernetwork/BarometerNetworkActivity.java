@@ -223,6 +223,7 @@ public class BarometerNetworkActivity extends Activity implements
 	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
 
 	private boolean locationAvailable = true;
+	private double customAltitude = 0.0;
 	
 	double recentPressureReading = 0.0;
 	double recentTemperatureReading = 1000; // TODO: fix default value hack
@@ -235,6 +236,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_MAILED_LOG = 3;
 	public static final int REQUEST_DATA_CHANGED = 4;
 	public static final int REQUEST_ANIMATION_PARAMS = 5;
+	public static final int REQUEST_ALTITUDE = 6;
 
 	public static final String GA_CATEGORY_MAIN_APP = "app";
 	public static final String GA_CATEGORY_NOTIFICATIONS = "notifications";
@@ -859,7 +861,12 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {				
 				Intent intent = new Intent(getApplicationContext(), AltitudeActivity.class);
-				startActivity(intent);
+				if(bestLocation!=null) {
+					intent.putExtra("altitude", bestLocation.getAltitude());
+				} else {
+					log("best location null not passing altitude to override");
+				}
+				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
 		
 		});
@@ -1729,9 +1736,14 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Show the latest location data
 	 */
 	private void updateLocationDisplay() {
-		if(bestLocation!=null) {
+		if (customAltitude!=0) {
 			DecimalFormat df = new DecimalFormat("##");
-			textAltitude.setText( df.format(bestLocation.getAltitude()) + "m");
+			textAltitude.setText( df.format(customAltitude));
+		} else {
+			if(bestLocation!=null) {
+				DecimalFormat df = new DecimalFormat("##");
+				textAltitude.setText( df.format(bestLocation.getAltitude()));
+			}
 		}
 	}
 
@@ -2392,16 +2404,7 @@ public class BarometerNetworkActivity extends Activity implements
 					BarometerNetworkActivity.GA_ACTION_BUTTON, 
 					"rate_pressurenet", 
 					null).build());
-		} /*else if (item.getItemId() == R.id.menu_sky_photos) {
-			Intent skyIntent = new Intent(getApplicationContext(), SkyPhotosActivity.class);
-			skyIntent.putExtra("latitude", mLatitude);
-			skyIntent.putExtra("longitude", mLongitude);
-			startActivity(skyIntent);
-		} else if (item.getItemId() == R.id.menu_mslp) {
-			Intent mslpIntent = new Intent(getApplicationContext(), MSLPActivity.class);
-			
-			startActivity(mslpIntent);
-		} */
+		} 
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -2585,6 +2588,22 @@ public class BarometerNetworkActivity extends Activity implements
 
 			} else {
 				log("barometernetworkactivity received data intent null:");
+			}
+		} else if (requestCode == REQUEST_ALTITUDE) {
+			if (data != null) {
+				if (data.getExtras() != null) {
+					Bundle bundle = data.getExtras();
+					double newAltitude = (Double) bundle.get("altitude");
+					
+					log("bestlocation altitude " + bestLocation.getAltitude());
+					bestLocation.setAltitude(newAltitude);
+					log("new bestlocation altitude " + bestLocation.getAltitude());
+					
+					customAltitude = newAltitude;
+					log("app received custom altitude " + customAltitude);
+					updateLocationDisplay();
+					
+				}
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);

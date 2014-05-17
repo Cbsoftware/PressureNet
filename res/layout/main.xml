@@ -368,7 +368,7 @@
             android:id="@+id/layoutAltitudeDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp">
+            android:padding="6dp">
 	        
         	<ImageView android:id="@+id/iconAltitude"
         	    android:layout_width="wrap_content"
@@ -376,17 +376,25 @@
         	    android:src="@drawable/ic_up"
         	    android:layout_alignParentLeft="true" />
         	
+        	<TextView android:id="@+id/textAltitudeLabel"
+        	    android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:text="Altitude: "
+        	    android:layout_toRightOf="@id/iconAltitude"/>
+        	
         	<TextView android:id="@+id/textAltitude"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
         	    android:text=""
-        	    android:layout_toRightOf="@id/iconAltitude"/>
+        	    android:layout_toRightOf="@id/textAltitudeLabel"/>
         	
         	<Button android:id="@+id/buttonAltitudeOverride"
         	    android:layout_width="wrap_content"
         	    android:layout_height="wrap_content"
         	    android:text="Override"
-          	    android:layout_toRightOf="@id/textAltitude"/>
+          	    android:layout_toRightOf="@id/textAltitude"
+          	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+          	    android:textColor="#000000"/>
         	    
             
 		</RelativeLayout>
