@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainParentLayout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:id="@+id/modeSelectionLayout"
@@ -13,7 +13,7 @@
         android:background="#EEEEEE"
         android:orientation="horizontal"
         android:visibility="visible" >
-        
+
         <Button
             android:id="@+id/buttonMapMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -22,12 +22,11 @@
             android:layout_gravity="left"
             android:layout_weight=".25"
             android:drawableTop="@drawable/ic_map"
-            android:text="Map"
-            android:textColor="#004455"
-            android:paddingTop="4dp"
             android:paddingBottom="8dp"
-            />
-        
+            android:paddingTop="4dp"
+            android:text="Map"
+            android:textColor="#004455" />
+
         <Button
             android:id="@+id/buttonContributeMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -36,10 +35,10 @@
             android:layout_gravity="left"
             android:layout_weight=".25"
             android:drawableTop="@drawable/ic_sensors"
-            android:text="Info"
-            android:textColor="#004455"
+            android:paddingBottom="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp"/>
+            android:text="Info"
+            android:textColor="#004455" />
 
         <Button
             android:id="@+id/buttonGraphMode"
@@ -49,10 +48,10 @@
             android:layout_gravity="left"
             android:layout_weight=".25"
             android:drawableTop="@drawable/ic_graph"
-            android:text="Graph"
-            android:textColor="#004455"
+            android:paddingBottom="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp"/>
+            android:text="Graph"
+            android:textColor="#004455" />
 
         <Button
             android:id="@+id/buttonSensorMode"
@@ -62,10 +61,10 @@
             android:layout_gravity="left"
             android:layout_weight=".19"
             android:drawableTop="@drawable/ic_sensors"
-            android:visibility="gone"
-            android:textColor="#004455"
+            android:paddingBottom="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp" />
+            android:textColor="#004455"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/buttonAnimationMode"
@@ -75,12 +74,12 @@
             android:layout_gravity="left"
             android:layout_weight=".25"
             android:drawableTop="@drawable/ic_play"
-            android:text="Animate"
-            android:textColor="#004455"
+            android:paddingBottom="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp" />
+            android:text="Animate"
+            android:textColor="#004455" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/layoutMap"
         android:layout_width="fill_parent"
@@ -100,14 +99,14 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/layoutSearchControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:visibility="visible" >
-        
+
         <ImageButton
             android:id="@+id/buttonSearchLocations"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
@@ -141,72 +140,75 @@
             android:textColor="@android:color/black"
             android:visibility="visible" />
     </LinearLayout>
-    
-      <LinearLayout
+
+    <LinearLayout
         android:id="@+id/layoutMapControls"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="invisible"
+        android:layout_alignLeft="@id/layoutSearchControls"
         android:layout_below="@id/layoutSearchControls"
-        android:layout_alignLeft="@id/layoutSearchControls" >
-           <View
-	        android:id="@+id/searchDiv"
-	        android:layout_width="match_parent"
-	        android:layout_height="1dip"
-	        android:background="#004455"
-	        android:layout_below="@id/layoutSearchControls" />    
-           <LinearLayout
-		        android:layout_width="fill_parent"
-		        android:layout_height="wrap_content"
-		        android:orientation="horizontal">
-          
-		    <ImageButton
-		        android:id="@+id/buttonReloadGlobalData"
-		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" 
-		        android:background="#CCFFFFFF"
-		        android:src="@drawable/ic_refresh" 
-		        android:layout_weight=".2" />
-	    
-		     <ImageButton
-		        android:id="@+id/buttonToggleSatellite"
-		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:background="#CCFFFFFF"
-		        android:src="@drawable/ic_satellite"
-		        android:layout_weight=".2" />
-		     
-		     <ImageButton
-		        android:id="@+id/buttonTogglePressure"
-		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:background="#CCFFFFFF"
-		        android:src="@drawable/ic_pressure"
-		        android:layout_weight=".2" />
-		     
-		     <ImageButton
-		        android:id="@+id/buttonToggleWeather"
-		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:background="#CCFFFFFF"
-		        android:src="@drawable/ic_conditions"
-		        android:layout_weight=".2" />
-		    
-		    <ImageButton
-		        android:id="@+id/buttonMyLocation"
-		        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:background="#CCFFFFFF"
-		        android:src="@drawable/ic_location_found"
-		        android:layout_weight=".2" />
-		  </LinearLayout>
-	</LinearLayout>
+        android:orientation="vertical"
+        android:visibility="invisible" >
+
+        <View
+            android:id="@+id/searchDiv"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_below="@id/layoutSearchControls"
+            android:background="#004455" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/buttonReloadGlobalData"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_refresh" />
+
+            <ImageButton
+                android:id="@+id/buttonToggleSatellite"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_satellite" />
+
+            <ImageButton
+                android:id="@+id/buttonTogglePressure"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_pressure" />
+
+            <ImageButton
+                android:id="@+id/buttonToggleWeather"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_conditions" />
+
+            <ImageButton
+                android:id="@+id/buttonMyLocation"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_location_found" />
+        </LinearLayout>
+    </LinearLayout>
+
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
         style="?android:attr/progressBarStyleHorizontal"
@@ -249,7 +251,7 @@
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
         android:orientation="horizontal"
-		android:padding="12dp"
+        android:padding="12dp"
         android:visibility="gone" >
 
         <RelativeLayout
@@ -291,7 +293,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMinMapInfoText"
                 android:textSize="16sp" />
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -315,10 +316,9 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/latitudeValueMaxMapInfoText"
                 android:textSize="16sp" />
-
-          </RelativeLayout>
+        </RelativeLayout>
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/layoutContribute"
         android:layout_width="match_parent"
@@ -327,153 +327,153 @@
         android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:visibility="gone" >
-        
+
         <RelativeLayout
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content">
-        
-	        <Button
-	            android:id="@+id/imageButtonBarometer"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:drawableLeft="@drawable/ic_pressure"
-	            android:textColor="@android:color/black"
-	            android:layout_alignParentLeft="true"/>
-	        
-	        <Button
-	            android:id="@+id/imageButtonThermometer"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:drawableLeft="@drawable/ic_thermometer"
-	            android:text=""
-	            android:textColor="@android:color/black"
-	            android:layout_centerInParent="true"
-	             />
-	
-	        <Button
-	            android:id="@+id/imageButtonHygrometer"
-	            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:drawableLeft="@drawable/ic_hygrometer"
-	            android:text=""
-	            android:textColor="@android:color/black"
-	            android:layout_alignParentRight="true"
-	             />
-	      </RelativeLayout>
-	      
-        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/imageButtonBarometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:drawableLeft="@drawable/ic_pressure"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/imageButtonThermometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:drawableLeft="@drawable/ic_thermometer"
+                android:text=""
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/imageButtonHygrometer"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:drawableLeft="@drawable/ic_hygrometer"
+                android:text=""
+                android:textColor="@android:color/black" />
+        </RelativeLayout>
+
+        <LinearLayout
             android:id="@+id/layoutAltitudeDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="6dp">
-	        
-        	<ImageView android:id="@+id/iconAltitude"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:src="@drawable/ic_up"
-        	    android:layout_alignParentLeft="true" />
-        	
-        	<TextView android:id="@+id/textAltitudeLabel"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text="Altitude: "
-        	    android:layout_toRightOf="@id/iconAltitude"/>
-        	
-        	<TextView android:id="@+id/textAltitude"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text=""
-        	    android:layout_toRightOf="@id/textAltitudeLabel"/>
-        	
-        	<Button android:id="@+id/buttonAltitudeOverride"
-        	    android:layout_width="wrap_content"
-        	    android:layout_height="wrap_content"
-        	    android:text="Override"
-          	    android:layout_toRightOf="@id/textAltitude"
-          	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-          	    android:textColor="#000000"/>
-        	    
-            
-		</RelativeLayout>
-        
+            android:orientation="horizontal"
+            android:padding="6dp" >
+
+            <TextView
+                android:id="@+id/textAltitudeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Altitude: "
+                android:textStyle="bold"
+				android:paddingLeft="12dp" />
+
+            <TextView
+                android:id="@+id/textAltitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:paddingRight="12dp" 
+                android:paddingLeft="24dp"/>
+
+            <Button
+                android:id="@+id/buttonAltitudeOverride"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Override GPS Altitude"
+                android:textColor="#000000"
+                android:background="@drawable/override" 
+                android:layout_marginLeft="36dp"/>
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/nexus5layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone" 
-            android:gravity="center_horizontal|center_vertical">
-        
-	       <TextView
-	           android:id="@+id/textNexus5Bug"
-	           android:layout_width="wrap_content"
-	           android:layout_height="wrap_content"
-	           android:text="@string/nexus5bugwarning"
-	           android:textColor="@android:color/black"
-	           android:textAppearance="?android:attr/textAppearanceSmall" />
-	       
-	       <Button 
-	           android:id="@+id/nexus5ReadMore"
-	           android:layout_width="fill_parent"
-	           android:layout_height="wrap_content"
-	           android:textColor="@android:color/black"
-	           android:text="More info"
-	           android:layout_below="@id/textNexus5Bug"
-	           android:gravity="center_horizontal|center_vertical"
-               style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
-        </RelativeLayout>   
-        
-  		<RelativeLayout
+            android:gravity="center_horizontal|center_vertical"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/textNexus5Bug"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/nexus5bugwarning"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/nexus5ReadMore"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textNexus5Bug"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="More info"
+                android:textColor="@android:color/black" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/layoutContribDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp">
+            android:padding="12dp" >
+
             <TextView
                 android:id="@+id/textContribPressureTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sensor contributions" 
-                android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
-                android:textStyle="bold"/>
+                android:layout_alignParentTop="true"
+                android:text="Sensor contributions"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/textContribConditionsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weather contributions" 
-                android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:textStyle="bold"/>
+                android:layout_alignParentTop="true"
+                android:text="Weather contributions"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/textContribPressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:layout_alignLeft="@id/textContribPressureTitle"
                 android:layout_below="@id/textContribPressureTitle"
-                android:layout_alignLeft="@id/textContribPressureTitle"/>
+                android:text="" />
+
             <TextView
                 android:id="@+id/textContribConditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:layout_alignLeft="@id/textContribConditionsTitle"
                 android:layout_below="@id/textContribConditionsTitle"
-                android:layout_alignLeft="@id/textContribConditionsTitle"/>
-            
+                android:text="" />
+
             <Button
                 android:id="@+id/inviteFriends"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Invite your friends!"
                 android:layout_below="@id/textContribConditions"
-                android:textColor="#000000"
+                android:layout_centerInParent="true"
                 android:drawableLeft="@drawable/ic_share"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:text="Invite your friends!"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_centerInParent="true"/>
-           	
-            </RelativeLayout>
+                android:textColor="#000000" />
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -485,8 +485,6 @@
         android:orientation="vertical"
         android:padding="12dp"
         android:visibility="gone" >
-
-       
     </LinearLayout>
 
     <LinearLayout
@@ -515,24 +513,23 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:src="@drawable/ic_play" />
-            
-             <ImageButton
+
+            <ImageButton
                 android:id="@+id/imageButtonAnimationSettings"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_settings" 
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_settings" />
 
             <SeekBar
                 android:id="@+id/animationProgress"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/imageButtonAnimationSettings"
                 android:layout_toRightOf="@id/imageButtonPlay"
                 android:max="100"
-                android:layout_toLeftOf="@id/imageButtonAnimationSettings"
-                android:paddingTop="6dp"
-                />
+                android:paddingTop="6dp" />
         </RelativeLayout>
 
         <TextView

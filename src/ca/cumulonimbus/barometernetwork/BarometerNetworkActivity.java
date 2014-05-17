@@ -861,11 +861,13 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {				
 				Intent intent = new Intent(getApplicationContext(), AltitudeActivity.class);
-				if(bestLocation!=null) {
+				if(customAltitude != 0.0) {
 					intent.putExtra("altitude", bestLocation.getAltitude());
 				} else {
-					log("best location null not passing altitude to override");
-				}
+					if(bestLocation!=null) {
+						intent.putExtra("altitude", bestLocation.getAltitude());
+					}
+				} 
 				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
 		
@@ -1898,7 +1900,7 @@ public class BarometerNetworkActivity extends Activity implements
 			case CbService.MSG_BEST_LOCATION:
 				bestLocation = (Location) msg.obj;
 				if (bestLocation != null) {
-					log("Client Received from service "
+					log("Client Received new location from service "
 							+ bestLocation.getLatitude());
 					updateLocationDisplay();
 				} else {
@@ -2602,7 +2604,6 @@ public class BarometerNetworkActivity extends Activity implements
 					customAltitude = newAltitude;
 					log("app received custom altitude " + customAltitude);
 					updateLocationDisplay();
-					
 				}
 			}
 		}
@@ -3653,7 +3654,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
-		askForBestLocation();
+		// askForBestLocation();
 		
 		// addDataToMap();
 
@@ -3673,7 +3674,6 @@ public class BarometerNetworkActivity extends Activity implements
 			log("onresume cbservice is already running");
 		}
 		bindCbService();
-		setLastKnownLocation();
 		editLocation.setText("");
 	}
 
@@ -3741,6 +3741,20 @@ public class BarometerNetworkActivity extends Activity implements
 		return df.format(value) + "%";
 	}
 
+	private String getBestPressureDisplay () {
+		String toPrint = "";
+		if(customAltitude!=0) {
+			toPrint = displayPressureValue(recentPressureReading, customAltitude);
+		} else {
+			if(bestLocation!=null) {
+				toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
+			} else {
+				toPrint = displayPressureValue(recentPressureReading, 0);
+			}			
+		}
+		return toPrint;
+	}
+	
 	/**
 	 * Display visible reading to the user
 	 */
@@ -3750,19 +3764,12 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceTemperatureUnit = getTempUnitPreference();
 		
 		if (hasBarometer) {
-			String toPrint = "";
-			if(bestLocation!=null) {
-				toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
-			} else {
-				toPrint = displayPressureValue(recentPressureReading, 0);
-			}
+			String toPrint = getBestPressureDisplay();
+			
+	
 			if (toPrint.length() > 2) {
-				DecimalFormat df = new DecimalFormat("##");
-				if(bestLocation!=null) {
-					buttonBarometer.setText(displayPressureValue(recentPressureReading, bestLocation.getAltitude()));
-				} else {
-					buttonBarometer.setText(displayPressureValue(recentPressureReading, 0));
-				}
+				buttonBarometer.setText(getBestPressureDisplay());
+				
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
 				int actionBarTitleId = getResources().getSystem()
