@@ -137,7 +137,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	Intent serviceIntent;
 
-	// pressureNET 4.0
+	// PressureNet 4.0
 	// SDK communication
 	boolean mBound;
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
@@ -463,7 +463,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/**
-	 * Alert the user if pressureNET is offline
+	 * Alert the user if PressureNet is offline
 	 */
 	private void displayNetworkOfflineToast() {
 		if (!isConnected) {
@@ -2292,7 +2292,7 @@ public class BarometerNetworkActivity extends Activity implements
 	};
 
 	/**
-	 * Welcome the user to pressureNET and explain the privacy options. Only
+	 * Welcome the user to PressureNet and explain the privacy options. Only
 	 * show on the first run
 	 */
 	private void showWelcomeActivity() {
@@ -2423,7 +2423,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/**
-	 * Open the Google Play pressureNET page
+	 * Open the Google Play PressureNet page
 	 */
 	private void ratePressureNET() {
 		Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -2437,7 +2437,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void sendFeedback() {
 		String address = "software@cumulonimbus.ca";
-		String subject = "pressureNET feedback";
+		String subject = "PressureNet feedback";
 		String emailtext = "";
 		final Intent emailIntent = new Intent(
 				android.content.Intent.ACTION_SEND);
@@ -2465,7 +2465,7 @@ public class BarometerNetworkActivity extends Activity implements
 		sendIntent
 				.putExtra(
 						Intent.EXTRA_TEXT,
-						"pressureNET crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork");
+						"PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork");
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
@@ -2491,7 +2491,7 @@ public class BarometerNetworkActivity extends Activity implements
 			String version = pInfo.versionName;
 
 			String address = "software@cumulonimbus.ca";
-			String subject = "pressureNET " + version + " Debug Log";
+			String subject = "PressureNet " + version + " Debug Log";
 			String emailtext = "Debug log sent "
 					+ (new Date()).toLocaleString();
 

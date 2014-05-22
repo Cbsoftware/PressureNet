@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0404012"
-    android:versionName="4.4.1BETA" >
+    android:versionCode="0404023"
+    android:versionName="4.4.2RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -217,7 +217,7 @@
         </receiver>
         <receiver
             android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider"
-            android:label="pressureNET Conditions" >
+            android:label="PressureNet Conditions" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider.ACTION_UPDATEUI" />

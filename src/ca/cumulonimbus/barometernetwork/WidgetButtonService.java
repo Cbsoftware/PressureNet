@@ -51,7 +51,7 @@ public class WidgetButtonService extends Service {
 	
 	private Intent mIntent;
 		
-	// pressureNET 4.0
+	// PressureNet 4.0
 	// SDK communication
 	boolean mBound;
 	private Messenger mMessenger = new Messenger(new IncomingHandler());

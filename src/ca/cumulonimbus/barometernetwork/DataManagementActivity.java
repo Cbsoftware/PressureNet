@@ -406,7 +406,7 @@ public class DataManagementActivity extends Activity {
 				if (mExternalStorageWriteable) {
 					File export = new File(
 							Environment.getExternalStorageDirectory(),
-							"pressureNET-export.csv");
+							"PressureNet-export.csv");
 					try {
 						BufferedWriter out = new BufferedWriter(new FileWriter(
 								export.getAbsolutePath(), false));

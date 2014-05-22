@@ -457,7 +457,7 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(smallIconId)
-				.setContentTitle("pressureNET").setContentText(deliveryMessage)
+				.setContentTitle("PressureNet").setContentText(deliveryMessage)
 				.addAction(R.drawable.ic_menu_dark_stats, "View graph", graphIntent)
 				.addAction(R.drawable.ic_menu_dark_weather, "Report weather", resultPendingIntent);
 		

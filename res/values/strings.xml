@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <string name="app_name">pressureNET</string>
+    <string name="app_name">PressureNet</string>
     <string name="currentReading">Current Reading:</string>
     <string name="empty"></string>
     <string name="submitReading">Submit Reading</string>
@@ -78,13 +78,13 @@
     <string name="close">Close</string>
     <string name="showLocalGraph">Show Local Graph</string>
     <string name="delete">Delete User Data</string>
-    <string name="deleteWarning">Warning: This will delete the data that you have recently submitted to pressureNET. You will disappear from the map, but some offline backups or archives may still contain your data for a while. If you would like to be removed urgently, please email software@cumulonimbus.ca</string>
+    <string name="deleteWarning">Warning: This will delete the data that you have recently submitted to PressureNet. You will disappear from the map, but some offline backups or archives may still contain your data for a while. If you would like to be removed urgently, please email software@cumulonimbus.ca</string>
     <string name="my_info">My Info</string>
     <string name="logViewer">Log Viewer</string>
     <string name="view_log">View Log</string>
     <string name="data_visualization">Data Visualization</string>
     <string name="about">About</string>
-    <string name="pndv">pressureNET Data Visualization</string>
+    <string name="pndv">PressureNet Data Visualization</string>
     <string name="loadInBrowser">Load in Browser</string>
     <string name="shareWith">Share with</string>
 
@@ -96,19 +96,19 @@
         <item>Public</item>
     </string-array>
 
-    <string name="welcomeToPressureNET">Welcome to pressureNET</string>
+    <string name="welcomeToPressureNET">Welcome to PressureNet</string>
     <string name="appAndSharingDescritption">You\'re helping us make a better weather forecast!
         \n\nWe\'re using the barometer inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
         by telling us what the weather is actually like where you are.  
         \n\nThis app periodically collects sensor data: your location and your atmospheric pressure. We\'ll share this data according to your wishes,
         which you can change below or through Settings.
-        \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
+        \n\nThe more people that use PressureNet, the better it gets, so tell your friends! Thank you!</string>
     <string name="appDescritptionNoBarometer">You\'re helping us make a better weather forecast!
         \n\nWe\'re using sensors inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
         by telling us what the weather is actually like where you are.  
         \n\nYour device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
         which you can change below or through Settings.
-        \n\nThe more people that use pressureNET, the better it gets, so tell your friends! Thank you!</string>
+        \n\nThe more people that use PressureNet, the better it gets, so tell your friends! Thank you!</string>
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
     <string name="sunny">Clear</string>
@@ -147,7 +147,7 @@
     <string name="tornado">Tornado</string>
     <string name="extreme">Severe</string>
     <string name="localData">Local Data</string>
-    <string name="pressureNETCommunity">pressureNET Data</string>
+    <string name="pressureNETCommunity">PressureNet Data</string>
     <string name="locationName">Location Name</string>
 	<string name="nexus5bugwarning">NOTICE: There\'s an Android bug that causes sensor
 	    failure on the Nexus 5. Restarting fixes it temporarily. We\'re working on a fix ASAP.</string>
@@ -155,12 +155,12 @@
 	<string name="nexus5bugFull">There\'s a bug in Android 4.4 on the Nexus 5 that causes occasional sensor failure. 
 	    It occurs after significant background access to the barometer inside the Nexus 5 and causes other sensors to silently fail: 
 	    the gyroscope, compass, barometer and other sensors may stop working after a while. You might notice that automatic screen rotation
-	    stops working, for example, after running pressureNET for a few days.
+	    stops working, for example, after running PressureNet for a few days.
 	    
 	    \n\nRebooting your phone will fix the issue temporarily, and all sensors will work again - until they eventually fail. We\'re working hard to fix this,
 	    but the core problem seems to be in Android itself. Below, you can open the Google Code Issue and Star it, giving it attention for a faster fix.
 	    
-	    \n\nIf you want to keep running pressureNET but notice frequent sensor failure, there are a few things you can try:
+	    \n\nIf you want to keep running PressureNet but notice frequent sensor failure, there are a few things you can try:
 	    \n\n
 	    • Reduce frequency of data collection in Settings \n
 	    • Turn off Auto-submit in Settings\n
