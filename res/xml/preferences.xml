@@ -38,7 +38,7 @@
             android:title="Enable weather notifications" />
 
         <ListPreference
-            android:defaultValue="1 hour"
+            android:defaultValue="3 hours"
             android:dependency="send_condition_notifications"
             android:entries="@array/condition_refresh_frequency"
             android:entryValues="@array/condition_refresh_frequency_values"
@@ -86,7 +86,7 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="mslp"
-            android:summary="Estimate MSLP adjustment"
+            android:summary="Estimate MSLP adjustment [Beta]"
             android:title="Mean Sea-Level Pressure" />
 <!-- 
         <CheckBoxPreference

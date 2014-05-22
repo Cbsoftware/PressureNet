@@ -124,7 +124,7 @@ public class PnDb {
 	 * @return
 	 */
 	public long addDelivery(String condition, double latitude, double longitude, long time) {
-
+		log("pndb adding delivery " + condition);
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_CONDITION, condition);
 		initialValues.put(KEY_LATITUDE, latitude);
@@ -138,11 +138,10 @@ public class PnDb {
 	 * Delete old condition deliveries to keep the table small
 	 */
 	public void deleteOldDeliveries() {
-		long ancientConditionMsAgo = 1000 * 60 * 2;
+		long ancientConditionMsAgo = 1000 * 60 * 60 * 10;
 		mDB.execSQL("delete from " + CONDITIONS_DELIVERED + " where " + 
 		KEY_TIME + "<" + ancientConditionMsAgo);
 	}
-	
 	
 	/**
 	 * Fetch every condition delivery
@@ -167,7 +166,6 @@ public class PnDb {
 				KEY_CONDITION, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME },
 				KEY_TIME + " > " + (System.currentTimeMillis() - (1000 * 60 * 60 * 2)), null, null, null, null);
 	}
-
 
 	/**
 	 * Fetch every location
@@ -279,6 +277,12 @@ public class PnDb {
 			
 			
 			showWhatsNew();
+		}
+	}
+	
+	private void log(String message) {
+		if (PressureNETConfiguration.DEBUG_MODE) {
+			System.out.println(message);
 		}
 	}
 	

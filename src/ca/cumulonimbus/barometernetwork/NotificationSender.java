@@ -149,7 +149,7 @@ public class NotificationSender extends BroadcastReceiver {
 		while(recentDeliveries.moveToNext()) {
 			String general = recentDeliveries.getString(1);
 			if(condition.getGeneral_condition().equals(general)) {
-				log("recently delivered: " + general);
+				log("notification recently delivered: " + general);
 				delivered = true;
 			}
 		}
@@ -208,7 +208,7 @@ public class NotificationSender extends BroadcastReceiver {
 		} else {
 			return;
 		}
-			
+		
 		String deliveryMessage = "What's it like outside?";
 		
 		// Current Conditions activity likes to know the location in the Intent
@@ -241,16 +241,22 @@ public class NotificationSender extends BroadcastReceiver {
 		int icon = R.drawable.ic_launcher;
 		String politeReportText = condition.getGeneral_condition();
 		if(condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
-			initial = "clear";
+			// don't notify on clear
+			return;
+			
+			// initial = "clear";
 			// pick the right clear icon
-			icon = getResIdForClearIcon(condition);
+			// icon = getResIdForClearIcon(condition);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.foggy))) {
 			initial = "fog";
 			icon = R.drawable.ic_wea_on_fog1;
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.cloudy))) {
-			initial = "cloud";
-			icon = R.drawable.ic_wea_on_cloud;
-			//vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+			// don't notify on cloudy
+			return;
+			
+			// initial = "cloud";
+			// icon = R.drawable.ic_wea_on_cloud;
+			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
