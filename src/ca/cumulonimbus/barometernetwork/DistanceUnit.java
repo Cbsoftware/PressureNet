@@ -10,7 +10,7 @@ public class DistanceUnit {
 	String abbrev;
 	
 	public static double kmToM(double km) {
-		return km * 1000;
+		return km / .001;
 	}
 	
 	public static double ftToM(double ft) {
@@ -21,32 +21,55 @@ public class DistanceUnit {
 		return mi / 0.000621371;
 	}
 	
+	private void log(String message ){
+		if(PressureNETConfiguration.DEBUG_MODE) {
+			System.out.println(message);
+		}
+	}
+	
 	public String fullToAbbrev() {
+		log("NOTIFTEST: fullToAbbrev " + abbrev);
 		if(abbrev.contains("(m)")) {
+			log("NOTIFTESTreturning m");
 			return "m";
 		} else if(abbrev.contains("(km)")) {
+			log("NOTIFTESTreturning km");
 			return "km";
 		} else if(abbrev.contains("(ft)")) {
+			log("NOTIFTESTreturning ft");
 			return "ft";
 		} else if(abbrev.contains("(mi)")) {
+			log("NOTIFTESTreturning mi");
 			return "mi";
 		} else {
+			log("NOTIFTESTreturning default m");
 			return "m";
 		}
 	}
 	
 	public double convertToPreferredUnit() {
+		log("NOTIFTESTconvert to preferred unit abbrev" + abbrev);
 		try {
 			if(abbrev.equals("m")) {
-				return valueInMeters;
+				double retVal = valueInMeters;
+				log("NOTIFTEST returning " + retVal);
+				return retVal;
 			} else if(abbrev.equals("km")) {
-				return valueInMeters * .001;
+				double retVal = valueInMeters * .001;
+				log("NOTIFTEST returning " + retVal);
+				return retVal;
 			} else if(abbrev.contains("ft")) {
-				return valueInMeters * 3.28084;
+				double retVal = valueInMeters * 3.28084;
+				log("NOTIFTEST returning " + retVal);
+				return retVal;
 			} else if(abbrev.contains("mi")) {
-				return valueInMeters * 0.000621371;
+				double retVal = valueInMeters * 0.000621371;
+				log("NOTIFTEST returning " + retVal);
+				return retVal;
 			} else {
-				return valueInMeters;
+				double retVal = valueInMeters;
+				log("NOTIFTEST returning default " + retVal);
+				return retVal;
 			}
 		} catch(Exception e) {
 			return -1;

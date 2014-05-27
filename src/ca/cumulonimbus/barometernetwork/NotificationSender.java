@@ -242,21 +242,20 @@ public class NotificationSender extends BroadcastReceiver {
 		String politeReportText = condition.getGeneral_condition();
 		if(condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
 			// don't notify on clear
-			return;
 			
-			// initial = "clear";
+			initial = "clear";
 			// pick the right clear icon
-			// icon = getResIdForClearIcon(condition);
+			icon = getResIdForClearIcon(condition);
+			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.foggy))) {
 			initial = "fog";
 			icon = R.drawable.ic_wea_on_fog1;
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.cloudy))) {
 			// don't notify on cloudy
-			return;
 			
-			// initial = "cloud";
-			// icon = R.drawable.ic_wea_on_cloud;
-			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+			initial = "cloud";
+			icon = R.drawable.ic_wea_on_cloud;
+			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
