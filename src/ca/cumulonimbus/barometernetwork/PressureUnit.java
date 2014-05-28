@@ -60,7 +60,7 @@ public class PressureUnit {
 	
 	public String getDisplayText() {
 		double accurateVal = convertToPreferredUnit();
-		DecimalFormat df = new DecimalFormat("####.00");
+		DecimalFormat df = new DecimalFormat("####.#");
 		String formatted = df.format(accurateVal);
 		String abb = fullToAbbrev();
 		return formatted + " " + abb;

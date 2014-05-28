@@ -164,7 +164,7 @@ public class WidgetButtonService extends Service {
 					break;
 				}
 				log("widget msg_local_recents received " + recents.size() + " mreading " + mReading);
-				DecimalFormat df = new DecimalFormat("####.00");
+				DecimalFormat df = new DecimalFormat("####.#");
 				String message = "0.00";
 				if(mReading>1) {
 					message = df.format(mReading);
