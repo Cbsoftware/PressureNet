@@ -246,7 +246,7 @@ public class NotificationSender extends BroadcastReceiver {
 			initial = "clear";
 			// pick the right clear icon
 			icon = getResIdForClearIcon(condition);
-			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.foggy))) {
 			initial = "fog";
 			icon = R.drawable.ic_wea_on_fog1;
@@ -255,7 +255,7 @@ public class NotificationSender extends BroadcastReceiver {
 			
 			initial = "cloud";
 			icon = R.drawable.ic_wea_on_cloud;
-			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
 			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
