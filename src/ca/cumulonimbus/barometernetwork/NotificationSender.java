@@ -102,7 +102,7 @@ public class NotificationSender extends BroadcastReceiver {
 			log("app received intent pressure sent toast");
 			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.pressureSent")) {
 				double pressureSent = intent.getDoubleExtra("ca.cumulonimbus.pressurenetsdk.pressureSent", 0.0);
-				Toast.makeText(context, "Sent " + displayPressureValue(pressureSent), Toast.LENGTH_SHORT).show();
+				// Toast.makeText(context, "Sent " + displayPressureValue(pressureSent), Toast.LENGTH_SHORT).show();
 			} else {
 				log("pressure sent intent not sent, doesn't have extra");
 			}
@@ -370,7 +370,7 @@ public class NotificationSender extends BroadcastReceiver {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
 		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Meters (m)");
-		DecimalFormat df = new DecimalFormat("##.#");
+		DecimalFormat df = new DecimalFormat("##");
 		DistanceUnit unit = new DistanceUnit(preferredDistanceUnit);
 		unit.setValue(distance);
 		unit.setAbbreviation(preferredDistanceUnit);

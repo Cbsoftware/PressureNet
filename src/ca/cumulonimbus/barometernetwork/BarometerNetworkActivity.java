@@ -866,6 +866,11 @@ public class BarometerNetworkActivity extends Activity implements
 						intent.putExtra("altitude", altitudeInPrefUnit(bestLocation.getAltitude()));
 					}
 				} 
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"override_gps", 
+						null).build());	
 				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
 		});
