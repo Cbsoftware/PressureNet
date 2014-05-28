@@ -1463,8 +1463,14 @@ public class CurrentConditionsActivity extends Activity {
 
 		String twitterCondition = "";
 		String tweet = "";
-		if(condition.getGeneral_condition().equals(getString(R.string.rain))) {
-			twitterCondition = "raining";
+		if(condition.getGeneral_condition().equals(getString(R.string.precipitation))) {
+			if(condition.getPrecipitation_type().equals(getString(R.string.rain))) { 
+				twitterCondition = "raining";
+			} else if(condition.getPrecipitation_type().equals(getString(R.string.snow))) { 
+				twitterCondition = "snowing";
+			} else if(condition.getPrecipitation_type().equals(getString(R.string.hail))) { 
+				twitterCondition = "hailing";
+			}
 		} else if(condition.getGeneral_condition().equals(getString(R.string.cloudy))) {
 			twitterCondition = "cloudy";
 		} else if(condition.getGeneral_condition().equals(getString(R.string.foggy))) {
