@@ -16,7 +16,7 @@
             android:minEms="6"
             android:padding="12dp"
             android:layout_weight=".5"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
 
         <Spinner
             android:id="@+id/spinDistanceUnit"

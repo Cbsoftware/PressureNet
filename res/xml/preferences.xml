@@ -74,7 +74,7 @@
             android:key="temperature_units"
             android:title="Temperature unit" />
         <ListPreference
-            android:defaultValue="Meters (m)"
+            android:defaultValue="Kilometers (km)"
             android:entries="@array/distance_units"
             android:entryValues="@array/distance_units"
             android:key="distance_units"

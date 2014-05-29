@@ -63,7 +63,7 @@ public class AltitudeActivity extends Activity {
 
 		String[] unitsArray = getResources().getStringArray(
 				R.array.distance_units);
-		String distance = settings.getString("distance_units", "Meters (m)");
+		String distance = settings.getString("distance_units", "Kilometers (km)");
 		int positionDistance = 0;
 		for (int i = 0; i < unitsArray.length; i++) {
 			if (unitsArray[i].equals(distance)) {
@@ -77,6 +77,7 @@ public class AltitudeActivity extends Activity {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
+
 				String[] array = getResources().getStringArray(
 						R.array.distance_units);
 				SharedPreferences settings = PreferenceManager
@@ -84,7 +85,7 @@ public class AltitudeActivity extends Activity {
 				SharedPreferences.Editor editor = settings.edit();
 				editor.putString("distance_units", array[pos]);
 				editor.commit();
-
+				log("setting distance units to " + array[pos]);
 			}
 
 			@Override

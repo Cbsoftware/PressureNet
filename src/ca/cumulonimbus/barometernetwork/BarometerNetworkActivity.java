@@ -707,7 +707,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getDefaultSharedPreferences(this);
 		preferencePressureUnit = sharedPreferences.getString("units",
 				"millibars");
-		preferenceDistanceUnit = sharedPreferences.getString("distance_units", "Meters (m)");
+		preferenceDistanceUnit = sharedPreferences.getString("distance_units", "Kilometers (km)");
 		preferenceMSLP = sharedPreferences.getBoolean("mslp", false);
 		preferenceTemperatureUnit = sharedPreferences.getString(
 				"temperature_units", "Celsius (¡C)");
@@ -2613,24 +2613,27 @@ public class BarometerNetworkActivity extends Activity implements
 				if (data.getExtras() != null) {
 					Bundle bundle = data.getExtras();
 					double newAltitude = (Double) bundle.get("altitude");
-					
+					log("app received raw altitude " + newAltitude);
 					// TODO: fix this hack and unit handling in general
 					getStoredPreferences();
-					if(preferenceDistanceUnit.contains("Meter")) {
-						// newAltitude = newAltitude;
+					if(preferenceDistanceUnit.equals("Meters (m)")) {
+						customAltitude = newAltitude;
 					} else if(preferenceDistanceUnit.contains("Feet")) {
-						newAltitude = DistanceUnit.ftToM(newAltitude);
+						customAltitude = DistanceUnit.ftToM(newAltitude);
 					} else if(preferenceDistanceUnit.contains("Kilometer")) {
-						newAltitude = DistanceUnit.kmToM(newAltitude);			
+						customAltitude = DistanceUnit.kmToM(newAltitude);
 					} else if(preferenceDistanceUnit.contains("Mile")) {
-						newAltitude = DistanceUnit.miToM(newAltitude);			
+						customAltitude = DistanceUnit.miToM(newAltitude);
+					} else {
+						log("other preference for distance altitude units?");
+						customAltitude = newAltitude;
 					}
 					
 					//log("bestlocation altitude " + bestLocation.getAltitude());
 					//bestLocation.setAltitude(newAltitude);
 					//log("new bestlocation altitude " + bestLocation.getAltitude());
 					
-					customAltitude = newAltitude;
+					
 					log("app received custom altitude " + customAltitude);
 					updateLocationDisplay();
 				}

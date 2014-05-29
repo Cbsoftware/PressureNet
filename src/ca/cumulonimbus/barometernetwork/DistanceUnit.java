@@ -28,21 +28,21 @@ public class DistanceUnit {
 	}
 	
 	public String fullToAbbrev() {
-		log("NOTIFTEST: fullToAbbrev " + abbrev);
+		log("altitudetest: fullToAbbrev " + abbrev);
 		if(abbrev.contains("(m)")) {
-			log("NOTIFTESTreturning m");
+			log("altitudetest returning m");
 			return "m";
 		} else if(abbrev.contains("(km)")) {
-			log("NOTIFTESTreturning km");
+			log("altitudetest returning km");
 			return "km";
 		} else if(abbrev.contains("(ft)")) {
-			log("NOTIFTESTreturning ft");
+			log("altitudetest returning ft");
 			return "ft";
 		} else if(abbrev.contains("(mi)")) {
-			log("NOTIFTESTreturning mi");
+			log("altitudetest returning mi");
 			return "mi";
 		} else {
-			log("NOTIFTESTreturning default m");
+			log("altitudetest returning default m");
 			return "m";
 		}
 	}
@@ -50,25 +50,25 @@ public class DistanceUnit {
 	public double convertToPreferredUnit() {
 		log("NOTIFTESTconvert to preferred unit abbrev" + abbrev);
 		try {
-			if(abbrev.equals("m")) {
+			if(abbrev.contains("(m)")) {
 				double retVal = valueInMeters;
-				log("NOTIFTEST returning " + retVal);
+				log("altitudetest returning " + retVal);
 				return retVal;
-			} else if(abbrev.equals("km")) {
+			} else if(abbrev.contains("(km)")) {
 				double retVal = valueInMeters * .001;
-				log("NOTIFTEST returning " + retVal);
+				log("altitudetest returning " + retVal);
 				return retVal;
-			} else if(abbrev.contains("ft")) {
+			} else if(abbrev.contains("(ft)")) {
 				double retVal = valueInMeters * 3.28084;
-				log("NOTIFTEST returning " + retVal);
+				log("altitudetest returning " + retVal);
 				return retVal;
-			} else if(abbrev.contains("mi")) {
+			} else if(abbrev.contains("(mi)")) {
 				double retVal = valueInMeters * 0.000621371;
-				log("NOTIFTEST returning " + retVal);
+				log("altitudetest returning " + retVal);
 				return retVal;
 			} else {
 				double retVal = valueInMeters;
-				log("NOTIFTEST returning default " + retVal);
+				log("altitudetest returning default " + retVal + " " + abbrev);
 				return retVal;
 			}
 		} catch(Exception e) {
