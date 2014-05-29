@@ -231,6 +231,7 @@ public class NotificationSender extends BroadcastReceiver {
 		log("haversine inputs: " + notificationLatitude + " " + notificationLongitude + " " + condition.getLat() + " " + condition.getLon());
 		double distance = CbScience.haversine(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
 		double angle = CbScience.angleEstimate(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
+		// double angle = CbScience.angleEstimate(condition.getLat(), condition.getLon(), notificationLatitude, notificationLongitude);
 		log("notification location " + distance + " " + angle);
 		
 		String vectorString = "nearby";
@@ -375,7 +376,7 @@ public class NotificationSender extends BroadcastReceiver {
 		unit.setValue(distance);
 		unit.setAbbreviation(preferredDistanceUnit);
 		double distanceInPreferredUnit = unit.convertToPreferredUnit();
-		return df.format(distanceInPreferredUnit) + " " + unit.fullToAbbrev();
+		return df.format(distanceInPreferredUnit) + unit.fullToAbbrev();
 	}
 	
 	
