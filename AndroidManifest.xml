@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
     android:versionCode="0404054"
-    android:versionName="4.4.5" >
+    android:versionName="4.4.6" >
 
     <uses-sdk
         android:minSdkVersion="11"
