@@ -370,7 +370,7 @@ public class NotificationSender extends BroadcastReceiver {
 	private String displayDistance(double distance) {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
-		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Meters (m)");
+		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Kilometers (km)");
 		DecimalFormat df = new DecimalFormat("##");
 		DistanceUnit unit = new DistanceUnit(preferredDistanceUnit);
 		unit.setValue(distance);
