@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Severe weather reports, notifications\n• MSLP estimates\n• Location bugfixes\n• Social integration\n\n4.4.5: Notification bug fixes"
+            android:text="• Severe weather reports, notifications\n• MSLP estimates\n• Location bugfixes\n• Social integration\n\n4.4.6: Notification bug fixes"
             android:textSize="16dp" />
 
         <TextView
