@@ -1009,6 +1009,12 @@ public class CurrentConditionsActivity extends Activity {
 				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
 				pn.close();
 				
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						"conditions_send_button", 
+						condition.getGeneral_condition(), 
+						null).build());
+				
 				// take photo?
 				/*if(addPhoto.isChecked()) {
 					dispatchTakePictureIntent();
@@ -1034,7 +1040,11 @@ public class CurrentConditionsActivity extends Activity {
 				sending = false;
 				condition.setGeneral_condition("");
 				updateWidget();
-
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						"conditions_cancel_button", 
+						null, 
+						null).build());
 				finish();
 			}
 		});
