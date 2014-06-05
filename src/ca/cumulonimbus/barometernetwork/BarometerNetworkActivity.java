@@ -471,47 +471,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/**
-	 * Get fresh data for each of the user's saved locations
-	 */
-	private void makeLocationAPICalls() {
-		long now = System.currentTimeMillis();
-		long acceptableLocationTimeDifference = 1000 * 60 * 5;
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		// when was the last search locations API call?
-		lastSearchLocationsAPICall = sharedPreferences.getLong(
-				"lastSearchLocationsAPICall", now - (1000 * 60 * 10));
-		if (now - lastSearchLocationsAPICall > acceptableLocationTimeDifference) {
-			log("running makeLocationAPICalls");
-			PnDb pn = new PnDb(getApplicationContext());
-			pn.open();
-			Cursor cursor = pn.fetchAllLocations();
-
-			while (cursor.moveToNext()) {
-				String name = cursor.getString(1);
-				double latitude = cursor.getDouble(2);
-				double longitude = cursor.getDouble(3);
-				SearchLocation location = new SearchLocation(name, latitude,
-						longitude);
-				CbApiCall locationApiCall = buildSearchLocationAPICall(location);
-				log("making api call for " + name + " at " + latitude + " "
-						+ longitude);
-				makeAPICall(locationApiCall);
-			}
-			pn.close();
-
-			lastSearchLocationsAPICall = now;
-			// Save the time in prefs
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putLong("lastSearchLocationsAPICall",
-					lastSearchLocationsAPICall);
-			editor.commit();
-		} else {
-			log("not making locations calls, too soon");
-		}
-	}
-
-	/**
 	 * Get fresh data for the global map
 	 */
 	private void makeGlobalMapCall() {
@@ -531,7 +490,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLat(90);
 			globalMapCall.setMinLon(-180);
 			globalMapCall.setMaxLon(180);
-			globalMapCall.setLimit(3000);
+			globalMapCall.setLimit(2000);
 			globalMapCall.setStartTime(System.currentTimeMillis()
 					- (int) (1000 * 60 * 10));
 			globalMapCall.setEndTime(System.currentTimeMillis());
@@ -3286,7 +3245,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 
-		int totalAllowed = 30;
+		int totalAllowed = 20;
 		int currentObs = 0;
 
 		int maxUpdateFrequency = 1000; // 500ms
