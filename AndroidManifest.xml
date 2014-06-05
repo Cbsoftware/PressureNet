@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0404054"
-    android:versionName="4.4.6" >
+    android:versionCode="0404073"
+    android:versionName="4.4.7RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -186,14 +186,6 @@
             android:theme="@style/CustomThemeDialog"
             android:excludeFromRecents="true" >
         </activity>
-         <activity
-            android:name="ca.cumulonimbus.barometernetwork.Nexus5Bug"
-            android:configChanges="orientation|screenSize"
-            android:label="Nexus 5 sensor bug"
-            android:theme="@style/CustomThemeDialog"
-            android:excludeFromRecents="true" >
-        </activity>
-        
      
         <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
             <intent-filter>
