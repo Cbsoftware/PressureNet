@@ -399,32 +399,6 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/nexus5layout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal|center_vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/textNexus5Bug"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nexus5bugwarning"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/black" />
-
-            <Button
-                android:id="@+id/nexus5ReadMore"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textNexus5Bug"
-                android:gravity="center_horizontal|center_vertical"
-                android:text="More info"
-                android:textColor="@android:color/black" />
-        </RelativeLayout>
-
-        <RelativeLayout
             android:id="@+id/layoutContribDetails"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

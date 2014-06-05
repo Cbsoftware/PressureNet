@@ -174,7 +174,7 @@ public class NotificationSender extends BroadcastReceiver {
 				"lastConditionsSubmit", System.currentTimeMillis()
 				- (1000 * 60 * 60 * 12));
 		
-		String prefTimeWait = sharedPreferences.getString("condition_refresh_frequency", "1 hour");
+		String prefTimeWait = sharedPreferences.getString("condition_refresh_frequency", "3 hours");
 		
 		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
@@ -364,7 +364,6 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch(NoSuchMethodError nsme) {
 			// 
 		}
-		
 	}
 	
 	private String displayDistance(double distance) {

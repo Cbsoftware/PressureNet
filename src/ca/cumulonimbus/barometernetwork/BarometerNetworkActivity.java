@@ -193,9 +193,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private SeekBar animationProgress;
 	private ImageButton imageButtonAnimationSettings;
-
-	private RelativeLayout nexus5layout;
-	private Button nexus5ReadMore;
 	
 	private TextView textPressureContributions;
 	private TextView textConditionContributions;
@@ -838,10 +835,7 @@ public class BarometerNetworkActivity extends Activity implements
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
 		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
 		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
-		
-		nexus5layout = (RelativeLayout) findViewById(R.id.nexus5layout);
-		nexus5ReadMore = (Button) findViewById(R.id.nexus5ReadMore);
-		
+	
 		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
 		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
 		textContribPressureTitle = (TextView) findViewById(R.id.textContribPressureTitle);
@@ -953,15 +947,6 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				mMap.clear();
 				loadRecents();
-			}
-		});
-		
-		nexus5ReadMore.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(getApplicationContext(), Nexus5Bug.class);
-				startActivity(intent);
 			}
 		});
 	
@@ -1353,12 +1338,6 @@ public class BarometerNetworkActivity extends Activity implements
 					sensorMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					animationMode.setBackgroundColor(Color.TRANSPARENT);
 					contributeMode.setBackgroundColor(Color.TRANSPARENT);
-					
-					if(Build.MODEL.equals("Nexus 5")) {
-						nexus5layout.setVisibility(View.VISIBLE);
-					} else {
-						nexus5layout.setVisibility(View.GONE);
-					}
 					
 					loadRecents();
 				}
