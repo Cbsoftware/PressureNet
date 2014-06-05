@@ -370,6 +370,12 @@ public class NotificationSender extends BroadcastReceiver {
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(mContext);
 		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Kilometers (km)");
+		
+		// Use km instead of m, event if preference is m
+		if (preferredDistanceUnit.equals("Meters (m)")) {
+			preferredDistanceUnit = "Kilometers (km)";
+		}
+		
 		DecimalFormat df = new DecimalFormat("##");
 		DistanceUnit unit = new DistanceUnit(preferredDistanceUnit);
 		unit.setValue(distance);
