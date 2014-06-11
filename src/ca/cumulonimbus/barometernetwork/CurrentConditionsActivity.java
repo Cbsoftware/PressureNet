@@ -163,54 +163,10 @@ public class CurrentConditionsActivity extends Activity {
 				.getDefaultSharedPreferences(getApplicationContext());
 		return sharedPreferences.getBoolean("assume_social", false);
 	}
-
-	private void dispatchTakePictureIntent() {
-	    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-	    if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-	        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-	    }
-	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-	        Bundle extras = data.getExtras();
-	        Bitmap imageBitmap = (Bitmap) extras.get("data");
-	        
-	        log("current conditions receiving sky photo on activity result");
-	        
-	        try {
-		        // Prepare image for storage
-		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-	            byte[] b = baos.toByteArray();
-	            String encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
-	            byte[] byteArray = Base64.decode(encodedImageString, Base64.DEFAULT);
-		        
-	            // Guess location: TODO: implement a better method
-	            LocationManager lm = (LocationManager) this
-						.getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				double latitude = loc.getLatitude();
-				double longitude = loc.getLongitude();
-	        
-		        PnDb db = new PnDb(getApplicationContext());
-		        db.open();
-		        long id = db.addSkyPhoto("filename", latitude, longitude, System.currentTimeMillis(), byteArray);
-		        db.close();
-		        
-		        log("current conditions added sky photo ID " + id);
-	        } catch (Exception e) {
-	        	if(e!=null) {
-	        		log(e.getMessage() + " error in storing photo");
-	        	}
-	        }
-	        
-	        //Toast.makeText(getApplicationContext(), "Added image ID " + id, Toast.LENGTH_LONG).show();
-	        //mImageView.setImageBitmap(imageBitmap);
-	        finish();
-	    }
+	    
 	}
 	
 	@Override

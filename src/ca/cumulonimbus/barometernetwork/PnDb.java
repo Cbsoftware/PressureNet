@@ -13,8 +13,7 @@ public class PnDb {
 	// Tables
 	public static final String SEARCH_LOCATIONS_TABLE = "pn_searchlocations";
 	public static final String CONDITIONS_DELIVERED = "conditions_delivered";
-	public static final String SKY_PHOTOS = "sky_photos";
-	
+
 	// Search Locations Fields
 	public static final String KEY_ROW_ID = "_id";
 	public static final String KEY_SEARCH_TEXT = "search_text";
@@ -51,12 +50,6 @@ public class PnDb {
 			+ " text not null, " + KEY_LATITUDE + " real not null, "
 			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
 	
-	private static final String SKY_PHOTOS_TABLE_CREATE = "create table "
-			+ SKY_PHOTOS
-			+ " (_id integer primary key autoincrement, " + KEY_IMAGE_FILENAME
-			+ " text not null, " + KEY_LATITUDE + " real not null, "
-			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real, " + KEY_THUMBNAIL + " blob)";
-
 
 	private static final String DATABASE_NAME = "PnDb";
 	private static final int DATABASE_VERSION = 15; 
@@ -77,49 +70,7 @@ public class PnDb {
 	public void close() {
 		mDbHelper.close();
 	}
-	
-	
-	/**z
-	 * Add new sky photo
 
-	 * @return
-	 */
-	public long addSkyPhoto(String filename, double latitude, double longitude, long time, byte[] thumb) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(KEY_IMAGE_FILENAME, filename);
-		initialValues.put(KEY_LATITUDE, latitude);
-		initialValues.put(KEY_LONGITUDE, longitude);
-		initialValues.put(KEY_TIME, time);
-		initialValues.put(KEY_THUMBNAIL, thumb);
-		return mDB.insert(SKY_PHOTOS, null, initialValues);
-	}
-
-	/**
-	 * Fetch local, recent sky photos
-	 *  
-	 * @return
-	 */
-	public Cursor fetchLocalRecentSkyPhotos(double minLat, double maxLat, double minLon, double maxLon, long timeAgo) {
-		return mDB.query(SKY_PHOTOS, new String[] { KEY_ROW_ID,
-				KEY_IMAGE_FILENAME, KEY_LATITUDE, KEY_LONGITUDE, KEY_TIME, KEY_THUMBNAIL },
-				KEY_TIME + " > ? and " + 
-				KEY_LATITUDE + " > ? and " + 
-				KEY_LATITUDE + " < ? and " +
-				KEY_LONGITUDE +" > ? and " +
-				KEY_LONGITUDE +" < ?", 
-				new String[] {timeAgo + "", minLat + "", maxLat + "", minLon + "", maxLon + ""},
-				null, null, KEY_TIME);
-	}
-	
-
-	/**
-	 * Delete a sky photo
-	 */
-	public void deleteSkyPhoto(int id) {
-		mDB.execSQL("delete from " + SKY_PHOTOS + " where " + KEY_ROW_ID + "=" + id);
-	}
-	
-	
 	/**
 	 * Add new condition delivery
 
