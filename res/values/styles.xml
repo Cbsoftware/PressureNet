@@ -1,27 +1,50 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="PressureNetTheme" parent="android:Theme.Holo.Light">
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
+    </style>
+
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="RobotoButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
     <style name="CustomTheme" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
         <item name="android:actionMenuTextAppearance">@style/ActionBarStyle.MenuTextStyle</item>
-        <item name="android:actionMenuTextColor">@android:color/white</item> 
-        <item name="android:homeAsUpIndicator">@drawable/ic_up</item> 
+        <item name="android:actionMenuTextColor">@android:color/white</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_up</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="CustomThemeDialog" parent="android:Theme.Holo.Light.Dialog">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="CustomThemeDialogDark" parent="android:Theme.Holo.Dialog">
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="ActionBarStyle" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">#0099CC</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="ActionBarStyle.MenuTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
         <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="android:buttonStyle">@style/RobotoButtonStyle</item>
     </style>
 
     <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">

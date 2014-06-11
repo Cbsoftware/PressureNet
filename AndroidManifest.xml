@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0404073"
-    android:versionName="4.4.7RC" >
+    android:versionCode="0404083"
+    android:versionName="4.4.8RC" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -32,7 +32,8 @@
 
     <application
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:theme="@style/PressureNetTheme" >
         <service
             android:name="ca.cumulonimbus.pressurenetsdk.CbService"
             android:enabled="true" >
@@ -119,18 +120,6 @@
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.SkyPhotosActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="Sky photos"
-            android:theme="@style/CustomTheme"
-            android:excludeFromRecents="true" 
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
-        </activity>
-        
-        <activity
             android:name="ca.cumulonimbus.barometernetwork.PNDVActivity"
             android:excludeFromRecents="true"
             android:label="@string/pndv"
@@ -179,15 +168,7 @@
             android:theme="@style/CustomThemeDialog"
             android:excludeFromRecents="true" >
         </activity>
-         <activity
-            android:name="ca.cumulonimbus.barometernetwork.MSLPActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="Mean Sea-Level Pressure"
-            android:theme="@style/CustomThemeDialog"
-            android:excludeFromRecents="true" >
-        </activity>
-     
-        <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
+   	    <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
             <intent-filter>
                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
 				<action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
