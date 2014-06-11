@@ -1,5 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -48,6 +50,12 @@ public class WelcomeActivity extends Activity {
 		return hasBarometer;
 	}
 	
+	private void log(String message) {
+		if(PressureNETConfiguration.DEBUG_MODE) {
+			System.out.println(message);
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,6 +92,16 @@ public class WelcomeActivity extends Activity {
 		}
 		spinnerWelcomeSharing.setSelection(positionShare);
 	
+		// set default units that are region aware/localized
+		Locale current = getResources().getConfiguration().locale;
+		if(current.getCountry().equals("US")) {
+			// default to 'ft' and 'F'
+		      SharedPreferences.Editor editor = settings.edit();
+		      editor.putString("distance_units", "Feet (ft)");
+		      editor.putString("temperature_units", "Fahrenheit (¡F)");
+		      editor.commit();
+		}
+		
 		closeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

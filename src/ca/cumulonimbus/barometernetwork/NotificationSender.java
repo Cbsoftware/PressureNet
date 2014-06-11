@@ -371,9 +371,14 @@ public class NotificationSender extends BroadcastReceiver {
 				.getDefaultSharedPreferences(mContext);
 		String preferredDistanceUnit = sharedPreferences.getString("distance_units", "Kilometers (km)");
 		
-		// Use km instead of m, event if preference is m
+		// Use km instead of m, even if preference is m
 		if (preferredDistanceUnit.equals("Meters (m)")) {
 			preferredDistanceUnit = "Kilometers (km)";
+		}
+		
+		// Use mi instead of ft, even if preference is ft
+		if (preferredDistanceUnit.equals("Feet (ft)")) {
+			preferredDistanceUnit = "Miles (mi)";
 		}
 		
 		DecimalFormat df = new DecimalFormat("##");
