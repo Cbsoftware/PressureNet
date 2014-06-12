@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Notification unit improvements\n• Nexus 5 fixes (Please help test!)\n• Performance improvements\n"
+            android:text="• Weather notification improvements\n• Nexus 5 fixes\n• Performance improvements\n"
             android:textSize="16dp" />
 
         <TextView
