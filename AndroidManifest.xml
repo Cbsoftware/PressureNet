@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0404084"
-    android:versionName="4.4.8" >
+    android:versionCode="0405002"
+    android:versionName="4.5.0BETA" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -43,16 +43,6 @@
             </intent-filter>
         </service>
         <activity android:name="org.achartengine.GraphicalActivity" />
-        <activity
-            android:name="ca.cumulonimbus.barometernetwork.DataManagementActivity"
-            android:excludeFromRecents="true"
-            android:label="Data cache"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
-            android:theme="@style/CustomTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
-        </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PlayServicesLegalActivity"
             android:excludeFromRecents="true"
@@ -223,6 +213,10 @@
 
         <uses-library android:name="com.google.android.maps" />
 
+        <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+        
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="" />

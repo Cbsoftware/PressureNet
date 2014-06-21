@@ -88,7 +88,7 @@ import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbContributions;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbObservation; 
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
@@ -666,7 +666,7 @@ public class BarometerNetworkActivity extends Activity implements
 		preferenceDistanceUnit = sharedPreferences.getString("distance_units", "Kilometers (km)");
 		preferenceMSLP = sharedPreferences.getBoolean("mslp", false);
 		preferenceTemperatureUnit = sharedPreferences.getString(
-				"temperature_units", "Celsius (¡C)");
+				"temperature_units", "Celsius (Â°C)");
 		preferenceCollectionFrequency = sharedPreferences.getString(
 				"autofrequency", "10 minutes");
 		preferenceShareData = sharedPreferences.getBoolean("autoupdate", true);
@@ -2324,11 +2324,6 @@ public class BarometerNetworkActivity extends Activity implements
 						"No location found, can't submit current condition",
 						Toast.LENGTH_LONG).show();
 			}
-		} else if (item.getItemId() == R.id.menu_data_management) {
-			Intent intent = new Intent(getApplicationContext(),
-					DataManagementActivity.class);
-			startActivityForResult(intent, REQUEST_DATA_CHANGED);
-
 		} else if (item.getItemId() == R.id.menu_about) {
 			Intent intent = new Intent(getApplicationContext(),
 					AboutActivity.class);
