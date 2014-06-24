@@ -284,6 +284,8 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private long lastSubmitStart = 0;
 
+	private final int DEFAULT_ZOOM = 9;
+	
 	private static final String moon_phase_name[] = { "New Moon", // 0
 			"Waxing crescent", // 1
 			"First quarter", // 2
@@ -296,7 +298,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
 	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
 
-	private boolean displayPressure = true;
+	private boolean displayPressure = false;
 	private boolean displayConditions = true;
 	private boolean displaySatellite = false;
 	
@@ -617,14 +619,14 @@ public class BarometerNetworkActivity extends Activity implements
 	public void goToMyLocation() {
 		try {
 			if(bestLocation != null) {
-				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), 11));
+				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
 			} else {
 				LocationManager lm = (LocationManager) this
 						.getSystemService(Context.LOCATION_SERVICE);
 				Location loc = lm
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				if (loc.getLatitude() != 0) {
-					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), 11));
+					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), DEFAULT_ZOOM));
 				} 
 			}
 			updateMapInfoText();
@@ -647,7 +649,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getMap();
 		try {
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-					latitude, longitude), 11));
+					latitude, longitude), DEFAULT_ZOOM));
 			updateMapInfoText();
 		} catch (Exception e) {
 			// e.printStackTrace();
@@ -1023,7 +1025,10 @@ public class BarometerNetworkActivity extends Activity implements
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
 				
-				makeGlobalMapCall();
+				if(displayPressure) {
+					makeGlobalMapCall();	
+				}
+				
 				makeGlobalConditionsMapCall();
 			}
 		});
@@ -2026,6 +2031,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private void setInitialMapButtonStates() {
 		dimSatelliteButton();
+		dimBarometerButton();
 	}
 	
 	/**
@@ -2147,7 +2153,9 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
-				makeGlobalMapCall();
+				if(displayPressure) {
+					makeGlobalMapCall();	
+				}
 				makeGlobalConditionsMapCall();
 			}
 			
