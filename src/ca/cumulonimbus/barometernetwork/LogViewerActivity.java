@@ -1,5 +1,8 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,21 +22,25 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
@@ -51,6 +58,9 @@ public class LogViewerActivity extends Activity {
 	Messenger mService = null;
 
 	private Messenger mMessenger = new Messenger(new IncomingHandler());
+	boolean mExternalStorageAvailable = false;
+	boolean mExternalStorageWriteable = false;
+
 
 	Button oneHour;
 	Button sixHours;
@@ -61,6 +71,78 @@ public class LogViewerActivity extends Activity {
 	private String preferenceUnit;
 	
 	private int hoursSelected = 6;
+	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.my_data_menu, menu);
+		return true;
+	}
+	
+
+	/**
+	 * Check the available storage options. Used for logging to SD card.
+	 */
+	public void checkStorage() {
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else {
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menu_export) {
+			if (mExternalStorageWriteable) {
+				File export = new File(
+						Environment.getExternalStorageDirectory(),
+						"PressureNet-export.csv");
+				try {
+					BufferedWriter out = new BufferedWriter(new FileWriter(
+							export.getAbsolutePath(), false));
+					out.write("Time,Pressure,Latitude,Longitude\n");
+					for (CbObservation obs : recents) {
+						String data = obs.getTime() + ","
+								+ obs.getObservationValue() + ","
+								+ obs.getLocation().getLatitude() + ","
+								+ obs.getLocation().getLongitude() + "\n";
+						out.write(data);
+					}
+					out.close();
+
+				} catch (Exception e) {
+					Toast.makeText(getApplicationContext(),
+							"Couldn't save data", Toast.LENGTH_LONG).show();
+				}
+
+				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
+						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
+						BarometerNetworkActivity.GA_ACTION_BUTTON, 
+						"export", 
+						null).build());
+				
+				Toast.makeText(
+						getApplicationContext(),
+						"Saved " + recents.size() + " measurements to "
+								+ export.getAbsolutePath(),
+						Toast.LENGTH_LONG).show();
+			}
+		} 
+		return super.onOptionsItemSelected(item);
+	}
+
 	
 	class IncomingHandler extends Handler {
 		@Override
@@ -68,7 +150,7 @@ public class LogViewerActivity extends Activity {
 			switch (msg.what) {
 			case CbService.MSG_LOCAL_RECENTS:
 
-				ArrayList<CbObservation> recents = (ArrayList<CbObservation>) msg.obj;
+				recents = (ArrayList<CbObservation>) msg.obj;
 				Collections.sort(recents,
 						new CbScience.TimeComparator());
 				try {
@@ -353,7 +435,7 @@ public class LogViewerActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.logviewer);
 		bindCbService();
-		
+		checkStorage();
 		 String ns = Context.NOTIFICATION_SERVICE;
 		 NotificationManager nMgr = (NotificationManager) getSystemService(ns);
 		 nMgr.cancel(NotificationSender.PRESSURE_NOTIFICATION_ID);
