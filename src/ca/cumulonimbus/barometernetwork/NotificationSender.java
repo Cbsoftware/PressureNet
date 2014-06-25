@@ -182,13 +182,18 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		long waitDiff = CbService.stringTimeToLongHack(prefTimeWait);
 		
-		if(now - lastConditionsSubmit < waitDiff) {
-			log("bailing on conditions notifications, recently submitted one");
-			return;
-		}
-		if (now - lastNearbyConditionReportNotification < waitDiff) {
-			log("bailing on conditions notification, not 1h wait yet");
-			return;
+		boolean isCriticalToDeliver = (condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) || 
+										(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm)));
+		
+		if(!isCriticalToDeliver) {
+			if(now - lastConditionsSubmit < waitDiff) {
+				log("bailing on conditions notifications, recently submitted one");
+				return;
+			}
+			if (now - lastNearbyConditionReportNotification < waitDiff) {
+				log("bailing on conditions notification, not 1h wait yet");
+				return;
+			}
 		}
 		
 		if(wasRecentlyDelivered(condition)) {
@@ -364,6 +369,12 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch(NoSuchMethodError nsme) {
 			// 
 		}
+		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
+				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+				"conditions_notification_delivered_final", 
+				condition.getGeneral_condition(), 
+				null).build());
+	
 	}
 	
 	private String displayDistance(double distance) {
