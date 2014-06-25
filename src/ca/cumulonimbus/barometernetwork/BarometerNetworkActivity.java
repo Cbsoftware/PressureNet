@@ -80,6 +80,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.ToggleButton;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -308,11 +309,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private boolean isPrimaryApp = true;
 	
+	private long appStartTime = 0;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		dataReceivedToPlot = false;
+		appStartTime = System.currentTimeMillis();
 		setContentView(R.layout.main);
 		checkNetwork();
 		checkSensors();
@@ -514,12 +518,12 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void makeGlobalConditionsMapCall() {
 		long now = System.currentTimeMillis();
-		long acceptableLocationTimeDifference = 1000 * 60 * 5;
+		long acceptableLocationTimeDifference = 1000 * 30;
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		// when was the last search locations API call?
 		lastGlobalConditionsApiCall = sharedPreferences.getLong(
-				"lastGlobalConditionsApiCall", now - (1000 * 60 * 10));
+				"lastGlobalConditionsApiCall", now - (1000 * 60 * 2));
 		if (now - lastGlobalConditionsApiCall > acceptableLocationTimeDifference) {
 			log("making global conditions call");
 			CbApiCall globalMapCall = new CbApiCall();
@@ -882,6 +886,7 @@ public class BarometerNetworkActivity extends Activity implements
 				if(displayPressure) {
 					displayMapToast("Showing pressure data");
 					restoreBarometerButton();
+					makeGlobalMapCall();
 				} else {
 					displayMapToast("Hiding pressure data");
 					dimBarometerButton();
@@ -899,6 +904,7 @@ public class BarometerNetworkActivity extends Activity implements
 				if(displayConditions) {
 					displayMapToast("Showing weather conditions");
 					restoreWeatherButton();
+					makeGlobalConditionsMapCall();
 				} else {
 					displayMapToast("Hiding weather conditions");
 					dimWeatherButton();
@@ -1017,7 +1023,7 @@ public class BarometerNetworkActivity extends Activity implements
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
 				lastGlobalApiCall = System.currentTimeMillis()
-						- (1000 * 60 * 20);
+						- (1000 * 60 * 1);
 				SharedPreferences.Editor editor = sharedPreferences.edit();
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
@@ -1894,9 +1900,9 @@ public class BarometerNetworkActivity extends Activity implements
 					listRecents = (ArrayList<CbObservation>) msg.obj;
 					if(displayPressure) {
 						addDataToMap();
-					}
-					if(displayConditions) {
-						addConditionsToMap();
+						if(displayConditions) {
+							addConditionsToMap();
+						}
 					}
 				}
 				break;
@@ -3198,16 +3204,20 @@ public class BarometerNetworkActivity extends Activity implements
 	private void addConditionsToMap() {
 		int currentCur = 0;
 		int totalAllowed = 30;
-
+		
+		
+		
 		if (currentConditionRecents != null) {
 			log("adding current conditions to map: "
 					+ currentConditionRecents.size());
+			
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
 
 				LatLng point = new LatLng(
 						condition.getLocation().getLatitude(), condition
 								.getLocation().getLongitude());
+				
 				log("getting layer drawable for condition "
 						+ condition.getGeneral_condition() + " id " + condition.getUser_id());
 				
@@ -3333,7 +3343,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
 		long startTime = System.currentTimeMillis()
-				- (int) ((.5 * 60 * 60 * 1000));
+				- (int) ((2 * 60 * 60 * 1000));
 		long endTime = System.currentTimeMillis();
 		CbApiCall api = new CbApiCall();
 
@@ -3343,7 +3353,7 @@ public class BarometerNetworkActivity extends Activity implements
 		api.setMaxLon(loc.getLongitude() + .1);
 		api.setStartTime(startTime);
 		api.setEndTime(endTime);
-		api.setLimit(100);
+		api.setLimit(1000);
 		return api;
 	}
 
