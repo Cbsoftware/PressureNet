@@ -295,7 +295,6 @@ public class BarometerNetworkActivity extends Activity implements
 			"Third quarter", // 6
 			"Waning crescent" }; // 7
 
-	private ArrayList<Marker> conditionsMarkers = new ArrayList<Marker>();
 	private ArrayList<MarkerOptions> animationMarkerOptions = new ArrayList<MarkerOptions>();
 
 	private boolean displayPressure = false;
@@ -558,9 +557,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				mMap.getUiSettings().setZoomControlsEnabled(false);
 				mMap.getUiSettings().setCompassEnabled(false);
-
-				mMap.setInfoWindowAdapter(new MapWindowAdapter(this));
-
+				
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 
 					@Override
@@ -1895,8 +1892,12 @@ public class BarometerNetworkActivity extends Activity implements
 					createAndShowChart();
 				} else {
 					listRecents = (ArrayList<CbObservation>) msg.obj;
-					addDataToMap();
-					addConditionsToMap();
+					if(displayPressure) {
+						addDataToMap();
+					}
+					if(displayConditions) {
+						addConditionsToMap();
+					}
 				}
 				break;
 			case CbService.MSG_STATS:
@@ -3219,12 +3220,23 @@ public class BarometerNetworkActivity extends Activity implements
 				Drawable draw = getSingleDrawable(drLayer);
 
 				Bitmap image = drawableToBitmap(draw, null);
+				
+				long timeSinceSubmit = System.currentTimeMillis() - condition.getTime();
+				long minutesAgo = timeSinceSubmit / (1000 * 60);
 
-				Marker marker = mMap.addMarker(new MarkerOptions().position(
-						point).icon(BitmapDescriptorFactory.fromBitmap(image)));
-				marker.showInfoWindow();
-				conditionsMarkers.add(marker);
-
+				String markerTitle = condition.getGeneral_condition();
+				if(markerTitle.equals(getString(R.string.extreme))) {
+					markerTitle = condition.getUser_comment();
+				} else if (markerTitle.equals(getString(R.string.precipitation))) {
+					markerTitle = condition.getPrecipitation_type();
+				}
+				
+				Marker marker = mMap.addMarker(new MarkerOptions()
+										.position(point)
+										.title(markerTitle)
+										.snippet(minutesAgo + " minutes ago")
+										.icon(BitmapDescriptorFactory.fromBitmap(image)));
+				
 				currentCur++;
 				if (currentCur > totalAllowed) {
 					break;
@@ -3232,12 +3244,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 			currentConditionRecents.clear();
-			conditionsMarkers.clear();
 		} else {
 			log("addDatatomap conditions recents is null");
 		}
-
-		bringConditionsToFront();
 	}
 
 	// Put a bunch of barometer readings and current conditions on the map.
@@ -3312,21 +3321,6 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			log("addDatatomap listrecents is null");
 		}
-	}
-
-	private void bringConditionsToFront() {
-		log("posted conditions front");
-
-		if (conditionsMarkers != null) {
-			log("bringing conditions to front " + conditionsMarkers.size());
-			for (Marker marker : conditionsMarkers) {
-				marker.showInfoWindow();
-			}
-		}
-		/*
-		 * ConditionsMapper mapper = new ConditionsMapper(); Handler handler =
-		 * new Handler(); handler.postDelayed(mapper, 100);
-		 */
 	}
 
 	/**
