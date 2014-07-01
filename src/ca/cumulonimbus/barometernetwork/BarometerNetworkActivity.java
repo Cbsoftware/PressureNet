@@ -150,6 +150,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
 	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
+	private ArrayList<CbCurrentCondition> localConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbStats> statsRecents = new ArrayList<CbStats>();
 
@@ -310,6 +311,10 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean isPrimaryApp = true;
 	
 	private long appStartTime = 0;
+	
+	private Handler appHintsHandler;
+	
+	private boolean userPrompted = false;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -611,7 +616,43 @@ public class BarometerNetworkActivity extends Activity implements
 				.getMap();
 
 		// Set default coordinates (centered around the user's location)
-		goToMyLocation();
+		appStartGoToMyLocation();
+	}
+	
+	/**
+	 * Use the recent network location to go to the user's location on the map
+	 */
+	public void appStartGoToMyLocation() {
+		try {
+			if(bestLocation != null) {
+				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
+			} else {
+				LocationManager lm = (LocationManager) this
+						.getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				if (loc.getLatitude() != 0) {
+					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), DEFAULT_ZOOM));
+				} 
+			}
+			updateMapInfoText();
+
+		} catch (Exception e) {
+
+		}
+	}
+	
+	private void delayedConditionsPrompt() {
+		appHintsHandler = new Handler();
+		appHintsHandler.postDelayed( new NoConditions(), 2000);
+	}
+	
+	private class NoConditions implements Runnable {
+
+		@Override
+		public void run() {
+			updateLocalConditions();
+		}
 	}
 
 	/**
@@ -1483,6 +1524,13 @@ public class BarometerNetworkActivity extends Activity implements
 		toast.show();
 	}
 	
+	private void displayLongMapToast(String message) {
+		Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 300);
+		toast.show();
+	}
+	
+	
 	/**
 	 * Get simple counts from the database
 	 * to tell the user how much they've contributed
@@ -1749,6 +1797,29 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/**
+	 * Query the database for locally stored current conditions
+	 * 
+	 * @param api
+	 */
+	private void askForLocalConditionRecents() {
+
+		if (mBound) {
+			log("asking for current conditions");
+			Message msg = Message.obtain(null,
+					CbService.MSG_GET_LOCAL_CONDITIONS, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+
+	
+	/**
 	 * Query the database for locally stored observations with the intent to
 	 * display on a time series chart
 	 * 
@@ -1995,6 +2066,10 @@ public class BarometerNetworkActivity extends Activity implements
 					isPrimaryApp = false;
 				}
 				break;
+			case CbService.MSG_LOCAL_CONDITIONS:
+				localConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
+				updateLocalConditions();
+				break;
 			default:
 				log("received default message");
 				super.handleMessage(msg);
@@ -2002,6 +2077,27 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
+	private void updateLocalConditions() {
+		// if the app has just been started and there are no conditions nearby, 
+		// prompt the user
+		long now = System.currentTimeMillis();
+		if(now - appStartTime < (1000 * 5)) {
+			if( localConditionRecents.size() < 1) {
+				if(userPrompted == false) {
+					displayLongMapToast("We don't have any nearby weather reports. What's it like outside?");
+					restoreBarometerButton();
+					displayPressure = true;
+					makeGlobalMapCall();
+					loadRecents();
+					userPrompted = true;
+				}
+			} else {
+				dimBarometerButton();
+				displayPressure = false;
+			}
+		}
+	}
+	
 	private void enableReload() {
 		reloadGobalData.setEnabled(true);
 		reloadGobalData.setImageAlpha(255);
@@ -2157,6 +2253,8 @@ public class BarometerNetworkActivity extends Activity implements
 			sendChangeNotification();
 			getStoredPreferences();
 			askForBestLocation();
+			
+			delayedConditionsPrompt();
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
@@ -3357,6 +3455,39 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
+	private CbApiCall buildLocalConditionsAPICall(double hoursAgo) {
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
+
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+
+		if (visibleBound != null) {
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("no map center, bailing on map call");
+			return api;
+		}
+
+		api.setMinLat(minLat);
+		api.setMaxLat(maxLat);
+		api.setMinLon(minLon);
+		api.setMaxLon(maxLon);
+		api.setStartTime(startTime);
+		api.setEndTime(endTime);
+		api.setLimit(500);
+		return api;
+	}
+	
 	private CbApiCall buildMapAPICall(double hoursAgo) {
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
@@ -3611,6 +3742,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if (displayConditions) {
 			askForCurrentConditionRecents(conditionsAPI);
 		}
+		askForLocalConditionRecents();
 	}
 
 	// Stop listening to the barometer when our app is paused.
