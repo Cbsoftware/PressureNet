@@ -851,6 +851,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		setInitialMapButtonStates();
 		
+		animationProgress.setEnabled(false);
+		
 		buttonAltitudeOverride.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -997,6 +999,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				
 				if (!animationPlaying) {
 					if (animationDurationInMillis > 0) {
 						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
@@ -1564,7 +1567,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if( (animationStep < 1) || (animationStep >= 99)) { 
 			animationStep = 0;
 			animationProgress.setProgress(0);
-		
+			animationProgress.setEnabled(true);
 			conditionAnimationRecents.clear();
 			animationMarkerOptions.clear();
 			

@@ -215,7 +215,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
-        android:progressDrawable="@drawable/progress" />
+        android:progressDrawable="@drawable/progress"/>
 
     <LinearLayout
         android:id="@+id/layoutGraph"
@@ -505,7 +505,8 @@
                 android:layout_toLeftOf="@id/imageButtonAnimationSettings"
                 android:layout_toRightOf="@id/imageButtonPlay"
                 android:max="100"
-                android:paddingTop="6dp" />
+                android:paddingTop="6dp"
+                android:enabled="false" />
         </RelativeLayout>
 
         <TextView
