@@ -485,7 +485,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void makeGlobalMapCall() {
 		long currentTime = System.currentTimeMillis();
-		long acceptableTimeDiff = 1000 * 60 * 5;
+		long acceptableTimeDiff = 1000 * 60 * 1;
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
 		disableReload();

@@ -235,7 +235,7 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		log("haversine inputs: " + notificationLatitude + " " + notificationLongitude + " " + condition.getLat() + " " + condition.getLon());
 		double distance = CbScience.haversine(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
-		double angle = CbScience.angleEstimate(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
+		double angle = CbScience.angle(notificationLatitude, notificationLongitude, condition.getLat(), condition.getLon());
 		// double angle = CbScience.angleEstimate(condition.getLat(), condition.getLon(), notificationLatitude, notificationLongitude);
 		log("notification location " + distance + " " + angle);
 		
