@@ -336,9 +336,15 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
+		//showNewWelcome();
 	}
 	
-	private void askIfPrimary() {
+	private void showNewWelcome() {
+		Intent intent = new Intent(this, NewWelcomeActivity.class);
+		startActivity(intent);
+	}
+	
+	private void askIfPrimary() {	
 		if (mBound) {
 			log("app asking if primary");
 			Message msg = Message.obtain(null,
@@ -387,31 +393,37 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Update local location data with the last known location.
 	 */
 	private void setLastKnownLocation() {
-		try {
-			LocationManager lm = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			bestLocation = loc;
 
-			double latitude = loc.getLatitude();
-			double longitude = loc.getLongitude();
-			double altitude = loc.getAltitude();
-			mLatitude = latitude;
-			mLongitude = longitude;
-			mAltitude = altitude;
-			
-			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-			buttonMyLocation.setImageAlpha(255);
-			locationAvailable = true;
-		} catch (Exception e) {
-			// everything stays as previous, likely 0
-			// Toast.makeText(getApplicationContext(), "Location not found",
-			// Toast.LENGTH_SHORT).show();
-			buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-			// buttonMyLocation.setImageAlpha(100);
-			locationAvailable = false;
+		LocationManager lm = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		Location loc = lm
+				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		if (loc == null) {
+			loc = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+			log("last known network location null, trying passive");
 		}
+		
+		if (loc == null) {
+			log("location still null, no other options");
+			locationAvailable = false;
+			return;
+		}
+		
+		
+		
+		bestLocation = loc;
+
+		double latitude = loc.getLatitude();
+		double longitude = loc.getLongitude();
+		double altitude = loc.getAltitude();
+		mLatitude = latitude;
+		mLongitude = longitude;
+		mAltitude = altitude;
+		
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+		buttonMyLocation.setImageAlpha(255);
+		locationAvailable = true;
+		
 	}
 
 	/**
