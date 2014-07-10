@@ -8,11 +8,40 @@
         android:id="@+id/welcome_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:text="Welcome to PressureNet!"
-        android:textSize="40dip"
-        android:layout_alignParentTop="true" />
-    
+        android:textSize="40dip" />
 
+    <ImageView
+        android:id="@+id/welcome_weather_screenshot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/welcome_label"
+        android:src="@drawable/weather_screenshot" />
+
+    <TextView
+        android:id="@+id/welcome_new_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/welcome_weather_screenshot"
+        android:text="PressureNet is a new kind of weather app. Your barometer!"
+        android:textSize="20dip" />
+
+    <Spinner
+        android:id="@+id/spinnerWelcomeSharing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="18dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true">
+    </Spinner>
     
+    <Button
+        android:id="@+id/buttonNewWelcomeNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="NEXT!"/>
 
 </RelativeLayout>
