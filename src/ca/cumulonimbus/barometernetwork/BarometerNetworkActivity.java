@@ -2273,6 +2273,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
+				mMap.clear();
 				if(displayPressure) {
 					makeGlobalMapCall();	
 				}
