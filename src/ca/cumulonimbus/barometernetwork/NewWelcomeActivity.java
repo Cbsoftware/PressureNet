@@ -2,6 +2,7 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.util.Locale;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,7 +28,13 @@ public class NewWelcomeActivity extends FragmentActivity {
 	 */
 	ViewPager mViewPager;
 
-
+	
+	private void log(String message) {
+		if(PressureNETConfiguration.DEBUG_MODE) {
+			System.out.println(message);
+		}
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
