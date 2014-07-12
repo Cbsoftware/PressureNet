@@ -7,20 +7,32 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
-public class NewWelcomeIntroFragment extends Fragment {
+public class NewWelcomeIntroFragment extends Fragment implements OnClickListener {
 
 	Context context;
 	boolean hasBarometer = true;
 	Spinner spinnerWelcomeSharing;
+	Button nextButton;
 	
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
+	ViewPager pager;
+	
+	public void moveNext() {
+	    //it doesn't matter if you're already in the last item
+	    pager.setCurrentItem(pager.getCurrentItem() + 1);
+	}
+
 	/**
 	 * Check if we have a barometer. Use info to disable menu items, choose to
 	 * run the service or not, etc.
@@ -39,6 +51,9 @@ public class NewWelcomeIntroFragment extends Fragment {
 		context = v.getContext();
 		
 		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+		
+		nextButton = (Button) v.findViewById(R.id.buttonNewWelcomeNext);
+		nextButton.setOnClickListener(this);
 		
 		ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter
 				.createFromResource(context, R.array.privacy_settings,
@@ -73,5 +88,17 @@ public class NewWelcomeIntroFragment extends Fragment {
 
 		// updateView();
 		return v;
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.buttonNewWelcomeNext:
+			pager = (ViewPager) getActivity().findViewById(R.id.pager);
+			moveNext();	
+			break;
+		default:
+			break;
+		}
 	}
 }
