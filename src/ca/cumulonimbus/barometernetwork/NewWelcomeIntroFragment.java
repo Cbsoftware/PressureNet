@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class NewWelcomeIntroFragment extends Fragment implements OnClickListener {
+public class NewWelcomeIntroFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
 
 	Context context;
 	boolean hasBarometer = true;
@@ -74,6 +76,8 @@ public class NewWelcomeIntroFragment extends Fragment implements OnClickListener
 			}
 		}
 		spinnerWelcomeSharing.setSelection(positionShare);
+		
+		spinnerWelcomeSharing.setOnItemSelectedListener(this);
 	
 		// set default units that are region aware/localized
 		Locale current = getResources().getConfiguration().locale;
@@ -100,5 +104,32 @@ public class NewWelcomeIntroFragment extends Fragment implements OnClickListener
 		default:
 			break;
 		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> v, View view,
+			int position, long id) {
+		if(v.getId()== R.id.spinnerNewWelcomeSharing) {
+			String[] array = getResources().getStringArray(R.array.privacy_settings);
+			saveSharingPrivacy(array[position]);
+			
+		} else {
+			System.out.println("setting preference none");
+		}
+		
+	}
+
+	public void saveSharingPrivacy(String value) {
+	      SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+	      SharedPreferences.Editor editor = settings.edit();
+	      System.out.println("setting preference " + value);
+	      editor.putString("sharing_preference", value);
+	      editor.commit();
+	}
+	
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		
+		
 	}
 }

@@ -336,7 +336,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		//showNewWelcome();
+		showNewWelcome();
 	}
 	
 	private void showNewWelcome() {
@@ -2099,7 +2099,9 @@ public class BarometerNetworkActivity extends Activity implements
 		if(now - appStartTime < (1000 * 5)) {
 			if( localConditionRecents.size() < 1) {
 				if(userPrompted == false) {
-					displayLongMapToast("We don't have any nearby weather reports. What's it like outside?");
+					if(hasWindowFocus()) {
+						displayLongMapToast("We don't have any nearby weather reports. What's it like outside?");
+					}
 					restoreBarometerButton();
 					displayPressure = true;
 					makeGlobalMapCall();
@@ -3355,10 +3357,17 @@ public class BarometerNetworkActivity extends Activity implements
 					markerTitle = condition.getPrecipitation_type();
 				}
 				
+				String minutesAgoMessage = "";
+				if (minutesAgo == 1) {
+					minutesAgoMessage = minutesAgo + " minute ago";
+				} else {
+					minutesAgoMessage = minutesAgo + " minutes ago";
+				}
+				
 				Marker marker = mMap.addMarker(new MarkerOptions()
 										.position(point)
 										.title(markerTitle)
-										.snippet(minutesAgo + " minutes ago")
+										.snippet(minutesAgoMessage)
 										.icon(BitmapDescriptorFactory.fromBitmap(image)));
 				
 				currentCur++;
