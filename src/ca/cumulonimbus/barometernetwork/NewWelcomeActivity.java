@@ -3,12 +3,14 @@ package ca.cumulonimbus.barometernetwork;
 import java.util.Locale;
 
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.widget.TextView;
 
 public class NewWelcomeActivity extends FragmentActivity {
 
@@ -48,6 +50,13 @@ public class NewWelcomeActivity extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		
+		int actionBarTitleId = getResources().getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+
+		TextView actionBarTextView = (TextView) findViewById(
+				actionBarTitleId);
+		actionBarTextView.setTextColor(Color.WHITE);
 	}
 
 	/**

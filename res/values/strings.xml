@@ -111,6 +111,23 @@
         \n\nYour device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
         which you can change below or through Settings.
         \n\nThe more people that use PressureNet, the better it gets, so tell your friends! Thank you!</string>
+    
+    <string name="newWelcomeBarometerIntro">PressureNet is a crowdsourced weather app. 
+        Your phone has a barometer which provides new weather data to scientists. Want a better forecast? 
+        Send and receive weather reports! 
+        
+        </string>
+    
+    <string name="newWelcomeNoBarometerIntro">PressureNet is a crowdsourced weather app. 
+        Your phone doesn\'t have a barometer, but that\'s okay. Want a better forecast? 
+       Send and receive weather reports!
+    </string>    
+    
+       <string name="newWelcomeSharingDescription">PressureNet collects sensor data: location and atmospheric pressure. 
+           We\'ll share this according to your preference, which you can change below and in Settings.
+        
+        </string>
+    
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
     <string name="sunny">Clear</string>
