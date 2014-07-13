@@ -46,7 +46,6 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
             android:label="Welcome to PressureNet"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

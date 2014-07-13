@@ -2,18 +2,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewWelcomeNotificationFragment" >
+    tools:context=".NewWelcomeNotificationFragment"
+        android:padding="8dip" >
 
     <TextView
         android:id="@+id/notifications_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notifications"
-        android:textSize="40dip"
-        android:layout_alignParentTop="true" />
-    
-    
-    
-    
+        android:layout_alignParentTop="true"
+        android:text="Weather Notifications"
+        android:textSize="40dip" />
+
+    <TextView
+        android:id="@+id/notification_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notifications_label"
+        android:text="@string/newWelcomeNotificationPrompt" />
+
+    <ImageView
+        android:id="@+id/notificationImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/notification_prompt"
+        android:src="@drawable/notification_preview" />
+
+    <Button
+        android:id="@+id/newWelcomeNotificationsNoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="No thanks" />
+
+    <Button
+        android:id="@+id/newWelcomeNotificationsYesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Yes please!" />
 
 </RelativeLayout>

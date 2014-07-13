@@ -122,11 +122,14 @@
         Your phone doesn\'t have a barometer, but that\'s okay. Want a better forecast? 
        Send and receive weather reports!
     </string>    
-    
-       <string name="newWelcomeSharingDescription">PressureNet collects sensor data: location and atmospheric pressure. 
-           We\'ll share this according to your preference, which you can change below and in Settings.
-        
-        </string>
+ 
+    <string name="newWelcomeSharingDescription">PressureNet collects sensor data: location and atmospheric pressure. 
+        We\'ll share this according to your preference, which you can change below and in Settings.
+    </string>
+
+    <string name="newWelcomeNotificationPrompt">Users nearby you will deliver the most accurate weather notifications
+        possible. Would you like to receive notifications?
+    </string>
     
     <string name="closeWelcome">Okay, sounds good!</string>
     <string name="send_debug_log">Send Debug Log</string>
