@@ -11,22 +11,43 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="Weather Notifications"
-        android:textSize="40dip" />
+        android:textSize="30dip" />
 
-    <TextView
-        android:id="@+id/notification_prompt"
-        android:layout_width="wrap_content"
+    
+    <LinearLayout
+        android:id="@+id/newWelcomeIntroDescriptionLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/notifications_label"
-        android:text="@string/newWelcomeNotificationPrompt" />
+        android:orientation="vertical"
+        android:paddingTop="16dip" >
+	    
+	    
+	    <TextView
+	        android:id="@+id/notification_intro"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/newWelcomeNotificationIntro"
+	        android:textSize="16dip"
+            android:layout_weight=".3"/>
+	
+	    <ImageView
+	        android:id="@+id/notificationImage"
+	        android:layout_width="wrap_content"
+	        android:layout_height="200dip"
+	        android:src="@drawable/notification_preview"
+	        android:layout_weight=".3" />
 
-    <ImageView
-        android:id="@+id/notificationImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/notification_prompt"
-        android:src="@drawable/notification_preview" />
-
+	    <TextView
+	        android:id="@+id/notification_prompt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/newWelcomeNotificationPrompt"
+	        android:textSize="16dip"
+            android:layout_weight=".3" />
+	    
+    </LinearLayout>
+    
     <Button
         android:id="@+id/newWelcomeNotificationsNoButton"
         android:layout_width="wrap_content"

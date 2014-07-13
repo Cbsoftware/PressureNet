@@ -127,8 +127,12 @@
         We\'ll share this according to your preference, which you can change below and in Settings.
     </string>
 
-    <string name="newWelcomeNotificationPrompt">Users nearby you will deliver the most accurate weather notifications
-        possible. Would you like to receive notifications?
+    <string name="newWelcomeNotificationIntro">Users nearby you will deliver the most accurate weather notifications
+        possible. 
+    </string>
+    
+    
+    <string name="newWelcomeNotificationPrompt">Would you like to receive notifications?
     </string>
     
     <string name="closeWelcome">Okay, sounds good!</string>
