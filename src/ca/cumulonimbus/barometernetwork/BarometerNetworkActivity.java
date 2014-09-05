@@ -209,6 +209,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private Button inviteFriends;
 	
+	private Button buttonShowBarometerData;
+	private Button buttonWhatsItLikeOutside;
+	
+	private LinearLayout layoutNoConditionsPrompt;
+	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
 	Handler animationHandler = new Handler();
@@ -336,7 +341,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		showNewWelcome();
+		//showNewWelcome();
 	}
 	
 	private void showNewWelcome() {
@@ -861,9 +866,37 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		inviteFriends = (Button) findViewById(R.id.inviteFriends);
 		
+		buttonShowBarometerData = (Button) findViewById(R.id.imageButtonShowBarometerData);
+		buttonWhatsItLikeOutside = (Button) findViewById(R.id.imageButtonWhatsItLikeOutside);
+		
+		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+		
 		setInitialMapButtonStates();
 		
 		animationProgress.setEnabled(false);
+		
+		buttonShowBarometerData.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				restoreBarometerButton();
+				displayPressure = true;
+				makeGlobalMapCall();
+				loadRecents();
+				
+				layoutNoConditionsPrompt.setVisibility(View.GONE);
+			}
+		});
+		
+		buttonWhatsItLikeOutside.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				launchCurrentConditionsActivity();
+				layoutNoConditionsPrompt.setVisibility(View.GONE);
+			}
+		});
+		
 		
 		buttonAltitudeOverride.setOnClickListener(new OnClickListener() {
 			
@@ -2419,6 +2452,33 @@ public class BarometerNetworkActivity extends Activity implements
 		return super.onPrepareOptionsMenu(menu);
 	}
 
+	private void launchCurrentConditionsActivity() {
+		Intent intent = new Intent(getApplicationContext(),
+				CurrentConditionsActivity.class);
+		try {
+			if (mLatitude == 0.0) {
+				LocationManager lm = (LocationManager) this
+						.getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				mLatitude = loc.getLatitude();
+				mLongitude = loc.getLongitude();
+				mAltitude = loc.getAltitude();
+				mLocationAccuracy = loc.getAccuracy();
+			}
+
+			intent.putExtra("appdir", mAppDir);
+			intent.putExtra("latitude", mLatitude);
+			intent.putExtra("longitude", mLongitude);
+			log("starting condition " + mLatitude + " , " + mLongitude);
+			startActivity(intent);
+		} catch (NullPointerException e) {
+			Toast.makeText(getApplicationContext(),
+					"No location found, can't submit current condition",
+					Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_settings) {
@@ -2430,31 +2490,7 @@ public class BarometerNetworkActivity extends Activity implements
 			// send logs to Cumulonimbus
 			emailLogs();
 		} else if (item.getItemId() == R.id.menu_current_conditions) {
-			// Current conditions
-			Intent intent = new Intent(getApplicationContext(),
-					CurrentConditionsActivity.class);
-			try {
-				if (mLatitude == 0.0) {
-					LocationManager lm = (LocationManager) this
-							.getSystemService(Context.LOCATION_SERVICE);
-					Location loc = lm
-							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					mLatitude = loc.getLatitude();
-					mLongitude = loc.getLongitude();
-					mAltitude = loc.getAltitude();
-					mLocationAccuracy = loc.getAccuracy();
-				}
-
-				intent.putExtra("appdir", mAppDir);
-				intent.putExtra("latitude", mLatitude);
-				intent.putExtra("longitude", mLongitude);
-				log("starting condition " + mLatitude + " , " + mLongitude);
-				startActivity(intent);
-			} catch (NullPointerException e) {
-				Toast.makeText(getApplicationContext(),
-						"No location found, can't submit current condition",
-						Toast.LENGTH_LONG).show();
-			}
+			launchCurrentConditionsActivity();
 		} else if (item.getItemId() == R.id.menu_about) {
 			Intent intent = new Intent(getApplicationContext(),
 					AboutActivity.class);

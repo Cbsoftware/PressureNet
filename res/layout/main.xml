@@ -244,6 +244,55 @@
         </RelativeLayout>
     </LinearLayout>
 
+    
+    <LinearLayout
+        android:id="@+id/layoutNoConditionsPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/modeSelectionLayout"
+        android:background="#CCFFFFFF"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="visible" >
+     
+        <TextView
+            android:id="@+id/textNoConditionsPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No weather conditions nearby"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold"/>
+	    
+	    
+	    <LinearLayout
+	       android:id="@+id/layoutNoConditionsPrompt"
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:layout_above="@+id/modeSelectionLayout"
+	       android:orientation="horizontal"
+	       android:padding="4dp"
+	       android:visibility="visible" >        
+		        <Button
+		            android:id="@+id/imageButtonShowBarometerData"
+		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:drawableLeft="@drawable/ic_pressure"
+		            android:textColor="@android:color/black"
+		            android:text="Show barometer data" />
+		        
+		        <Button
+		            android:id="@+id/imageButtonWhatsItLikeOutside"
+		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:drawableLeft="@drawable/ic_conditions"
+		            android:textColor="@android:color/black"
+		            android:text="What's it like outside?" />
+	       </LinearLayout>
+        
+    </LinearLayout>
+    
     <LinearLayout
         android:id="@+id/layoutMapInformation"
         android:layout_width="match_parent"
