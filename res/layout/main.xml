@@ -253,7 +253,7 @@
         android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:padding="12dp"
-        android:visibility="visible" >
+        android:visibility="gone" >
      
         <TextView
             android:id="@+id/textNoConditionsPrompt"
@@ -265,7 +265,7 @@
 	    
 	    
 	    <LinearLayout
-	       android:id="@+id/layoutNoConditionsPrompt"
+	       android:id="@+id/layoutNoConditionsPromptBuuttons"
 	       android:layout_width="match_parent"
 	       android:layout_height="wrap_content"
 	       android:layout_above="@+id/modeSelectionLayout"

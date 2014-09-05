@@ -2132,13 +2132,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if(now - appStartTime < (1000 * 5)) {
 			if( localConditionRecents.size() < 1) {
 				if(userPrompted == false) {
-					if(hasWindowFocus()) {
-						displayLongMapToast("We don't have any nearby weather reports. What's it like outside?");
-					}
-					restoreBarometerButton();
-					displayPressure = true;
-					makeGlobalMapCall();
-					loadRecents();
+					layoutNoConditionsPrompt.setVisibility(View.VISIBLE);
 					userPrompted = true;
 				}
 			} else {
