@@ -5,5 +5,5 @@
         android:enabled="true"
         android:showAsAction="always"
         android:title="Export"
-        android:icon="@drawable/ic_share"/>
+        android:icon="@drawable/ic_export"/>
 </menu>
