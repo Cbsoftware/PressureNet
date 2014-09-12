@@ -2282,6 +2282,41 @@ public class BarometerNetworkActivity extends Activity implements
 		mainLayout.addView(chartView);
 	}
 
+
+	/** 
+	 * Use the app preferences to tell the SDK to poll
+	 * for nearby conditions or not.
+	 */
+	private void setNotificationDeliverySDKPreference() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+		boolean pressureNetOn = sharedPreferences.getBoolean("send_condition_notifications", false);
+		tellSDKToPollConditions(pressureNetOn);
+	}
+	
+	private void tellSDKToPollConditions(boolean pollConditions) {
+		if (mBound) {
+			log("telling SDK about condition delivery prefs " + pollConditions);
+
+			Message msg;
+			if(pollConditions) {
+				msg = Message
+						.obtain(null, CbService.MSG_LOCAL_CONDITION_OPT_IN, 0, 0);
+			} else {
+				msg = Message
+						.obtain(null, CbService.MSG_LOCAL_CONDITION_OPT_OUT, 0, 0);
+			}
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+	
 	/**
 	 * Communicate with CbService
 	 */
@@ -2299,6 +2334,8 @@ public class BarometerNetworkActivity extends Activity implements
 			askForBestLocation();
 			
 			delayedConditionsPrompt();
+			
+			setNotificationDeliverySDKPreference();
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
