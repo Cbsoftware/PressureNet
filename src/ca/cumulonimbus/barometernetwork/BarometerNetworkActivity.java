@@ -341,7 +341,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		//showNewWelcome();
+		showNewWelcome();
 	}
 	
 	private void showNewWelcome() {
@@ -349,6 +349,10 @@ public class BarometerNetworkActivity extends Activity implements
 		startActivity(intent);
 	}
 	
+	
+	/**
+	 * Multitenacy 
+	 */
 	private void askIfPrimary() {	
 		if (mBound) {
 			log("app asking if primary");
@@ -1853,8 +1857,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (mBound) {
 			log("asking for current conditions");
+			CbApiCall mapApiCall = buildMapAPICall(2);
 			Message msg = Message.obtain(null,
-					CbService.MSG_GET_LOCAL_CONDITIONS, 0, 0);
+					CbService.MSG_GET_LOCAL_CONDITIONS, mapApiCall);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
