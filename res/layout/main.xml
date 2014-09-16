@@ -51,8 +51,9 @@
             android:paddingBottom="8dp"
             android:paddingTop="4dp"
             android:text="Graph"
-            android:textColor="#004455" />
-
+            android:textColor="#004455"
+            android:visibility="gone"/>
+        
         <Button
             android:id="@+id/buttonSensorMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"

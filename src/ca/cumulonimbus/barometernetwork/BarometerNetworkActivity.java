@@ -341,7 +341,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		showNewWelcome();
+		// showNewWelcome();
 	}
 	
 	private void showNewWelcome() {
@@ -2121,6 +2121,7 @@ public class BarometerNetworkActivity extends Activity implements
 				break;
 			case CbService.MSG_LOCAL_CONDITIONS:
 				localConditionRecents = (ArrayList<CbCurrentCondition>) msg.obj;
+				log("app receiving " + localConditionRecents.size() + " local conditions");
 				updateLocalConditions();
 				break;
 			default:
@@ -2143,6 +2144,7 @@ public class BarometerNetworkActivity extends Activity implements
 			} else {
 				dimBarometerButton();
 				displayPressure = false;
+				layoutNoConditionsPrompt.setVisibility(View.INVISIBLE);
 			}
 		}
 	}
@@ -2337,7 +2339,7 @@ public class BarometerNetworkActivity extends Activity implements
 			sendChangeNotification();
 			getStoredPreferences();
 			askForBestLocation();
-			
+						
 			delayedConditionsPrompt();
 			
 			setNotificationDeliverySDKPreference();
