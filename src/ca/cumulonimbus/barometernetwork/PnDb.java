@@ -52,7 +52,7 @@ public class PnDb {
 	
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 16; 
+	private static final int DATABASE_VERSION = 17; 
 	// TODO: fix this nonsense
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
@@ -61,6 +61,7 @@ public class PnDb {
 	// 14 = 4.4.6
 	// 15 = 4.4.7
 	// 16 = 4.4.8
+	// 17 = 4.5
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -193,7 +194,7 @@ public class PnDb {
 	
 	private void showWhatsNew() {
 		// show What's New
-		Intent intent = new Intent(mContext, WhatsNewActivity.class);
+		Intent intent = new Intent(mContext, NewWelcomeActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		mContext.startActivity(intent);
 	}

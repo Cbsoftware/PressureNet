@@ -341,12 +341,6 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		// showNewWelcome();
-	}
-	
-	private void showNewWelcome() {
-		Intent intent = new Intent(this, NewWelcomeActivity.class);
-		startActivity(intent);
 	}
 	
 	/**
@@ -2361,6 +2355,7 @@ public class BarometerNetworkActivity extends Activity implements
 			intent.putExtra("latitude", mLatitude);
 			intent.putExtra("longitude", mLongitude);
 			log("starting condition " + mLatitude + " , " + mLongitude);
+			hideNoConditionsPrompt();
 			startActivity(intent);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),

@@ -71,18 +71,22 @@ public class NotificationSender extends BroadcastReceiver {
 					.getDefaultSharedPreferences(mContext);
 			boolean isOkayToDeliver = sharedPreferences.getBoolean("send_condition_notifications", false);
 			if(isOkayToDeliver) {
-				if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification")) {
-					CbCurrentCondition receivedCondition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification");
-					if(receivedCondition != null) {
-						EasyTracker.getInstance(context).send(MapBuilder.createEvent(
-								BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
-								"conditions_notification_delivered", 
-								receivedCondition.getGeneral_condition(), 
-								null).build());
-						deliverConditionNotification(receivedCondition);
+				try { 
+					if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification")) {
+						CbCurrentCondition receivedCondition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification");
+						if(receivedCondition != null) {
+							EasyTracker.getInstance(context).send(MapBuilder.createEvent(
+									BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
+									"conditions_notification_delivered", 
+									receivedCondition.getGeneral_condition(), 
+									null).build());
+							deliverConditionNotification(receivedCondition);
+						}
+					} else {
+						log("local conditions intent not sent, doesn't have extra");
 					}
-				} else {
-					log("local conditions intent not sent, doesn't have extra");
+				} catch(RuntimeException re) {
+					log("notificationsender runtime exception " + re.getMessage());
 				}
 			} else {
 				log("not delivering conditions notification, disabled in prefs");
