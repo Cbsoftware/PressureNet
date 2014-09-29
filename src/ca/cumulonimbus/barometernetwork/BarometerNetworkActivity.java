@@ -349,30 +349,6 @@ public class BarometerNetworkActivity extends Activity implements
 		startActivity(intent);
 	}
 	
-	
-	/**
-	 * Multitenacy 
-	 */
-	private void askIfPrimary() {	
-		if (mBound) {
-			log("app asking if primary");
-			Message msg = Message.obtain(null,
-					CbService.MSG_GET_PRIMARY_APP, 0, 0);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				// e.printStackTrace();
-			}
-		} else {
-			// log("error: not bound");
-		}
-	}
-	
-	private void runTests() {
-		askIfPrimary();
-	}
-	
 	/**
 	 * Establish which sensors we can access
 	 */
@@ -592,6 +568,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					@Override
 					public void onCameraChange(CameraPosition position) {
+						hideNoConditionsPrompt();
 						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 						imm.hideSoftInputFromWindow(
 								editLocation.getWindowToken(), 0);
@@ -1158,7 +1135,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				runTests();
+				hideNoConditionsPrompt();
 				int visible = layoutMapInfo.getVisibility();
 				if (activeMode.equals("map")) {
 					if (visible == View.VISIBLE) {
@@ -1210,6 +1187,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				hideNoConditionsPrompt();
 				if (activeMode.equals("contribute")) {
 					int visible = layoutContribute.getVisibility();
 					if (visible == View.VISIBLE) {
@@ -1273,141 +1251,11 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 		
-		graphMode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				int visible = layoutGraph.getVisibility();
-				if (visible == View.VISIBLE) {
-					// switch to map mode
-					
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					layoutMapInfo.setVisibility(View.GONE);
-					layoutMapControls.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-
-					graphMode.setBackgroundColor(Color.TRANSPARENT);
-				
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					removeChartFromLayout();
-
-					// set mode and load data
-					activeMode = "map";
-					loadRecents();
-					
-				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_MODE, 
-							"graph", 
-							 null).build());
-					
-					layoutGraph.setVisibility(View.VISIBLE);
-					activeMode = "graph";
-					removeChartFromLayout();
-					
-					mMap.clear();
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					hoursAgoSelected = 72;
-
-					displayMapToast("Loading graph");
-					log("making api call 72h for graph");
-					CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
-					makeStatsAPICall(api);
-
-					layoutGraph.setVisibility(View.VISIBLE);
-					layoutMapInfo.setVisibility(View.GONE);
-					layoutMapControls.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-					
-					mapMode.setBackgroundColor(Color.TRANSPARENT);
-					graphMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					animationMode.setBackgroundColor(Color.TRANSPARENT);
-					contributeMode.setBackgroundColor(Color.TRANSPARENT);
-				}
-			}
-		});
-
-		sensorMode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (activeMode.equals("sensors")) {
-					// switch to map mode
-					
-					int visible = layoutSensors.getVisibility();
-					if (visible == View.VISIBLE) {
-						sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					} else {
-						sensorMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					}
-					
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					layoutMapInfo.setVisibility(View.GONE);
-					layoutMapControls.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-					
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					// set mode and load data
-					activeMode = "map";
-					loadRecents();
-										
-				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_MODE, 
-							"sensors", 
-							 null).build());
-					
-					activeMode = "sensors";
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					layoutMapInfo.setVisibility(View.GONE);
-					layoutMapControls.setVisibility(View.GONE);
-					layoutSensors.setVisibility(View.VISIBLE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-					
-					mapMode.setBackgroundColor(Color.TRANSPARENT);
-					graphMode.setBackgroundColor(Color.TRANSPARENT);
-					sensorMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					animationMode.setBackgroundColor(Color.TRANSPARENT);
-					contributeMode.setBackgroundColor(Color.TRANSPARENT);
-					
-					loadRecents();
-				}
-			}
-		});
-
 		animationMode.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				hideNoConditionsPrompt();
 				if (activeMode.equals("animation")) {
 					// switch to map mode
 					
@@ -1568,6 +1416,10 @@ public class BarometerNetworkActivity extends Activity implements
 
 			}
 		});
+	}
+	
+	private void hideNoConditionsPrompt() {
+		layoutNoConditionsPrompt.setVisibility(View.GONE);
 	}
 	
 	private void displayMapToast(String message) {
