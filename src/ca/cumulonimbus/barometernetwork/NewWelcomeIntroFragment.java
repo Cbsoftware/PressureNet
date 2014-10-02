@@ -59,7 +59,7 @@ public class NewWelcomeIntroFragment extends Fragment implements OnClickListener
 		
 		ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter
 				.createFromResource(context, R.array.privacy_settings,
-						android.R.layout.simple_spinner_item);
+						R.layout.welcome_spinner);
 		adapterSharing
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinnerWelcomeSharing = (Spinner) v.findViewById(R.id.spinnerNewWelcomeSharing);

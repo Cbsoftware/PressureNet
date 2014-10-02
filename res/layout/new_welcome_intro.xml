@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/newWelcomeIntroDescriptionLayout"
-        android:paddingLeft="12dp"
+        android:layout_marginLeft="8dp"
         android:paddingRight="18dp" >
     </Spinner>
 
@@ -86,14 +86,16 @@
         android:id="@+id/buttonNewWelcomeNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@id/newWelcomeIntroDescriptionLayout"
-        android:background="@android:color/transparent"
+        android:layout_alignRight="@id/newWelcomeIntroDescriptionLayout"
+        android:background="@drawable/conditions_yes_button"
         android:paddingRight="8dp"
+        android:paddingLeft="8dp"
         android:text="Next!"
-        android:textColor="#0099cc"
-        android:textSize="16dp" />
-
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:layout_marginRight="8dp" />
+        
     <LinearLayout
         android:id="@+id/new_welcome_pagination"
         android:layout_width="fill_parent"
