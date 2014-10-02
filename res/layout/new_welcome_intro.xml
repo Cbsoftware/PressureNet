@@ -11,21 +11,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="Welcome to PressureNet!"
-        android:textSize="30dip" />
+        android:text="WELCOME TO"
+        android:textSize="24dip"
+        android:fontFamily="sans-serif-light"
+        android:layout_centerHorizontal="true" />
+    
+    <ImageView
+        android:id="@+id/welcome_PressureNet_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/welcome_label"
+        android:src="@drawable/ic_wordmark"
+        android:layout_centerHorizontal="true"/>
 
     <LinearLayout
         android:id="@+id/newWelcomeIntroDescriptionLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/welcome_label"
-        android:orientation="vertical" >
+        android:layout_below="@id/welcome_PressureNet_logo"
+        android:orientation="vertical"
+        android:padding="6dp" >
 
         <TextView
             android:id="@+id/welcome_new_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="16dip"
+            android:paddingTop="8dip"
             android:text="@string/newWelcomeBarometerIntro"
             android:textSize="16dip"
             android:layout_weight=".3" />
@@ -46,24 +57,56 @@
             android:text="@string/newWelcomeSharingDescription"
             android:textSize="14dip"
             android:layout_weight=".3"
-            android:paddingTop="16dip" />
+            android:paddingTop="8dip" />
     </LinearLayout>
 
     <Spinner
         android:id="@+id/spinnerNewWelcomeSharing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:paddingRight="18dp" >
+        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
+        android:paddingRight="18dp"
+         >
     </Spinner>
 
     <Button
         android:id="@+id/buttonNewWelcomeNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="NEXT!" />
-
+        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
+        android:text="Next!"
+        android:textColor="#0099cc"
+        android:textSize="16dp"
+        android:background="@android:color/transparent" />
+    
+    <LinearLayout
+        android:id="@+id/new_welcome_pagination"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:paddingTop="4dp">
+    
+	    <ImageView 
+	        android:id="@+id/new_welcome_intro_paging_1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_paginate_on"/>
+	
+	    <ImageView 
+	        android:id="@+id/new_welcome_intro_paging_1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_paginate"
+	        android:paddingLeft="20dp"/>
+	    
+    </LinearLayout>
+    
 </RelativeLayout>
+
+
+
+
