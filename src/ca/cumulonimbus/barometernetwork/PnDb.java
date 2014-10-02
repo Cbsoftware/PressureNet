@@ -209,6 +209,8 @@ public class PnDb {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
 			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
+			
+			showWhatsNew();
 		}
 
 		@Override

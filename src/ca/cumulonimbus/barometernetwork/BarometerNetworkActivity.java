@@ -337,7 +337,6 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpUIListeners();
 		setId();
 		setUpFiles();
-		showWelcomeActivity();
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
@@ -2281,32 +2280,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 	};
-
-	/**
-	 * Welcome the user to PressureNet and explain the privacy options. Only
-	 * show on the first run
-	 */
-	private void showWelcomeActivity() {
-		// has this been shown yet?
-		int runCount = 0;
-		SharedPreferences sharedPreferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		if (sharedPreferences != null) {
-			runCount = sharedPreferences.getInt("runCount", 0);
-		}
-
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putInt("runCount", runCount + 1);
-		editor.commit();
-
-		if (runCount == 0) {
-
-			Intent intent = new Intent(this,
-					ca.cumulonimbus.barometernetwork.WelcomeActivity.class);
-			startActivityForResult(intent, 0);
-		}
-	}
-
+	
 	/**
 	 * Some devices have barometers, other's don't. Fix up the UI a bit so that
 	 * most useful elements show for the right users
