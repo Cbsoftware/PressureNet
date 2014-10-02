@@ -3,26 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="top"
-    android:padding="8dip"
     tools:context=".NewWelcomeIntroFragment" >
+
+    <ImageView
+        android:id="@+id/backgroundBarometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/barometer_bg_left" />
 
     <TextView
         android:id="@+id/welcome_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:text="WELCOME TO"
-        android:textSize="24dip"
+        android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-light"
-        android:layout_centerHorizontal="true" />
-    
+        android:text="WELCOME TO"
+        android:textSize="24sp"
+        android:paddingTop="8dp" />
+
     <ImageView
         android:id="@+id/welcome_PressureNet_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/welcome_label"
-        android:src="@drawable/ic_wordmark"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:src="@drawable/ic_wordmark" />
 
     <LinearLayout
         android:id="@+id/newWelcomeIntroDescriptionLayout"
@@ -30,34 +40,36 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/welcome_PressureNet_logo"
         android:orientation="vertical"
-        android:padding="6dp" >
+        android:paddingTop="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
 
         <TextView
             android:id="@+id/welcome_new_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight=".3"
             android:paddingTop="8dip"
             android:text="@string/newWelcomeBarometerIntro"
-            android:textSize="16dip"
-            android:layout_weight=".3" />
+            android:textSize="16dip" />
 
         <ImageView
             android:id="@+id/welcome_weather_screenshot"
             android:layout_width="wrap_content"
             android:layout_height="200dip"
-            android:src="@drawable/weather_screenshot"
             android:layout_weight=".3"
+            android:paddingBottom="4dip"
             android:paddingTop="8dip"
-            android:paddingBottom="4dip" />
+            android:src="@drawable/weather_screenshot" />
 
         <TextView
             android:id="@+id/welcome_new_sharing_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/newWelcomeSharingDescription"
-            android:textSize="14dip"
             android:layout_weight=".3"
-            android:paddingTop="8dip" />
+            android:paddingTop="8dip"
+            android:text="@string/newWelcomeSharingDescription"
+            android:textSize="14dip" />
     </LinearLayout>
 
     <Spinner
@@ -66,8 +78,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/newWelcomeIntroDescriptionLayout"
-        android:paddingRight="18dp"
-         >
+        android:paddingLeft="12dp"
+        android:paddingRight="18dp" >
     </Spinner>
 
     <Button
@@ -76,37 +88,33 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@id/newWelcomeIntroDescriptionLayout"
+        android:background="@android:color/transparent"
+        android:paddingRight="8dp"
         android:text="Next!"
         android:textColor="#0099cc"
-        android:textSize="16dp"
-        android:background="@android:color/transparent" />
-    
+        android:textSize="16dp" />
+
     <LinearLayout
         android:id="@+id/new_welcome_pagination"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
-        android:paddingTop="4dp">
-    
-	    <ImageView 
-	        android:id="@+id/new_welcome_intro_paging_1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:src="@drawable/ic_paginate_on"/>
-	
-	    <ImageView 
-	        android:id="@+id/new_welcome_intro_paging_1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:src="@drawable/ic_paginate"
-	        android:paddingLeft="20dp"/>
-	    
+        android:orientation="horizontal"
+        android:padding="8dp" >
+
+        <ImageView
+            android:id="@+id/new_welcome_intro_paging_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_paginate_on" />
+
+        <ImageView
+            android:id="@+id/new_welcome_intro_paging_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:src="@drawable/ic_paginate" />
     </LinearLayout>
-    
+
 </RelativeLayout>
-
-
-
-
