@@ -5,12 +5,11 @@
     tools:context=".NewWelcomeNotificationFragment" >
 
     <ImageView
-        android:id="@+id/backgroundBarometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/backgroundBarometerRight"
+        android:layout_width="180dp"
+        android:layout_height="360dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:paddingTop="4dp"
         android:src="@drawable/barometer_bg_right" />
 
     <TextView
