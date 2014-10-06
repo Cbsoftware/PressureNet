@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0405002"
-    android:versionName="4.5.0BETA" >
+    android:versionCode="0405012"
+    android:versionName="4.5.1BETA" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -46,7 +46,8 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
             android:label="Welcome to PressureNet"
-            android:theme="@style/CustomTheme" >
+            android:theme="@style/CustomTheme"
+            android:excludeFromRecents="true" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />

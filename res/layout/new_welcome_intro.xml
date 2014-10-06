@@ -20,9 +20,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-light"
+        android:paddingTop="8dp"
         android:text="WELCOME TO"
-        android:textSize="24sp"
-        android:paddingTop="8dp" />
+        android:textSize="24sp" />
 
     <ImageView
         android:id="@+id/welcome_PressureNet_logo"
@@ -40,9 +40,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/welcome_PressureNet_logo"
         android:orientation="vertical"
-        android:paddingTop="6dp"
         android:paddingLeft="12dp"
-        android:paddingRight="12dp" >
+        android:paddingRight="12dp"
+        android:paddingTop="6dp" >
 
         <TextView
             android:id="@+id/welcome_new_description"
@@ -79,23 +79,30 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/newWelcomeIntroDescriptionLayout"
         android:layout_marginLeft="8dp"
-        android:paddingRight="18dp" >
+        android:paddingRight="18dp"
+        android:paddingTop="10dp" >
     </Spinner>
 
     <Button
         android:id="@+id/buttonNewWelcomeNext"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
         android:layout_alignRight="@id/newWelcomeIntroDescriptionLayout"
+        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
+        android:layout_alignTop="@id/spinnerNewWelcomeSharing"
+        android:layout_marginRight="8dp"
         android:background="@drawable/conditions_yes_button"
-        android:paddingRight="8dp"
-        android:paddingLeft="8dp"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
         android:text="Next!"
         android:textColor="#FFFFFF"
-        android:textSize="16dp"
-        android:layout_marginRight="8dp" />
-        
+        android:textSize="18dp" />
+
     <LinearLayout
         android:id="@+id/new_welcome_pagination"
         android:layout_width="fill_parent"

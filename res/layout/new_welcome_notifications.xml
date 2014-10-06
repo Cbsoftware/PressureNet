@@ -22,7 +22,7 @@
         android:paddingBottom="12dp"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:paddingTop="24dp"
+        android:paddingTop="30dp"
         android:text="CURRENT CONDITIONS"
         android:textSize="24dip" />
 
@@ -90,52 +90,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/notification_screenshot_demo"
-        android:paddingBottom="24dp"
+        android:paddingBottom="12dp"
+        android:paddingTop="6dp"
         android:paddingLeft="8dp"
         android:paddingRight="12dp"
         android:text="Would you like to receive notifications?"
         android:textSize="16dip" />
 
-    <Button
-        android:id="@+id/newWelcomeNotificationsNoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/notifications_question"
-        android:layout_below="@id/notifications_question"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/conditions_no_button"
-        android:gravity="center"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="No thanks"
-        android:textColor="#0099cc"
-        android:textSize="16dp" />
-
-    <Button
-        android:id="@+id/newWelcomeNotificationsYesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/notification_screenshot_demo"
-        android:layout_below="@id/notifications_question"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/conditions_yes_button"
-        android:gravity="center"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:text="Yes please!"
-        android:textColor="#FFFFFF"
-        android:textSize="16dp" />
-
-    <LinearLayout
+     <LinearLayout
         android:id="@+id/new_welcome_pagination"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:padding="8dp" >
+        android:paddingBottom="8dp"
+        android:paddingTop="20dp" >
 
         <ImageView
             android:id="@+id/new_welcome_intro_paging_1"
@@ -150,5 +120,47 @@
             android:paddingLeft="20dp"
             android:src="@drawable/ic_paginate_on" />
     </LinearLayout>
+    
+    
+    <Button
+        android:id="@+id/newWelcomeNotificationsNoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/notifications_question"
+        android:layout_above="@id/new_welcome_pagination"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/conditions_no_button"
+        android:gravity="center"
+		android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:text="No thanks"
+        android:textColor="#0099cc"
+        android:textSize="18dp" />
 
+    <Button
+        android:id="@+id/newWelcomeNotificationsYesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@id/notification_screenshot_demo"
+        android:layout_above="@id/new_welcome_pagination"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/conditions_yes_button"
+        android:gravity="center"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:text="Yes please!"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
+
+   
 </RelativeLayout>
