@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class HelpActivity extends Activity {
@@ -36,6 +37,9 @@ public class HelpActivity extends Activity {
 		
 		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
 		actionBarTextView.setTextColor(Color.WHITE);
+		
+		ImageView view = (ImageView)findViewById(android.R.id.home);
+	    view.setPadding(8, 0, 0, 0);
 		
 		webHelp = (WebView) findViewById(R.id.webViewHelp);
 		WebView pndvWebView = (WebView) findViewById(R.id.webViewHelp);

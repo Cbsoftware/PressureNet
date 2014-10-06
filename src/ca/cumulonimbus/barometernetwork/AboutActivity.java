@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
@@ -121,6 +122,9 @@ public class AboutActivity extends Activity {
 
 		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
+		
+		ImageView view = (ImageView)findViewById(android.R.id.home);
+	    view.setPadding(8, 0, 0, 0);
 
 	}
 

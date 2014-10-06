@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -475,6 +476,10 @@ public class LogViewerActivity extends Activity {
 				actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
 	
+		ImageView view = (ImageView)findViewById(android.R.id.home);
+	    view.setPadding(8, 0, 0, 0);
+		
+		
 		preferenceUnit = getUnitPreference();
 	
 		

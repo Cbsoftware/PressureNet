@@ -1,12 +1,13 @@
 package ca.cumulonimbus.barometernetwork;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class PreferencesActivity extends PreferenceActivity{
 
@@ -20,6 +21,9 @@ public class PreferencesActivity extends PreferenceActivity{
 		
 		TextView actionBarTextView = (TextView)findViewById(actionBarTitleId); 
 		actionBarTextView.setTextColor(Color.WHITE);
+		
+	    ImageView view = (ImageView)findViewById(android.R.id.home);
+	    view.setPadding(8, 0, 0, 0);
 	}
 	
 	@Override
