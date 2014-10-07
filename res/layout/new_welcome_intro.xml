@@ -122,7 +122,7 @@
             android:id="@+id/new_welcome_intro_paging_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
+            android:paddingLeft="12dp"
             android:src="@drawable/ic_paginate" />
     </LinearLayout>
 

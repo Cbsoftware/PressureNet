@@ -289,7 +289,7 @@
 		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:drawableLeft="@drawable/ic_conditions"
+		            android:drawableLeft="@drawable/ic_cc_icon"
 		            android:textColor="@android:color/black"
 		            android:text="What's it like outside?"
 					android:paddingLeft="10dp"

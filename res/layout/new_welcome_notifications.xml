@@ -42,12 +42,15 @@
             android:text="Want a better weather forecast? Send and receive weather reports! Use this icon to make a current conditions report."
             android:textSize="16dip" />
 
-        <ImageView
-            android:id="@+id/currentConditionsIconDemo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".33"
-            android:src="@drawable/ic_cc_icon" />
+        <Button
+		            android:id="@+id/imageButtonWhatsItLikeOutside"
+		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:drawableLeft="@drawable/ic_cc_icon"
+		            android:textColor="@android:color/black"
+					android:paddingLeft="10dp"
+					android:layout_gravity="right"/>
     </LinearLayout>
 
     <TextView
@@ -116,7 +119,7 @@
             android:id="@+id/new_welcome_intro_paging_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
+            android:paddingLeft="12dp"
             android:src="@drawable/ic_paginate_on" />
     </LinearLayout>
     
