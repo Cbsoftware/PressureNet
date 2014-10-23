@@ -52,7 +52,7 @@
             android:paddingTop="4dp"
             android:text="Graph"
             android:textColor="#004455"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
         
         <Button
             android:id="@+id/buttonSensorMode"

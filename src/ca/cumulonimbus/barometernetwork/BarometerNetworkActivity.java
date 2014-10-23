@@ -1244,6 +1244,14 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 		
+		graphMode.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				viewLog();
+			}
+		});
+		
 		animationMode.setOnClickListener(new OnClickListener() {
 
 			@Override
