@@ -2,6 +2,8 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.util.Locale;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,6 +39,18 @@ public class NewWelcomeActivity extends FragmentActivity {
 		}
 	}
 	
+	@Override
+	protected void onStart() {
+		EasyTracker.getInstance(this).activityStart(this);
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		EasyTracker.getInstance(this).activityStop(this);
+		super.onStop();
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
