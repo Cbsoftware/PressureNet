@@ -399,7 +399,12 @@ public class BarometerNetworkActivity extends Activity implements
 		mAltitude = altitude;
 		
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-		buttonMyLocation.setImageAlpha(255);
+		try {
+			buttonMyLocation.setImageAlpha(255);	
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
+		
 		locationAvailable = true;
 		
 	}
@@ -2004,36 +2009,71 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private void enableReload() {
 		reloadGobalData.setEnabled(true);
-		reloadGobalData.setImageAlpha(255);
+		try {
+			reloadGobalData.setImageAlpha(255);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
+		
 	}
 
 	private void disableReload() {
 		reloadGobalData.setEnabled(false);
-		reloadGobalData.setImageAlpha(255);
+		try {
+			reloadGobalData.setImageAlpha(255);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
 	}
 	
 	private void dimSatelliteButton() {
-		buttonSatellite.setImageAlpha(100);
+		try {
+			buttonSatellite.setImageAlpha(100);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
+		
 	}
 
 	private void restoreSatelliteButton() {
-		buttonSatellite.setImageAlpha(255);
+		try {
+			buttonSatellite.setImageAlpha(255);			
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
+
 	}
 	
 	private void dimBarometerButton() {
-		buttonPressure.setImageAlpha(100);
+		try {
+			buttonPressure.setImageAlpha(100);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
 	}
 
 	private void restoreBarometerButton() {
-		buttonPressure.setImageAlpha(255);
+		try {
+			buttonPressure.setImageAlpha(255);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
 	}
 	
 	private void dimWeatherButton() {
-		buttonWeather.setImageAlpha(100);
+		try {
+			buttonWeather.setImageAlpha(100);			
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
 	}
 
 	private void restoreWeatherButton() {
-		buttonWeather.setImageAlpha(255);
+		try {
+			buttonWeather.setImageAlpha(255);
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		}
 	}
 
 	private void setInitialMapButtonStates() {
