@@ -285,6 +285,20 @@ public class NotificationSender extends BroadcastReceiver {
 			
 			initial = "cloud";
 			icon = R.drawable.ic_wea_on_cloud;
+			
+			if(condition.getCloud_type().equals(mContext.getString(R.string.partly_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy1;
+				politeReportText = "Partly cloudy";
+			} else if(condition.getCloud_type().equals(mContext.getString(R.string.mostly_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy2;
+				politeReportText = "Mostly cloudy";
+			} if(condition.getCloud_type().equals(mContext.getString(R.string.very_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy;
+				politeReportText = "Very cloudy";
+			} else {
+				icon = R.drawable.ic_wea_on_cloud;
+			}
+			
 			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
 			initial = "precip";
