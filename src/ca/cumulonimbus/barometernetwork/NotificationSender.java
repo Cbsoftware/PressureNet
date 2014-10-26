@@ -3,6 +3,7 @@ package ca.cumulonimbus.barometernetwork;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,6 +15,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
@@ -75,6 +77,12 @@ public class NotificationSender extends BroadcastReceiver {
 					if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification")) {
 						CbCurrentCondition receivedCondition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.conditionNotification");
 						if(receivedCondition != null) {
+							if(receivedCondition.getLocation()==null) {
+								Location loc = new Location("network");
+								loc.setLatitude(receivedCondition.getLat());
+								loc.setLongitude(receivedCondition.getLon());
+								receivedCondition.setLocation(loc);
+							}
 							EasyTracker.getInstance(context).send(MapBuilder.createEvent(
 									BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
 									"conditions_notification_delivered", 
@@ -120,7 +128,19 @@ public class NotificationSender extends BroadcastReceiver {
 				log("condition sent intent not sent, doesn't have extra");
 			}
 			
-		} else {
+		} else if(intent.getAction().equals("ca.cumulonimbus.barometernetwork.CANCEL_CONDITION")) {
+			log("app notificationsender receiving condition cancel");
+			NotificationCanceler cancel = new NotificationCanceler(mContext, CONDITION_NOTIFICATION_ID);
+			notificationHandler.post(cancel);
+						
+    	} else if(intent.getAction().equals("ca.cumulonimbus.barometernetwork.CANCEL_PRESSURE")) {
+    		log("app notificationsender receiving pressure cancel");
+			NotificationCanceler cancel = new NotificationCanceler(mContext, PRESSURE_NOTIFICATION_ID);
+			notificationHandler.post(cancel);
+    					
+    	}
+		
+		else {
 			log("no matching code for " + intent.getAction());
 		}	
 	}
@@ -362,10 +382,11 @@ public class NotificationSender extends BroadcastReceiver {
 			// notification later on.
 			mNotificationManager.notify(CONDITION_NOTIFICATION_ID, mBuilder.build());
 	
-			// Cancel the notification 2 hours later
-			NotificationCanceler cancel = new NotificationCanceler(mContext, CONDITION_NOTIFICATION_ID);
-			notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 2);
-			
+			AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+			Intent i = new Intent("ca.cumulonimbus.barometernetwork.CANCEL_CONDITION");
+			PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, 0);
+			am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + (1000 * 60 * 60 * 2), pi);
+					
 			// save the time
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			editor.putLong("lastConditionTime", now);
@@ -501,9 +522,10 @@ public class NotificationSender extends BroadcastReceiver {
 		// notification later on.
 		mNotificationManager.notify(PRESSURE_NOTIFICATION_ID, mBuilder.build());
 		
-		// Cancel the notification 2 hours later
-		NotificationCanceler cancel = new NotificationCanceler(mContext, PRESSURE_NOTIFICATION_ID);
-		notificationHandler.postDelayed(cancel, 1000 * 60 * 60 * 12);
+		AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+		Intent i = new Intent("ca.cumulonimbus.barometernetwork.CANCEL_PRESSURE");
+		PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, 0);
+		am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + (1000 * 60 * 60 * 12), pi); // 12h
 		
 		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
 				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
