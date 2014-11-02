@@ -2338,6 +2338,7 @@ public class BarometerNetworkActivity extends Activity implements
 		if (!hasBarometer) {
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
+			graphMode.setVisibility(View.GONE);
 		}
 		if (!PressureNETConfiguration.DEBUG_MODE) {
 			// hide menu item
