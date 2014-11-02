@@ -292,7 +292,7 @@ public class NotificationSender extends BroadcastReceiver {
 			} else if(condition.getCloud_type().equals(mContext.getString(R.string.mostly_cloudy))) {
 				icon = R.drawable.ic_wea_on_cloudy2;
 				politeReportText = "Mostly cloudy";
-			} if(condition.getCloud_type().equals(mContext.getString(R.string.very_cloudy))) {
+			} else if(condition.getCloud_type().equals(mContext.getString(R.string.very_cloudy))) {
 				icon = R.drawable.ic_wea_on_cloudy;
 				politeReportText = "Very cloudy";
 			} else {
