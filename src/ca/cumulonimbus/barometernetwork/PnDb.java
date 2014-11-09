@@ -194,28 +194,16 @@ public class PnDb {
 		return mCursor;
 	}
 	
+	private void showWelcome() {
+		Intent intent = new Intent(mContext, NewWelcomeActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mContext.startActivity(intent);
+	}
+	
 	private void showWhatsNew() {
-		// If this is the first run, show the welcome screen
-		// Otherwise, show What's New
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(mContext);
-		boolean firstRun = prefs.getBoolean("PressureNetFirstRun", true);
-		
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putBoolean("PressureNetFirstRun", false);
-		editor.commit();
-		
-		if(firstRun) {
-			// show Welcome
-			Intent intent = new Intent(mContext, NewWelcomeActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			mContext.startActivity(intent);
-		} else {
-			// show What's New
-			Intent intent = new Intent(mContext, WhatsNewActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			mContext.startActivity(intent);
-		}
+		Intent intent = new Intent(mContext, WhatsNewActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		mContext.startActivity(intent);
 	}
 
 	private class DatabaseHelper extends SQLiteOpenHelper {
@@ -229,7 +217,7 @@ public class PnDb {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
 			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
 			
-			showWhatsNew();
+			showWelcome();
 		}
 
 		@Override
