@@ -3,10 +3,12 @@ package ca.cumulonimbus.barometernetwork;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.preference.PreferenceManager;
 
 public class PnDb {
 
@@ -52,7 +54,7 @@ public class PnDb {
 	
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 19; 
+	private static final int DATABASE_VERSION = 20; 
 	// TODO: fix this nonsense
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
@@ -61,7 +63,7 @@ public class PnDb {
 	// 14 = 4.4.6
 	// 15 = 4.4.7
 	// 16 = 4.4.8
-	// 17-19 = 4.5
+	// 17-20 = 4.5.x
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -193,10 +195,27 @@ public class PnDb {
 	}
 	
 	private void showWhatsNew() {
-		// show What's New
-		Intent intent = new Intent(mContext, NewWelcomeActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		mContext.startActivity(intent);
+		// If this is the first run, show the welcome screen
+		// Otherwise, show What's New
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		boolean firstRun = prefs.getBoolean("PressureNetFirstRun", true);
+		
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean("PressureNetFirstRun", false);
+		editor.commit();
+		
+		if(firstRun) {
+			// show Welcome
+			Intent intent = new Intent(mContext, NewWelcomeActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			mContext.startActivity(intent);
+		} else {
+			// show What's New
+			Intent intent = new Intent(mContext, WhatsNewActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			mContext.startActivity(intent);
+		}
 	}
 
 	private class DatabaseHelper extends SQLiteOpenHelper {

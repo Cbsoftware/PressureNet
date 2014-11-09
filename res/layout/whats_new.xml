@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Weather notification improvements\n• Nexus 5 fixes\n• Performance improvements\n"
+            android:text="• Notification improvements\n• Android 5.0 optimization\n• Faster access to graphs\n"
             android:textSize="16dp" />
 
         <TextView
@@ -34,7 +34,8 @@
             android:paddingLeft="18dp"
             android:paddingTop="8dp"
             android:text="RECENT SETTINGS UPDATES"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/checkReceiveConditionNotifications"
@@ -45,7 +46,8 @@
             android:paddingLeft="6dp"
             android:paddingTop="6dp"
             android:text="Receive conditions notifications"
-            android:textSize="16dp" />
+            android:textSize="16dp"
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/checkEnableSocial"
@@ -56,7 +58,8 @@
             android:paddingLeft="6dp"
             android:text="Enable social integration"
             android:textSize="16dp"
-            android:checked="false" />
+            android:checked="false"
+            android:visibility="gone" />
 
         <View
             android:id="@+id/sepWhatsNew"
