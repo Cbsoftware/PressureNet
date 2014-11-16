@@ -46,7 +46,7 @@
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity
             android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
-            android:label="Welcome to PressureNet"
+            android:label="@string/activity_welcome"
             android:theme="@style/CustomTheme"
             android:excludeFromRecents="true" >
             <meta-data
