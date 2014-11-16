@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="extension_description">Shows weather data from the PressureNet app</string>
+</resources>
