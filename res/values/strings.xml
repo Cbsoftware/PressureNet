@@ -173,5 +173,6 @@
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">PressureNet Data</string>
     <string name="locationName">Location Name</string>
+    <string name="version">Version </string>
 	
 </resources>
