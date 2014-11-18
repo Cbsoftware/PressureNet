@@ -95,7 +95,7 @@ public class AboutActivity extends Activity {
 
 		try {
 			sdkVersionName = CbConfiguration.SDK_VERSION;
-			textViewSDKVersion.setText("SDK " + sdkVersionName);
+			textViewSDKVersion.setText(getString(R.string.SDK) + sdkVersionName);
 		} catch (Exception e) {
 			//System.out.println("error " + e.getMessage());
 		}
