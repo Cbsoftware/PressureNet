@@ -87,7 +87,7 @@ public class AboutActivity extends Activity {
 			versionName = this.getPackageManager().getPackageInfo(
 					this.getPackageName(), 0).versionName;
 
-			textViewVersion.setText("Version " + versionName);
+			textViewVersion.setText(getString(R.string.version) + versionName);
 
 		} catch (NameNotFoundException e) {
 			//System.out.println("name not found " + e.getMessage());
