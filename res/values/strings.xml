@@ -175,5 +175,15 @@
     <string name="locationName">Location Name</string>
     <string name="version">Version </string>
     <string name="SDK">SDK </string>
+    <string name="connectionErrorMsg">No network connection. Data won\'t load.</string>
+    <string name="mapError">Unable to show map</string>
+    <string name="showingPressureData">Showing pressure data</string>
+    <string name="hidingPressureData">Hiding pressure data</string>
+    <string name="showingWeather">Showing weather conditions</string>
+    <string name="hidingWeather">Hiding weather conditions</string>
+    <string name="satView">Satellite view</string>
+    <string name="mapView">Map view</string>
+    <string name="locatingUser">Going to your location</string>
+    <string name="locationError">Location services not available</string>
 	
 </resources>
