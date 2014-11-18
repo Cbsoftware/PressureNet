@@ -470,7 +470,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void displayNetworkOfflineToast() {
 		if (!isConnected) {
 			Toast.makeText(getApplicationContext(),
-					"No network connection. Data won't load.",
+					getString(R.string.connectionErrorMsg),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -594,7 +594,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 			} else {
-				Toast.makeText(getApplicationContext(), "Unable to show map",
+				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
 						Toast.LENGTH_SHORT).show();
 			}
 
@@ -933,11 +933,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displaySatellite = !displaySatellite;
 				if (displaySatellite) {
-					displayMapToast("Satellite view");
+					displayMapToast(getString(R.string.satView));
 					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					restoreSatelliteButton();
 				} else {
-					displayMapToast("Map view");
+					displayMapToast(getString(R.string.mapView);
 					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 					
 					dimSatelliteButton();
@@ -951,11 +951,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayPressure = !displayPressure;
 				if(displayPressure) {
-					displayMapToast("Showing pressure data");
+					displayMapToast(getString(R.string.showingPressureData));
 					restoreBarometerButton();
 					makeGlobalMapCall();
 				} else {
-					displayMapToast("Hiding pressure data");
+					displayMapToast(getString(R.string.hidingPressureData));
 					dimBarometerButton();
 				}
 				mMap.clear();
@@ -969,11 +969,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayConditions = !displayConditions;
 				if(displayConditions) {
-					displayMapToast("Showing weather conditions");
+					displayMapToast(getString(R.string.showingWeather));
 					restoreWeatherButton();
 					makeGlobalConditionsMapCall();
 				} else {
-					displayMapToast("Hiding weather conditions");
+					displayMapToast(getString(R.string.hidingWeather));
 					dimWeatherButton();
 				}
 				mMap.clear();
@@ -1064,7 +1064,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View arg0) {
 				if(locationAvailable) {
-					displayMapToast("Going to your location");
+					displayMapToast(getString(R.string.locatingUser));
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
 							GA_ACTION_BUTTON, 
@@ -1072,7 +1072,7 @@ public class BarometerNetworkActivity extends Activity implements
 							 null).build());
 					goToMyLocation(); 
 				} else {
-					displayMapToast("Location services not available");
+					displayMapToast(getString(R.string.locationError));
 				}
 			}
 		});
