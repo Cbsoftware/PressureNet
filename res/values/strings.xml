@@ -174,5 +174,6 @@
     <string name="pressureNETCommunity">PressureNet Data</string>
     <string name="locationName">Location Name</string>
     <string name="version">Version </string>
+    <string name="SDK">SDK </string>
 	
 </resources>
