@@ -1081,7 +1081,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
-				displayMapToast("Refreshing...");
+				displayMapToast(getString(R.string.refreshing));
 				
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 						GA_CATEGORY_MAIN_APP, 
@@ -1370,7 +1370,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				String location = editLocation.getText().toString().trim();
 				if (location.equals("")) {
-					displayMapToast("Enter a search location");
+					displayMapToast(getString(R.string.locationPrompt));
 					focusSearch();
 					return;
 				}
@@ -1382,7 +1382,7 @@ public class BarometerNetworkActivity extends Activity implements
 					List<Address> addr = geocode.getFromLocationName(location,
 							2);
 					if (addr.size() > 0) {
-						displayMapToast("Going to " + location);
+						displayMapToast(getString(R.string.goingTo) + location);
 						
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
@@ -1411,7 +1411,7 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall conditionApi = buildMapCurrentConditionsCall(2);
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
-						displayMapToast("No search results found");
+						displayMapToast(getString(R.string.noSearchResults));
 					}
 
 				} catch (IOException ioe) {
