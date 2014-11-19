@@ -185,5 +185,10 @@
     <string name="mapView">Map view</string>
     <string name="locatingUser">Going to your location</string>
     <string name="locationError">Location services not available</string>
+    <string name="refreshing">Refreshing...</string>
+    <string name="locationPrompt">Enter a search location</string>
+    <string name="goingTo">Going to </string>
+    <string name="noSearchResults">No search results found</string>
+    
 	
 </resources>
