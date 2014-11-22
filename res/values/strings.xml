@@ -2,6 +2,9 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">PressureNet</string>
+    
+    <string name="activity_welcome">Bem-vindo ao PressureNet</string>
+    
     <string name="currentReading">Current Reading:</string>
     <string name="empty"></string>
     <string name="submitReading">Submit Reading</string>
@@ -173,5 +176,9 @@
     <string name="localData">Local Data</string>
     <string name="pressureNETCommunity">PressureNet Data</string>
     <string name="locationName">Location Name</string>
+    
+    <string name="next">Next!</string>
+    <string name="yes_please">Yes please!</string>
+    <string name="no_thanks">No thanks</string>
 	
 </resources>

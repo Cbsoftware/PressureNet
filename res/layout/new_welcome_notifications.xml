@@ -96,7 +96,7 @@
         android:paddingTop="6dp"
         android:paddingLeft="8dp"
         android:paddingRight="12dp"
-        android:text="Would you like to receive notifications?"
+        android:text="@string/newWelcomeNotificationPrompt"
         android:textSize="16dip" />
 
      <LinearLayout
@@ -116,7 +116,7 @@
             android:src="@drawable/ic_paginate" />
 
         <ImageView
-            android:id="@+id/new_welcome_intro_paging_1"
+            android:id="@+id/new_welcome_intro_paging_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="12dp"
@@ -140,7 +140,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="6dp"
-        android:text="No thanks"
+        android:text="@string/no_thanks"
         android:textColor="#0099cc"
         android:textSize="18dp" />
 
@@ -160,7 +160,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:paddingTop="6dp"
-        android:text="Yes please!"
+        android:text="@string/yes_please"
         android:textColor="#FFFFFF"
         android:textSize="18dp" />
 

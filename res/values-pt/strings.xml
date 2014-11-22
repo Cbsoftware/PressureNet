@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">PressureNet</string>
+    
+    <string name="activity_welcome">Bem-vindo ao PressureNet</string>
+    
+    <string name="currentReading">Leitura atual:</string>
+    <string name="empty"></string>
+    <string name="submitReading">Enviar leitura</string>
+    <string name="addDataToMap">Adicionar ao mapa</string>
+    <string name="load">Recarregar</string>
+    <string name="settings">Configurações</string>
+    <string name="showSettings">Mostrar configurações</string>
+    <string name="hideSettings">Esconder configurações</string>
+    <string name="cacheSetting">Dados em Cache (até 1M)</string>
+    <string name="enableAuto">Ativar envio automático</string>
+    <string name="disableAuto">Desativar envio automático</string>
+    <string name="statusStart">Status: </string>
+    <string name="chartView">Gráfico (milibares ao longo dos dias)</string>
+    <string name="refreshFrequency">Envio automático</string>
+    <string name="submitEvery">Enviar a cada:</string>
+    <string name="data">Dados</string>
+    <string name="chartTimeDisplay">Chart Time Display</string>
+
+    <string-array name="display_time_chart">
+        <item name="3 hours ">3 horas</item>
+        <item name="6 hours ">6 horas</item>
+        <item name="12 hours ">12 horas</item>
+    </string-array>
+    <string-array name="refresh_frequency">
+        <item name="1 minute">1 minuto</item>
+        <item name="5 minutes">5 minutos</item>
+        <item name="10 minutes">10 minutos</item>
+        <item name="30 minutes">30 minutos</item>
+        <item name="1 hour">1 hora</item>
+        <item name="6 hours">6 horas</item>
+        <item name="12 hours">12 horas</item>
+    </string-array>
+    <string-array name="refresh_frequency_values">
+        <item name="1 minute">1 minuto</item>
+        <item name="5 minutes">5 minutos</item>
+        <item name="10 minutes">10 minutos</item>
+        <item name="10 minutes">30 minutos</item>
+        <item name="1 hour">1 hora</item>
+        <item name="6 hours">6 horas</item>
+        <item name="12 hours">12 horas</item>
+    </string-array>
+    <string-array name="condition_refresh_frequency">
+        <item name="10 minutes">10 minutos</item>
+        <item name="1 hour">1 hora</item>
+        <item name="3 hours">3 horas</item>
+        <item name="6 hours">6 horas</item>
+    </string-array>
+    <string-array name="condition_refresh_frequency_values">
+        <item name="10 minutes">10 minutos</item>
+        <item name="1 hour">1 hora</item>
+        <item name="3 hours">3 horas</item>
+        <item name="6 hours">6 horas</item>
+    </string-array>
+    <string-array name="default_units">
+        <item>Millibares (mbar)</item>
+        <item>Hectopascais (hPa)</item>
+        <item>Kilopascais (kPa)</item>
+        <item>Atmosfera padrão (atm)</item>
+        <item>Milímetros de Mercúrio (mmHg)</item>
+        <item>Polegadas de Mercúrio (inHg)</item>
+        <item>Libra por Polegada ao Quadrado (psi)</item>
+    </string-array>
+    <string-array name="distance_units">
+        <item>Metros (m)</item>
+        <item>Quilômetros (km)</item>
+        <item>Pés (ft)</item>
+        <item>Milhas (mi)</item>
+    </string-array>
+    <string-array name="temperature_units">
+        <item>Celsius (°C)</item>
+        <item>Fahrenheit (°F)</item>
+        <item>Kelvin (K)</item>
+    </string-array>
+
+    <string name="units">Unidades: </string>
+    <string name="close">Fechar</string>
+    <string name="showLocalGraph">Mostrar gráfico local</string>
+    <string name="delete">Excluir dados do usuário</string>
+    <string name="deleteWarning">Atenção: Isto irá excluir os dados enviados ao PressureNet. Você desaparecerá do mapa mas alguns dados locais de backup podem permanecer ativo por algum tempo. Se desejar ser removido com urgência, por favor envie um e-mail para software@cumulonimbus.ca</string>
+    <string name="my_info">Minhas informações</string>
+    <string name="logViewer">Visualização de Log</string>
+    <string name="view_log">Ver Log</string>
+    <string name="data_visualization">Visualização de Dados</string>
+    <string name="about">Sobre</string>
+    <string name="pndv">Visualização de Dados do PressureNet</string>
+    <string name="loadInBrowser">Carregar no Navegador</string>
+    <string name="shareWith">Compartilhar com</string>
+
+    <string-array name="privacy_settings">
+        <item>Ninguém</item>
+        <item>Cumulonimbus (Nós)</item>
+        <item>Nós e Pesquisadores</item>
+        <item>Nós, Pesquisadores e meteorologistas</item>
+        <item>Público</item>
+    </string-array>
+
+    <string name="welcomeToPressureNET">Bem-vindo ao PressureNet</string>
+    <string name="appAndSharingDescritption">Você está nos ajudando a melhorar a previsão do tempo!
+        \n\nNós estamos usando o barômetro disponível em alguns dispositivos para fazer o crowdsource da pressão atmosférica. Você também pode nos ajudar validando a previsão do tempo de
+        nossos meteorologistas ao nos informar como de fato está o tempo na sua localidade.
+        \n\nEste aplicativo irá coletar os seguintes dados: sua localização e a pressão atmosférica atual. Nós iremos compartilhar estes dados de acordo com sua preferência abaixo.
+        \n\nQuanto mais pessoas usarem o PressureNet, melhor ele fica. Compartilha o aplicativo com seus amigos! Obrigado!</string>
+    <string name="appDescritptionNoBarometer">Você está nos ajudando a melhorar a previsão do tempo!
+        \n\nNós estamos usando os sensores de seu dispositivo para fazer o crowdsource da pressão atmosférica. Você também pode nos ajudar validando a previsão do tempo de
+        nossos meteorologistas ao nos informar como de fato está o tempo na sua localidade.  
+        \n\nSeu dispositivo não possui barômetro mas você também pode nos ajudar! Envie relatórios sobre as condições do tempo, e nós iremos compartilhar estes dados de acordo com sua preferência abaixo.
+        \n\nQuanto mais pessoas usarem o PressureNet, melhor ele fica. Compartilha o aplicativo com seus amigos! Obrigado!</string>
+    
+    <string name="newWelcomeBarometerIntro">PressureNet é um aplicativo de previsão do tempo colaborativo.
+        Seu dispositivo possui um barômetro que pode ser usado para enviar dados sobre o tempo para cientistas. 
+        
+        </string>
+    
+    <string name="newWelcomeNoBarometerIntro">PressureNet é um aplicativo de previsão do tempo colaborativo.
+        Seu dispositivo não possui barômetro mas você também pode nos ajudar!
+    </string>    
+ 
+    <string name="newWelcomeSharingDescription">PressureNet coleta dados de sensores: localização e pressão atmosférica. 
+        Nós vamos compartilhar estas informações de acordo com sua preferência abaixo.
+    </string>
+
+    <string name="newWelcomeNotificationIntro">Usuários próximos de ti irão enviar notificações de previsão do tempo com a maior precisão possível. 
+    </string>
+    
+    
+    <string name="newWelcomeNotificationPrompt">Gostaria de receber notificações?
+    </string>
+    
+    <string name="closeWelcome">Ok, parece bom!</string>
+    <string name="send_debug_log">Enviar relatório de erro</string>
+    <string name="sunny">Claro</string>
+    <string name="foggy">Nevoeiro</string>
+    <string name="cloudy">Nublado</string>
+    <string name="precipitation">Precipitação</string>
+    <string name="thunderstorm">Tempestada</string>
+    <string name="current_conditions">Condições Atuais</string>
+    <string name="windyOne">Um pouco de vento</string>
+    <string name="windyTwo">Algum vento</string>
+    <string name="windyThree">Muito vento</string>
+    <string name="calm">Sem vento</string>
+    <string name="thick_fog">Nevoeiro forte</string>
+    <string name="thin_fog">Nevoeiro leve</string>
+    <string name="rain">Chuva</string>
+    <string name="hail">Granizo</string>
+    <string name="snow">Neve</string>
+    <string name="low_precip">Baixa</string>
+    <string name="moderate_precip">Moderada</string>
+    <string name="heavy_precip">Forte</string>
+    <string name="infrequentLightning">Relâmpagos infrequentes</string>
+    <string name="frequentLightning">Relâmpagos frequentes</string>
+    <string name="heavyLightning">Relâmpagos fortes</string>
+    <string name="send_condition">Enviar!</string>
+    <string name="cancel_condition">Cancelar</string>
+    <string name="partly_cloudy">Sol entre nuvens</string>
+    <string name="mostly_cloudy">Parcialmente nublado</string>
+    <string name="very_cloudy">Nublado</string>
+    <string name="light_fog">Nevoeiro leve</string>
+    <string name="moderate_fog">Nevoeiro moderado</string>
+    <string name="heavy_fog">Nevoeiro forte</string>
+    <string name="flooding">Inundação</string>
+    <string name="duststorm">Tempestade de poeira</string>
+    <string name="wildfire">Incêndios</string>
+    <string name="tropicalstorm">Tempestade tropical</string>
+    <string name="tornado">Tornado</string>
+    <string name="extreme">Severo</string>
+    <string name="localData">Dados locais</string>
+    <string name="pressureNETCommunity">Dados do PressureNet</string>
+    <string name="locationName">Nome do local</string>
+	
+    <string name="next">Próximo!</string>
+    <string name="yes_please">Sim, por favor!</string>
+    <string name="no_thanks">Não, obrigado</string>
+</resources>
