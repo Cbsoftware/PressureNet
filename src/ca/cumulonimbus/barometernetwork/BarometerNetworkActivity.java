@@ -1489,7 +1489,7 @@ public class BarometerNetworkActivity extends Activity implements
 			long timeSpan = endTime - startTime;
 			if(timeSpan > (1000 * 60 * 60 * 24)) {
 				log("send toast");
-				Toast.makeText(getApplicationContext(), "Preparing animation...", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.preparingAnimation), Toast.LENGTH_SHORT).show();
 			} else {
 				log("don't send toast");
 			}
@@ -1529,7 +1529,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (frameLength == 0) {
 			log("barometernetworkactivity framelength = 0, bail on animation");
-			Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), getString(R.string.animationErrorNoData), Toast.LENGTH_SHORT).show();
 			animator.stop();
 			animator.reset();
 			return;
@@ -1937,7 +1937,7 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						log("app received conditions size 0");
 						if(activeMode.equals("animation")) {
-							Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), getString(R.string.animationErrorNoData), Toast.LENGTH_SHORT).show();
 							animator.stop();
 							animator.reset();
 						}
@@ -2109,7 +2109,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		} else if (statsRecents.size() == 0) {
 			log("stats recents 0, RETURNING, no chart");
-			displayMapToast("Can't display graph, no data was returned");
+			displayMapToast(getString(R.string.graphErrorNoData));
 			return;
 		}
 
@@ -2386,7 +2386,7 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivity(intent);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
-					"No location found, can't submit current condition",
+					getString(R.string.noLocationFound),
 					Toast.LENGTH_LONG).show();
 		}
 	}
