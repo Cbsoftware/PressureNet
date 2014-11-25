@@ -1072,7 +1072,7 @@ public class BarometerNetworkActivity extends Activity implements
 							 null).build());
 					goToMyLocation(); 
 				} else {
-					displayMapToast(getString(R.string.locationError));
+					displayMapToast(getString(R.string.locationServicesError));
 				}
 			}
 		});
@@ -2454,7 +2454,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void sendFeedback() {
 		String address = "software@cumulonimbus.ca";
-		String subject = "PressureNet feedback";
+		String subject = getString(R.string.feedbackEmailSubject);
 		String emailtext = "";
 		final Intent emailIntent = new Intent(
 				android.content.Intent.ACTION_SEND);
@@ -2469,7 +2469,7 @@ public class BarometerNetworkActivity extends Activity implements
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 		startActivityForResult(
-				Intent.createChooser(emailIntent, "Send mail..."),
+				Intent.createChooser(emailIntent, getString(R.string.sendEmailChooser),
 				REQUEST_MAILED_LOG);
 	}
 
@@ -2482,7 +2482,7 @@ public class BarometerNetworkActivity extends Activity implements
 		sendIntent
 				.putExtra(
 						Intent.EXTRA_TEXT,
-						"PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork");
+						getString(R.string.shareIntentText));
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
@@ -2508,8 +2508,8 @@ public class BarometerNetworkActivity extends Activity implements
 			String version = pInfo.versionName;
 
 			String address = "software@cumulonimbus.ca";
-			String subject = "PressureNet " + version + " Debug Log";
-			String emailtext = "Debug log sent "
+			String subject = getString(R.string.pressureNet) + version + getString(R.string.debugLog);
+			String emailtext = getString(R.string.debugLogSent)
 					+ (new Date()).toLocaleString();
 
 			emailIntent.setType("plain/text");
@@ -2525,11 +2525,11 @@ public class BarometerNetworkActivity extends Activity implements
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 			startActivityForResult(
-					Intent.createChooser(emailIntent, "Send mail..."),
+					Intent.createChooser(emailIntent, getString(R.string.sendEmailChooser)),
 					REQUEST_MAILED_LOG);
 
 		} catch (Throwable t) {
-			Toast.makeText(this, "Request failed: " + t.toString(),
+			Toast.makeText(this, getString(R.string.requestFailed) + t.toString(),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -2565,7 +2565,7 @@ public class BarometerNetworkActivity extends Activity implements
 						if (lat != 0) {
 							editLocation.setText(search,
 									TextView.BufferType.EDITABLE);
-							displayMapToast("Going to " + search);
+							displayMapToast(getString(R.string.goingTo) + search);
 							moveMapTo(lat, lon);
 						}
 					}
