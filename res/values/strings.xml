@@ -184,14 +184,21 @@
     <string name="satView">Satellite view</string>
     <string name="mapView">Map view</string>
     <string name="locatingUser">Going to your location</string>
-    <string name="locationError">Location services not available</string>
+    <string name="locationServicesError">Location services not available</string>
     <string name="refreshing">Refreshing...</string>
     <string name="locationPrompt">Enter a search location</string>
     <string name="goingTo">Going to </string>
     <string name="noSearchResults">No search results found</string>
     <string name="preparingAnimation">Preparing animation...</string>
     <string name="animationErrorNoData">No data to animate for this region and time</string>
-    <string name="graphErrorNoData">Can't display graph, no data was returned</string>
-    <string name="noLocationFound">No location found, can't submit current condition</string>
-	
+    <string name="graphErrorNoData">Can\'t display graph, no data was returned</string>
+    <string name="noLocationFound">No location found, can\'t submit current condition</string>
+    <string name="sendMailChooser">Send mail...</string>
+    <string name="feedbackEmailSubject">PressureNet feedback</string>
+    <string name="shareIntentText">PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork</string>
+    <string name="pressureNet">PressureNet </string>
+    <string name="debugLog"> Debug Log</string>
+    <string name="debugLogSent">Debug log sent </string>
+    <string name="requestFailed">Request failed: </string>
+    
 </resources>
