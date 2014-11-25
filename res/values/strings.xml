@@ -189,6 +189,9 @@
     <string name="locationPrompt">Enter a search location</string>
     <string name="goingTo">Going to </string>
     <string name="noSearchResults">No search results found</string>
-    
+    <string name="preparingAnimation">Preparing animation...</string>
+    <string name="animationErrorNoData">No data to animate for this region and time</string>
+    <string name="graphErrorNoData">Can't display graph, no data was returned</string>
+    <string name="noLocationFound">No location found, can't submit current condition</string>
 	
 </resources>
