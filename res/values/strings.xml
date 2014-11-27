@@ -206,6 +206,7 @@
     <string name="minutesAgo"> minutes ago</string>
     <string name="locationUnavailable">Can\'t send data: location unavailable</string>
     <string name="noSensorsDetected">No atmosphere sensors detected</string>
+    <string name="noDataToPlot">There's no data to plot</string>
     
     
 </resources>
