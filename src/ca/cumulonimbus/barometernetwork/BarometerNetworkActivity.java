@@ -2573,7 +2573,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 				} else if (rowId == -2L) {
 					log("onactivityresult -2");
-					displayMapToast("No saved locations. Enter a location.");
+					displayMapToast(getString(R.string.noSavedLocations));
 
 					focusSearch();
 				} else {
@@ -2690,11 +2690,11 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		String returnText = "";
 		if(showSecondPrefix) {
-			returnText = sdf.format(start.getTimeInMillis()) + " to " + sdf.format(end.getTimeInMillis());
+			returnText = sdf.format(start.getTimeInMillis()) + getString(R.string.timeFromTo) + sdf.format(end.getTimeInMillis());
 		} else {
 			String secondFormat = "H:mm";
 			SimpleDateFormat second = new SimpleDateFormat(secondFormat);
-			returnText = sdf.format(start.getTimeInMillis()) + " to " + second.format(end.getTimeInMillis());
+			returnText = sdf.format(start.getTimeInMillis()) + getString(R.string.timeFromTo) + second.format(end.getTimeInMillis());
 		}
 		
 		return returnText;
@@ -3307,9 +3307,9 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				String minutesAgoMessage = "";
 				if (minutesAgo == 1) {
-					minutesAgoMessage = minutesAgo + " minute ago";
+					minutesAgoMessage = minutesAgo + getString(R.string.minuteAgo);
 				} else {
-					minutesAgoMessage = minutesAgo + " minutes ago";
+					minutesAgoMessage = minutesAgo + getString(R.string.minutesAgo);
 				}
 				
 				Marker marker = mMap.addMarker(new MarkerOptions()
@@ -3380,7 +3380,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 							mMap.addMarker(new MarkerOptions()
 									.position(point)
-									.title(minutesAgo + " minutes ago")
+									.title(minutesAgo + getString(R.string.minutesAgo))
 									.icon(BitmapDescriptorFactory
 											.fromBitmap(image)));
 
@@ -3601,7 +3601,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// check location and bail/notify if it's unavailable
 		if (mLatitude == 0.0) {
 			Toast.makeText(getApplicationContext(),
-					"Can't send data: location unavailable", Toast.LENGTH_LONG)
+					getString(R.string.locationUnavailable), Toast.LENGTH_LONG)
 					.show();
 			return;
 		}
@@ -3904,7 +3904,7 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonThermometer.setVisibility(View.GONE);
 			buttonHygrometer.setVisibility(View.GONE);
 			
-			buttonBarometer.setText("No atmosphere sensors detected");
+			buttonBarometer.setText(getString(R.string.noSensorsDetected));
 			
 			textContribPressureTitle.setVisibility(View.GONE);
 			textPressureContributions.setVisibility(View.GONE);
