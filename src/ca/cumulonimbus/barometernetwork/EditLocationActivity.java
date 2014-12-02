@@ -95,7 +95,7 @@ public class EditLocationActivity extends Activity {
 				pn.open();
 				pn.deleteLocation(initialRowId);
 				pn.close();
-				Toast.makeText(getApplicationContext(), "Deleted " + initialName, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.deleted) + initialName, Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		});
@@ -111,7 +111,7 @@ public class EditLocationActivity extends Activity {
 							Double.parseDouble(editLatitude.getText().toString()), 
 							Double.parseDouble(editLongitude.getText().toString()));
 					pn.close();
-					Toast.makeText(getApplicationContext(), "Saved " + editLocationName.getText().toString(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), getString(R.string.saved) + editLocationName.getText().toString(), Toast.LENGTH_SHORT).show();
 				} catch(Exception e) {
 					// meh
 				}
