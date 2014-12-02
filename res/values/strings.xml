@@ -216,5 +216,17 @@
     <string name="saved">Saved </string>
     <string name="dataSavingError">Couldn\'t save data</string>
     <string name="measurementsTo"> measurements to </string>
+    <string name="conditionPrompt">What\'s it like outside?</string>
+    <string name="lightRain">Light rain</string>
+    <string name="moderateRain">Moderate rain</string>
+    <string name="heavyRain">Heavy rain</string>
+    <string name="lightSnow">Light snow</string>
+    <string name="moderateSnow">Moderate snow</string>
+    <string name="heavySnow">Heavy snow</string>
+    <string name="pressureRiseNotification">The pressure is rising</string>
+    <string name="pressureDropNotification">The pressure is dropping</string>
+    <string name="pressureSteadyNotification">The pressure is steady</string>
+    <string name="viewGraph">View graph</string>
+    <string name="reportWeather">Report weather</string>
     
 </resources>
