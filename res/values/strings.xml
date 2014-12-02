@@ -206,7 +206,7 @@
     <string name="minutesAgo"> minutes ago</string>
     <string name="locationUnavailable">Can\'t send data: location unavailable</string>
     <string name="noSensorsDetected">No atmosphere sensors detected</string>
-    <string name="noDataToPlot">There's no data to plot</string>
+    <string name="noDataToPlot">There\'s no data to plot</string>
     <string name="minimal">Minimal </string>
     <string name="moderate">Moderate </string>
     <string name="heavy">Heavy </string>
@@ -228,5 +228,6 @@
     <string name="pressureSteadyNotification">The pressure is steady</string>
     <string name="viewGraph">View graph</string>
     <string name="reportWeather">Report weather</string>
+    
     
 </resources>
