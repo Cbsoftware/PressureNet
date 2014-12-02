@@ -207,6 +207,10 @@
     <string name="locationUnavailable">Can\'t send data: location unavailable</string>
     <string name="noSensorsDetected">No atmosphere sensors detected</string>
     <string name="noDataToPlot">There's no data to plot</string>
-    
+    <string name="minimal">Minimal </string>
+    <string name="moderate">Moderate </string>
+    <string name="heavy">Heavy </string>
+    <string name="noLocationAvailable">No location available,  can\'t send condition</string>
+    <string name="currentConditionsTweet"> near me, what\'s it like where you are? #PressureNet </string>
     
 </resources>
