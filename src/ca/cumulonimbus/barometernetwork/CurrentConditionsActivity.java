@@ -635,7 +635,7 @@ public class CurrentConditionsActivity extends Activity {
     	precipStateSelected = true;
     	
     	double value = 0.0;
-		String printValue = "Minimal " + condition.getPrecipitation_type();
+		String printValue = getString(R.string.minimal) + condition.getPrecipitation_type();
 		switchActivePrecipitationAmount("low");
 		condition.setPrecipitation_amount(value);
 		textPrecipitationAmountDescription.setText(printValue);
@@ -1252,7 +1252,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 0.0;
-				String printValue = "Minimal " + condition.getPrecipitation_type();
+				String printValue = getString(R.string.minimal) + condition.getPrecipitation_type();
 				condition.setPrecipitation_amount(value);
 				switchActivePrecipitationAmount("low");
 				textPrecipitationAmountDescription.setText(printValue);
@@ -1265,7 +1265,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 1.0;
-				String printValue = "Moderate " + condition.getPrecipitation_type();
+				String printValue = getString(R.string.moderate) + condition.getPrecipitation_type();
 				switchActivePrecipitationAmount("moderate");
 				condition.setPrecipitation_amount(value);
 				textPrecipitationAmountDescription.setText(printValue);
@@ -1278,7 +1278,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 2.0;
-				String printValue = "Heavy " + condition.getPrecipitation_type();
+				String printValue = getString(R.string.heavy) + condition.getPrecipitation_type();
 				condition.setPrecipitation_amount(value);
 				switchActivePrecipitationAmount("heavy");
 				textPrecipitationAmountDescription.setText(printValue);
@@ -1354,7 +1354,7 @@ public class CurrentConditionsActivity extends Activity {
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
 	    	if(mLatitude == 0.0) {
-				Toast.makeText(getApplicationContext(), "No location available,  can't send condition", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.noLocationAvailable) Toast.LENGTH_LONG).show();
 				finish();
 				
 	    	}
@@ -1450,9 +1450,9 @@ public class CurrentConditionsActivity extends Activity {
 		}
 		
 		if(condition.getGeneral_condition().equals(getString(R.string.extreme))) {
-			tweet = "#" + condition.getUser_comment() + " near me, what's it like where you are? #PressureNet ";
+			tweet = "#" + condition.getUser_comment() + getString(R.string.currentConditionsTweet);
 		} else {
-			tweet = "It's #" + twitterCondition + " near me, what's it like where you are? #PressureNet ";
+			tweet = "It's #" + twitterCondition + getString(R.string.currentConditionsTweet);
 		}
 		
 		
