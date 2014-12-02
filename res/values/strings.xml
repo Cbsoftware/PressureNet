@@ -212,5 +212,7 @@
     <string name="heavy">Heavy </string>
     <string name="noLocationAvailable">No location available,  can\'t send condition</string>
     <string name="currentConditionsTweet"> near me, what\'s it like where you are? #PressureNet </string>
+    <string name="deleted">Deleted </string>
+    <string name="saved">Saved </string>
     
 </resources>
