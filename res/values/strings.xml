@@ -214,5 +214,7 @@
     <string name="currentConditionsTweet"> near me, what\'s it like where you are? #PressureNet </string>
     <string name="deleted">Deleted </string>
     <string name="saved">Saved </string>
+    <string name="dataSavingError">Couldn\'t save data</string>
+    <string name="measurementsTo"> measurements to </string>
     
 </resources>
