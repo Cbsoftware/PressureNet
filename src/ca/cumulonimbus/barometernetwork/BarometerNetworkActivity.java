@@ -1666,8 +1666,13 @@ public class BarometerNetworkActivity extends Activity implements
 				textAltitude.setText(displayAltitudeValue(bestLocation.getAltitude()));
 			}
 		}
-		buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
-		buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+
+		try {
+			buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
+			buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+		} catch (NoSuchMethodError nsme) {
+			// 
+		}
 	}
 
 	/**
