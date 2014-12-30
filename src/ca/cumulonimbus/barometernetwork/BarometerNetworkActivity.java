@@ -714,7 +714,7 @@ public class BarometerNetworkActivity extends Activity implements
 				"sharing_preference", "Us, Researchers and Forecasters");
 		preferenceSendNotifications = sharedPreferences.getBoolean(
 				"send_notifications", false);
-		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", true);
+		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", false);
 		preferenceWhenCharging = sharedPreferences.getBoolean(
 				"only_when_charging", false);
 
