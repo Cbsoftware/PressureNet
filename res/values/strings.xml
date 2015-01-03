@@ -3,7 +3,7 @@
 
     <string name="app_name">PressureNet</string>
     
-    <string name="activity_welcome">Bem-vindo ao PressureNet</string>
+    <string name="activity_welcome">Welcome to PressureNet</string>
     
     <string name="currentReading">Current Reading:</string>
     <string name="empty"></string>
