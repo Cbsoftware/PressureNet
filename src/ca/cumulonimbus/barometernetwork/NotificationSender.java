@@ -238,7 +238,7 @@ public class NotificationSender extends BroadcastReceiver {
 			return;
 		}
 		
-		String deliveryMessage = getString(R.string.conditionPrompt);
+		String deliveryMessage = mContext.getString(R.string.conditionPrompt);
 		
 		// Current Conditions activity likes to know the location in the Intent
 		// Also needed for Haversine calculation
@@ -288,13 +288,13 @@ public class NotificationSender extends BroadcastReceiver {
 			
 			if(condition.getCloud_type().equals(mContext.getString(R.string.partly_cloudy))) {
 				icon = R.drawable.ic_wea_on_cloudy1;
-				politeReportText = getString(R.string.partly_cloudy);
+				politeReportText = mContext.getString(R.string.partly_cloudy);
 			} else if(condition.getCloud_type().equals(mContext.getString(R.string.mostly_cloudy))) {
 				icon = R.drawable.ic_wea_on_cloudy2;
-				politeReportText = getString(R.string.mostly_cloudy);
+				politeReportText = mContext.getString(R.string.mostly_cloudy);
 			} else if(condition.getCloud_type().equals(mContext.getString(R.string.very_cloudy))) {
 				icon = R.drawable.ic_wea_on_cloudy;
-				politeReportText = getString(R.string.very_cloudy);
+				politeReportText = mContext.getString(R.string.very_cloudy);
 			} else {
 				icon = R.drawable.ic_wea_on_cloud;
 			}
@@ -307,37 +307,37 @@ public class NotificationSender extends BroadcastReceiver {
 				switch((int)condition.getPrecipitation_amount()) {
 				case 0:
 					icon = R.drawable.ic_wea_on_rain1;
-					politeReportText = getString(R.string.lightRain);
+					politeReportText = mContext.getString(R.string.lightRain);
 					break;
 				case 1:
 					icon = R.drawable.ic_wea_on_rain2;
-					politeReportText = getString(R.string.moderateRain);
+					politeReportText = mContext.getString(R.string.moderateRain);
 					break;
 				case 2:
 					icon = R.drawable.ic_wea_on_rain3;
-					politeReportText = getString(R.string.heavyRain);
+					politeReportText = mContext.getString(R.string.heavyRain);
 					break;
 				default:
 					icon = R.drawable.ic_wea_on_rain1;
-					politeReportText = getString(R.string.rain);
+					politeReportText = mContext.getString(R.string.rain);
 				}
 			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
 				switch((int)condition.getPrecipitation_amount()) {
 				case 0:
 					icon = R.drawable.ic_wea_on_snow1;
-					politeReportText = getString(R.string.lightSnow);
+					politeReportText = mContext.getString(R.string.lightSnow);
 					break;
 				case 1:
 					icon = R.drawable.ic_wea_on_snow2;
-					politeReportText = getString(R.string.moderateSnow);
+					politeReportText = mContext.getString(R.string.moderateSnow);
 					break;
 				case 2:
 					icon = R.drawable.ic_wea_on_snow3;
-					politeReportText = getString(R.string.heavySnow);
+					politeReportText = mContext.getString(R.string.heavySnow);
 					break;
 				default:
 					icon = R.drawable.ic_wea_on_snow1;
-					politeReportText = getString(R.string.snow);
+					politeReportText = mContext.getString(R.string.snow);
 				}
 			} else {
 				icon = R.drawable.ic_wea_on_precip;
@@ -353,19 +353,19 @@ public class NotificationSender extends BroadcastReceiver {
 			vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
 			if(condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
 				icon = R.drawable.ic_wea_on_flooding;
-				politeReportText = getString(R.string.flooding);
+				politeReportText = mContext.getString(R.string.flooding);
 			} else if(condition.getUser_comment().equals(mContext.getString(R.string.wildfire))) {
 				icon = R.drawable.ic_wea_on_fire;
-				politeReportText = getString(R.string.wildfire);
+				politeReportText = mContext.getString(R.string.wildfire);
 			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tornado))) {
 				icon = R.drawable.ic_wea_on_tornado;
-				politeReportText = getString(R.string.tornado);
+				politeReportText = mContext.getString(R.string.tornado);
 			} else if(condition.getUser_comment().equals(mContext.getString(R.string.duststorm))) {
 				icon = R.drawable.ic_wea_on_dust;
-				politeReportText = getString(R.string.duststorm);
+				politeReportText = mContext.getString(R.string.duststorm);
 			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tropicalstorm))) {
 				icon = R.drawable.ic_wea_on_tropical_storm;
-				politeReportText = getString(R.string.tropicalstorm);
+				politeReportText = mContext.getString(R.string.tropicalstorm);
 			}
 		} 
 		
@@ -472,19 +472,19 @@ public class NotificationSender extends BroadcastReceiver {
 		int smallIconId = R.drawable.ic_launcher;
 
 		if ((first.contains("Rising")) && (second.contains("Falling"))) {
-			deliveryMessage = getString(R.string.pressureDropNotification);
+			deliveryMessage = mContext.getString(R.string.pressureDropNotification);
 			smallIconId = R.drawable.ic_stat_notify_falling;
 		} else if ((first.contains("Steady")) && (second.contains("Falling"))) {
-			deliveryMessage = getString(R.string.pressureDropNotification);
+			deliveryMessage = mContext.getString(R.string.pressureDropNotification);
 			smallIconId = R.drawable.ic_stat_notify_falling;
 		} else if ((first.contains("Steady")) && (second.contains("Rising"))) {
-			deliveryMessage = getString(R.string.pressureRiseNotification);
+			deliveryMessage = mContext.getString(R.string.pressureRiseNotification);
 			smallIconId = R.drawable.ic_stat_notify_rising;
 		} else if ((first.contains("Falling")) && (second.contains("Rising"))) {
-			deliveryMessage = getString(R.string.pressureRiseNotification);
+			deliveryMessage = mContext.getString(R.string.pressureRiseNotification);
 			smallIconId = R.drawable.ic_stat_notify_rising;
 		} else {
-			deliveryMessage = getString(R.string.pressureSteadyNotification);
+			deliveryMessage = mContext.getString(R.string.pressureSteadyNotification);
 			// don't deliver this message
 			log("bailing on notification, pressure is steady");
 			return;
@@ -523,9 +523,9 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(smallIconId)
-				.setContentTitle(getString(R.string.app_name)).setContentText(deliveryMessage)
-				.addAction(R.drawable.ic_menu_dark_stats, getString(R.string.viewGraph), graphIntent)
-				.addAction(R.drawable.ic_menu_dark_weather, getString(R.string.reportWeather), resultPendingIntent);
+				.setContentTitle(mContext.getString(R.string.app_name)).setContentText(deliveryMessage)
+				.addAction(R.drawable.ic_menu_dark_stats, mContext.getString(R.string.viewGraph), graphIntent)
+				.addAction(R.drawable.ic_menu_dark_weather, mContext.getString(R.string.reportWeather), resultPendingIntent);
 		
 		
 		stackBuilder.addNextIntent(resultIntent);

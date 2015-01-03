@@ -1354,7 +1354,7 @@ public class CurrentConditionsActivity extends Activity {
 	    	condition.setTzoffset(Calendar.getInstance().getTimeZone().getOffset((long)condition.getTime()));
 	   
 	    	if(mLatitude == 0.0) {
-				Toast.makeText(getApplicationContext(), getString(R.string.noLocationAvailable) Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.noLocationAvailable), Toast.LENGTH_LONG).show();
 				finish();
 				
 	    	}

@@ -714,7 +714,7 @@ public class BarometerNetworkActivity extends Activity implements
 				"sharing_preference", "Us, Researchers and Forecasters");
 		preferenceSendNotifications = sharedPreferences.getBoolean(
 				"send_notifications", false);
-		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", true);
+		preferenceUseGPS = sharedPreferences.getBoolean("use_gps", false);
 		preferenceWhenCharging = sharedPreferences.getBoolean(
 				"only_when_charging", false);
 
@@ -937,7 +937,7 @@ public class BarometerNetworkActivity extends Activity implements
 					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					restoreSatelliteButton();
 				} else {
-					displayMapToast(getString(R.string.mapView);
+					displayMapToast(getString(R.string.mapView));
 					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 					
 					dimSatelliteButton();
@@ -1666,8 +1666,13 @@ public class BarometerNetworkActivity extends Activity implements
 				textAltitude.setText(displayAltitudeValue(bestLocation.getAltitude()));
 			}
 		}
-		buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
-		buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+
+		try {
+			buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
+			buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+		} catch (NoSuchMethodError nsme) {
+			// 
+		}
 	}
 
 	/**
@@ -2469,7 +2474,7 @@ public class BarometerNetworkActivity extends Activity implements
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 		startActivityForResult(
-				Intent.createChooser(emailIntent, getString(R.string.sendEmailChooser),
+				Intent.createChooser(emailIntent, "Send mail..."),
 				REQUEST_MAILED_LOG);
 	}
 
@@ -2525,7 +2530,7 @@ public class BarometerNetworkActivity extends Activity implements
 			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 
 			startActivityForResult(
-					Intent.createChooser(emailIntent, getString(R.string.sendEmailChooser)),
+					Intent.createChooser(emailIntent, "Send mail..."),
 					REQUEST_MAILED_LOG);
 
 		} catch (Throwable t) {
@@ -2690,11 +2695,11 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		String returnText = "";
 		if(showSecondPrefix) {
-			returnText = sdf.format(start.getTimeInMillis()) + getString(R.string.timeFromTo) + sdf.format(end.getTimeInMillis());
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + sdf.format(end.getTimeInMillis());
 		} else {
 			String secondFormat = "H:mm";
 			SimpleDateFormat second = new SimpleDateFormat(secondFormat);
-			returnText = sdf.format(start.getTimeInMillis()) + getString(R.string.timeFromTo) + second.format(end.getTimeInMillis());
+			returnText = sdf.format(start.getTimeInMillis()) + " to " + second.format(end.getTimeInMillis());
 		}
 		
 		return returnText;

@@ -119,7 +119,7 @@ public class Chart {
 		// " data points");
 
 		if (obsList.size() < 2) {
-			Toast.makeText(context, getString(R.string.noDataToPlot),
+			Toast.makeText(context, context.getString(R.string.noDataToPlot),
 					Toast.LENGTH_SHORT).show();
 		}
 
