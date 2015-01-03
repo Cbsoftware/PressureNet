@@ -3274,11 +3274,13 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentCur = 0;
 		int totalAllowed = 30;
 		
-		
-		
 		if (currentConditionRecents != null) {
 			log("adding current conditions to map: "
 					+ currentConditionRecents.size());
+			
+			if(currentConditionRecents.size() != 0) {
+				hideNoConditionsPrompt();
+			}
 			
 			// Add Current Conditions
 			for (CbCurrentCondition condition : currentConditionRecents) {
