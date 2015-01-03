@@ -339,6 +339,24 @@ public class NotificationSender extends BroadcastReceiver {
 					icon = R.drawable.ic_wea_on_snow1;
 					politeReportText = mContext.getString(R.string.snow);
 				}
+			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.hail))) {
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_hail1;
+					politeReportText = mContext.getString(R.string.lightHail);
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_hail2;
+					politeReportText = mContext.getString(R.string.moderateHail);
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_hail3;;
+					politeReportText = mContext.getString(R.string.heavyHail);
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_hail1;
+					politeReportText = mContext.getString(R.string.hail);
+				}
 			} else {
 				icon = R.drawable.ic_wea_on_precip;
 			}

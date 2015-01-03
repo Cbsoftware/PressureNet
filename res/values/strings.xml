@@ -224,6 +224,9 @@
     <string name="lightRain">Light rain</string>
     <string name="moderateRain">Moderate rain</string>
     <string name="heavyRain">Heavy rain</string>
+    <string name="lightHail">Light hail</string>
+    <string name="moderateHail">Moderate hail</string>
+    <string name="heavyHail">Heavy hail</string>
     <string name="lightSnow">Light snow</string>
     <string name="moderateSnow">Moderate snow</string>
     <string name="heavySnow">Heavy snow</string>
