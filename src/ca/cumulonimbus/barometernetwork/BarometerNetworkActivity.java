@@ -470,7 +470,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void displayNetworkOfflineToast() {
 		if (!isConnected) {
 			Toast.makeText(getApplicationContext(),
-					"No network connection. Data won't load.",
+					getString(R.string.connectionErrorMsg),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -594,7 +594,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 			} else {
-				Toast.makeText(getApplicationContext(), "Unable to show map",
+				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
 						Toast.LENGTH_SHORT).show();
 			}
 
@@ -933,11 +933,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displaySatellite = !displaySatellite;
 				if (displaySatellite) {
-					displayMapToast("Satellite view");
+					displayMapToast(getString(R.string.satView));
 					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 					restoreSatelliteButton();
 				} else {
-					displayMapToast("Map view");
+					displayMapToast(getString(R.string.mapView));
 					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 					
 					dimSatelliteButton();
@@ -951,11 +951,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayPressure = !displayPressure;
 				if(displayPressure) {
-					displayMapToast("Showing pressure data");
+					displayMapToast(getString(R.string.showingPressureData));
 					restoreBarometerButton();
 					makeGlobalMapCall();
 				} else {
-					displayMapToast("Hiding pressure data");
+					displayMapToast(getString(R.string.hidingPressureData));
 					dimBarometerButton();
 				}
 				mMap.clear();
@@ -969,11 +969,11 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				displayConditions = !displayConditions;
 				if(displayConditions) {
-					displayMapToast("Showing weather conditions");
+					displayMapToast(getString(R.string.showingWeather));
 					restoreWeatherButton();
 					makeGlobalConditionsMapCall();
 				} else {
-					displayMapToast("Hiding weather conditions");
+					displayMapToast(getString(R.string.hidingWeather));
 					dimWeatherButton();
 				}
 				mMap.clear();
@@ -1064,7 +1064,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View arg0) {
 				if(locationAvailable) {
-					displayMapToast("Going to your location");
+					displayMapToast(getString(R.string.locatingUser));
 					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 							GA_CATEGORY_MAIN_APP, 
 							GA_ACTION_BUTTON, 
@@ -1072,7 +1072,7 @@ public class BarometerNetworkActivity extends Activity implements
 							 null).build());
 					goToMyLocation(); 
 				} else {
-					displayMapToast("Location services not available");
+					displayMapToast(getString(R.string.locationServicesError));
 				}
 			}
 		});
@@ -1081,7 +1081,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
-				displayMapToast("Refreshing...");
+				displayMapToast(getString(R.string.refreshing));
 				
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
 						GA_CATEGORY_MAIN_APP, 
@@ -1370,7 +1370,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 				String location = editLocation.getText().toString().trim();
 				if (location.equals("")) {
-					displayMapToast("Enter a search location");
+					displayMapToast(getString(R.string.locationPrompt));
 					focusSearch();
 					return;
 				}
@@ -1382,7 +1382,7 @@ public class BarometerNetworkActivity extends Activity implements
 					List<Address> addr = geocode.getFromLocationName(location,
 							2);
 					if (addr.size() > 0) {
-						displayMapToast("Going to " + location);
+						displayMapToast(getString(R.string.goingTo) + location);
 						
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
@@ -1411,7 +1411,7 @@ public class BarometerNetworkActivity extends Activity implements
 						CbApiCall conditionApi = buildMapCurrentConditionsCall(2);
 						makeCurrentConditionsAPICall(conditionApi);
 					} else {
-						displayMapToast("No search results found");
+						displayMapToast(getString(R.string.noSearchResults));
 					}
 
 				} catch (IOException ioe) {
@@ -1489,7 +1489,7 @@ public class BarometerNetworkActivity extends Activity implements
 			long timeSpan = endTime - startTime;
 			if(timeSpan > (1000 * 60 * 60 * 24)) {
 				log("send toast");
-				Toast.makeText(getApplicationContext(), "Preparing animation...", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), getString(R.string.preparingAnimation), Toast.LENGTH_SHORT).show();
 			} else {
 				log("don't send toast");
 			}
@@ -1529,7 +1529,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		if (frameLength == 0) {
 			log("barometernetworkactivity framelength = 0, bail on animation");
-			Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), getString(R.string.animationErrorNoData), Toast.LENGTH_SHORT).show();
 			animator.stop();
 			animator.reset();
 			return;
@@ -1942,7 +1942,7 @@ public class BarometerNetworkActivity extends Activity implements
 					} else {
 						log("app received conditions size 0");
 						if(activeMode.equals("animation")) {
-							Toast.makeText(getApplicationContext(), "No data to animate for this region and time", Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), getString(R.string.animationErrorNoData), Toast.LENGTH_SHORT).show();
 							animator.stop();
 							animator.reset();
 						}
@@ -2114,7 +2114,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		} else if (statsRecents.size() == 0) {
 			log("stats recents 0, RETURNING, no chart");
-			displayMapToast("Can't display graph, no data was returned");
+			displayMapToast(getString(R.string.graphErrorNoData));
 			return;
 		}
 
@@ -2391,7 +2391,7 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivity(intent);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
-					"No location found, can't submit current condition",
+					getString(R.string.noLocationFound),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -2459,7 +2459,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void sendFeedback() {
 		String address = "software@cumulonimbus.ca";
-		String subject = "PressureNet feedback";
+		String subject = getString(R.string.feedbackEmailSubject);
 		String emailtext = "";
 		final Intent emailIntent = new Intent(
 				android.content.Intent.ACTION_SEND);
@@ -2487,7 +2487,7 @@ public class BarometerNetworkActivity extends Activity implements
 		sendIntent
 				.putExtra(
 						Intent.EXTRA_TEXT,
-						"PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork");
+						getString(R.string.shareIntentText));
 		sendIntent.setType("text/plain");
 		startActivity(sendIntent);
 	}
@@ -2513,8 +2513,8 @@ public class BarometerNetworkActivity extends Activity implements
 			String version = pInfo.versionName;
 
 			String address = "software@cumulonimbus.ca";
-			String subject = "PressureNet " + version + " Debug Log";
-			String emailtext = "Debug log sent "
+			String subject = getString(R.string.pressureNet) + version + getString(R.string.debugLog);
+			String emailtext = getString(R.string.debugLogSent)
 					+ (new Date()).toLocaleString();
 
 			emailIntent.setType("plain/text");
@@ -2534,7 +2534,7 @@ public class BarometerNetworkActivity extends Activity implements
 					REQUEST_MAILED_LOG);
 
 		} catch (Throwable t) {
-			Toast.makeText(this, "Request failed: " + t.toString(),
+			Toast.makeText(this, getString(R.string.requestFailed) + t.toString(),
 					Toast.LENGTH_LONG).show();
 		}
 	}
@@ -2570,7 +2570,7 @@ public class BarometerNetworkActivity extends Activity implements
 						if (lat != 0) {
 							editLocation.setText(search,
 									TextView.BufferType.EDITABLE);
-							displayMapToast("Going to " + search);
+							displayMapToast(getString(R.string.goingTo) + search);
 							moveMapTo(lat, lon);
 						}
 					}
@@ -2578,7 +2578,7 @@ public class BarometerNetworkActivity extends Activity implements
 					layoutMapControls.setVisibility(View.GONE);
 				} else if (rowId == -2L) {
 					log("onactivityresult -2");
-					displayMapToast("No saved locations. Enter a location.");
+					displayMapToast(getString(R.string.noSavedLocations));
 
 					focusSearch();
 				} else {
@@ -3312,9 +3312,9 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				String minutesAgoMessage = "";
 				if (minutesAgo == 1) {
-					minutesAgoMessage = minutesAgo + " minute ago";
+					minutesAgoMessage = minutesAgo + getString(R.string.minuteAgo);
 				} else {
-					minutesAgoMessage = minutesAgo + " minutes ago";
+					minutesAgoMessage = minutesAgo + getString(R.string.minutesAgo);
 				}
 				
 				Marker marker = mMap.addMarker(new MarkerOptions()
@@ -3385,7 +3385,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 							mMap.addMarker(new MarkerOptions()
 									.position(point)
-									.title(minutesAgo + " minutes ago")
+									.title(minutesAgo + getString(R.string.minutesAgo))
 									.icon(BitmapDescriptorFactory
 											.fromBitmap(image)));
 
@@ -3606,7 +3606,7 @@ public class BarometerNetworkActivity extends Activity implements
 		// check location and bail/notify if it's unavailable
 		if (mLatitude == 0.0) {
 			Toast.makeText(getApplicationContext(),
-					"Can't send data: location unavailable", Toast.LENGTH_LONG)
+					getString(R.string.locationUnavailable), Toast.LENGTH_LONG)
 					.show();
 			return;
 		}
@@ -3909,7 +3909,7 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonThermometer.setVisibility(View.GONE);
 			buttonHygrometer.setVisibility(View.GONE);
 			
-			buttonBarometer.setText("No atmosphere sensors detected");
+			buttonBarometer.setText(getString(R.string.noSensorsDetected));
 			
 			textContribPressureTitle.setVisibility(View.GONE);
 			textPressureContributions.setVisibility(View.GONE);

@@ -87,7 +87,7 @@ public class AboutActivity extends Activity {
 			versionName = this.getPackageManager().getPackageInfo(
 					this.getPackageName(), 0).versionName;
 
-			textViewVersion.setText("Version " + versionName);
+			textViewVersion.setText(getString(R.string.version) + versionName);
 
 		} catch (NameNotFoundException e) {
 			//System.out.println("name not found " + e.getMessage());
@@ -95,7 +95,7 @@ public class AboutActivity extends Activity {
 
 		try {
 			sdkVersionName = CbConfiguration.SDK_VERSION;
-			textViewSDKVersion.setText("SDK " + sdkVersionName);
+			textViewSDKVersion.setText(getString(R.string.SDK) + sdkVersionName);
 		} catch (Exception e) {
 			//System.out.println("error " + e.getMessage());
 		}

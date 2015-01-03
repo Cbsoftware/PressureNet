@@ -18,6 +18,8 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
+import com.google.android.gms.internal.mc;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
@@ -120,7 +122,7 @@ public class StatsChart {
 		// " data points");
 
 		if (statsList.size() <= 2) {
-			Toast.makeText(context, "There's no data to plot",
+			Toast.makeText(context, context.getString(R.string.noDataToPlot),
 					Toast.LENGTH_SHORT).show();
 		}
 

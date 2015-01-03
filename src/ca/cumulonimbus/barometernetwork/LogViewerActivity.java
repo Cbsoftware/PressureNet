@@ -125,7 +125,7 @@ public class LogViewerActivity extends Activity {
 
 				} catch (Exception e) {
 					Toast.makeText(getApplicationContext(),
-							"Couldn't save data", Toast.LENGTH_LONG).show();
+							getString(R.string.dataSavingError), Toast.LENGTH_LONG).show();
 				}
 
 				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
@@ -136,7 +136,7 @@ public class LogViewerActivity extends Activity {
 				
 				Toast.makeText(
 						getApplicationContext(),
-						"Saved " + recents.size() + " measurements to "
+						getString(R.string.saved) + recents.size() + getString(R.string.measurementsTo)
 								+ export.getAbsolutePath(),
 						Toast.LENGTH_LONG).show();
 			}

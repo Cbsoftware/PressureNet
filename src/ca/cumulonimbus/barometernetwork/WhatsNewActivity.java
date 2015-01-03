@@ -83,7 +83,7 @@ public class WhatsNewActivity extends Activity {
 		} catch (NameNotFoundException nnfe) {
 
 		}
-		setTitle("PressureNet " + versionName);
+		setTitle(getString(R.string.pressureNet) + versionName);
 		
 		checkReceiveConditionNotifications.setChecked(prefs.getBoolean("send_condition_notifications", true));
 		SharedPreferences settings = PreferenceManager
