@@ -49,7 +49,7 @@
         android:key="device_prefs"
         android:title="Device" >
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="use_gps"
             android:title="Use GPS" />
         <CheckBoxPreference
