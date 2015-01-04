@@ -3314,9 +3314,9 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				String minutesAgoMessage = "";
 				if (minutesAgo == 1) {
-					minutesAgoMessage = minutesAgo + getString(R.string.minuteAgo);
+					minutesAgoMessage = minutesAgo + " " + getString(R.string.minuteAgo);
 				} else {
-					minutesAgoMessage = minutesAgo + getString(R.string.minutesAgo);
+					minutesAgoMessage = minutesAgo + " " + getString(R.string.minutesAgo);
 				}
 				
 				Marker marker = mMap.addMarker(new MarkerOptions()
