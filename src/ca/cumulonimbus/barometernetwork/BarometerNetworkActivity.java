@@ -903,11 +903,21 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if(v.isPressed()) {
-					v.setBackground(getResources().getDrawable(R.drawable.override_pressed));
-					buttonAltitudeOverride.setTextColor(Color.rgb(255, 255, 255));
+					try {
+						v.setBackground(getResources().getDrawable(R.drawable.override_pressed));
+						buttonAltitudeOverride.setTextColor(Color.rgb(255, 255, 255));	
+					} catch (NoSuchMethodError nsme ) {
+						
+					}
+					
 				} else {
-					v.setBackground(getResources().getDrawable(R.drawable.override));
-					buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
+					try {
+						v.setBackground(getResources().getDrawable(R.drawable.override));
+						buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));						
+					} catch(NoSuchMethodError nsme) {
+						
+					}
+
 				}
 				return false;
 			}
