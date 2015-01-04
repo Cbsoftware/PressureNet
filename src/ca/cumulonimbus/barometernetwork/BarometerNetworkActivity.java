@@ -3217,12 +3217,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 			break;
 		case DisplayMetrics.DENSITY_XHIGH:
-			textSize = defaultTextSize;
+			textSize = defaultTextSize + 2;
 			textXOffset = defaultTextXOffset + 3;
 			textYOffset = defaultTextYOffset;
 			break;
 		case DisplayMetrics.DENSITY_XXHIGH:
-			textSize = defaultTextSize + 10;
+			textSize = defaultTextSize + 16;
 			textXOffset = defaultTextXOffset + 22;
 			textYOffset = defaultTextYOffset + 14;
 			break;
