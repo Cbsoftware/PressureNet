@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Notification improvements\n• Android 5.0 optimization\n• Faster access to graphs\n"
+            android:text="• Notification improvements\n• General bugfixes\n• Battery usage improvements\n"
             android:textSize="16dp" />
 
         <TextView
