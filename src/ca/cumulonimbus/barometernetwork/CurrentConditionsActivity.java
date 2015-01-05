@@ -1450,9 +1450,9 @@ public class CurrentConditionsActivity extends Activity {
 		}
 		
 		if(condition.getGeneral_condition().equals(getString(R.string.extreme))) {
-			tweet = "#" + condition.getUser_comment() + getString(R.string.currentConditionsTweet);
+			tweet = "#" + condition.getUser_comment() + " " + getString(R.string.currentConditionsTweet);
 		} else {
-			tweet = "It's #" + twitterCondition + getString(R.string.currentConditionsTweet);
+			tweet = "It's #" + twitterCondition + " " + getString(R.string.currentConditionsTweet);
 		}
 		
 		
