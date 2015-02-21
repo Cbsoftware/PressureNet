@@ -8,6 +8,6 @@
         android:id="@+id/logviewerFragmentLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="ca.cumulonimbus.barometernetwork.LogViewerFragment" />
+        class="ca.cumulonimbus.wendy.LogViewerFragment" />
 
 </LinearLayout>

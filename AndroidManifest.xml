@@ -38,7 +38,7 @@
         </service>
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
+            android:name="ca.cumulonimbus.wendy.NewWelcomeActivity"
             android:label="@string/activity_welcome"
             android:theme="@style/CustomTheme"
             android:excludeFromRecents="true" >
@@ -47,37 +47,37 @@
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.PlayServicesLegalActivity"
+            android:name="ca.cumulonimbus.wendy.PlayServicesLegalActivity"
             android:excludeFromRecents="true"
             android:label="Legal Notices"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:parentActivityName="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.AboutActivity"
+            android:name="ca.cumulonimbus.wendy.AboutActivity"
             android:excludeFromRecents="true"
             android:label="@string/about"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:parentActivityName="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.HelpActivity"
+            android:name="ca.cumulonimbus.wendy.HelpActivity"
             android:excludeFromRecents="true"
             android:label="Help"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:parentActivityName="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
+            android:name="ca.cumulonimbus.wendy.CurrentConditionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="What's it like outside?"
@@ -85,65 +85,65 @@
             android:exported="true" >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.AltitudeActivity"
+            android:name="ca.cumulonimbus.wendy.AltitudeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="Enter Altitude"
             android:theme="@style/CustomThemeDialog">
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
+            android:name="ca.cumulonimbus.wendy.PreferencesActivity"
             android:excludeFromRecents="true"
             android:label="@string/settings"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:parentActivityName="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.LogViewerActivity"
+            android:name="ca.cumulonimbus.wendy.LogViewerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="My data"
-            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:parentActivityName="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.PNDVActivity"
+            android:name="ca.cumulonimbus.wendy.PNDVActivity"
             android:excludeFromRecents="true"
             android:label="@string/pndv"
             android:theme="@style/CustomTheme" >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.WelcomeActivity"
+            android:name="ca.cumulonimbus.wendy.WelcomeActivity"
             android:excludeFromRecents="true"
             android:label="@string/welcomeToPressureNET"
             android:theme="@style/CustomThemeDialog" >
         </activity>
    		<activity
-            android:name="ca.cumulonimbus.barometernetwork.WhatsNewActivity"
+            android:name="ca.cumulonimbus.wendy.WhatsNewActivity"
             android:excludeFromRecents="true"
             android:label="What's New"
             android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.SearchLocationsActivity"
+            android:name="ca.cumulonimbus.wendy.SearchLocationsActivity"
             android:excludeFromRecents="true"
             android:label="Search Locations"
             android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.EditLocationActivity"
+            android:name="ca.cumulonimbus.wendy.EditLocationActivity"
             android:excludeFromRecents="true"
             android:label="Location Details"
             android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
+            android:name="ca.cumulonimbus.wendy.BarometerNetworkActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:logo="@drawable/ic_launcher"
@@ -155,13 +155,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ca.cumulonimbus.barometernetwork.ConditionsAnimationSettingsActivity"
+            android:name="ca.cumulonimbus.wendy.ConditionsAnimationSettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="Animation settings"
             android:theme="@style/CustomThemeDialog"
             android:excludeFromRecents="true" >
         </activity>
-   	    <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
+   	    <receiver android:name="ca.cumulonimbus.wendy.NotificationSender" >
             <intent-filter>
                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
 				<action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
@@ -174,7 +174,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="ca.cumulonimbus.barometernetwork.WidgetProvider" >
+        <receiver android:name="ca.cumulonimbus.wendy.WidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_SUBMIT_AND_UPDATE" />
@@ -185,7 +185,7 @@
                 android:resource="@xml/widget_info" />
         </receiver>
         <receiver
-            android:name="ca.cumulonimbus.barometernetwork.ConditionsWidgetProvider"
+            android:name="ca.cumulonimbus.wendy.ConditionsWidgetProvider"
             android:label="PressureNet Conditions" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -196,7 +196,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/cc_widget_info" />
         </receiver>
-        <receiver android:name="ca.cumulonimbus.barometernetwork.GeneralBroadcastReceiver" >
+        <receiver android:name="ca.cumulonimbus.wendy.GeneralBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -210,7 +210,7 @@
             </intent-filter>
         </receiver>
         <service
-            android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
+            android:name="ca.cumulonimbus.wendy.WidgetButtonService"
             android:enabled="true" >
             <intent-filter>
                 <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
@@ -237,7 +237,7 @@
  
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="" />
+            android:value="AIzaSyDb5LwlY3WvwTtR_AxHA9LVNLuW69wBPC8" />
         
         <meta-data
     android:name="com.google.android.gms.version"
