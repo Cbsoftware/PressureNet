@@ -756,33 +756,6 @@ public class BarometerNetworkActivity extends Activity implements
 				.getString("temperature_units", "Celsius (°C)");
 	}
 
-	/**
-	 * Round the api call location values to improve performance (caching)
-	 * 
-	 * @param rawApi
-	 * @return
-	 */
-	private CbApiCall roundApiCallLocations(CbApiCall rawApi) {
-		double newMinLat = Math.floor(rawApi.getMinLat() * 10) / 10;
-		double newMaxLat = Math.floor(rawApi.getMaxLat() * 10) / 10;
-		double newMinLon = Math.floor(rawApi.getMinLon() * 10) / 10;
-		double newMaxLon = Math.floor(rawApi.getMaxLon() * 10) / 10;
-
-		if (newMaxLat == newMinLat) {
-			newMaxLat += .1;
-		}
-		if (newMaxLon == newMinLon) {
-			newMaxLon += .1;
-		}
-
-		rawApi.setMinLat(newMinLat);
-		rawApi.setMaxLat(newMaxLat);
-		rawApi.setMinLon(newMinLon);
-		rawApi.setMaxLon(newMaxLon);
-
-		return rawApi;
-	}
-
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
@@ -1434,13 +1407,6 @@ public class BarometerNetworkActivity extends Activity implements
 		toast.show();
 	}
 	
-	private void displayLongMapToast(String message) {
-		Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
-		toast.setGravity(Gravity.TOP|Gravity.CENTER, 0, 300);
-		toast.show();
-	}
-	
-	
 	/**
 	 * Get simple counts from the database
 	 * to tell the user how much they've contributed
@@ -1729,29 +1695,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	
-	/**
-	 * Query the database for locally stored observations with the intent to
-	 * display on a time series chart
-	 * 
-	 * @param apiCall
-	 */
-	private void askForGraphRecents(CbStatsAPICall apiCall) {
-		if (mBound) {
-			log("asking for graph recents");
-
-			Message msg = Message.obtain(null,
-					CbService.MSG_MAKE_STATS_CALL, apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				// e.printStackTrace();
-			}
-		} else {
-			// log("error: not bound");
-		}
-	}
 
 	/**
 	 * Query the database for locally stored observations
@@ -2296,29 +2239,6 @@ public class BarometerNetworkActivity extends Activity implements
 		log("oncreate main activity v: " + version);
 	}
 
-	/**
-	 * Get a unique ID by fetching the phone ID and hashing it
-	 * 
-	 * @return
-	 */
-	private String getID() {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-
-			String actual_id = Secure.getString(getApplicationContext()
-					.getContentResolver(), Secure.ANDROID_ID);
-			byte[] bytes = actual_id.getBytes();
-			byte[] digest = md.digest(bytes);
-			StringBuffer hexString = new StringBuffer();
-			for (int i = 0; i < digest.length; i++) {
-				hexString.append(Integer.toHexString(0xFF & digest[i]));
-			}
-			return hexString.toString();
-		} catch (Exception e) {
-			return "--";
-		}
-	}
-
 	DialogInterface.OnClickListener dialogDeleteClickListener = new DialogInterface.OnClickListener() {
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
@@ -2447,30 +2367,6 @@ public class BarometerNetworkActivity extends Activity implements
 		intent.setData(Uri
 				.parse("market://details?id=ca.cumulonimbus.barometernetwork"));
 		startActivity(intent);
-	}
-
-	/**
-	 * Email software@cumulonimbus.ca for feedback
-	 */
-	private void sendFeedback() {
-		String address = "software@cumulonimbus.ca";
-		String subject = "PressureNet feedback";
-		String emailtext = "";
-		final Intent emailIntent = new Intent(
-				android.content.Intent.ACTION_SEND);
-
-		emailIntent.setType("plain/text");
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-				new String[] { address });
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
-
-		startActivityForResult(
-				Intent.createChooser(emailIntent, "Send mail..."),
-				REQUEST_MAILED_LOG);
 	}
 
 	/**
@@ -3428,39 +3324,6 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
 
-	private CbApiCall buildLocalConditionsAPICall(double hoursAgo) {
-		long startTime = System.currentTimeMillis()
-				- (int) ((hoursAgo * 60 * 60 * 1000));
-		long endTime = System.currentTimeMillis();
-		CbApiCall api = new CbApiCall();
-
-		double minLat = 0;
-		double maxLat = 0;
-		double minLon = 0;
-		double maxLon = 0;
-
-		if (visibleBound != null) {
-			LatLng ne = visibleBound.northeast;
-			LatLng sw = visibleBound.southwest;
-			minLat = sw.latitude;
-			maxLat = ne.latitude;
-			minLon = sw.longitude;
-			maxLon = ne.longitude;
-		} else {
-			log("no map center, bailing on map call");
-			return api;
-		}
-
-		api.setMinLat(minLat);
-		api.setMaxLat(maxLat);
-		api.setMinLon(minLon);
-		api.setMaxLon(maxLon);
-		api.setStartTime(startTime);
-		api.setEndTime(endTime);
-		api.setLimit(500);
-		return api;
-	}
-	
 	private CbApiCall buildMapAPICall(double hoursAgo) {
 		long startTime = System.currentTimeMillis()
 				- (int) ((hoursAgo * 60 * 60 * 1000));
