@@ -8,9 +8,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -26,11 +23,15 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.RemoteViews;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class WidgetButtonService extends Service {
 	
@@ -86,11 +87,17 @@ public class WidgetButtonService extends Service {
 	
 	private void sendSingleObservation() {
 		if (mBound) {
-			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-					BarometerNetworkActivity.GA_CATEGORY_WIDGET, 
-					BarometerNetworkActivity.GA_ACTION_BUTTON, 
-					"small_widget_sending_single_observation", 
-					null).build());
+		
+			// Get tracker.
+			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+			    .setLabel("small_widget_sending_single_observation")
+			    .build());
+			
 			log("widget sending single observation");
 			Message msg = Message.obtain(null, CbService.MSG_SEND_OBSERVATION, 0, 0);
 			try {

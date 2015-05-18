@@ -1,7 +1,5 @@
 package ca.cumulonimbus.barometernetwork;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +9,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class EditLocationActivity extends Activity {
 
@@ -28,16 +30,17 @@ public class EditLocationActivity extends Activity {
 
 	@Override
 	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this); 
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication())
+				.getTracker(TrackerName.APP_TRACKER);
+		// Set screen name.
+		t.setScreenName("Edit Location");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 		super.onStart();
 	}
 
-	@Override
-	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
-		super.onStop();
-	}
-	
 	public void populateFields() {
 		// get the row id from the intent and load
 		// the correct data
@@ -58,11 +61,11 @@ public class EditLocationActivity extends Activity {
 				initialLatitude = c.getDouble(2);
 				initialLongitude = c.getDouble(3);
 				initialRowId = rowId;
-				
+
 				editLocationName.setText(initialName);
 				editLatitude.setText(initialLatitude + "");
 				editLongitude.setText(initialLongitude + "");
-				
+
 			} catch (Exception e) {
 				// meh
 			}
@@ -95,7 +98,9 @@ public class EditLocationActivity extends Activity {
 				pn.open();
 				pn.deleteLocation(initialRowId);
 				pn.close();
-				Toast.makeText(getApplicationContext(), getString(R.string.deleted) + initialName, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.deleted) + initialName,
+						Toast.LENGTH_SHORT).show();
 				finish();
 			}
 		});
@@ -107,12 +112,17 @@ public class EditLocationActivity extends Activity {
 				try {
 					PnDb pn = new PnDb(getApplicationContext());
 					pn.open();
-					pn.updateLocation(initialRowId, editLocationName.getText().toString(), 
-							Double.parseDouble(editLatitude.getText().toString()), 
-							Double.parseDouble(editLongitude.getText().toString()));
+					pn.updateLocation(initialRowId, editLocationName.getText()
+							.toString(), Double.parseDouble(editLatitude
+							.getText().toString()), Double
+							.parseDouble(editLongitude.getText().toString()));
 					pn.close();
-					Toast.makeText(getApplicationContext(), getString(R.string.saved) + editLocationName.getText().toString(), Toast.LENGTH_SHORT).show();
-				} catch(Exception e) {
+					Toast.makeText(
+							getApplicationContext(),
+							getString(R.string.saved)
+									+ editLocationName.getText().toString(),
+							Toast.LENGTH_SHORT).show();
+				} catch (Exception e) {
 					// meh
 				}
 				finish();

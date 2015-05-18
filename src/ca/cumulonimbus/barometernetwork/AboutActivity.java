@@ -1,6 +1,7 @@
 package ca.cumulonimbus.barometernetwork;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -17,8 +18,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
-import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class AboutActivity extends Activity {
 
@@ -47,12 +48,11 @@ public class AboutActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private void showWhatsNew() {
 		Intent intent = new Intent(this, WhatsNewActivity.class);
 		startActivity(intent);
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,17 +60,18 @@ public class AboutActivity extends Activity {
 		inflater.inflate(R.menu.about, menu);
 		return true;
 	}
-	
-	@Override
-	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this); 
-		super.onStart();
-	}
 
 	@Override
-	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
-		super.onStop();
+	protected void onStart() {
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication())
+				.getTracker(TrackerName.APP_TRACKER);
+		// Set screen name.
+		t.setScreenName("About");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
+		super.onStart();
 	}
 
 	@Override
@@ -87,17 +88,19 @@ public class AboutActivity extends Activity {
 			versionName = this.getPackageManager().getPackageInfo(
 					this.getPackageName(), 0).versionName;
 
-			textViewVersion.setText(getString(R.string.version) + " " + versionName);
+			textViewVersion.setText(getString(R.string.version) + " "
+					+ versionName);
 
 		} catch (NameNotFoundException e) {
-			//System.out.println("name not found " + e.getMessage());
+			// System.out.println("name not found " + e.getMessage());
 		}
 
 		try {
 			sdkVersionName = CbConfiguration.SDK_VERSION;
-			textViewSDKVersion.setText(getString(R.string.SDK) + " " + sdkVersionName);
+			textViewSDKVersion.setText(getString(R.string.SDK) + " "
+					+ sdkVersionName);
 		} catch (Exception e) {
-			//System.out.println("error " + e.getMessage());
+			// System.out.println("error " + e.getMessage());
 		}
 
 		layoutPressureNET.setOnClickListener(new OnClickListener() {
@@ -122,9 +125,9 @@ public class AboutActivity extends Activity {
 
 		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
-		
-		ImageView view = (ImageView)findViewById(android.R.id.home);
-	    view.setPadding(8, 0, 0, 0);
+
+		ImageView view = (ImageView) findViewById(android.R.id.home);
+		view.setPadding(8, 0, 0, 0);
 
 	}
 

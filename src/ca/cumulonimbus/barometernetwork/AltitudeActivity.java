@@ -16,8 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class AltitudeActivity extends Activity {
 
@@ -63,7 +65,8 @@ public class AltitudeActivity extends Activity {
 
 		String[] unitsArray = getResources().getStringArray(
 				R.array.distance_units);
-		String distance = settings.getString("distance_units", "Kilometers (km)");
+		String distance = settings.getString("distance_units",
+				"Kilometers (km)");
 		int positionDistance = 0;
 		for (int i = 0; i < unitsArray.length; i++) {
 			if (unitsArray[i].equals(distance)) {
@@ -137,13 +140,19 @@ public class AltitudeActivity extends Activity {
 
 	@Override
 	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this);
+		// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+		// Set screen name.
+		t.setScreenName("Altitude Settings");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);
 		super.onStop();
 	}
 }

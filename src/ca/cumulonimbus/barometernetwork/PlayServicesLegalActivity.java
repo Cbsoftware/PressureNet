@@ -1,14 +1,12 @@
 package ca.cumulonimbus.barometernetwork;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 public class PlayServicesLegalActivity extends Activity {
@@ -25,14 +23,19 @@ public class PlayServicesLegalActivity extends Activity {
 	}
 	
 	@Override
-	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this); 
+	protected void onStart() {// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+	// Set screen name.
+	t.setScreenName("Play Services Legal");
+
+	// Send a screen view.
+	t.send(new HitBuilders.ScreenViewBuilder().build());
 		super.onStart();
 	}
 
 	@Override
-	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
+	protected void onStop() { 
 		super.onStop();
 	}
 

@@ -42,16 +42,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class LogViewerActivity extends Activity {
-	
 
 	TextView logText;
 
@@ -62,7 +62,6 @@ public class LogViewerActivity extends Activity {
 	boolean mExternalStorageAvailable = false;
 	boolean mExternalStorageWriteable = false;
 
-
 	Button oneHour;
 	Button sixHours;
 	Button oneDay;
@@ -70,7 +69,7 @@ public class LogViewerActivity extends Activity {
 	long hoursAgo;
 
 	private String preferenceUnit;
-	
+
 	private int hoursSelected = 6;
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 
@@ -80,7 +79,6 @@ public class LogViewerActivity extends Activity {
 		inflater.inflate(R.menu.my_data_menu, menu);
 		return true;
 	}
-	
 
 	/**
 	 * Check the available storage options. Used for logging to SD card.
@@ -102,7 +100,7 @@ public class LogViewerActivity extends Activity {
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_export) {
@@ -125,26 +123,32 @@ public class LogViewerActivity extends Activity {
 
 				} catch (Exception e) {
 					Toast.makeText(getApplicationContext(),
-							getString(R.string.dataSavingError), Toast.LENGTH_LONG).show();
+							getString(R.string.dataSavingError),
+							Toast.LENGTH_LONG).show();
 				}
 
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"export", 
-						null).build());
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("export")
+				    .build());
+				
 				
 				Toast.makeText(
 						getApplicationContext(),
-						getString(R.string.saved) + recents.size() + getString(R.string.measurementsTo)
-								+ export.getAbsolutePath(),
-						Toast.LENGTH_LONG).show();
+						getString(R.string.saved) + recents.size()
+								+ getString(R.string.measurementsTo)
+								+ export.getAbsolutePath(), Toast.LENGTH_LONG)
+						.show();
 			}
-		} 
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	class IncomingHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -152,8 +156,7 @@ public class LogViewerActivity extends Activity {
 			case CbService.MSG_LOCAL_RECENTS:
 
 				recents = (ArrayList<CbObservation>) msg.obj;
-				Collections.sort(recents,
-						new CbScience.TimeComparator());
+				Collections.sort(recents, new CbScience.TimeComparator());
 				try {
 
 					String rawLog = "";
@@ -162,61 +165,64 @@ public class LogViewerActivity extends Activity {
 						c.setTimeInMillis(obs.getTime());
 						String dateString = c.getTime().toLocaleString();
 						DecimalFormat df = new DecimalFormat("####.00000");
-						String valueString = df.format(convertedPressureValue(obs));
+						String valueString = df
+								.format(convertedPressureValue(obs));
 						rawLog += dateString + ": " + valueString + "\n";
 					}
-					
+
 					// display in text form
 					try {
 						logText = (TextView) findViewById(R.id.editLog);
 						logText.setText(rawLog);
 					} catch (NullPointerException npe) {
-						// TODO; fix hack. 
-						//log("not loading text");
+						// TODO; fix hack.
+						// log("not loading text");
 					}
-					
+
 					// display in chart form
 					try {
 						Chart chart = new Chart(getApplicationContext());
-						
+
 						// set units according to preference
 						ArrayList<CbObservation> displayRecents = new ArrayList<CbObservation>();
-						for(CbObservation ob : recents) {
+						for (CbObservation ob : recents) {
 							double rawValue = ob.getObservationValue();
-							
+
 							PressureUnit unit = new PressureUnit(preferenceUnit);
 							SharedPreferences sharedPreferences = PreferenceManager
 									.getDefaultSharedPreferences(getApplicationContext());
-							boolean mslp = sharedPreferences.getBoolean("mslp", false);
+							boolean mslp = sharedPreferences.getBoolean("mslp",
+									false);
 
-							if(mslp) {
-								unit.setValue(CbScience.estimateMSLP(rawValue, ob.getLocation().getAltitude(), 15));
+							if (mslp) {
+								unit.setValue(CbScience.estimateMSLP(rawValue,
+										ob.getLocation().getAltitude(), 15));
 							} else {
 								unit.setValue(rawValue);
 							}
-							
+
 							unit.setAbbreviation(preferenceUnit);
 							double pressureInPreferredUnit = unit
 									.convertToPreferredUnit();
-							
+
 							ob.setObservationUnit(preferenceUnit);
 							ob.setObservationValue(pressureInPreferredUnit);
 							displayRecents.add(ob);
 						}
-						
+
 						View chartView = chart.drawChart(displayRecents);
 						showChart(chartView);
-					} catch (NullPointerException npe ) {
+					} catch (NullPointerException npe) {
 						// TODO: fix hack.
-						//log("not drawing chart");
+						// log("not drawing chart");
 					}
-					
+
 				} catch (Exception e) {
-					//e.printStackTrace();
+					// e.printStackTrace();
 				} finally {
-					
+
 				}
-				
+
 				// enable buttons
 				oneHour.setEnabled(true);
 				oneHour.setTypeface(null, Typeface.NORMAL);
@@ -226,13 +232,13 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setEnabled(true);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
-				
+
 				oneHour.setTextColor(Color.BLACK);
 				sixHours.setTextColor(Color.BLACK);
 				oneDay.setTextColor(Color.BLACK);
 				oneWeek.setTextColor(Color.BLACK);
-				
-				switch(hoursSelected) {
+
+				switch (hoursSelected) {
 				case 1:
 					oneHour.setTypeface(null, Typeface.BOLD);
 					break;
@@ -242,11 +248,11 @@ public class LogViewerActivity extends Activity {
 				case 24:
 					oneDay.setTypeface(null, Typeface.BOLD);
 					break;
-				case 24*7:
+				case 24 * 7:
 					oneWeek.setTypeface(null, Typeface.BOLD);
 					break;
 				}
-				
+
 				break;
 			default:
 				super.handleMessage(msg);
@@ -266,26 +272,26 @@ public class LogViewerActivity extends Activity {
 				mConnection, Context.BIND_AUTO_CREATE);
 
 	}
-	
+
 	public double convertedPressureValue(CbObservation obs) {
 		double value = obs.getObservationValue();
 		SharedPreferences sharedPreferences = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
 		boolean mslp = sharedPreferences.getBoolean("mslp", false);
-		if(mslp) {
-			if(obs.getLocation().getAltitude()!=0) {
-				value = CbScience.estimateMSLP(value, obs.getLocation().getAltitude(), 15);
+		if (mslp) {
+			if (obs.getLocation().getAltitude() != 0) {
+				value = CbScience.estimateMSLP(value, obs.getLocation()
+						.getAltitude(), 15);
 			}
 		}
-		
+
 		PressureUnit unit = new PressureUnit(preferenceUnit);
-		
+
 		unit.setValue(value);
 		unit.setAbbreviation(preferenceUnit);
 		return unit.convertToPreferredUnit();
 	}
 
-	 	
 	private ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			mService = new Messenger(service);
@@ -310,7 +316,7 @@ public class LogViewerActivity extends Activity {
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
 		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
-		
+
 		oneHour.setEnabled(false);
 		oneHour.setTextColor(Color.GRAY);
 		sixHours.setEnabled(false);
@@ -319,27 +325,33 @@ public class LogViewerActivity extends Activity {
 		oneDay.setTextColor(Color.GRAY);
 		oneWeek.setEnabled(false);
 		oneWeek.setTextColor(Color.GRAY);
-		
+
 		if (mBound) {
 			MessageSender message = new MessageSender();
 			message.execute("");
 		} else {
-			//log("error: not bound");
+			// log("error: not bound");
 		}
 	}
-	
+
 	@Override
 	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this); 
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication())
+				.getTracker(TrackerName.APP_TRACKER);
+		// Set screen name.
+		t.setScreenName("Log Viewer");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);  
 		super.onStop();
 	}
-	
+
 	private class MessageSender extends AsyncTask<String, Integer, Integer> {
 
 		@Override
@@ -359,15 +371,13 @@ public class LogViewerActivity extends Activity {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
 			} catch (RemoteException e) {
-				//e.printStackTrace();
+				// e.printStackTrace();
 			}
 			return null;
 		}
-		
-		
-		
+
 	}
-	
+
 	class DataTabsListener implements ActionBar.TabListener {
 		public Fragment fragment;
 
@@ -377,16 +387,20 @@ public class LogViewerActivity extends Activity {
 
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-			
+
 		}
 
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-					BarometerNetworkActivity.GA_ACTION_BUTTON, 
-					tab.getText().toString(), 
-					(long)hoursSelected).build());
+			// Get tracker.
+			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+			    .setLabel(tab.getText().toString())
+			    .build());
 			ft.replace(R.id.fragment_container, fragment);
 			getRecents(hoursSelected);
 		}
@@ -404,7 +418,6 @@ public class LogViewerActivity extends Activity {
 		super.onDestroy();
 	}
 
-
 	public void showChart(View v) {
 		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layout_chart_fragment);
 
@@ -412,7 +425,7 @@ public class LogViewerActivity extends Activity {
 			View testChartView = findViewById(100); // TODO: ...
 			mainLayout.removeView(testChartView);
 		} catch (Exception e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
 
 		v.setId(100); // TODO: what's safe?
@@ -424,12 +437,11 @@ public class LogViewerActivity extends Activity {
 		v.setBackgroundColor(Color.rgb(238, 238, 238));
 		v.setLayoutParams(lparams);
 		if (mainLayout == null) {
-			//log("ERROR layout null, chart");
+			// log("ERROR layout null, chart");
 			return;
 		}
 		mainLayout.addView(v);
 	}
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -437,18 +449,16 @@ public class LogViewerActivity extends Activity {
 		setContentView(R.layout.logviewer);
 		bindCbService();
 		checkStorage();
-		 String ns = Context.NOTIFICATION_SERVICE;
-		 NotificationManager nMgr = (NotificationManager) getSystemService(ns);
-		 nMgr.cancel(NotificationSender.PRESSURE_NOTIFICATION_ID);
-		
+		String ns = Context.NOTIFICATION_SERVICE;
+		NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+		nMgr.cancel(NotificationSender.PRESSURE_NOTIFICATION_ID);
+
 		Fragment allLogFrags = new LogViewerFragment();
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
 		fragmentTransaction.add(R.id.layoutLogFragContainer, allLogFrags);
 		fragmentTransaction.commit();
-
-	
 
 		// ActionBar gets initiated
 		ActionBar actionbar = getActionBar();
@@ -472,26 +482,19 @@ public class LogViewerActivity extends Activity {
 		int actionBarTitleId = getResources().getSystem().getIdentifier(
 				"action_bar_title", "id", "android");
 
-		TextView actionBarTextView = (TextView) findViewById(
-				actionBarTitleId);
+		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
-	
-		ImageView view = (ImageView)findViewById(android.R.id.home);
-	    view.setPadding(8, 0, 0, 0);
-		
-		
+
+		ImageView view = (ImageView) findViewById(android.R.id.home);
+		view.setPadding(8, 0, 0, 0);
+
 		preferenceUnit = getUnitPreference();
-	
-		
+
 		oneHour = (Button) findViewById(R.id.buttonOneHour);
 		sixHours = (Button) findViewById(R.id.buttonSixHours);
 		oneDay = (Button) findViewById(R.id.buttonOneDay);
 		oneWeek = (Button) findViewById(R.id.buttonOneWeek);
 
-
-		
-		
-		
 		oneHour.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -501,11 +504,16 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 1;
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"hour_change", 
-						(long)hoursSelected).build());
+				
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("hour_change")
+				    .build());
 				getRecents(1);
 			}
 		});
@@ -519,11 +527,15 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 6;
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"hour_change", 
-						(long)hoursSelected).build());
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("hour_change")
+				    .build());
 				getRecents(6);
 			}
 		});
@@ -536,11 +548,15 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.BOLD);
 				oneWeek.setTypeface(null, Typeface.NORMAL);
 				hoursSelected = 24;
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"hour_change", 
-						(long)hoursSelected).build());
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("hour_change")
+				    .build());
 				getRecents(24);
 			}
 		});
@@ -553,16 +569,19 @@ public class LogViewerActivity extends Activity {
 				oneDay.setTypeface(null, Typeface.NORMAL);
 				oneWeek.setTypeface(null, Typeface.BOLD);
 				hoursSelected = 24 * 7;
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"hour_change", 
-						(long)hoursSelected).build());
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("hour_change")
+				    .build());
 				getRecents(24 * 7);
 			}
 		});
 
-		
 	}
 
 	/**
@@ -574,6 +593,5 @@ public class LogViewerActivity extends Activity {
 				.getDefaultSharedPreferences(getApplicationContext());
 		return sharedPreferences.getString("units", "millibars");
 	}
-
 
 }

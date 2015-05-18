@@ -2,9 +2,6 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.util.Locale;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +10,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.TextView;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class NewWelcomeActivity extends FragmentActivity {
 
@@ -25,29 +26,33 @@ public class NewWelcomeActivity extends FragmentActivity {
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
 	SectionsPagerAdapter mSectionsPagerAdapter;
-	
 
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
 
-	
 	private void log(String message) {
-		if(PressureNETConfiguration.DEBUG_MODE) {
+		if (PressureNETConfiguration.DEBUG_MODE) {
 			System.out.println(message);
 		}
 	}
-	
+
 	@Override
 	protected void onStart() {
-		EasyTracker.getInstance(this).activityStart(this);
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication())
+				.getTracker(TrackerName.APP_TRACKER);
+		// Set screen name.
+		t.setScreenName("New Welcome");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
-		EasyTracker.getInstance(this).activityStop(this);
 		super.onStop();
 	}
 
@@ -64,12 +69,11 @@ public class NewWelcomeActivity extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
-		
+
 		int actionBarTitleId = getResources().getSystem().getIdentifier(
 				"action_bar_title", "id", "android");
 
-		TextView actionBarTextView = (TextView) findViewById(
-				actionBarTitleId);
+		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
 	}
 

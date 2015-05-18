@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +50,6 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -80,24 +80,25 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.ToggleButton;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbContributions;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbObservation; 
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbStats;
 import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -112,6 +113,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
 
+
+	
 	public static final int NOTIFICATION_ID = 101325;
 
 	double mLatitude = 0.0;
@@ -889,11 +892,16 @@ public class BarometerNetworkActivity extends Activity implements
 						intent.putExtra("altitude", altitudeInPrefUnit(bestLocation.getAltitude()));
 					}
 				} 
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"override_gps", 
-						null).build());	
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("override_gps")
+				    .build());
+				
 				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
 		});
@@ -928,11 +936,16 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				growPressureNET();
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-						BarometerNetworkActivity.GA_ACTION_BUTTON, 
-						"invite_your_friends", 
-						null).build());	
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("invite_your_friends")
+				    .build());
+				
 			}
 		});
 		
@@ -1036,20 +1049,30 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				if (!animationPlaying) {
 					if (animationDurationInMillis > 0) {
-						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-								GA_CATEGORY_MAIN_APP, 
-								GA_ACTION_BUTTON, 
-								"animation_play", 
-								 1L).build());
+						// Get tracker.
+						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+						    TrackerName.APP_TRACKER);
+						// Build and send an Event.
+						t.send(new HitBuilders.EventBuilder()
+						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+						    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+						    .setLabel("animation_play")
+						    .build());
+						
 						log("animation onclick, duration "
 								+ animationDurationInMillis);
 						playConditionsAnimation();
 					} else {
-						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-								GA_CATEGORY_MAIN_APP, 
-								GA_ACTION_BUTTON, 
-								"animation_play", 
-								 0L).build());
+						// Get tracker.
+						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+						    TrackerName.APP_TRACKER);
+						// Build and send an Event.
+						t.send(new HitBuilders.EventBuilder()
+						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+						    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+						    .setLabel("animation_play")
+						    .build());
+						
 						log("animation onclick, no duration, default 24h");
 						animationDurationInMillis = 1000 * 60 * 60 * 24;
 						calAnimationStartDate = Calendar.getInstance();
@@ -1059,11 +1082,16 @@ public class BarometerNetworkActivity extends Activity implements
 						playConditionsAnimation();
 					}
 				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_BUTTON, 
-							"animation_pause", 
-							 null).build());
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+					    .setLabel("animation_pause")
+					    .build());
+					
 					animator.pause();
 				}
 			}
@@ -1075,11 +1103,18 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View arg0) {
 				if(locationAvailable) {
 					displayMapToast(getString(R.string.locatingUser));
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_BUTTON, 
-							"my_location", 
-							 null).build());
+
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+					    .setLabel("my_location")
+					    .build());
+					
+					
 					goToMyLocation(); 
 				} else {
 					displayMapToast(getString(R.string.locationServicesError));
@@ -1093,11 +1128,18 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View arg0) {
 				displayMapToast(getString(R.string.refreshing));
 				
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_BUTTON, 
-						"reload_global_data", 
-						 null).build());
+
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("reload_global_data")
+				    .build());
+				
+				
 				SharedPreferences sharedPreferences = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
 				lastGlobalApiCall = System.currentTimeMillis()
@@ -1157,11 +1199,17 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 					loadRecents();
 				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_MODE, 
-							"map", 
-							 null).build());
+
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_MODE)
+					    .setLabel("map")
+					    .build());
+					
 					
 					// UI switch
 					layoutGraph.setVisibility(View.GONE);
@@ -1227,11 +1275,17 @@ public class BarometerNetworkActivity extends Activity implements
 					loadRecents();
 										
 				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_MODE, 
-							"contribute", 
-							 null).build());
+
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_MODE)
+					    .setLabel("contribute")
+					    .build());
+					
 					
 					activeMode = "contribute";
 
@@ -1295,11 +1349,17 @@ public class BarometerNetworkActivity extends Activity implements
 					loadRecents();
 					
 				} else {
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_MODE, 
-							"animation", 
-							 null).build());
+
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+					    .setLabel("animation")
+					    .build());
+					
 					
 					activeMode = "animation";
 
@@ -1347,11 +1407,19 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-						GA_CATEGORY_MAIN_APP, 
-						GA_ACTION_BUTTON, 
-						"search_location_focus", 
-						 null).build());
+			
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("search_location_focus")
+				    .build());
+				
+				
+				
 				editLocation.setText("");
 				editLocation.setCursorVisible(true);
 			}
@@ -1363,11 +1431,18 @@ public class BarometerNetworkActivity extends Activity implements
 					KeyEvent event) {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					buttonGoLocation.performClick();
-					EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-							GA_CATEGORY_MAIN_APP, 
-							GA_ACTION_SEARCH, 
-							editLocation.getEditableText().toString(), 
-							null).build());
+					
+					// Get tracker.
+					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+					    TrackerName.APP_TRACKER);
+					// Build and send an Event.
+					t.send(new HitBuilders.EventBuilder()
+					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+					    .setAction(BarometerNetworkActivity.GA_ACTION_SEARCH)
+					    .setLabel(editLocation.getEditableText().toString())
+					    .build());
+					
+					
 				}
 				return false;
 			}
@@ -1403,12 +1478,16 @@ public class BarometerNetworkActivity extends Activity implements
 								latitude, longitude);
 						searchedLocations.add(loc);
 						
-						EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-								GA_CATEGORY_MAIN_APP, 
-								GA_ACTION_SEARCH, 
-								location, 
-								null).build());
-
+						// Get tracker.
+						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+						    TrackerName.APP_TRACKER);
+						// Build and send an Event.
+						t.send(new HitBuilders.EventBuilder()
+						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+						    .setAction(BarometerNetworkActivity.GA_ACTION_SEARCH)
+						    .setLabel(location)
+						    .build());
+						
 						PnDb pn = new PnDb(getApplicationContext());
 						pn.open();
 						pn.addLocation(location, latitude, longitude,
@@ -2431,25 +2510,43 @@ public class BarometerNetworkActivity extends Activity implements
 		} else if (item.getItemId() == R.id.menu_submit_reading) {
 			// submit a single reading
 			sendSingleObservation();
-			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-					BarometerNetworkActivity.GA_ACTION_BUTTON, 
-					"send_single_reading", 
-					null).build());
+
+			// Get tracker.
+			// Get tracker.
+			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+			    .setLabel("send_single_reading")
+			    .build());
+			
 		} else if (item.getItemId() == R.id.menu_grow_pressurenet) {
 			growPressureNET();
-			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-					BarometerNetworkActivity.GA_ACTION_BUTTON, 
-					"spread_the_word", 
-					null).build());
+	
+
+			// Get tracker.
+			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+			    .setLabel("spread_the_word")
+			    .build());
+			
 		} else if (item.getItemId() == R.id.menu_rate_pressurenet) {
 			ratePressureNET();
-			EasyTracker.getInstance(getApplicationContext()).send(MapBuilder.createEvent(
-					BarometerNetworkActivity.GA_CATEGORY_MAIN_APP, 
-					BarometerNetworkActivity.GA_ACTION_BUTTON, 
-					"rate_pressurenet", 
-					null).build());
+			// Get tracker.
+			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+			    .setLabel("rate_pressurenet")
+			    .build());
 		} 
 		return super.onOptionsItemSelected(item);
 	}
@@ -3793,7 +3890,17 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		// bindCbService();
 		super.onStart();
-		EasyTracker.getInstance(this).activityStart(this);
+		
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+		    TrackerName.APP_TRACKER);
+
+
+		// Set screen name.
+		t.setScreenName("PressureNet Main App");
+
+		// Send a screen view.
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 	}
 
 	@Override
@@ -3801,7 +3908,6 @@ public class BarometerNetworkActivity extends Activity implements
 		stopSensorListeners();
 		dataReceivedToPlot = false;
 		unBindCbService();
-		EasyTracker.getInstance(this).activityStop(this);
 		super.onStop();
 	}
 

@@ -18,12 +18,13 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 public class NotificationSender extends BroadcastReceiver {
 
@@ -83,11 +84,18 @@ public class NotificationSender extends BroadcastReceiver {
 								loc.setLongitude(receivedCondition.getLon());
 								receivedCondition.setLocation(loc);
 							}
-							EasyTracker.getInstance(context).send(MapBuilder.createEvent(
-									BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
-									"conditions_notification_delivered", 
-									receivedCondition.getGeneral_condition(), 
-									null).build());
+							
+							// Get tracker.
+							Tracker t = ((PressureNetApplication) mContext).getTracker(
+							    TrackerName.APP_TRACKER);
+							// Build and send an Event.
+							t.send(new HitBuilders.EventBuilder()
+							    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+							    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+							    .setLabel("conditions_notification_delivered")
+							    .build());
+							
+							
 							deliverConditionNotification(receivedCondition);
 						}
 					} else {
@@ -426,11 +434,17 @@ public class NotificationSender extends BroadcastReceiver {
 		} catch(NoSuchMethodError nsme) {
 			// 
 		}
-		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
-				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
-				"conditions_notification_delivered_final", 
-				condition.getGeneral_condition(), 
-				null).build());
+		
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) mContext).getTracker(
+		    TrackerName.APP_TRACKER);
+		// Build and send an Event.
+		t.send(new HitBuilders.EventBuilder()
+		    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+		    .setAction("conditions_notification_delivered_final")
+		    .setLabel(condition.getGeneral_condition())
+		    .build());
+		
 	
 	}
 	
@@ -559,12 +573,20 @@ public class NotificationSender extends BroadcastReceiver {
 		PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, 0);
 		am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + (1000 * 60 * 60 * 12), pi); // 12h
 		
-		EasyTracker.getInstance(mContext).send(MapBuilder.createEvent(
-				BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS, 
-				"pressure_notification_delivered", 
-				deliveryMessage, 
-				null).build());
+		
 
+		// Get tracker.
+				Tracker t = ((PressureNetApplication) mContext).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction("pressure_notification_delivered")
+				    .setLabel(deliveryMessage)
+				    .build());
+				
+			
+		
 		// save the time
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putLong("lastNotificationTime", now);
