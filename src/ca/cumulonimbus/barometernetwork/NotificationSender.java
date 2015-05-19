@@ -239,6 +239,8 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		String prefTimeWait = sharedPreferences.getString("condition_refresh_frequency", "3 hours");
 		
+		boolean alsoAlertClearCloudy = sharedPreferences.getBoolean("also_alert_clear_cloudy", false);
+		
 		lastNearbyConditionReportNotification = sharedPreferences.getLong(
 				"lastConditionTime", System.currentTimeMillis()
 						- (1000 * 60 * 60 * 12));
@@ -317,6 +319,12 @@ public class NotificationSender extends BroadcastReceiver {
 		String politeReportText = condition.getGeneral_condition();
 		if(condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
 			// don't notify on clear
+			if(!alsoAlertClearCloudy) {
+				log("notification sender not sending, condition is clear and pref not set to deliver");
+				return;
+			} else {
+				log("notification sender: condition is clear and pref set to deliver");				
+			}
 			
 			initial = "clear";
 			// pick the right clear icon
@@ -327,6 +335,12 @@ public class NotificationSender extends BroadcastReceiver {
 			icon = R.drawable.ic_wea_on_fog1;
 		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.cloudy))) {
 			// don't notify on cloudy
+			if(!alsoAlertClearCloudy) {
+				log("notification sender not sending, condition is cloudy and pref not set to deliver");
+				return;
+			} else {
+				log("notification sender: condition is cloudy and pref set to deliver");				
+			}
 			
 			initial = "cloud";
 			icon = R.drawable.ic_wea_on_cloud;

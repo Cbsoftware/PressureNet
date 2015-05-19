@@ -44,6 +44,14 @@
             android:entryValues="@array/condition_refresh_frequency_values"
             android:key="condition_refresh_frequency"
             android:title="    Weather notification frequency" />
+        
+         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="also_alert_clear_cloudy"
+            android:dependency="send_condition_notifications"
+            android:summary="      Also notify when clear or cloudy"
+            android:title="    Include clear/cloudy" />
+        
     </PreferenceCategory>
     <PreferenceCategory
         android:key="device_prefs"
