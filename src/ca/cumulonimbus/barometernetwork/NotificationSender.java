@@ -2,6 +2,7 @@ package ca.cumulonimbus.barometernetwork;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -18,11 +19,11 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
-import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -38,6 +39,35 @@ public class NotificationSender extends BroadcastReceiver {
 			- (1000 * 60 * 60 * 4);
 	
 	Handler notificationHandler = new Handler();
+	
+
+	/**
+	 * Enum used to identify the tracker that needs to be used for tracking.
+	 *
+	 * A single tracker is usually enough for most purposes. In case you do need multiple trackers,
+	 * storing them all in Application object helps ensure that they are created only once per
+	 * application instance.
+	 */
+	public enum TrackerName {
+	  APP_TRACKER, // Tracker used only in this app.
+	  GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+
+	}
+
+	HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+	
+	synchronized Tracker getTracker(TrackerName trackerId) {
+		  if (!mTrackers.containsKey(trackerId)) {
+
+		    GoogleAnalytics analytics = GoogleAnalytics.getInstance(mContext);
+		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker("UA-44997384-1")
+		        : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
+		            : analytics.newTracker(R.xml.global_tracker);
+		    mTrackers.put(trackerId, t);
+
+		  }
+		  return mTrackers.get(trackerId);
+		}
 	
 	public NotificationSender() {
 		super();
@@ -84,9 +114,11 @@ public class NotificationSender extends BroadcastReceiver {
 								loc.setLongitude(receivedCondition.getLon());
 								receivedCondition.setLocation(loc);
 							}
+
+							deliverConditionNotification(receivedCondition);
 							
 							// Get tracker.
-							Tracker t = ((PressureNetApplication) mContext).getTracker(
+							Tracker t = getTracker(
 							    TrackerName.APP_TRACKER);
 							// Build and send an Event.
 							t.send(new HitBuilders.EventBuilder()
@@ -96,7 +128,6 @@ public class NotificationSender extends BroadcastReceiver {
 							    .build());
 							
 							
-							deliverConditionNotification(receivedCondition);
 						}
 					} else {
 						log("local conditions intent not sent, doesn't have extra");
@@ -436,7 +467,7 @@ public class NotificationSender extends BroadcastReceiver {
 		}
 		
 		// Get tracker.
-		Tracker t = ((PressureNetApplication) mContext).getTracker(
+		Tracker t = getTracker(
 		    TrackerName.APP_TRACKER);
 		// Build and send an Event.
 		t.send(new HitBuilders.EventBuilder()
@@ -444,8 +475,6 @@ public class NotificationSender extends BroadcastReceiver {
 		    .setAction("conditions_notification_delivered_final")
 		    .setLabel(condition.getGeneral_condition())
 		    .build());
-		
-	
 	}
 	
 	private String displayDistance(double distance) {
@@ -576,14 +605,14 @@ public class NotificationSender extends BroadcastReceiver {
 		
 
 		// Get tracker.
-				Tracker t = ((PressureNetApplication) mContext).getTracker(
-				    TrackerName.APP_TRACKER);
-				// Build and send an Event.
-				t.send(new HitBuilders.EventBuilder()
-				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-				    .setAction("pressure_notification_delivered")
-				    .setLabel(deliveryMessage)
-				    .build());
+		Tracker t = getTracker(
+		    TrackerName.APP_TRACKER);
+		// Build and send an Event.
+		t.send(new HitBuilders.EventBuilder()
+		    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+		    .setAction("pressure_notification_delivered")
+		    .setLabel(deliveryMessage)
+		    .build());
 				
 			
 		
