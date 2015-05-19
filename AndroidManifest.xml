@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0405084"
-    android:versionName="4.5.8" >
+    android:versionCode="0406003"
+    android:versionName="4.6.0RC" >
 
     <uses-sdk
         android:minSdkVersion="19"
@@ -19,6 +19,10 @@
 
     <uses-feature android:name="android.hardware.camera"
                   android:required="false" />
+    
+    <uses-feature android:name="android.hardware.sensor.barometer"
+                  android:required="true" />
+    
     
     <permission
 		android:name="ca.cumulonimbus.barometernetwork.permission.MAPS_RECEIVE"
