@@ -328,9 +328,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private boolean userPrompted = false;
 	
 	
-	
 	MixpanelAPI mixpanel;
-	
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -358,6 +356,11 @@ public class BarometerNetworkActivity extends Activity implements
 		// Mixpanel project token, MIXPANEL_TOKEN, and a reference
 		// to your application context.
 		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel.identify(getID());
+		
+		mixpanel.getPeople().identify(getID());
+		mixpanel.getPeople().set("UserID", getID());
+		
 		JSONObject props = new JSONObject();
 
 		JSONObject hashedUserIdProps = new JSONObject();
@@ -370,6 +373,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 				
 		mixpanel.track("App Launch", props);
+		
 	}
 	
 	/**
