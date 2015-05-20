@@ -569,7 +569,7 @@ public class BarometerNetworkActivity extends Activity implements
 			globalMapCall.setMaxLon(180);
 			globalMapCall.setLimit(1000);
 			globalMapCall.setStartTime(System.currentTimeMillis()
-					- (int) (1000 * 60 * 60 * 2));
+					- (int) (1000 * 60 * 60 * 3));
 			globalMapCall.setEndTime(System.currentTimeMillis());
 			makeCurrentConditionsAPICall(globalMapCall);
 
