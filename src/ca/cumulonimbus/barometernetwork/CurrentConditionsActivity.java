@@ -14,6 +14,8 @@ import java.util.TimeZone;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -53,6 +55,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.SunLocation;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class CurrentConditionsActivity extends Activity {
 
@@ -145,6 +148,8 @@ public class CurrentConditionsActivity extends Activity {
 	private boolean precipStateSelected = false;
 	private boolean extremeStateSelected = false;
 	private boolean lightningStateSelected = false;
+	
+	MixpanelAPI mixpanel;
 
 	private boolean sharingEnabled() {
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -178,6 +183,7 @@ public class CurrentConditionsActivity extends Activity {
 
 	@Override
 	protected void onStop() {
+		mixpanel.flush();
 		super.onStop();
 	}
 
@@ -855,6 +861,8 @@ public class CurrentConditionsActivity extends Activity {
 
 		}
 
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		
 		condition = new CbCurrentCondition();
 
 		buttonSunny = (ImageButton) findViewById(R.id.buttonSunny);
@@ -1014,6 +1022,16 @@ public class CurrentConditionsActivity extends Activity {
 				    .setLabel(condition.getGeneral_condition())
 				    .build());
 
+				JSONObject props = new JSONObject();
+				try {
+					props.put("Condition Type", condition.getGeneral_condition());
+					mixpanel.track("Sent Condition", props);
+				} catch (JSONException e) {
+					log("setupmixpanel json exception " + e.getMessage());
+					e.printStackTrace();
+				}
+				
+				
 				// take photo?
 				/*
 				 * if(addPhoto.isChecked()) { dispatchTakePictureIntent(); }
@@ -1048,6 +1066,8 @@ public class CurrentConditionsActivity extends Activity {
 				    .setAction("conditions_cancel_button")
 				    .setLabel("Cancel")
 				    .build());
+				mixpanel.track("Cancel Condition", null);
+				
 				finish();
 			}
 		});

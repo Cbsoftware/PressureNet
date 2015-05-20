@@ -9,6 +9,8 @@ import android.app.Application;
 
 public class PressureNetApplication extends Application {
 
+	public static final String MIXPANEL_TOKEN = "";
+	
 	/**
 	 * Enum used to identify the tracker that needs to be used for tracking.
 	 *

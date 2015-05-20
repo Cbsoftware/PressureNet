@@ -50,6 +50,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class LogViewerActivity extends Activity {
 
@@ -73,6 +74,8 @@ public class LogViewerActivity extends Activity {
 	private int hoursSelected = 6;
 	ArrayList<CbObservation> recents = new ArrayList<CbObservation>();
 
+	MixpanelAPI mixpanel;
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -344,14 +347,18 @@ public class LogViewerActivity extends Activity {
 
 		// Send a screen view.
 		t.send(new HitBuilders.ScreenViewBuilder().build());
+		
 		super.onStart();
 	}
 
 	@Override
 	protected void onStop() {
+		mixpanel.flush();
 		super.onStop();
 	}
 
+	
+	
 	private class MessageSender extends AsyncTask<String, Integer, Integer> {
 
 		@Override
@@ -449,6 +456,10 @@ public class LogViewerActivity extends Activity {
 		setContentView(R.layout.logviewer);
 		bindCbService();
 		checkStorage();
+		
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel.track("View Graph", null);
+		
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager nMgr = (NotificationManager) getSystemService(ns);
 		nMgr.cancel(NotificationSender.PRESSURE_NOTIFICATION_ID);

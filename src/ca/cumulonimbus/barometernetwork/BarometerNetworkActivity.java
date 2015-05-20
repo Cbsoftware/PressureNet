@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -96,7 +98,6 @@ import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbStats;
 import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -109,6 +110,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
@@ -325,6 +327,11 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private boolean userPrompted = false;
 	
+	
+	
+	MixpanelAPI mixpanel;
+	
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -344,6 +351,25 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpActionBar();
 		checkDb();
 		callExternalAPIs();
+		setUpMixPanel();
+	}
+	
+	private void setUpMixPanel() {
+		// Mixpanel project token, MIXPANEL_TOKEN, and a reference
+		// to your application context.
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		JSONObject props = new JSONObject();
+
+		JSONObject hashedUserIdProps = new JSONObject();
+		try {
+			hashedUserIdProps.put("user_id", getID());
+			mixpanel.registerSuperProperties(hashedUserIdProps);
+		} catch (JSONException e) {
+			log("setupmixpanel json exception " + e.getMessage());
+			e.printStackTrace();
+		}
+				
+		mixpanel.track("App Launch", props);
 	}
 	
 	/**
@@ -903,7 +929,7 @@ public class BarometerNetworkActivity extends Activity implements
 				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
 				    .setLabel("override_gps")
 				    .build());
-				
+
 				startActivityForResult(intent, REQUEST_ALTITUDE);
 			}
 		});
@@ -947,7 +973,7 @@ public class BarometerNetworkActivity extends Activity implements
 				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
 				    .setLabel("invite_your_friends")
 				    .build());
-				
+				mixpanel.track("Invite Friends", null);
 			}
 		});
 		
@@ -965,7 +991,7 @@ public class BarometerNetworkActivity extends Activity implements
 				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
 				    .setLabel("invite_your_friends2")
 				    .build());
-				
+				mixpanel.track("Invite Friends 2", null);
 			}
 		});
 		
@@ -1068,6 +1094,7 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				
 				if (!animationPlaying) {
+					mixpanel.track("Playing Animation", null);
 					if (animationDurationInMillis > 0) {
 						// Get tracker.
 						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
@@ -1380,6 +1407,7 @@ public class BarometerNetworkActivity extends Activity implements
 					    .setLabel("animation")
 					    .build());
 					
+					mixpanel.track("Animation mode", null);
 					
 					activeMode = "animation";
 
@@ -2498,6 +2526,7 @@ public class BarometerNetworkActivity extends Activity implements
 			log("starting condition " + mLatitude + " , " + mLongitude);
 			hideNoConditionsPrompt();
 			startActivity(intent);
+			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
 					getString(R.string.noLocationFound),
@@ -3935,6 +3964,7 @@ public class BarometerNetworkActivity extends Activity implements
 	protected void onDestroy() {
 		dataReceivedToPlot = false;
 		unBindCbService();
+		mixpanel.flush();
 		super.onDestroy();
 	}
 
