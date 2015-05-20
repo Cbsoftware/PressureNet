@@ -28,7 +28,7 @@ public class WhatsNewActivity extends Activity {
 
 	TextView pressureNETVersion;
 	Button done;
-	CheckBox checkReceiveConditionNotifications;
+	CheckBox checkAlertCloudyAndClear;
 	CheckBox checkEnableSocial;
 
 	@Override
@@ -37,7 +37,7 @@ public class WhatsNewActivity extends Activity {
 		setContentView(R.layout.whats_new);
 		String versionName = "";
 		done = (Button) findViewById(R.id.buttonDone);
-		checkReceiveConditionNotifications = (CheckBox) findViewById(R.id.checkReceiveConditionNotifications);
+		checkAlertCloudyAndClear = (CheckBox) findViewById(R.id.checkAlertCloudyAndClear);
 		checkEnableSocial = (CheckBox) findViewById(R.id.checkEnableSocial);
 
 		SharedPreferences prefs = PreferenceManager
@@ -88,16 +88,16 @@ public class WhatsNewActivity extends Activity {
 		}
 		setTitle(getString(R.string.pressureNet) + " " + versionName);
 
-		checkReceiveConditionNotifications.setChecked(prefs.getBoolean(
-				"send_condition_notifications", true));
+		checkAlertCloudyAndClear.setChecked(prefs.getBoolean(
+				"also_alert_clear_cloudy", true));
 		SharedPreferences settings = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
 
 		SharedPreferences.Editor editor = settings.edit();
-		if (checkReceiveConditionNotifications.isChecked()) {
-			editor.putBoolean("send_condition_notifications", true);
+		if (checkAlertCloudyAndClear.isChecked()) {
+			editor.putBoolean("also_alert_clear_cloudy", true);
 		} else {
-			editor.putBoolean("send_condition_notifications", false);
+			editor.putBoolean("also_alert_clear_cloudy", false);
 		}
 		editor.commit();
 
@@ -106,6 +106,16 @@ public class WhatsNewActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				SharedPreferences settings = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+				SharedPreferences.Editor editor = settings.edit();
+				if (checkAlertCloudyAndClear.isChecked()) {
+					editor.putBoolean("also_alert_clear_cloudy", true);
+				} else {
+					editor.putBoolean("also_alert_clear_cloudy", false);
+				}
+				editor.commit();
+
 				finish();
 			}
 		});

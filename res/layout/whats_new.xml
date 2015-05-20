@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Notification improvements\n• General bugfixes\n• Battery usage improvements\n"
+            android:text="• Weather alert improvements\n• Performance/battery fixes\n"
             android:textSize="16dp" />
 
         <TextView
@@ -35,25 +35,25 @@
             android:paddingTop="8dp"
             android:text="RECENT SETTINGS UPDATES"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <CheckBox
-            android:id="@+id/checkReceiveConditionNotifications"
+            android:id="@+id/checkAlertCloudyAndClear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/textNewSettings"
             android:layout_marginLeft="12dp"
             android:paddingLeft="6dp"
             android:paddingTop="6dp"
-            android:text="Receive conditions notifications"
+            android:text="Notify about clear/cloudy weather"
             android:textSize="16dp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <CheckBox
             android:id="@+id/checkEnableSocial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/checkReceiveConditionNotifications"
+            android:layout_below="@id/checkAlertCloudyAndClear"
             android:layout_marginLeft="12dp"
             android:paddingLeft="6dp"
             android:text="Enable social integration"
