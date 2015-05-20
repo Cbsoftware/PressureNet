@@ -211,6 +211,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private long animationDurationInMillis = 0;
 
 	private Button inviteFriends;
+	private Button inviteFriends2;
 	
 	private Button buttonShowBarometerData;
 	private Button buttonWhatsItLikeOutside;
@@ -847,6 +848,7 @@ public class BarometerNetworkActivity extends Activity implements
 		textAltitude = (TextView) findViewById(R.id.textAltitude);
 		
 		inviteFriends = (Button) findViewById(R.id.inviteFriends);
+		inviteFriends2 = (Button) findViewById(R.id.inviteFriends2);
 		
 		buttonShowBarometerData = (Button) findViewById(R.id.imageButtonShowBarometerData);
 		buttonWhatsItLikeOutside = (Button) findViewById(R.id.imageButtonWhatsItLikeOutside);
@@ -944,6 +946,24 @@ public class BarometerNetworkActivity extends Activity implements
 				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
 				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
 				    .setLabel("invite_your_friends")
+				    .build());
+				
+			}
+		});
+		
+		inviteFriends2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				growPressureNET();
+				// Get tracker.
+				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				    TrackerName.APP_TRACKER);
+				// Build and send an Event.
+				t.send(new HitBuilders.EventBuilder()
+				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				    .setLabel("invite_your_friends2")
 				    .build());
 				
 			}

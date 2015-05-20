@@ -254,7 +254,8 @@
         android:background="#CCFFFFFF"
         android:orientation="vertical"
         android:padding="12dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:gravity="center_horizontal">
      
         <TextView
             android:id="@+id/textNoConditionsPrompt"
@@ -262,7 +263,8 @@
             android:layout_height="wrap_content"
             android:text="No weather conditions nearby"
             android:layout_gravity="center_horizontal"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textSize="20sp"/>
 	    
 	    
 	    <LinearLayout
@@ -280,7 +282,7 @@
 		            android:layout_height="wrap_content"
 		            android:drawableLeft="@drawable/ic_pressure"
 		            android:textColor="@android:color/black"
-		            android:text="Show barometer data" 
+		            android:text="Show sensor data" 
                     android:paddingLeft="10dp"
                     android:layout_gravity="left"/>
 		        
@@ -297,6 +299,21 @@
 					android:layout_gravity="right"/>
 	       </LinearLayout>
         
+	       <Button
+                android:id="@+id/inviteFriends2"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layoutNoConditionsPromptButtons"
+                android:layout_centerInParent="true"
+                android:drawableLeft="@drawable/ic_share"
+                android:text="Invite your friends to improve hyper-local weather alerts!"
+				android:background="@drawable/override" 
+                android:textColor="#000000"
+                android:layout_marginTop="12dp"
+                android:paddingRight="12dp"
+                android:paddingLeft="12dp"/>
+	    
     </LinearLayout>
     
     <LinearLayout
