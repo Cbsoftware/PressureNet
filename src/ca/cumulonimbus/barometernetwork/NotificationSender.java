@@ -4,6 +4,9 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -26,6 +29,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class NotificationSender extends BroadcastReceiver {
 
@@ -39,6 +43,8 @@ public class NotificationSender extends BroadcastReceiver {
 			- (1000 * 60 * 60 * 4);
 	
 	Handler notificationHandler = new Handler();
+	
+	MixpanelAPI mixpanel;
 	
 
 	/**
@@ -60,7 +66,7 @@ public class NotificationSender extends BroadcastReceiver {
 		  if (!mTrackers.containsKey(trackerId)) {
 
 		    GoogleAnalytics analytics = GoogleAnalytics.getInstance(mContext);
-		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker("UA-44997384-1")
+		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker("")
 		        : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
 		            : analytics.newTracker(R.xml.global_tracker);
 		    mTrackers.put(trackerId, t);
@@ -97,6 +103,7 @@ public class NotificationSender extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
+		mixpanel = MixpanelAPI.getInstance(context, PressureNetApplication.MIXPANEL_TOKEN);
 		if(intent.getAction().equals(CbService.LOCAL_CONDITIONS_ALERT)) {
 			log("app received intent local conditions alert");
 			// potentially notify about nearby conditions
@@ -117,15 +124,6 @@ public class NotificationSender extends BroadcastReceiver {
 
 							deliverConditionNotification(receivedCondition);
 							
-							// Get tracker.
-							Tracker t = getTracker(
-							    TrackerName.APP_TRACKER);
-							// Build and send an Event.
-							t.send(new HitBuilders.EventBuilder()
-							    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-							    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-							    .setLabel("conditions_notification_delivered")
-							    .build());
 							
 							
 						}
@@ -478,6 +476,27 @@ public class NotificationSender extends BroadcastReceiver {
 			PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, 0);
 			am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + (1000 * 60 * 60 * 2), pi);
 					
+			
+			// Get tracker.
+			Tracker t = getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS)
+			    .setAction("conditions_notification_delivered")
+			    .setLabel(condition.getGeneral_condition())
+			    .build());
+			
+			try {
+				JSONObject props = new JSONObject();
+				props.put("Condition", condition.getGeneral_condition());
+				mixpanel.track("Notification Delivered", props);	
+			} catch (JSONException jsone) {
+				log("condition notification json exception " + jsone.getMessage());
+			}
+			
+			mixpanel.flush();
+			
 			// save the time
 			SharedPreferences.Editor editor = sharedPreferences.edit();
 			editor.putLong("lastConditionTime", now);
