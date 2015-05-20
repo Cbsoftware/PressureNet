@@ -253,10 +253,22 @@
         android:layout_above="@+id/modeSelectionLayout"
         android:background="#CCFFFFFF"
         android:orientation="vertical"
-        android:padding="12dp"
+        android:paddingBottom="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
         android:visibility="gone"
         android:gravity="center_horizontal">
      
+         <Button
+            android:id="@+id/buttonCloseNoConditionsPrompt"
+            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="Close"
+            android:drawableRight="@drawable/ic_menu_light_close"
+            android:layout_gravity="right"/>
+      
         <TextView
             android:id="@+id/textNoConditionsPrompt"
             android:layout_width="wrap_content"
@@ -264,7 +276,7 @@
             android:text="No weather conditions nearby"
             android:layout_gravity="center_horizontal"
             android:textStyle="bold"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
 	    
 	    
 	    <LinearLayout

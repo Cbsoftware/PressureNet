@@ -218,6 +218,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private Button buttonShowBarometerData;
 	private Button buttonWhatsItLikeOutside;
 	
+	private Button buttonCloseNoConditionsPrompt;
+	
 	private LinearLayout layoutNoConditionsPrompt;
 	
 	Handler timeHandler = new Handler();
@@ -600,7 +602,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					@Override
 					public void onCameraChange(CameraPosition position) {
-						hideNoConditionsPrompt();
+						//hideNoConditionsPrompt();
 						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 						imm.hideSoftInputFromWindow(
 								editLocation.getWindowToken(), 0);
@@ -885,9 +887,19 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
 		
+		buttonCloseNoConditionsPrompt = (Button) findViewById(R.id.buttonCloseNoConditionsPrompt);
+		
 		setInitialMapButtonStates();
 		
 		animationProgress.setEnabled(false);
+		
+		buttonCloseNoConditionsPrompt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				layoutNoConditionsPrompt.setVisibility(View.GONE);
+			}
+		});
 		
 		buttonShowBarometerData.setOnClickListener(new OnClickListener() {
 			
