@@ -228,7 +228,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private int animationStep = 0;
 
-	String apiServerURL = CbConfiguration.SERVER_URL + "list/?";
+	String apiServerURL = CbConfiguration.SERVER_URL_PRESSURENET + "list/?";
 
 	private boolean locationAvailable = true;
 	private double customAltitude = 0.0;
@@ -764,7 +764,7 @@ public class BarometerNetworkActivity extends Activity implements
 		settings.setSendNotifications(preferenceSendNotifications);
 		settings.setUseGPS(preferenceUseGPS);
 		settings.setOnlyWhenCharging(preferenceWhenCharging);
-		settings.setServerURL(CbConfiguration.SERVER_URL);
+		settings.setServerURL(CbConfiguration.SERVER_URL_PRESSURENET);
 		settings.saveSettings();
 		activeSettings = settings;
 		sendNewSettings();

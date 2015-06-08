@@ -107,7 +107,7 @@ public class AboutActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				openWebBrowser(CbConfiguration.SERVER_URL);
+				openWebBrowser(CbConfiguration.SERVER_URL_PRESSURENET);
 			}
 		});
 

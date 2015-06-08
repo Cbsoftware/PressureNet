@@ -128,7 +128,7 @@ public class CurrentConditionsActivity extends Activity {
 	private double mLongitude = 0.0;
 	private CbCurrentCondition condition;
 
-	private String serverURL = CbConfiguration.SERVER_URL;
+	private String serverURL = CbConfiguration.SERVER_URL_PRESSURENET;
 
 	public final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 
