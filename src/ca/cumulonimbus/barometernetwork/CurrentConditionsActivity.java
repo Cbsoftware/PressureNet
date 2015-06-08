@@ -656,7 +656,7 @@ public class CurrentConditionsActivity extends Activity {
 		precipStateSelected = true;
 
 		double value = 0.0;
-		String printValue = getString(R.string.minimal)
+		String printValue = getString(R.string.minimal) + " "
 				+ condition.getPrecipitation_type();
 		switchActivePrecipitationAmount("low");
 		condition.setPrecipitation_amount(value);
@@ -1314,7 +1314,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 0.0;
-				String printValue = getString(R.string.minimal)
+				String printValue = getString(R.string.minimal)  + " "
 						+ condition.getPrecipitation_type();
 				condition.setPrecipitation_amount(value);
 				switchActivePrecipitationAmount("low");
@@ -1328,7 +1328,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 1.0;
-				String printValue = getString(R.string.moderate)
+				String printValue = getString(R.string.moderate)  + " "
 						+ condition.getPrecipitation_type();
 				switchActivePrecipitationAmount("moderate");
 				condition.setPrecipitation_amount(value);
@@ -1342,7 +1342,7 @@ public class CurrentConditionsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				double value = 2.0;
-				String printValue = getString(R.string.heavy)
+				String printValue = getString(R.string.heavy)  + " "
 						+ condition.getPrecipitation_type();
 				condition.setPrecipitation_amount(value);
 				switchActivePrecipitationAmount("heavy");
