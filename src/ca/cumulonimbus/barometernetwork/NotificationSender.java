@@ -66,7 +66,7 @@ public class NotificationSender extends BroadcastReceiver {
 		  if (!mTrackers.containsKey(trackerId)) {
 
 		    GoogleAnalytics analytics = GoogleAnalytics.getInstance(mContext);
-		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker("")
+		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(PressureNETConfiguration.GA_TOKEN)
 		        : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
 		            : analytics.newTracker(R.xml.global_tracker);
 		    mTrackers.put(trackerId, t);
@@ -103,7 +103,7 @@ public class NotificationSender extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		mContext = context;
-		mixpanel = MixpanelAPI.getInstance(context, PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel = MixpanelAPI.getInstance(context, PressureNETConfiguration.MIXPANEL_TOKEN);
 		if(intent.getAction().equals(CbService.LOCAL_CONDITIONS_ALERT)) {
 			log("app received intent local conditions alert");
 			// potentially notify about nearby conditions
@@ -123,8 +123,6 @@ public class NotificationSender extends BroadcastReceiver {
 							}
 
 							deliverConditionNotification(receivedCondition);
-							
-							
 							
 						}
 					} else {
@@ -263,18 +261,15 @@ public class NotificationSender extends BroadcastReceiver {
 			return;
 		}
 		
-		if(condition!=null) {
-			if(condition.getLocation()!=null) {
-				PnDb pn = new PnDb(mContext);
-				pn.open();
-				pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
-				pn.close();
-			} else {
-				log("condition out for notification has no location, bailing");
-				//return;
-			}
+	
+		if(condition.getLocation()!=null) {
+			PnDb pn = new PnDb(mContext);
+			pn.open();
+			pn.addDelivery(condition.getGeneral_condition(), condition.getLocation().getLatitude(), condition.getLocation().getLongitude(), condition.getTime());
+			pn.close();
 		} else {
-			return;
+			log("condition out for notification has no location, bailing");
+			//return;
 		}
 		
 		String deliveryMessage = mContext.getString(R.string.conditionPrompt);
