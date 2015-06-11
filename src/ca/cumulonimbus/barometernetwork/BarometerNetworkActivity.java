@@ -375,7 +375,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void setUpMixPanel() {
 		// Mixpanel project token, MIXPANEL_TOKEN, and a reference
 		// to your application context.
-		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNETConfiguration.MIXPANEL_TOKEN);
 		mixpanel.identify(getID());
 		
 		mixpanel.getPeople().identify(getID());

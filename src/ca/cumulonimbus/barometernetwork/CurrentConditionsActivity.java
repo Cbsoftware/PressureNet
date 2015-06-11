@@ -861,7 +861,7 @@ public class CurrentConditionsActivity extends Activity {
 
 		}
 
-		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNETConfiguration.MIXPANEL_TOKEN);
 		
 		condition = new CbCurrentCondition();
 

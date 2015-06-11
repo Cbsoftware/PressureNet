@@ -457,7 +457,7 @@ public class LogViewerActivity extends Activity {
 		bindCbService();
 		checkStorage();
 		
-		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNetApplication.MIXPANEL_TOKEN);
+		mixpanel = MixpanelAPI.getInstance(getApplicationContext(), PressureNETConfiguration.MIXPANEL_TOKEN);
 		mixpanel.track("View Graph", null);
 		
 		String ns = Context.NOTIFICATION_SERVICE;

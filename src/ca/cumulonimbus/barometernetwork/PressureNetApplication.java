@@ -8,8 +8,6 @@ import com.google.android.gms.analytics.Tracker;
 import android.app.Application;
 
 public class PressureNetApplication extends Application {
-
-	public static final String MIXPANEL_TOKEN = "";
 	
 	/**
 	 * Enum used to identify the tracker that needs to be used for tracking.
@@ -30,7 +28,7 @@ public class PressureNetApplication extends Application {
 		  if (!mTrackers.containsKey(trackerId)) {
 
 		    GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker("")
+		    Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(PressureNETConfiguration.GA_TOKEN)
 		        : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
 		            : analytics.newTracker(R.xml.global_tracker);
 		    mTrackers.put(trackerId, t);
