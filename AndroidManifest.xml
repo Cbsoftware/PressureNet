@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0406044"
-    android:versionName="4.6.4" >
+    android:versionCode="0406054"
+    android:versionName="4.6.5" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -15,49 +15,74 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.REGISTER" />
+    <uses-permission android:name="ca.cumulonimbus.barometernetwork.permission.C2D_MESSAGE" />
 
-    <uses-feature android:name="android.hardware.camera"
-                  android:required="false" />
-    
-    <uses-feature android:name="android.hardware.sensor.barometer"
-                  android:required="false" />
-    
-    
     <permission
-		android:name="ca.cumulonimbus.barometernetwork.permission.MAPS_RECEIVE"
-		android:protectionLevel="signature" />
-	<uses-permission android:name="ca.cumulonimbus.barometernetwork.permission.MAPS_RECEIVE"/>
-	
+        android:name="ca.cumulonimbus.barometernetwork.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.barometer"
+        android:required="false" />
+
+    <permission
+        android:name="ca.cumulonimbus.barometernetwork.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="ca.cumulonimbus.barometernetwork.permission.MAPS_RECEIVE" />
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
 
     <application
+        android:name="PressureNetApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/PressureNetTheme"
-        android:name="PressureNetApplication" >
+        android:theme="@style/PressureNetTheme" >
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
         
-        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-              android:enabled="true">
-      <intent-filter>
-        <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
-      </intent-filter>
-    </receiver>
-    <service android:name="com.google.android.gms.analytics.AnalyticsService"
-             android:enabled="true"
-             android:exported="false"/>
+        <receiver
+            android:name="ca.cumulonimbus.barometernetwork.NotificationReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <action android:name="com.google.android.c2dm.intent.REGISTER" />
 
-      <!-- Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
-           installation campaign reporting -->
-      <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-                android:exported="true">
-        <intent-filter>
-          <action android:name="com.android.vending.INSTALL_REFERRER" />
-        </intent-filter>
-      </receiver>
-      <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
-        
+                <category android:name="ca.cumulonimbus.barometernetwork" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!--
+           Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+           installation campaign reporting
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
         <service
             android:name="ca.cumulonimbus.pressurenetsdk.CbService"
             android:enabled="true" >
@@ -66,12 +91,13 @@
                 <action android:name="ca.cumulonimbus.pressurenetsdk.ACTION_REGISTER" />
             </intent-filter>
         </service>
+
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity
             android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
+            android:excludeFromRecents="true"
             android:label="@string/activity_welcome"
-            android:theme="@style/CustomTheme"
-            android:excludeFromRecents="true" >
+            android:theme="@style/CustomTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
@@ -110,16 +136,16 @@
             android:name="ca.cumulonimbus.barometernetwork.CurrentConditionsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:label="What's it like outside?"
-            android:theme="@style/CustomThemeDialogDark"
-            android:exported="true" >
+            android:theme="@style/CustomThemeDialogDark" >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.AltitudeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="Enter Altitude"
-            android:theme="@style/CustomThemeDialog">
+            android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
@@ -154,7 +180,7 @@
             android:label="@string/welcomeToPressureNET"
             android:theme="@style/CustomThemeDialog" >
         </activity>
-   		<activity
+        <activity
             android:name="ca.cumulonimbus.barometernetwork.WhatsNewActivity"
             android:excludeFromRecents="true"
             android:label="What's New"
@@ -180,30 +206,28 @@
             android:theme="@style/CustomTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-				
-				<category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.ConditionsAnimationSettingsActivity"
             android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"
             android:label="Animation settings"
-            android:theme="@style/CustomThemeDialog"
-            android:excludeFromRecents="true" >
+            android:theme="@style/CustomThemeDialog" >
         </activity>
-   	    <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
+
+        <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
             <intent-filter>
-               <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
-				<action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
-				<action android:name="ca.cumulonimbus.pressurenetsdk.CONDITION_SENT_TOAST" />
-				<action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_SENT_TOAST" />
-				<action android:name="ca.cumulonimbus.barometernetwork.CANCEL_CONDITION" />
-				<action android:name="ca.cumulonimbus.barometernetwork.CANCEL_PRESSURE" />
-				
-				
+                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_CHANGE_ALERT" />
+                <action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
+                <action android:name="ca.cumulonimbus.pressurenetsdk.CONDITION_SENT_TOAST" />
+                <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_SENT_TOAST" />
+                <action android:name="ca.cumulonimbus.barometernetwork.CANCEL_CONDITION" />
+                <action android:name="ca.cumulonimbus.barometernetwork.CANCEL_PRESSURE" />
             </intent-filter>
         </receiver>
-
         <receiver android:name="ca.cumulonimbus.barometernetwork.WidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -239,6 +263,7 @@
                 </action>
             </intent-filter>
         </receiver>
+
         <service
             android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
             android:enabled="true" >
@@ -246,9 +271,11 @@
                 <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
             </intent-filter>
         </service>
-        <!-- Service in charge of handling requests from AlarmPad to update the data to be displayed 
-		when the alarm rings. AlarmPad integration not yet active. -->
-		<!-- 
+        <!--
+        Service in charge of handling requests from AlarmPad to update the data to be displayed 
+		when the alarm rings. AlarmPad integration not yet active.
+        -->
+        <!--
         <service android:name="ca.cumulonimbus.extensions.alarmpad.AlarmPadExtension"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
@@ -261,18 +288,16 @@
             <meta-data android:name="description"
                 android:value="@string/extension_description" />
         </service>
-         -->
+        -->
 
         <uses-library android:name="com.google.android.maps" />
- 
+
         <meta-data
-		    android:name="com.google.android.geo.API_KEY"
-		    android:value=""/>
-        
-           <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="" />
+        <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        
     </application>
 
 </manifest>

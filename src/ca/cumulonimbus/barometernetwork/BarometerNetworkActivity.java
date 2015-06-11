@@ -354,6 +354,24 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpMixPanel();
 	}
 	
+	/**
+	 * Send a message to CbService to register with GCM for notifications
+	 */
+	private void registerForNotifications() {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		boolean firstLaunch = sharedPreferences.getBoolean("firstLaunch", true);
+		sendRegistrationInfo();
+		if (firstLaunch) {
+			// sendRegistrationInfo();	
+		} else {
+			log("app not registering for notifications, not first launch");
+		}
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putBoolean("firstLaunch", false);
+		editor.commit();
+	}
+	
 	private void setUpMixPanel() {
 		// Mixpanel project token, MIXPANEL_TOKEN, and a reference
 		// to your application context.
@@ -1531,7 +1549,7 @@ public class BarometerNetworkActivity extends Activity implements
 					List<Address> addr = geocode.getFromLocationName(location,
 							2);
 					if (addr.size() > 0) {
-						displayMapToast(getString(R.string.goingTo) + location);
+						displayMapToast(getString(R.string.goingTo) + " " + location);
 						
 						Address ad = addr.get(0);
 						double latitude = ad.getLatitude();
@@ -1593,7 +1611,25 @@ public class BarometerNetworkActivity extends Activity implements
 		toast.show();
 	}
 	
-	
+	/**
+	 * Tell CbService to send registration info to GCM
+	 */
+	private void sendRegistrationInfo() {
+		if (mBound) {
+			log("app directing CbService to send registration info");
+			Message msg = Message.obtain(null,
+					CbService.MSG_REGISTER_NOTIFICATIONS, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+
 	/**
 	 * Get simple counts from the database
 	 * to tell the user how much they've contributed
@@ -2395,6 +2431,8 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			setNotificationDeliverySDKPreference();
 			
+			registerForNotifications();
+			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
 				try {
@@ -2742,7 +2780,7 @@ public class BarometerNetworkActivity extends Activity implements
 						if (lat != 0) {
 							editLocation.setText(search,
 									TextView.BufferType.EDITABLE);
-							displayMapToast(getString(R.string.goingTo) + search);
+							displayMapToast(getString(R.string.goingTo) + " " + search);
 							moveMapTo(lat, lon);
 						}
 					}

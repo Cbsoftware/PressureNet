@@ -1547,7 +1547,7 @@ public class CurrentConditionsActivity extends Activity {
 				.format("https://twitter.com/intent/tweet?text=%s&url=%s",
 						URLEncoder.encode(tweet),
 						URLEncoder
-								.encode("https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork"));
+								.encode("http://bit.ly/1IvRM8w"));
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
 
 		// Narrow down to official Twitter app, if available:
