@@ -269,7 +269,7 @@ public class NotificationSender extends BroadcastReceiver {
 			pn.close();
 		} else {
 			log("condition out for notification has no location, bailing");
-			//return;
+			return;
 		}
 		
 		String deliveryMessage = mContext.getString(R.string.conditionPrompt);

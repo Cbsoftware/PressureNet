@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0406054"
-    android:versionName="4.6.5" >
+    android:versionCode="0407003"
+    android:versionName="4.7.0RC" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -101,6 +101,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
+        </activity>
+        
+        <activity
+            android:name="ca.cumulonimbus.barometernetwork.ForecastDetailsActivity"
+            android:excludeFromRecents="true"
+            android:label="Forecast Details"
+            android:theme="@style/CustomThemeDialog">
+            
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PlayServicesLegalActivity"
