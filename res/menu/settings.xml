@@ -6,6 +6,12 @@
         android:icon="@drawable/ic_current"
         android:showAsAction="ifRoom|withText"
         android:title="What&apos;s it like outside?"/>
+   	<item
+	    android:id="@+id/menu_test_forecastalerts"
+	    android:enabled="true"
+	    android:showAsAction="always"
+	    android:title="Alerts"
+	    android:icon="@drawable/ic_wea_on_severe"/>
     <item
         android:id="@+id/menu_log_viewer"
         android:enabled="true"

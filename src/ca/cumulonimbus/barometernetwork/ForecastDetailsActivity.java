@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Calendar;
 import java.util.Random;
 
 import android.app.Activity;
@@ -69,6 +70,8 @@ public class ForecastDetailsActivity extends Activity {
 				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		condition.setLocation(loc);
 		condition.setTime(System.currentTimeMillis() + (1800 * 1000)); // now + 30 minutes
+		Calendar cal = Calendar.getInstance();
+		condition.setTzoffset(cal.getTimeZone().getRawOffset());
 		
 		if(type.equals("Rain")) {
 			condition.setGeneral_condition("Precipitation");
@@ -82,7 +85,7 @@ public class ForecastDetailsActivity extends Activity {
 		} else {
 			condition.setGeneral_condition("Thunderstorm");
 		}
-			
+		
 		LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition,
 				null);
 		if (drLayer == null) {
