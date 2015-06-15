@@ -9,8 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbForecastAlert;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -27,11 +29,39 @@ public class NotificationReceiver extends BroadcastReceiver {
                 if(extras!=null){
                     for(String key: extras.keySet()){
                         message+= key + "=" + extras.getString(key) + "\n";
+                        log("key, value: " + key + " " +  extras.getString(key));
                         if(key.equals("notification")) {
-                        	CbCurrentCondition condition = createConditionFromJSONNotification(extras.getString(key));
-                        	if(condition!=null) {
-                        		sendNotification(condition);
+                        	
+                        	if(extras.getString(key).contains("alert")) {
+                        		log("notificationreceiver creating forecast alert");
+                        		String jsonAlert = extras.getString(key);
+                        		try {
+                        			JSONObject js = new JSONObject(jsonAlert);
+                        			String alertString = js.getString("alert");
+                        			CbForecastAlert alert = createForecastAlertFromJSONNotification(alertString);
+                                	CbCurrentCondition condition = createSmallConditionForAlert(alertString);
+                                	if(alert!=null) {
+                                		sendAlert(alert, condition);
+                                	} else {
+                                		log("notificationreceiver not sending alert, alert is null");
+                                	} 
+                        		} catch(JSONException e) {
+                        			log("json exception e" + e.getMessage());
+                        		}
+                        		
+                            
+                        	} else {
+                        	
+	                        	log("notificationreceiver creating condition notification");
+	                        	CbCurrentCondition condition = createConditionFromJSONNotification(extras.getString(key));
+	                        	if(condition!=null) {
+	                        		sendNotification(condition);
+	                        	}
+                        	
                         	}
+                        	
+                        } else {
+                        	log("notificationreceiver doing nothing; " + extras.getString(key));
                         }
                     }
                 }
@@ -39,6 +69,131 @@ public class NotificationReceiver extends BroadcastReceiver {
             log("app notifcation messages " + message);
         }
     }
+    
+    /**
+     * Weather forecast alerts
+     */
+    private void sendAlert(CbForecastAlert alert, CbCurrentCondition condition) {
+		// potentially notify about nearby conditions
+		Intent intent = new Intent();
+		log("notification receiver sending weather alert intent");
+		intent.setAction(CbService.WEATHER_FORECAST_ALERT);
+		intent.putExtra("ca.cumulonimbus.pressurenetsdk.alertNotification", alert);
+		intent.putExtra("ca.cumulonimbus.pressurenetsdk.alertNotificationCondition", condition);
+		mContext.sendBroadcast(intent);
+    }
+    
+    private CbCurrentCondition createSmallConditionForAlert(String json) {
+    	try {
+    		log("notification receiver creating small condition from " + json);
+    		JSONObject object = new JSONObject(json);
+        	CbCurrentCondition condition = new CbCurrentCondition();
+    		Location loc = new Location("network");
+    		try {
+    			LocationManager lm = (LocationManager) mContext
+    					.getSystemService(Context.LOCATION_SERVICE);
+    			loc = lm
+    					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+    			
+    		} catch (Exception e) {
+    			log("notificationreceiver no location " + e.getMessage());
+    		}
+    		condition.setLocation(loc);
+    		
+    		// Weather conditions
+    		if(object.has("event")) {
+    			String event = object.getString("event").toLowerCase();
+    			log("notification receiver event is " + event);
+    			if(event.equals("rain")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Rain");
+    			} else if(event.equals("light-rain")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Rain");
+    				condition.setPrecipitation_amount(0);
+    			} if(event.equals("moderate-rain")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Rain");
+    				condition.setPrecipitation_amount(1);
+    			} if(event.equals("heavy-rain")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Rain");
+    				condition.setPrecipitation_amount(2);
+    			} else if (event.equals("hail")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Hail");
+    			} else if (event.equals("snow")) {
+    				condition.setGeneral_condition("Precipitation");
+    				condition.setPrecipitation_type("Snow");
+    			} else if (event.equals("thunderstorm")) {
+    				condition.setGeneral_condition("Thunderstorm");
+    			} 
+    		}
+    		return condition;
+    	} catch (Exception e) {
+    		log("notificationreceiver exception" + e.getMessage());
+    		return null;
+    	}
+		
+    }
+    
+    private CbForecastAlert createForecastAlertFromJSONNotification(String json) {
+    	log("creating forecast alert from JSON "  + json);
+    	try {
+    		JSONObject object = new JSONObject(json);
+    		
+    		CbForecastAlert alert = new CbForecastAlert();
+    		
+    		
+    		if(object.has("temperature")) {
+    			// TODO: fix this
+    			try {
+    				alert.setTemperature(Double.parseDouble(object.getString("temperature")));
+    				log("notificationreceiver setting temperature " + alert.getTemperature());
+    			} catch(Exception e) {
+    				log("number errorl " + e.getMessage());
+    			}	
+    		}
+    		if(object.has("temperatureUnit")) {
+    			// TODO: fix this
+    			try {
+    				alert.setTemperatureUnit(object.getString("temperatureUnit"));
+    				log("notificationreceiver setting temperature unit " + alert.getTemperatureUnit());
+    			} catch(Exception e) {
+    				log("number errorl " + e.getMessage());
+    			}	
+    		} 
+    		
+    		if(alert.getTemperatureUnit().toLowerCase().contains("f")) {
+    			double temp = (alert.getTemperature() - 32) * (5/9);
+    			alert.setTemperature(temp);
+    			alert.setTemperatureUnit("c");
+    		}
+    		
+    		
+    		if(object.has("time")) {
+    			// TODO: fix this
+    			try {
+    				alert.setAlertTime(Long.parseLong(object.getString("time")));
+    			} catch(Exception e) {
+    				log("number errorl " + e.getMessage());
+    			}	
+    		} 
+    		
+    		return alert;
+    	} catch(JSONException jsone) {
+    		log("JSON error : " + jsone.getMessage());
+    	} catch (Exception e) {
+    		log("other JSON error: " + e.getMessage());
+    	}
+    	return null;
+    }
+    
+    
+    /**
+     * Current Condition Notifications
+     * 
+     */
     
     private void sendNotification(CbCurrentCondition condition) {
 		// potentially notify about nearby conditions

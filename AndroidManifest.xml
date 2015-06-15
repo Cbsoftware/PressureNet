@@ -106,7 +106,7 @@
         <activity
             android:name="ca.cumulonimbus.barometernetwork.ForecastDetailsActivity"
             android:excludeFromRecents="true"
-            android:label="Forecast Details"
+            android:label="Forecast Alerts"
             android:theme="@style/CustomThemeDialog">
             
         </activity>
@@ -232,7 +232,9 @@
                 <action android:name="ca.cumulonimbus.pressurenetsdk.LOCAL_CONDITIONS_ALERT" />
                 <action android:name="ca.cumulonimbus.pressurenetsdk.CONDITION_SENT_TOAST" />
                 <action android:name="ca.cumulonimbus.pressurenetsdk.PRESSURE_SENT_TOAST" />
+                <action android:name="ca.cumulonimbus.pressurenetsdk.WEATHER_FORECAST_ALERT" />
                 <action android:name="ca.cumulonimbus.barometernetwork.CANCEL_CONDITION" />
+                <action android:name="ca.cumulonimbus.barometernetwork.CANCEL_ALERT" />
                 <action android:name="ca.cumulonimbus.barometernetwork.CANCEL_PRESSURE" />
             </intent-filter>
         </receiver>

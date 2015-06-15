@@ -23,6 +23,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbForecastAlert;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 
@@ -36,6 +37,7 @@ public class NotificationSender extends BroadcastReceiver {
 	Context mContext;
 	public static final int PRESSURE_NOTIFICATION_ID  = 101325;
 	public static final int CONDITION_NOTIFICATION_ID = 100012;
+	public static final int ALERT_NOTIFICATION_ID = 100013;
 	
 	private long lastNearbyConditionReportNotification = System.currentTimeMillis() 
 			- (1000 * 60 * 60);
@@ -135,6 +137,40 @@ public class NotificationSender extends BroadcastReceiver {
 				log("not delivering conditions notification, disabled in prefs");
 			}
 			
+		} else if(intent.getAction().equals(CbService.WEATHER_FORECAST_ALERT)) {
+			log("app received intent weather forecast alert");
+			// potentially notify about weather forecasts
+			SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(mContext);
+	
+				CbForecastAlert alert = (CbForecastAlert) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.alertNotification");
+				CbCurrentCondition condition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.alertNotificationCondition");
+				if(alert != null) {
+					
+					if(condition != null) {
+						log("notificationsender alert condition is good, assigning a location");
+						Location loc = new Location("network");
+						LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+						Location location = lm
+								.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+						loc.setLatitude(condition.getLat());
+						loc.setLongitude(condition.getLon());
+						condition.setLocation(loc);
+						alert.setCondition(condition);
+						
+						Calendar cal = Calendar.getInstance(); 
+						condition.setTzoffset(cal.getTimeZone().getRawOffset());
+						
+						
+						alert.setCondition(condition);
+						
+						log("delivering weather forecast alert");
+						deliverAlertNotification(alert);
+					} else {
+						log("notificationsender not sending alert, condition is null");
+					}
+				}
+			
 		} else if(intent.getAction().equals(CbService.PRESSURE_CHANGE_ALERT)) {
 			log("app received intent pressure change alert");
 			if(intent.hasExtra("ca.cumulonimbus.pressurenetsdk.tendencyChange")) {
@@ -173,7 +209,12 @@ public class NotificationSender extends BroadcastReceiver {
 			NotificationCanceler cancel = new NotificationCanceler(mContext, PRESSURE_NOTIFICATION_ID);
 			notificationHandler.post(cancel);
     					
-    	}
+    	} else if(intent.getAction().equals("ca.cumulonimbus.barometernetwork.CANCEL_ALERT")) {
+			log("app notificationsender receiving alert cancel");
+			NotificationCanceler cancel = new NotificationCanceler(mContext, ALERT_NOTIFICATION_ID);
+			notificationHandler.post(cancel);
+						
+    	} 
 		
 		else {
 			log("no matching code for " + intent.getAction());
@@ -215,6 +256,210 @@ public class NotificationSender extends BroadcastReceiver {
 		pn.close();
 		
 		return delivered;
+	}
+	
+	/**
+	 * Send an Android notification to the user about 
+	 * weather forecast details
+	 * 
+	 * @param tendencyChange
+	 */
+	private void deliverAlertNotification(CbForecastAlert alert) {
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+
+		CbCurrentCondition condition = alert.getCondition();
+		
+		long now = System.currentTimeMillis();
+		
+		// feed it with the initial condition
+		// clear, fog, cloud, precip, thunderstorm
+		String initial = "";
+		int icon = R.drawable.ic_launcher;
+		String politeReportText = condition.getGeneral_condition();
+		if(condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
+			initial = "clear";
+			// pick the right clear icon
+			icon = getResIdForClearIcon(condition);
+			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.foggy))) {
+			initial = "fog";
+			icon = R.drawable.ic_wea_on_fog1;
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.cloudy))) {
+			// don't notify on cloudy
+			
+			initial = "cloud";
+			icon = R.drawable.ic_wea_on_cloud;
+			
+			if(condition.getCloud_type().equals(mContext.getString(R.string.partly_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy1;
+				politeReportText = mContext.getString(R.string.partly_cloudy);
+			} else if(condition.getCloud_type().equals(mContext.getString(R.string.mostly_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy2;
+				politeReportText = mContext.getString(R.string.mostly_cloudy);
+			} else if(condition.getCloud_type().equals(mContext.getString(R.string.very_cloudy))) {
+				icon = R.drawable.ic_wea_on_cloudy;
+				politeReportText = mContext.getString(R.string.very_cloudy);
+			} else {
+				icon = R.drawable.ic_wea_on_cloud;
+			}
+			
+			// vectorString = displayDistance(distance) + " " + CbScience.englishDirection(angle);
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.precipitation))) {
+			
+			if(condition.getPrecipitation_type().equals(mContext.getString(R.string.rain))) {
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = mContext.getString(R.string.lightRain);
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_rain2;
+					politeReportText = mContext.getString(R.string.moderateRain);
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_rain3;
+					politeReportText = mContext.getString(R.string.heavyRain);
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_rain1;
+					politeReportText = mContext.getString(R.string.rain);
+				}
+			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.snow))) {
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = mContext.getString(R.string.lightSnow);
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_snow2;
+					politeReportText = mContext.getString(R.string.moderateSnow);
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_snow3;
+					politeReportText = mContext.getString(R.string.heavySnow);
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_snow1;
+					politeReportText = mContext.getString(R.string.snow);
+				}
+			} else if (condition.getPrecipitation_type().equals(mContext.getString(R.string.hail))) {
+				switch((int)condition.getPrecipitation_amount()) {
+				case 0:
+					icon = R.drawable.ic_wea_on_hail1;
+					politeReportText = mContext.getString(R.string.lightHail);
+					break;
+				case 1:
+					icon = R.drawable.ic_wea_on_hail2;
+					politeReportText = mContext.getString(R.string.moderateHail);
+					break;
+				case 2:
+					icon = R.drawable.ic_wea_on_hail3;;
+					politeReportText = mContext.getString(R.string.heavyHail);
+					break;
+				default:
+					icon = R.drawable.ic_wea_on_hail1;
+					politeReportText = mContext.getString(R.string.hail);
+				}
+			} else {
+				icon = R.drawable.ic_wea_on_precip;
+			}
+			
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.thunderstorm))) {
+			initial = "thunderstorm";
+			icon = R.drawable.ic_wea_on_lightning2;
+			
+		} else if(condition.getGeneral_condition().equals(mContext.getString(R.string.extreme))) {
+			initial = "severe";
+			icon = R.drawable.ic_wea_on_severe;
+			
+			if(condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
+				icon = R.drawable.ic_wea_on_flooding;
+				politeReportText = mContext.getString(R.string.flooding);
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.wildfire))) {
+				icon = R.drawable.ic_wea_on_fire;
+				politeReportText = mContext.getString(R.string.wildfire);
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tornado))) {
+				icon = R.drawable.ic_wea_on_tornado;
+				politeReportText = mContext.getString(R.string.tornado);
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.duststorm))) {
+				icon = R.drawable.ic_wea_on_dust;
+				politeReportText = mContext.getString(R.string.duststorm);
+			} else if(condition.getUser_comment().equals(mContext.getString(R.string.tropicalstorm))) {
+				icon = R.drawable.ic_wea_on_tropical_storm;
+				politeReportText = mContext.getString(R.string.tropicalstorm);
+			}
+		} 
+		alert.composeNotificationText();
+		
+		Notification.Builder mBuilder = new Notification.Builder(
+				mContext).setSmallIcon(icon)
+				.setContentTitle(alert.getTagLine()).setContentText("Tap for forecast");
+		// Creates an explicit intent for an activity
+		Intent resultIntent = new Intent(mContext,
+				ForecastDetailsActivity.class);
+
+		
+		resultIntent.putExtra("weatherEvent", alert);
+		resultIntent.putExtra("condition", condition);
+
+		try {
+		
+			android.support.v4.app.TaskStackBuilder stackBuilder = android.support.v4.app.TaskStackBuilder
+					.create(mContext);
+	
+			stackBuilder.addNextIntent(resultIntent);
+			PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			mBuilder.setContentIntent(resultPendingIntent);
+			NotificationManager mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+			// mId allows you to update the
+			// notification later on.
+			mNotificationManager.notify(ALERT_NOTIFICATION_ID, mBuilder.build());
+	
+			AlarmManager am = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+			Intent i = new Intent("ca.cumulonimbus.barometernetwork.CANCEL_ALERT");
+			PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, 0);
+			am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + (1000 * 60 * 60 * 1), pi);
+					
+			
+			// Get tracker.
+			Tracker t = getTracker(
+			    TrackerName.APP_TRACKER);
+			// Build and send an Event.
+			t.send(new HitBuilders.EventBuilder()
+			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS)
+			    .setAction("conditions_notification_delivered")
+			    .setLabel(condition.getGeneral_condition())
+			    .build());
+			
+			try {
+				JSONObject props = new JSONObject();
+				props.put("Condition", condition.getGeneral_condition());
+				mixpanel.track("Notification Delivered", props);	
+			} catch (JSONException jsone) {
+				log("condition notification json exception " + jsone.getMessage());
+			}
+			
+			mixpanel.flush();
+			
+			// save the time
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putLong("lastConditionTime", now);
+			editor.commit();
+		} catch(NoSuchMethodError nsme) {
+			// 
+		}
+		
+		// Get tracker.
+		Tracker t = getTracker(
+		    TrackerName.APP_TRACKER);
+		// Build and send an Event.
+		t.send(new HitBuilders.EventBuilder()
+		    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+		    .setAction("conditions_notification_delivered_final")
+		    .setLabel(condition.getGeneral_condition())
+		    .build());
 	}
 	
 	/**
