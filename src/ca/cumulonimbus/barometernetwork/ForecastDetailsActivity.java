@@ -7,20 +7,25 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
@@ -37,16 +42,109 @@ import com.google.android.gms.analytics.Tracker;
  */
 public class ForecastDetailsActivity extends Activity {
 	
+	PnDb db;
 	
-	TextView textAlertTime;
-	
-	TextView forecastTextView;
-	ImageView imageConditionAlert;
-	
-	TextView textAlertTemperature;
+	TextView textNoForecastAlerts;
 	
 	Button dismiss;
 	
+	
+	 public class CustomForecastAdapter extends CursorAdapter {
+	        // Cursor cursor;
+	        Context context;
+
+	        public CustomForecastAdapter(Context context, Cursor cursor) {
+	            super(context, cursor);
+	            // this.cursor = cursor;
+	            this.context = context;
+	        }
+
+	        @Override
+	        public void bindView(View view, Context context, Cursor cursor) {
+
+	        	String generalCondition = cursor.getString(1);
+	        	String alertPrecip = cursor.getString(2);
+	        	long alertTime = cursor.getLong(3);
+	        	double alertTemp = cursor.getDouble(4);
+	        	String politeText = cursor.getString(5);
+	        	
+	        	CbCurrentCondition condition = new CbCurrentCondition();
+	        	CbForecastAlert alert = new CbForecastAlert();
+	        	
+	        	
+	        	condition.setGeneral_condition(generalCondition);
+	        	if(generalCondition.equals("Precipitation")) {
+
+					if(alertPrecip.equals("Rain")) {
+						condition.setPrecipitation_type("Rain");
+					} else if(alertPrecip.equals("Snow")) {
+						condition.setPrecipitation_type("Snow");
+					} if(alertPrecip.equals("Hail")) {
+						condition.setPrecipitation_type("Hail");
+					} 
+	        	} else {
+					condition.setGeneral_condition("Thunderstorm");
+				}
+
+	        	Location location = new Location("network");
+	        	try {
+	    			LocationManager lm = (LocationManager) mContext
+	    					.getSystemService(Context.LOCATION_SERVICE);
+	    			location = lm
+	    					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+	    			
+	    		} catch (Exception e) {
+	    			log("notificationreceiver no location " + e.getMessage());
+	    		}
+	    		condition.setLocation(location);
+	        	
+	    		condition.setTime(alertTime);
+	        	Calendar cal = Calendar.getInstance();
+	        	int offset = cal.getTimeZone().getRawOffset();
+	        	condition.setTzoffset(offset);
+				
+	        	ConditionsDrawables draws = new ConditionsDrawables(getApplicationContext());
+				LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition,
+						null);
+				if (drLayer == null) {
+					log("drlayer null, next!");
+					
+				}
+				
+				Drawable draw = draws.getSingleDrawable(drLayer);
+				
+				Bitmap image = ((BitmapDrawable) draw).getBitmap();
+				
+				
+	            ImageView imageAlert = (ImageView) view.findViewById(R.id.imageConditionAlert);
+	            imageAlert.setImageBitmap(image);
+
+	            
+	            TextView textForecastDescription = (TextView) view.findViewById(R.id.textForecastDescription);
+	            textForecastDescription.setText(politeText);
+	            
+	            TextView textAlertTime = (TextView) view.findViewById(R.id.textAlertTime);
+	            String displayTime = "";
+				
+				long localAlertTime = alertTime + offset;
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(localAlertTime);
+				SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+				displayTime = df.format(cal.getTimeInMillis()).toString();
+				
+				textAlertTime.setText(displayTime);
+	            
+	            TextView textAlertTemperature = (TextView) view.findViewById(R.id.textAlertTemperature);
+	            textAlertTemperature.setText(displayTemperatureValue(alertTemp));
+	        }
+
+	        @Override
+	        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+	            LayoutInflater inflater = LayoutInflater.from(context);
+	            View v = inflater.inflate(R.layout.forecast_list_item, parent, false);
+	            return v;
+	        }
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +152,6 @@ public class ForecastDetailsActivity extends Activity {
 		setContentView(R.layout.forecast_details);
 
 		dismiss = (Button) findViewById(R.id.buttonDismissForecastDetails);
-		forecastTextView = (TextView) findViewById(R.id.textForecastDescription);
-		imageConditionAlert = (ImageView) findViewById(R.id.imageConditionAlert);
-
-		textAlertTime = (TextView) findViewById(R.id.textAlertTime);
-		textAlertTemperature = (TextView) findViewById(R.id.textAlertTemperature);
-		
-		String timingText = "in 1 hour";
 		
 		dismiss.setOnClickListener(new OnClickListener() {
 			
@@ -71,97 +162,32 @@ public class ForecastDetailsActivity extends Activity {
 			}
 		});
 		
+		
+		db = new PnDb(getApplicationContext());
+		// Query for items from the database and get a cursor back
+		db.open();
+		db.deleteOldForecastAlerts();
+		Cursor cursor = db.fetchRecentForecastAlerts();
+		
+		log("forecast details cursor count " + cursor.getCount());
+		if(cursor.getCount() == 0 ) {
+			textNoForecastAlerts = (TextView) findViewById(R.id.textNoForecastAlerts);
+			textNoForecastAlerts.setVisibility(View.VISIBLE);
+		}
+		
+		// Find ListView to populate
+		ListView lvItems = (ListView) findViewById(R.id.listForecastAlerts);
+		// Setup cursor adapter using cursor from last step
+		CustomForecastAdapter forecastAdapter = new CustomForecastAdapter(getApplicationContext(), cursor);
+		// Attach cursor adapter to the ListView 
+		lvItems.setAdapter(forecastAdapter);
+		
 		try {
 			log("cancelling existing notification");
 			cancelNotification(NotificationSender.ALERT_NOTIFICATION_ID);
 		} catch (Exception e) {
 			log("conditions missing data, cannot submit");
 		}
-		
-		CbForecastAlert alert = new CbForecastAlert();
-		CbCurrentCondition condition = new CbCurrentCondition();
-		
-		Intent intent = getIntent();
-		if(intent!=null ) {
-			
-			if(intent.hasExtra("weatherEvent")) {
-				
-			
-				alert = (CbForecastAlert) intent.getSerializableExtra("weatherEvent");
-				condition = (CbCurrentCondition) intent.getSerializableExtra("condition");
-				
-				if(alert.getCondition() != null) {
-					String type = alert.getCondition().getGeneral_condition();
-					Double temperature = alert.getTemperature();
-		
-					
-					textAlertTemperature.setText(displayTemperatureValue(temperature));
-					
-					String displayTime = "";
-					
-					long now = System.currentTimeMillis() / 1000;
-					long timeDiff = alert.getAlertTime() - now;
-					int minutesFuture = (int) (timeDiff / 60);
-					timingText = "in " + minutesFuture + " minutes";
-					
-					
-					ConditionsDrawables draws = new ConditionsDrawables(getApplicationContext());
-					
-					
-					LocationManager lm = (LocationManager) this
-							.getSystemService(Context.LOCATION_SERVICE);
-					Location loc = lm
-							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					condition.setLocation(loc);
-					
-					long localAlertTime = alert.getAlertTime() * 1000; // + condition.getTzoffset();
-					Calendar cal = Calendar.getInstance();
-					cal.setTimeInMillis(localAlertTime);
-					SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-					displayTime = df.format(cal.getTimeInMillis()).toString();
-					
-					textAlertTime.setText(displayTime);
-					
-					
-					if(type.equals("Precipitation")) {
-						if(condition.getPrecipitation_type().equals("Rain")) {
-							condition.setPrecipitation_type("Rain");
-							setTitle("Rain " + timingText);	
-						} else if(condition.getPrecipitation_type().equals("Snow")) {
-							condition.setPrecipitation_type("Snow");
-							setTitle("Snow "+ timingText);	
-						} if(condition.getPrecipitation_type().equals("Hail")) {
-							condition.setPrecipitation_type("Hail");
-							setTitle("Hail " + timingText);	
-						} 
-					} else {
-						condition.setGeneral_condition("Thunderstorm");
-						setTitle("Thunderstorm " + timingText);
-					}
-					
-					LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition,
-							null);
-					if (drLayer == null) {
-						log("drlayer null, next!");
-						
-					}
-					
-					Drawable draw = draws.getSingleDrawable(drLayer);
-					
-					Bitmap image = ((BitmapDrawable) draw).getBitmap();
-					
-					forecastTextView.setText(alert.getTagLine());
-					imageConditionAlert.setImageBitmap(image);
-					
-					
-					
-				}
-			}
-		} else {
-			forecastTextView.setText("No active alerts");
-		}
-
-		
 	}
 
 	private String displayTemperatureValue(double value) {
@@ -209,7 +235,7 @@ public class ForecastDetailsActivity extends Activity {
 
 	@Override
 	protected void onStop() {
-
+		db.close();
 		super.onStop();
 	}
 

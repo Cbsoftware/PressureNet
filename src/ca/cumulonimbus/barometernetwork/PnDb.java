@@ -1,20 +1,21 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Calendar;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.preference.PreferenceManager;
 
 public class PnDb {
 
 	// Tables
 	public static final String SEARCH_LOCATIONS_TABLE = "pn_searchlocations";
 	public static final String CONDITIONS_DELIVERED = "conditions_delivered";
+	public static final String FORECAST_ALERTS = "forecast_alerts";
 
 	// Search Locations Fields
 	public static final String KEY_ROW_ID = "_id";
@@ -34,11 +35,19 @@ public class PnDb {
 	// KEY_LONGITUDE
 	public static final String KEY_THUMBNAIL = "image_thumbnail";
 	
-
+	// Forecast Alert fields
+	private static final String KEY_ALERT_TIME = "alert_time";
+	private static final String KEY_ALERT_CONDITION = "alert_condition";
+	private static final String KEY_ALERT_PRECIP = "alert_precip";
+	private static final String KEY_ALERT_POLITE_STRING = "alert_polite_string";
+	private static final String KEY_ALERT_TEMP = "alert_temperature";
+	
+	
 	private Context mContext;
 
 	private DatabaseHelper mDbHelper;
 	private SQLiteDatabase mDB;
+	
 	private static final String SEARCH_LOCATIONS_TABLE_CREATE = "create table "
 			+ SEARCH_LOCATIONS_TABLE
 			+ " (_id integer primary key autoincrement, " + KEY_SEARCH_TEXT
@@ -52,9 +61,16 @@ public class PnDb {
 			+ " text not null, " + KEY_LATITUDE + " real not null, "
 			+ KEY_LONGITUDE + " real not null, " + KEY_TIME + " real)";
 	
+	private static final String FORECAST_ALERTS_TABLE_CREATE = "create table "
+			+ FORECAST_ALERTS
+			+ " (_id integer primary key autoincrement, " + KEY_ALERT_CONDITION
+			+ " text, "  + KEY_ALERT_PRECIP
+			+ " text not null, " + KEY_ALERT_TIME + " real not null, "
+			+ KEY_ALERT_TEMP + " real not null, " + KEY_ALERT_POLITE_STRING + " text)";
+	
 
 	private static final String DATABASE_NAME = "PnDb";
-	private static final int DATABASE_VERSION = 23; 
+	private static final int DATABASE_VERSION = 26; 
 	// TODO: fix this nonsense
 	// db = 2 at pN <=4.0.11. 5=4.1.6, 6=4.1.7, 7=4.2.5, 8=4.2.6
 	// 9 = 4.2.7
@@ -66,6 +82,7 @@ public class PnDb {
 	// 17-20 = 4.5.x
 	// 21-22 = 4.5.8
 	// 23 = 4.6.0RC
+	// 24+ = 4.7.x
 	
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
@@ -77,6 +94,50 @@ public class PnDb {
 		mDbHelper.close();
 	}
 
+	
+
+	/**
+	 * Add new forecast alert
+	 * @return
+	 */
+	public long addForecastAlert(String condition, long time, double temp, String politeText, String precip) {
+		log("pndb adding forecast alert " + condition);
+		ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_ALERT_CONDITION, condition);
+		initialValues.put(KEY_ALERT_TIME, time);
+		initialValues.put(KEY_ALERT_TEMP, temp);
+		initialValues.put(KEY_ALERT_POLITE_STRING, politeText);
+		initialValues.put(KEY_ALERT_PRECIP, precip);
+
+		return mDB.insert(FORECAST_ALERTS, null, initialValues);
+	}
+	
+
+	/**
+	 * Delete old forecast alerts to keep the table current
+	 */
+	public void deleteOldForecastAlerts() {
+		
+		long now = System.currentTimeMillis();
+		long timeAgo = now - (1000 * 60 * 60 * 1);
+		mDB.execSQL("delete from " + FORECAST_ALERTS + " where " + 
+		KEY_ALERT_TIME + "<" + timeAgo);
+		log("pndb deleted old forecast alerts");
+	}
+	
+
+	/**
+	 * Fetch recent forecast alerts
+	 * 
+	 * @return
+	 */
+	public Cursor fetchRecentForecastAlerts() {
+		return mDB.query(FORECAST_ALERTS, new String[] { KEY_ROW_ID,
+				KEY_ALERT_CONDITION, KEY_ALERT_PRECIP, KEY_ALERT_TIME, KEY_ALERT_TEMP, KEY_ALERT_POLITE_STRING },
+				KEY_ALERT_TIME + " > 0" , null, null, null, null);
+	}
+	
+	
 	/**
 	 * Add new condition delivery
 
@@ -92,14 +153,16 @@ public class PnDb {
 
 		return mDB.insert(CONDITIONS_DELIVERED, null, initialValues);
 	}
+	
+	
 
 	/**
 	 * Delete old condition deliveries to keep the table small
 	 */
 	public void deleteOldDeliveries() {
-		long ancientConditionMsAgo = 1000 * 60 * 60 * 10;
+		long timeAgo = System.currentTimeMillis() - (1000 * 60 * 60 * 10);
 		mDB.execSQL("delete from " + CONDITIONS_DELIVERED + " where " + 
-		KEY_TIME + "<" + ancientConditionMsAgo);
+		KEY_TIME + "<" + timeAgo);
 	}
 	
 	/**
@@ -218,7 +281,7 @@ public class PnDb {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(SEARCH_LOCATIONS_TABLE_CREATE);
 			db.execSQL(CONDITIONS_DELIVERED_TABLE_CREATE);
-			
+			db.execSQL(FORECAST_ALERTS_TABLE_CREATE);
 			showWelcome();
 		}
 
@@ -240,6 +303,9 @@ public class PnDb {
 				db.execSQL(SKY_PHOTOS_TABLE_CREATE);
 			}
 			*/
+			if( (oldVersion < 24)) {
+				db.execSQL(FORECAST_ALERTS_TABLE_CREATE);
+			}
 			
 			
 			showWhatsNew();

@@ -1,5 +1,6 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.Calendar;
 import java.util.Iterator;
 
 import org.json.JSONException;
@@ -42,6 +43,14 @@ public class NotificationReceiver extends BroadcastReceiver {
                                 	CbCurrentCondition condition = createSmallConditionForAlert(alertString);
                                 	if(alert!=null) {
                                 		sendAlert(alert, condition);
+                                		
+                                		// add to the database
+                                		
+                                		PnDb db = new PnDb(mContext);
+                                		db.open();
+                                		long d = db.addForecastAlert(condition.getGeneral_condition(), (long)(alert.getAlertTime() * 1000), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
+                                		db.close();
+                                		log("notificationreceiver adding forecast alert to database " + d + ", " + condition.getGeneral_condition() + " " + alert.getAlertTime());
                                 	} else {
                                 		log("notificationreceiver not sending alert, alert is null");
                                 	} 
@@ -174,7 +183,8 @@ public class NotificationReceiver extends BroadcastReceiver {
     		if(object.has("time")) {
     			// TODO: fix this
     			try {
-    				alert.setAlertTime(Long.parseLong(object.getString("time")));
+    				long alertTime  = Long.parseLong(object.getString("time"));
+    				alert.setAlertTime(alertTime);
     			} catch(Exception e) {
     				log("number errorl " + e.getMessage());
     			}	
