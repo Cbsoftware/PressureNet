@@ -41,6 +41,7 @@ public class PnDb {
 	private static final String KEY_ALERT_PRECIP = "alert_precip";
 	private static final String KEY_ALERT_POLITE_STRING = "alert_polite_string";
 	private static final String KEY_ALERT_TEMP = "alert_temperature";
+	private static final String KEY_ALERT_ISSUE_TIME = "issue_time";
 	
 	
 	private Context mContext;
@@ -66,7 +67,8 @@ public class PnDb {
 			+ " (_id integer primary key autoincrement, " + KEY_ALERT_CONDITION
 			+ " text, "  + KEY_ALERT_PRECIP
 			+ " text not null, " + KEY_ALERT_TIME + " real not null, "
-			+ KEY_ALERT_TEMP + " real not null, " + KEY_ALERT_POLITE_STRING + " text)";
+			+ KEY_ALERT_TEMP + " real not null, " + KEY_ALERT_POLITE_STRING + " text, "
+			+ KEY_ALERT_ISSUE_TIME + " real not null)";
 	
 
 	private static final String DATABASE_NAME = "PnDb";
@@ -108,6 +110,7 @@ public class PnDb {
 		initialValues.put(KEY_ALERT_TEMP, temp);
 		initialValues.put(KEY_ALERT_POLITE_STRING, politeText);
 		initialValues.put(KEY_ALERT_PRECIP, precip);
+		initialValues.put(KEY_ALERT_ISSUE_TIME, System.currentTimeMillis());
 
 		return mDB.insert(FORECAST_ALERTS, null, initialValues);
 	}
@@ -121,7 +124,7 @@ public class PnDb {
 		long now = System.currentTimeMillis();
 		long timeAgo = now - (1000 * 60 * 60 * 1);
 		mDB.execSQL("delete from " + FORECAST_ALERTS + " where " + 
-		KEY_ALERT_TIME + "<" + timeAgo);
+		KEY_ALERT_ISSUE_TIME + "<" + timeAgo);
 		log("pndb deleted old forecast alerts");
 	}
 	
@@ -133,7 +136,8 @@ public class PnDb {
 	 */
 	public Cursor fetchRecentForecastAlerts() {
 		return mDB.query(FORECAST_ALERTS, new String[] { KEY_ROW_ID,
-				KEY_ALERT_CONDITION, KEY_ALERT_PRECIP, KEY_ALERT_TIME, KEY_ALERT_TEMP, KEY_ALERT_POLITE_STRING },
+				KEY_ALERT_CONDITION, KEY_ALERT_PRECIP, KEY_ALERT_TIME, 
+				KEY_ALERT_TEMP, KEY_ALERT_POLITE_STRING, KEY_ALERT_ISSUE_TIME},
 				KEY_ALERT_TIME + " > 0" , null, null, null, null);
 	}
 	

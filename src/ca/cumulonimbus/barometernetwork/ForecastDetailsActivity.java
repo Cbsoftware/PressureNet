@@ -3,6 +3,7 @@ package ca.cumulonimbus.barometernetwork;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -15,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.location.Location;
 import android.location.LocationManager;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.CursorAdapter;
@@ -67,6 +67,7 @@ public class ForecastDetailsActivity extends Activity {
 	        	long alertTime = cursor.getLong(3);
 	        	double alertTemp = cursor.getDouble(4);
 	        	String politeText = cursor.getString(5);
+	        	long issueTime = cursor.getLong(6);
 	        	
 	        	CbCurrentCondition condition = new CbCurrentCondition();
 	        	CbForecastAlert alert = new CbForecastAlert();
@@ -126,11 +127,11 @@ public class ForecastDetailsActivity extends Activity {
 	            TextView textAlertTime = (TextView) view.findViewById(R.id.textAlertTime);
 	            String displayTime = "";
 				
-				long localAlertTime = alertTime + offset;
+				long localAlertTime = issueTime;
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(localAlertTime);
 				SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-				displayTime = df.format(cal.getTimeInMillis()).toString();
+				displayTime = df.format(new Date(localAlertTime));
 				
 				textAlertTime.setText(displayTime);
 	            

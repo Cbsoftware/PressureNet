@@ -394,14 +394,10 @@ public class NotificationSender extends BroadcastReceiver {
 		
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
-				.setContentTitle(alert.getTagLine()).setContentText("Tap for forecast");
+				.setContentTitle(alert.getNotificationTitle()).setContentText(alert.getNotificationContent());
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
 				ForecastDetailsActivity.class);
-
-		
-		resultIntent.putExtra("weatherEvent", alert);
-		resultIntent.putExtra("condition", condition);
 
 		try {
 		
