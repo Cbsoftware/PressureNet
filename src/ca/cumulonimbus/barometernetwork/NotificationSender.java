@@ -165,7 +165,13 @@ public class NotificationSender extends BroadcastReceiver {
 						alert.setCondition(condition);
 						
 						log("delivering weather forecast alert");
-						deliverAlertNotification(alert);
+						boolean isOkayToDeliver = sharedPreferences.getBoolean("send_condition_notifications", false);
+						if(isOkayToDeliver) {
+							log("notification sender delivering forecast alert, permission granted");
+							deliverAlertNotification(alert);
+						} else {
+							log("notification sender NOT delivering forecast alert, permission denied");
+						}
 					} else {
 						log("notificationsender not sending alert, condition is null");
 					}
@@ -425,16 +431,16 @@ public class NotificationSender extends BroadcastReceiver {
 			// Build and send an Event.
 			t.send(new HitBuilders.EventBuilder()
 			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_NOTIFICATIONS)
-			    .setAction("conditions_notification_delivered")
+			    .setAction("forecast_notification_delivered")
 			    .setLabel(condition.getGeneral_condition())
 			    .build());
 			
 			try {
 				JSONObject props = new JSONObject();
 				props.put("Condition", condition.getGeneral_condition());
-				mixpanel.track("Notification Delivered", props);	
+				mixpanel.track("Forecast Alert Delivered", props);	
 			} catch (JSONException jsone) {
-				log("condition notification json exception " + jsone.getMessage());
+				log("forecast notification json exception " + jsone.getMessage());
 			}
 			
 			mixpanel.flush();

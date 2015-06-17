@@ -42,13 +42,16 @@ public class NotificationReceiver extends BroadcastReceiver {
                         			CbForecastAlert alert = createForecastAlertFromJSONNotification(alertString);
                                 	CbCurrentCondition condition = createSmallConditionForAlert(alertString);
                                 	if(alert!=null) {
+                                		alert.setCondition(condition);
+                                		alert.composeNotificationText();
+                                		
                                 		sendAlert(alert, condition);
                                 		
                                 		// add to the database
                                 		
                                 		PnDb db = new PnDb(mContext);
                                 		db.open();
-                                		long d = db.addForecastAlert(condition.getGeneral_condition(), (long)(alert.getAlertTime() * 1000), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
+                                		long d = db.addForecastAlert(condition.getGeneral_condition(), alert.getAlertTime(), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
                                 		db.close();
                                 		log("notificationreceiver adding forecast alert to database " + d + ", " + condition.getGeneral_condition() + " " + alert.getAlertTime());
                                 	} else {
@@ -155,7 +158,6 @@ public class NotificationReceiver extends BroadcastReceiver {
     		
     		
     		if(object.has("temperature")) {
-    			// TODO: fix this
     			try {
     				alert.setTemperature(Double.parseDouble(object.getString("temperature")));
     				log("notificationreceiver setting temperature " + alert.getTemperature());
@@ -164,7 +166,6 @@ public class NotificationReceiver extends BroadcastReceiver {
     			}	
     		}
     		if(object.has("temperatureUnit")) {
-    			// TODO: fix this
     			try {
     				alert.setTemperatureUnit(object.getString("temperatureUnit"));
     				log("notificationreceiver setting temperature unit " + alert.getTemperatureUnit());
@@ -172,18 +173,16 @@ public class NotificationReceiver extends BroadcastReceiver {
     				log("number errorl " + e.getMessage());
     			}	
     		} 
-    		
     		if(alert.getTemperatureUnit().toLowerCase().contains("f")) {
-    			double temp = (alert.getTemperature() - 32) * (5/9);
+    			double temp = ((alert.getTemperature() - 32) / 1.8);
     			alert.setTemperature(temp);
     			alert.setTemperatureUnit("c");
     		}
     		
     		
     		if(object.has("time")) {
-    			// TODO: fix this
     			try {
-    				long alertTime  = Long.parseLong(object.getString("time"));
+    				long alertTime  = Long.parseLong(object.getString("time")) * 1000;
     				alert.setAlertTime(alertTime);
     			} catch(Exception e) {
     				log("number errorl " + e.getMessage());
