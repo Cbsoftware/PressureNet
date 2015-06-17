@@ -38,6 +38,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -329,8 +330,9 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private boolean userPrompted = false;
 	
-	
 	MixpanelAPI mixpanel;
+	
+	private Menu mOptionsMenu;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -352,6 +354,31 @@ public class BarometerNetworkActivity extends Activity implements
 		checkDb();
 		callExternalAPIs();
 		setUpMixPanel();
+		
+	}
+	
+	
+	/**
+	 * Show a red icon in the Action bar if there are alerts.
+	 * Show a default icon otherwise.
+	 */
+	private void setActionBarAlertIcon() {
+		
+		Drawable d = getResources().getDrawable(R.drawable.ic_wea_on_severe);
+		
+		PnDb db = new PnDb(getApplicationContext());
+		db.open();
+		
+		Cursor c = db.fetchRecentForecastAlerts();
+		if(c.getCount()>0) {
+
+			int color = Color.parseColor("#FF0000");
+			d.setColorFilter( color, Mode.MULTIPLY );
+			mOptionsMenu.findItem(R.id.menu_test_forecastalerts).setIcon(d);
+			log("main activity launching, setting action bar icon color for new forecast alerts");
+		} else {
+			log("main activity launching, NOT setting action bar icon color  (no forecast alerts)");
+		}
 	}
 	
 	/**
@@ -2554,6 +2581,9 @@ public class BarometerNetworkActivity extends Activity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.settings, menu);
+		
+		mOptionsMenu = menu;
+		setActionBarAlertIcon();
 		return true;
 	}
 
