@@ -354,10 +354,8 @@ public class BarometerNetworkActivity extends Activity implements
 		checkDb();
 		callExternalAPIs();
 		setUpMixPanel();
-		
 	}
-	
-	
+		
 	/**
 	 * Show a red icon in the Action bar if there are alerts.
 	 * Show a default icon otherwise.
@@ -372,7 +370,7 @@ public class BarometerNetworkActivity extends Activity implements
 		Cursor c = db.fetchRecentForecastAlerts();
 		if(c.getCount()>0) {
 
-			int color = Color.parseColor("#FF0000");
+			int color = Color.parseColor("#ec2826");
 			d.setColorFilter( color, Mode.MULTIPLY );
 			mOptionsMenu.findItem(R.id.menu_test_forecastalerts).setIcon(d);
 			log("main activity launching, setting action bar icon color for new forecast alerts");

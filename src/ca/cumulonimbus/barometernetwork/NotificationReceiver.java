@@ -119,6 +119,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     			if(event.equals("rain")) {
     				condition.setGeneral_condition("Precipitation");
     				condition.setPrecipitation_type("Rain");
+    				condition.setPrecipitation_amount(-1);
     			} else if(event.equals("light-rain")) {
     				condition.setGeneral_condition("Precipitation");
     				condition.setPrecipitation_type("Rain");
