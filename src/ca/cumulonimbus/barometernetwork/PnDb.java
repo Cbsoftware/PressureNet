@@ -128,6 +128,15 @@ public class PnDb {
 		log("pndb deleted old forecast alerts");
 	}
 	
+	
+	/**
+	 * Delete old forecast alerts to keep the table current
+	 */
+	public void deleteSingleForecastAlert(int id) {
+		mDB.execSQL("delete from " + FORECAST_ALERTS + " WHERE " + KEY_ROW_ID + "=" + id);
+		log("pndb single forecast alert");
+	}
+	
 
 	/**
 	 * Fetch recent forecast alerts

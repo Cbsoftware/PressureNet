@@ -3631,6 +3631,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		updateLocationDisplay();
 		
+		invalidateOptionsMenu();
+		
 		if(hasBarometer) {
 			startSensorListeners();
 		}

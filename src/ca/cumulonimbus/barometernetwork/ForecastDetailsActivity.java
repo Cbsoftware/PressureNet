@@ -19,10 +19,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.CursorAdapter;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -48,6 +54,8 @@ public class ForecastDetailsActivity extends Activity {
 	
 	Button dismiss;
 	
+	Cursor adapterCursor;
+	
 	
 	 public class CustomForecastAdapter extends CursorAdapter {
 	        // Cursor cursor;
@@ -58,6 +66,8 @@ public class ForecastDetailsActivity extends Activity {
 	            // this.cursor = cursor;
 	            this.context = context;
 	        }
+	        
+	        
 
 	        @Override
 	        public void bindView(View view, Context context, Cursor cursor) {
@@ -71,7 +81,7 @@ public class ForecastDetailsActivity extends Activity {
 	        	
 	        	CbCurrentCondition condition = new CbCurrentCondition();
 	        	CbForecastAlert alert = new CbForecastAlert();
-	        	
+	        	adapterCursor = cursor;
 	        	
 	        	condition.setGeneral_condition(generalCondition);
 	        	if(generalCondition.equals("Precipitation")) {
@@ -137,14 +147,29 @@ public class ForecastDetailsActivity extends Activity {
 	            
 	            TextView textAlertTemperature = (TextView) view.findViewById(R.id.textAlertTemperature);
 	            textAlertTemperature.setText(displayTemperatureValue(alertTemp));
+	            
+	            if(cursor.getCount() == 0) {
+					textNoForecastAlerts.setVisibility(View.VISIBLE); 
+				}
 	        }
 
+	        
+	        
+	        
 	        @Override
 	        public View newView(Context context, Cursor cursor, ViewGroup parent) {
 	            LayoutInflater inflater = LayoutInflater.from(context);
 	            View v = inflater.inflate(R.layout.forecast_list_item, parent, false);
 	            return v;
 	        }
+	}
+
+	 
+	 
+	@Override
+	protected void onResume() {
+		log("onresume");
+		super.onResume();
 	}
 
 	@Override
@@ -158,7 +183,6 @@ public class ForecastDetailsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				
 				finish();
 			}
 		});
@@ -183,12 +207,62 @@ public class ForecastDetailsActivity extends Activity {
 		// Attach cursor adapter to the ListView 
 		lvItems.setAdapter(forecastAdapter);
 		
+		
+		registerForContextMenu(lvItems);
+		
 		try {
 			log("cancelling existing notification");
 			cancelNotification(NotificationSender.ALERT_NOTIFICATION_ID);
 		} catch (Exception e) {
 			log("conditions missing data, cannot submit");
 		}
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==R.id.listForecastAlerts) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    menu.setHeaderTitle("Alert Options");
+	    String[] menuItems = {"Delete", "Close"};
+	    for (int i = 0; i<menuItems.length; i++) {
+	      menu.add(Menu.NONE, i, i, menuItems[i]);
+	    }
+	  }
+	}
+	
+	
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+	  int menuItemIndex = item.getItemId();
+	  String[] menuItems = {"Delete", "Close"};
+	  
+	  if(menuItems[menuItemIndex].equals("Delete")) {
+		  log("item selected for deletion " + info.position );
+		// Find ListView to populate
+			ListView lvItems = (ListView) findViewById(R.id.listForecastAlerts);
+			log("delete row id " + lvItems.getAdapter().getItemId(info.position));
+			try {
+				PnDb db = new PnDb(getApplicationContext());
+				db.open();
+				db.deleteSingleForecastAlert((int)lvItems.getAdapter().getItemId(info.position));
+				db.close();
+				adapterCursor.requery();
+				if(adapterCursor.getCount() == 0) {
+					textNoForecastAlerts = (TextView) findViewById(R.id.textNoForecastAlerts);
+					textNoForecastAlerts.setVisibility(View.VISIBLE); 
+				}
+			} catch(Exception e) {
+				log("db delete error " + e.getMessage());
+			}
+		  
+	  } else {
+		  log("closing menu without deleting");
+	  }
+	  
+	  return true;
 	}
 
 	private String displayTemperatureValue(double value) {
