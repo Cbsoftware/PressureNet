@@ -45,6 +45,11 @@ public class NotificationReceiver extends BroadcastReceiver {
                                 		alert.setCondition(condition);
                                 		alert.composeNotificationText();
                                 		
+                                		if(alert.getAlertTime() < System.currentTimeMillis()) {
+                                			log("negative alert, bailing");
+                                			return;
+                                		}
+                                		
                                 		sendAlert(alert, condition);
                                 		
                                 		// add to the database

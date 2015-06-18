@@ -23,8 +23,9 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• Weather alert improvements\n• Performance/battery fixes\n"
+            android:text="• 2-hour weather forecast alerts\n• More accurate current condition notifications\n"
             android:textSize="16dp" />
+        
 
         <TextView
             android:id="@+id/textNewSettings"
@@ -35,7 +36,7 @@
             android:paddingTop="8dp"
             android:text="RECENT SETTINGS UPDATES"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/checkAlertCloudyAndClear"
@@ -47,7 +48,7 @@
             android:paddingTop="6dp"
             android:text="Notify about clear/cloudy weather"
             android:textSize="16dp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <CheckBox
             android:id="@+id/checkEnableSocial"
