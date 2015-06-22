@@ -61,61 +61,61 @@ public class ConditionsDrawables {
 			CbCurrentCondition condition, Drawable drawable) {
 
 		Drawable weatherBackgroundDrawable = resizeDrawable(mContext
-				.getDrawable(R.drawable.bg_wea_square));
+				.getResources().getDrawable(R.drawable.bg_wea_square));
 
 		if (CurrentConditionsActivity.isDaytime(condition.getLocation()
 				.getLatitude(), condition.getLocation().getLongitude(),
 				condition.getTime(), condition.getTzoffset())) {
 			weatherBackgroundDrawable = resizeDrawable(mContext
-					.getDrawable(R.drawable.bg_wea_day));
+					.getResources().getDrawable(R.drawable.bg_wea_day));
 		} else {
 			weatherBackgroundDrawable = resizeDrawable(mContext
-					.getDrawable(R.drawable.bg_wea_night));
+					.getResources().getDrawable(R.drawable.bg_wea_night));
 		}
 
 		int moonNumber = getMoonPhaseIndex() + 1;
 
 		if (condition.getGeneral_condition().equals(mContext.getString(R.string.sunny))) {
-			Drawable sunDrawable = mContext.getDrawable(
+			Drawable sunDrawable = mContext.getResources().getDrawable(
 					R.drawable.ic_wea_col_sun);
 			if (!CurrentConditionsActivity.isDaytime(condition.getLocation()
 					.getLatitude(), condition.getLocation().getLongitude(),
 					condition.getTime(), condition.getTzoffset())) {
 				switch (moonNumber) {
 				case 1:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon1);
 					break;
 				case 2:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon2);
 					break;
 				case 3:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon3);
 					break;
 				case 4:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon4);
 					break;
 				case 5:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon5);
 					break;
 				case 6:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon6);
 					break;
 				case 7:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon7);
 					break;
 				case 8:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon8);
 					break;
 				default:
-					sunDrawable = mContext.getDrawable(
+					sunDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_moon2);
 					break;
 				}
@@ -130,21 +130,21 @@ public class ConditionsDrawables {
 			if (condition.getPrecipitation_type().equals(
 					mContext.getString(R.string.rain))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
@@ -154,21 +154,21 @@ public class ConditionsDrawables {
 			} else if (condition.getPrecipitation_type().equals(
 					mContext.getString(R.string.snow))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
-					Drawable snowDrawable = mContext.getDrawable(
+					Drawable snowDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_snow1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
-					Drawable snowDrawable = mContext.getDrawable(
+					Drawable snowDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_snow2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
-					Drawable snowDrawable = mContext.getDrawable(
+					Drawable snowDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_snow3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(snowDrawable) };
@@ -178,21 +178,21 @@ public class ConditionsDrawables {
 			} else if (condition.getPrecipitation_type().equals(
 					mContext.getString(R.string.hail))) {
 				if (condition.getPrecipitation_amount() == 0.0) {
-					Drawable hailDrawable = mContext.getDrawable(
+					Drawable hailDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_hail1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
-					Drawable hailDrawable = mContext.getDrawable(
+					Drawable hailDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_hail2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
-					Drawable hailDrawable = mContext.getDrawable(
+					Drawable hailDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_hail3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(hailDrawable) };
@@ -202,21 +202,21 @@ public class ConditionsDrawables {
 			} else {
 				// TODO: this is a copypaste of rain
 				if (condition.getPrecipitation_amount() == 0.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain1);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 1.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain2);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
 					LayerDrawable layerDrawable = new LayerDrawable(layers);
 					return layerDrawable;
 				} else if (condition.getPrecipitation_amount() == 2.0) {
-					Drawable rainDrawable = mContext.getDrawable(
+					Drawable rainDrawable = mContext.getResources().getDrawable(
 							R.drawable.ic_wea_col_rain3);
 					Drawable[] layers = { weatherBackgroundDrawable,
 							resizeDrawable(rainDrawable) };
@@ -228,7 +228,7 @@ public class ConditionsDrawables {
 				mContext.getString(R.string.cloudy))) {
 			if (condition.getCloud_type().equals(
 					mContext.getString(R.string.partly_cloudy))) {
-				Drawable cloudDrawable = mContext.getDrawable(
+				Drawable cloudDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_cloud1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
@@ -236,7 +236,7 @@ public class ConditionsDrawables {
 				return layerDrawable;
 			} else if (condition.getCloud_type().equals(
 					mContext.getString(R.string.mostly_cloudy))) {
-				Drawable cloudDrawable = mContext.getDrawable(
+				Drawable cloudDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_cloud2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
@@ -244,14 +244,14 @@ public class ConditionsDrawables {
 				return layerDrawable;
 			} else if (condition.getCloud_type().equals(
 					mContext.getString(R.string.very_cloudy))) {
-				Drawable cloudDrawable = mContext.getDrawable(
+				Drawable cloudDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_cloud);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else {
-				Drawable cloudDrawable = mContext.getDrawable(
+				Drawable cloudDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_cloud);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(cloudDrawable) };
@@ -262,7 +262,7 @@ public class ConditionsDrawables {
 				mContext.getString(R.string.foggy))) {
 			if (condition.getFog_thickness().equals(
 					mContext.getString(R.string.light_fog))) {
-				Drawable fogDrawable = mContext.getDrawable(
+				Drawable fogDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_fog1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
@@ -270,7 +270,7 @@ public class ConditionsDrawables {
 				return layerDrawable;
 			} else if (condition.getFog_thickness().equals(
 					mContext.getString(R.string.moderate_fog))) {
-				Drawable fogDrawable = mContext.getDrawable(
+				Drawable fogDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_fog2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
@@ -278,14 +278,14 @@ public class ConditionsDrawables {
 				return layerDrawable;
 			} else if (condition.getFog_thickness().equals(
 					mContext.getString(R.string.heavy_fog))) {
-				Drawable fogDrawable = mContext.getDrawable(
+				Drawable fogDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_fog3);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else {
-				Drawable fogDrawable = mContext.getDrawable(
+				Drawable fogDrawable = mContext.getResources().getDrawable(
 						R.drawable.ic_wea_col_fog2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fogDrawable) };
@@ -302,7 +302,7 @@ public class ConditionsDrawables {
 			}
 			if (Double.parseDouble(condition.getThunderstorm_intensity()) == 0.0) {
 				Drawable thunderstormDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_r_l1);
+						.getResources().getDrawable(R.drawable.ic_wea_col_r_l1);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -310,7 +310,7 @@ public class ConditionsDrawables {
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 1.0) {
 				Drawable thunderstormDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_r_l2);
+						.getResources().getDrawable(R.drawable.ic_wea_col_r_l2);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -318,7 +318,7 @@ public class ConditionsDrawables {
 			} else if (Double
 					.parseDouble(condition.getThunderstorm_intensity()) == 2.0) {
 				Drawable thunderstormDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_r_l3);
+						.getResources().getDrawable(R.drawable.ic_wea_col_r_l3);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(thunderstormDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -328,35 +328,35 @@ public class ConditionsDrawables {
 				mContext.getString(R.string.extreme))) {
 			if (condition.getUser_comment().equals(mContext.getString(R.string.flooding))) {
 				Drawable floodingDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_flooding);
+						.getResources().getDrawable(R.drawable.ic_wea_col_flooding);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(floodingDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else if (condition.getUser_comment().equals(mContext.getString(R.string.wildfire))) {
 				Drawable fireDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_fire);
+						.getResources().getDrawable(R.drawable.ic_wea_col_fire);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(fireDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else if (condition.getUser_comment().equals(mContext.getString(R.string.tornado))) {
 				Drawable tornadoDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_tornado);
+						.getResources().getDrawable(R.drawable.ic_wea_col_tornado);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(tornadoDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else if (condition.getUser_comment().equals(mContext.getString(R.string.duststorm))) {
 				Drawable dustDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_dust);
+						.getResources().getDrawable(R.drawable.ic_wea_col_dust);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(dustDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
 				return layerDrawable;
 			} else if (condition.getUser_comment().equals(mContext.getString(R.string.tropicalstorm))) {
 				Drawable tropicalDrawable = mContext
-						.getDrawable(R.drawable.ic_wea_col_tropical_storm);
+						.getResources().getDrawable(R.drawable.ic_wea_col_tropical_storm);
 				Drawable[] layers = { weatherBackgroundDrawable,
 						resizeDrawable(tropicalDrawable) };
 				LayerDrawable layerDrawable = new LayerDrawable(layers);
