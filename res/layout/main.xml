@@ -15,19 +15,6 @@
         android:visibility="visible" >
 
         <Button
-            android:id="@+id/buttonMapMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_map"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:text="Map"
-            android:textColor="#004455" />
-
-        <Button
             android:id="@+id/buttonContributeMode"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
@@ -148,8 +135,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/layoutSearchControls"
         android:layout_below="@id/layoutSearchControls"
-        android:orientation="vertical"
-        android:visibility="invisible" >
+        android:orientation="vertical">
 
         <View
             android:id="@+id/searchDiv"
@@ -159,45 +145,10 @@
             android:background="#004455" />
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
-            <ImageButton
-                android:id="@+id/buttonReloadGlobalData"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:background="#CCFFFFFF"
-                android:src="@drawable/ic_refresh" />
-
-            <ImageButton
-                android:id="@+id/buttonToggleSatellite"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:background="#CCFFFFFF"
-                android:src="@drawable/ic_satellite" />
-
-            <ImageButton
-                android:id="@+id/buttonTogglePressure"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:background="#CCFFFFFF"
-                android:src="@drawable/ic_pressure" />
-
-            <ImageButton
-                android:id="@+id/buttonToggleWeather"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:background="#CCFFFFFF"
-                android:src="@drawable/ic_conditions" />
 
             <ImageButton
                 android:id="@+id/buttonMyLocation"
@@ -245,164 +196,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    
-    <LinearLayout
-        android:id="@+id/layoutNoConditionsPrompt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:paddingBottom="12dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:visibility="gone"
-        android:gravity="center_horizontal">
-     
-         <Button
-            android:id="@+id/buttonCloseNoConditionsPrompt"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:text="Close"
-            android:drawableRight="@drawable/ic_menu_light_close"
-            android:layout_gravity="right"/>
-      
-        <TextView
-            android:id="@+id/textNoConditionsPrompt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No weather conditions nearby"
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
-	    
-	    
-	    <LinearLayout
-	       android:id="@+id/layoutNoConditionsPromptButtons"
-	       android:layout_width="match_parent"
-	       android:layout_height="wrap_content"
-	       android:layout_above="@+id/modeSelectionLayout"
-	       android:orientation="horizontal"
-	       android:padding="4dp"
-	       android:visibility="visible" >
-		        <Button
-		            android:id="@+id/imageButtonShowBarometerData"
-		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:drawableLeft="@drawable/ic_pressure"
-		            android:textColor="@android:color/black"
-		            android:text="Show sensor data" 
-                    android:paddingLeft="10dp"
-                    android:layout_gravity="left"/>
-		        
-		        <Button
-		            android:id="@+id/imageButtonWhatsItLikeOutside"
-		            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:drawableLeft="@drawable/ic_cc_icon"
-		            android:textColor="@android:color/black"
-		            android:text="What's it like outside?"
-					android:paddingLeft="10dp"
-					android:paddingRight="10dp"
-					android:layout_gravity="right"/>
-	       </LinearLayout>
-        
-	       <Button
-                android:id="@+id/inviteFriends2"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/layoutNoConditionsPromptButtons"
-                android:layout_centerInParent="true"
-                android:drawableLeft="@drawable/ic_share"
-                android:text="Invite your friends to improve hyper-local weather alerts!"
-				android:background="@drawable/override" 
-                android:textColor="#000000"
-                android:layout_marginTop="12dp"
-                android:paddingRight="12dp"
-                android:paddingLeft="12dp"/>
-	    
-    </LinearLayout>
-    
-    <LinearLayout
-        android:id="@+id/layoutMapInformation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:visibility="gone" >
-
-        <RelativeLayout
-            android:id="@+id/layoutMapInfoLeft"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5" >
-
-            <TextView
-                android:id="@+id/latitudeLabelMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="Latitude"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/longitudeLabelMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/latitudeLabelMapInfoText"
-                android:text="Longitude"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/latitudeValueMinMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/longitudeValueMinMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/latitudeValueMinMapInfoText"
-                android:textSize="16sp" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layoutMapInfoRight"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:layout_weight=".5"
-            android:gravity="right" >
-
-            <TextView
-                android:id="@+id/latitudeValueMaxMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/longitudeValueMaxMapInfoText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/latitudeValueMaxMapInfoText"
-                android:textSize="16sp" />
-        </RelativeLayout>
-    </LinearLayout>
-
+   
     <LinearLayout
         android:id="@+id/layoutContribute"
         android:layout_width="match_parent"
