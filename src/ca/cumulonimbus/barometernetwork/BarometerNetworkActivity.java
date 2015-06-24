@@ -104,6 +104,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -353,6 +354,7 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			log("main activity launching, NOT setting action bar icon color  (no forecast alerts)");
 		}
+		db.close();
 	}
 	
 	/**
@@ -579,30 +581,22 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.getUiSettings().setZoomControlsEnabled(false);
 				mMap.getUiSettings().setCompassEnabled(false);
 				
+				
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 
 					@Override
 					public void onCameraChange(CameraPosition position) {
-						//hideNoConditionsPrompt();
-						InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(
-								editLocation.getWindowToken(), 0);
-						editLocation.setCursorVisible(false);
+						refreshMap();
 
-						LatLngBounds bounds = mMap.getProjection()
-								.getVisibleRegion().latLngBounds;
-						visibleBound = bounds;
-
-						if (activeMode.equals("graph")) {
-							CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
-							makeStatsAPICall(api);
-						} else if (activeMode.equals("map")) {
-							loadRecents();
-						} else if (activeMode.equals("animation")) {
-							animator.stop();
-							animator.reset();
-						}
-
+					}
+				});
+				
+				mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+					
+					@Override
+					public boolean onMarkerClick(Marker marker) {
+						marker.showInfoWindow();
+						return true;
 					}
 				});
 			} else {
@@ -613,6 +607,51 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 	}
+	
+	private Handler mapHandler = new Handler();
+	private long lastRefresh = System.currentTimeMillis();
+	
+	private class MapRefresher implements Runnable {
+		
+		@Override
+		public void run() {
+			log("map refresh running");
+			
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(
+					editLocation.getWindowToken(), 0);
+			editLocation.setCursorVisible(false);
+
+			LatLngBounds bounds = mMap.getProjection()
+					.getVisibleRegion().latLngBounds;
+			visibleBound = bounds;
+
+			if (activeMode.equals("graph")) {
+				CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
+				makeStatsAPICall(api);
+			} else if (activeMode.equals("map")) {
+				loadRecents();
+			} else if (activeMode.equals("animation")) {
+				animator.stop();
+				animator.reset();
+			}
+		}
+	}
+	
+	private void refreshMap() {
+		long now = System.currentTimeMillis();
+		MapRefresher refresh = new MapRefresher();
+		if(now - lastRefresh > 100) {
+			log("posting map refresh in 100");
+			lastRefresh = System.currentTimeMillis();
+			mapHandler.postDelayed(refresh, 100);
+		} else {
+			log("cancelling map refresh");
+			mapHandler.removeCallbacks(refresh);
+		}
+	}
+	
+	
 
 	/**
 	 * Zoom into the user's location
@@ -3044,12 +3083,9 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void loadRecents() {
-		CbApiCall api = buildMapAPICall(.25);
-		CbApiCall conditionsAPI = buildMapAPICall(2);
-		if (displayConditions) {
-			askForCurrentConditionRecents(conditionsAPI);
-		}
-		askForLocalConditionRecents();
+		CbApiCall conditionsAPI = buildMapAPICall(1.5);
+		askForCurrentConditionRecents(conditionsAPI);
+
 	}
 
 	// Stop listening to the barometer when our app is paused.
