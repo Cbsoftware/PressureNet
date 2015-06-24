@@ -23,7 +23,6 @@
         android:id="@+id/altitude_sep"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:layout_below="@id/spinDistanceUnit"
         android:layout_gravity="center_vertical"
         android:background="#D8D8D8"
         android:paddingTop="12dip" />

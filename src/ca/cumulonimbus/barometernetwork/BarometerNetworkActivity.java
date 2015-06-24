@@ -194,9 +194,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private TextView textContribPressureTitle;
 	private TextView textContribConditionsTitle;
 
-	private Button buttonAltitudeOverride;
-	private TextView textAltitude;
-	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
 
@@ -211,7 +208,6 @@ public class BarometerNetworkActivity extends Activity implements
 	String apiServerURL = CbConfiguration.SERVER_URL_PRESSURENET + "list/?";
 
 	private boolean locationAvailable = true;
-	private double customAltitude = 0.0;
 	
 	double recentPressureReading = 0.0;
 	double recentTemperatureReading = 1000; // TODO: fix default value hack
@@ -224,7 +220,6 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final int REQUEST_MAILED_LOG = 3;
 	public static final int REQUEST_DATA_CHANGED = 4;
 	public static final int REQUEST_ANIMATION_PARAMS = 5;
-	public static final int REQUEST_ALTITUDE = 6;
 
 	public static final String GA_CATEGORY_MAIN_APP = "app";
 	public static final String GA_CATEGORY_NOTIFICATIONS = "notifications";
@@ -460,6 +455,8 @@ public class BarometerNetworkActivity extends Activity implements
 			buttonMyLocation.setImageAlpha(255);	
 		} catch (NoSuchMethodError nsme) {
 			log("app could not set image alpha");
+		} catch(RuntimeException re) {
+			log("my location button error");
 		}
 		
 		locationAvailable = true;
@@ -862,64 +859,11 @@ public class BarometerNetworkActivity extends Activity implements
 		textContribPressureTitle = (TextView) findViewById(R.id.textContribPressureTitle);
 		textContribConditionsTitle = (TextView) findViewById(R.id.textContribConditionsTitle);
 		
-		buttonAltitudeOverride = (Button) findViewById(R.id.buttonAltitudeOverride);
-		textAltitude = (TextView) findViewById(R.id.textAltitude);
 		
 		inviteFriends = (Button) findViewById(R.id.inviteFriends);
 		
 		animationProgress.setEnabled(false);
-		
-		
-		buttonAltitudeOverride.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {				
-				Intent intent = new Intent(getApplicationContext(), AltitudeActivity.class);
-				if(customAltitude != 0.0) {
-					intent.putExtra("altitude", altitudeInPrefUnit(customAltitude));
-				} else {
-					if(bestLocation!=null) {
-						intent.putExtra("altitude", altitudeInPrefUnit(bestLocation.getAltitude()));
-					}
-				} 
-				// Get tracker.
-				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-				    TrackerName.APP_TRACKER);
-				// Build and send an Event.
-				t.send(new HitBuilders.EventBuilder()
-				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-				    .setLabel("override_gps")
-				    .build());
-
-				startActivityForResult(intent, REQUEST_ALTITUDE);
-			}
-		});
-		
-		buttonAltitudeOverride.setOnTouchListener(new OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				if(v.isPressed()) {
-					try {
-						v.setBackground(getResources().getDrawable(R.drawable.override_pressed));
-						buttonAltitudeOverride.setTextColor(Color.rgb(255, 255, 255));	
-					} catch (NoSuchMethodError nsme ) {
-						
-					}
-					
-				} else {
-					try {
-						v.setBackground(getResources().getDrawable(R.drawable.override));
-						buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));						
-					} catch(NoSuchMethodError nsme) {
-						
-					}
-
-				}
-				return false;
-			}
-		});
+	
 		
 		inviteFriends.setOnClickListener(new OnClickListener() {
 			
@@ -1576,25 +1520,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	/**
-	 * Show the latest location data
-	 */
-	private void updateLocationDisplay() {
-		if (customAltitude!=0) {
-			textAltitude.setText( displayAltitudeValue(customAltitude));
-		} else {
-			if(bestLocation!=null) {
-				textAltitude.setText(displayAltitudeValue(bestLocation.getAltitude()));
-			}
-		}
-
-		try {
-			buttonAltitudeOverride.setBackground(getResources().getDrawable(R.drawable.override));
-			buttonAltitudeOverride.setTextColor(Color.rgb(0, 0, 0));
-		} catch (NoSuchMethodError nsme) {
-			// 
-		}
-	}
 
 	/**
 	 * Initiate the CbService
@@ -1751,7 +1676,7 @@ public class BarometerNetworkActivity extends Activity implements
 				if (bestLocation != null) {
 					log("Client Received new location from service "
 							+ bestLocation.getLatitude());
-					updateLocationDisplay();
+					
 				} else {
 					log("location null");
 				}
@@ -2438,37 +2363,7 @@ public class BarometerNetworkActivity extends Activity implements
 			} else {
 				log("barometernetworkactivity received data intent null:");
 			}
-		} else if (requestCode == REQUEST_ALTITUDE) {
-			if (data != null) {
-				if (data.getExtras() != null) {
-					Bundle bundle = data.getExtras();
-					double newAltitude = (Double) bundle.get("altitude");
-					log("app received raw altitude " + newAltitude);
-					// TODO: fix this hack and unit handling in general
-					getStoredPreferences();
-					if(preferenceDistanceUnit.equals("Meters (m)")) {
-						customAltitude = newAltitude;
-					} else if(preferenceDistanceUnit.contains("Feet")) {
-						customAltitude = DistanceUnit.ftToM(newAltitude);
-					} else if(preferenceDistanceUnit.contains("Kilometer")) {
-						customAltitude = DistanceUnit.kmToM(newAltitude);
-					} else if(preferenceDistanceUnit.contains("Mile")) {
-						customAltitude = DistanceUnit.miToM(newAltitude);
-					} else {
-						log("other preference for distance altitude units?");
-						customAltitude = newAltitude;
-					}
-					
-					//log("bestlocation altitude " + bestLocation.getAltitude());
-					//bestLocation.setAltitude(newAltitude);
-					//log("new bestlocation altitude " + bestLocation.getAltitude());
-					
-					
-					log("app received custom altitude " + customAltitude);
-					updateLocationDisplay();
-				}
-			}
-		}
+		} 
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 	
@@ -3113,8 +3008,6 @@ public class BarometerNetworkActivity extends Activity implements
 		checkSensors();
 		updateVisibleReading();
 		
-		updateLocationDisplay();
-		
 		invalidateOptionsMenu();
 		
 		if(hasBarometer) {
@@ -3225,15 +3118,13 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private String getBestPressureDisplay () {
 		String toPrint = "";
-		if(customAltitude!=0) {
-			toPrint = displayPressureValue(recentPressureReading, customAltitude);
+	
+		if(bestLocation!=null) {
+			toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
 		} else {
-			if(bestLocation!=null) {
-				toPrint = displayPressureValue(recentPressureReading, bestLocation.getAltitude());
-			} else {
-				toPrint = displayPressureValue(recentPressureReading, 0);
-			}			
-		}
+			toPrint = displayPressureValue(recentPressureReading, 0);
+		}			
+	
 		return toPrint;
 	}
 	

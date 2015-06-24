@@ -18,13 +18,13 @@
         android:icon="@drawable/ic_logs"
         android:showAsAction="never"
         android:title="My data"
-        android:visible="true"/>
+        android:visible="false"/>
     <item
         android:id="@+id/menu_submit_reading"
         android:enabled="true"
         android:showAsAction="never"
         android:title="Submit reading"
-        android:visible="true"/>
+        android:visible="false"/>
     <item
         android:id="@+id/send_debug_log"
         android:enabled="true"

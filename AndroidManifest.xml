@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0407004"
-    android:versionName="4.7.0" >
+    android:versionCode="0408003"
+    android:versionName="4.8.0RC" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -150,13 +150,6 @@
             android:exported="true"
             android:label="What's it like outside?"
             android:theme="@style/CustomThemeDialogDark" >
-        </activity>
-        <activity
-            android:name="ca.cumulonimbus.barometernetwork.AltitudeActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:label="Enter Altitude"
-            android:theme="@style/CustomThemeDialog" >
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"

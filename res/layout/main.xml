@@ -242,42 +242,7 @@
                 android:textColor="@android:color/black" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/layoutAltitudeDetails"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="6dp" >
-
-            <TextView
-                android:id="@+id/textAltitudeLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Altitude: "
-                android:textStyle="bold"
-				android:paddingLeft="6dp" />
-
-            <TextView
-                android:id="@+id/textAltitude"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:paddingRight="12dp" 
-                android:paddingLeft="24dp"/>
-
-            <Button
-                android:id="@+id/buttonAltitudeOverride"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Override GPS Altitude"
-                android:textColor="#004455"
-                android:background="@drawable/override" 
-                android:layout_marginLeft="36dp"
-                android:layout_weight=".5"
-                />
-        </LinearLayout>
-
+     
         <RelativeLayout
             android:id="@+id/layoutContribDetails"
             android:layout_width="match_parent"
