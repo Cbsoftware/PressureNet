@@ -68,11 +68,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -104,6 +102,7 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -112,6 +111,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class BarometerNetworkActivity extends Activity implements
@@ -305,6 +305,9 @@ public class BarometerNetworkActivity extends Activity implements
 	MixpanelAPI mixpanel;
 	
 	private Menu mOptionsMenu;
+	
+	private Handler conditionsHandler = new Handler(); 
+	private ConditionsAdder conditionsAdder = new ConditionsAdder();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -578,7 +581,6 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.getUiSettings().setZoomControlsEnabled(false);
 				mMap.getUiSettings().setCompassEnabled(false);
 				
-				
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 
 					@Override
@@ -612,6 +614,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		@Override
 		public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 			log("map refresh running");
 			
 			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -627,6 +630,7 @@ public class BarometerNetworkActivity extends Activity implements
 				CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
 				makeStatsAPICall(api);
 			} else if (activeMode.equals("map")) {
+				log("map refresher is in map mode, calling loadrecents");
 				loadRecents();
 			} else if (activeMode.equals("animation")) {
 				animator.stop();
@@ -638,7 +642,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void refreshMap() {
 		long now = System.currentTimeMillis();
 		MapRefresher refresh = new MapRefresher();
-		if(now - lastRefresh > 100) {
+		if(now - lastRefresh > 1000) {
 			log("posting map refresh in 100");
 			lastRefresh = System.currentTimeMillis();
 			mapHandler.postDelayed(refresh, 100);
@@ -647,8 +651,6 @@ public class BarometerNetworkActivity extends Activity implements
 			mapHandler.removeCallbacks(refresh);
 		}
 	}
-	
-	
 
 	/**
 	 * Zoom into the user's location
@@ -1442,6 +1444,7 @@ public class BarometerNetworkActivity extends Activity implements
 			LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition, null);
 			if (drLayer == null) {
 				log("drlayer null, next!");
+				
 				continue;
 			}
 			Drawable draw = draws.getSingleDrawable(drLayer);
@@ -1466,9 +1469,13 @@ public class BarometerNetworkActivity extends Activity implements
 		mMap.clear();
 		while (conditionIterator.hasNext()) {
 			CbCurrentCondition condition = conditionIterator.next();
-			MarkerOptions markerOpts = animationMarkerOptions.get(num);
-			if (Math.abs(condition.getAnimateGroupNumber() - frame) < e) {
-				mMap.addMarker(markerOpts);
+			try {
+				MarkerOptions markerOpts = animationMarkerOptions.get(num);
+				if (Math.abs(condition.getAnimateGroupNumber() - frame) < e) {
+					mMap.addMarker(markerOpts);
+				}
+			} catch(IndexOutOfBoundsException ioobe) {
+				// 
 			}
 			num++;
 		}
@@ -1746,7 +1753,7 @@ public class BarometerNetworkActivity extends Activity implements
 					if (receivedList.size() > 0) {
 						if (!activeMode.equals("animation")) {
 							currentConditionRecents = receivedList;
-							addConditionsToMap();
+							conditionsHandler.post(conditionsAdder);
 						} else {
 							conditionAnimationRecents.clear();
 							conditionAnimationRecents = receivedList;
@@ -2609,7 +2616,26 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	
+	private void addTemperaturesToMap() {
+		log("adding temperature icons to map");
+		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
+		//addIcon(iconFactory, "23º C", new LatLng(37.78, -122.5));
+		
+	}
+	
+	  private void addIcon(IconGenerator iconFactory, String text, LatLng position) {
+	        MarkerOptions markerOptions = new MarkerOptions().
+	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
+	                position(position).
+	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
+	        mMap.addMarker(markerOptions);
+	        log("added temp icon");
+	  }
+
+	/**
+	 * Display user-submitted current conditions on the map
+	 */
 	private void addConditionsToMap() {
 		int currentCur = 0;
 		int totalAllowed = 30;
@@ -2669,12 +2695,25 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 			}
 
+			addTemperaturesToMap();
+			
 			currentConditionRecents.clear();
 		} else {
 			log("addDatatomap conditions recents is null");
 		}
 	}
 
+	public class ConditionsAdder implements Runnable {
+
+		@Override
+		public void run() {
+			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+			addConditionsToMap();
+		}
+		
+		
+	}
+	
 	/**
 	 * 
 	 * Users will save locations and we will cache data for those locations.
