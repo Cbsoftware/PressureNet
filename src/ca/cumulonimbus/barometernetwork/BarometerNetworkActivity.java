@@ -184,12 +184,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ProgressBar progressAPI;
 
-	private Button contributeMode;
-	private Button graphMode;
-	private Button sensorMode;
-	private Button animationMode;
-
-	private LinearLayout layoutGraph;
 	private LinearLayout layoutSensors;
 	private LinearLayout layoutAnimation;
 	private LinearLayout layoutContribute;
@@ -341,6 +335,33 @@ public class BarometerNetworkActivity extends Activity implements
 		checkDb();
 		callExternalAPIs();
 		setUpMixPanel();
+		prepareAnimationSettings();
+	}
+	
+	
+	/**
+	 * Set the default dates and parameters for the 
+	 * animation feature. 
+	 */
+	private void prepareAnimationSettings() {
+
+		if (calAnimationStartDate == null) {
+			calAnimationStartDate = Calendar.getInstance();
+			calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
+			calAnimationStartDate.set(Calendar.MINUTE, 0);
+			calAnimationStartDate.set(Calendar.SECOND, 0);
+			animationDurationInMillis = 1000 * 60 * 60 * 24;
+		}
+		
+		long startTime = calAnimationStartDate.getTimeInMillis();
+		long endTime = startTime + animationDurationInMillis;
+		
+		Calendar end = Calendar.getInstance();
+		end.setTimeInMillis(endTime);
+		
+		textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
+		animationStep = 0;
+		animationProgress.setProgress(0);
 	}
 		
 	/**
@@ -453,8 +474,6 @@ public class BarometerNetworkActivity extends Activity implements
 			locationAvailable = false;
 			return;
 		}
-		
-		
 		
 		bestLocation = loc;
 
@@ -1029,12 +1048,6 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
 
-		contributeMode = (Button) findViewById(R.id.buttonContributeMode);
-		graphMode = (Button) findViewById(R.id.buttonGraphMode);
-		sensorMode = (Button) findViewById(R.id.buttonSensorMode);
-		animationMode = (Button) findViewById(R.id.buttonAnimationMode);
-
-		layoutGraph = (LinearLayout) findViewById(R.id.layoutGraph);
 		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
 		layoutContribute = (LinearLayout) findViewById(R.id.layoutContribute);
@@ -1221,164 +1234,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 
-		contributeMode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (activeMode.equals("contribute")) {
-					int visible = layoutContribute.getVisibility();
-					if (visible == View.VISIBLE) {
-						contributeMode.setBackgroundColor(Color.TRANSPARENT);
-					} else {
-						contributeMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					}
-					
-					// UI switch to map
-					layoutGraph.setVisibility(View.GONE);
-					
-
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-				
-					
-					graphMode.setBackgroundColor(Color.TRANSPARENT);
-					sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					animationMode.setBackgroundColor(Color.TRANSPARENT);
-					
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					// set mode and load data
-					activeMode = "map";
-					//loadRecents();
-										
-				} else {
-
-					// Get tracker.
-					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-					    TrackerName.APP_TRACKER);
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder()
-					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-					    .setAction(BarometerNetworkActivity.GA_ACTION_MODE)
-					    .setLabel("contribute")
-					    .build());
-					
-					
-					activeMode = "contribute";
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.VISIBLE);
-
-					graphMode.setBackgroundColor(Color.TRANSPARENT);
-					sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					animationMode.setBackgroundColor(Color.TRANSPARENT);
-					contributeMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					askForContributionData();
-					
-					//loadRecents();
-				}
-			}
-		});
-		
-		graphMode.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				viewLog();
-			}
-		});
-		
-		animationMode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (activeMode.equals("animation")) {
-					// switch to map mode
-					
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.GONE);
-					layoutContribute.setVisibility(View.GONE);
-					animationMode.setBackgroundColor(Color.TRANSPARENT);
-
-					if (animationPlaying) {
-						animator.pause();
-					}
-
-					removeChartFromLayout();
-
-					// set mode and load data
-					activeMode = "map";
-					loadRecents();
-					
-				} else {
-
-					// Get tracker.
-					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-					    TrackerName.APP_TRACKER);
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder()
-					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-					    .setLabel("animation")
-					    .build());
-					
-					mixpanel.track("Animation mode", null);
-					
-					activeMode = "animation";
-
-					if (mMap != null) {
-						mMap.clear();
-					}
-
-					if (calAnimationStartDate == null) {
-						calAnimationStartDate = Calendar.getInstance();
-						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
-						calAnimationStartDate.set(Calendar.MINUTE, 0);
-						calAnimationStartDate.set(Calendar.SECOND, 0);
-						animationDurationInMillis = 1000 * 60 * 60 * 24;
-					}
-					
-					long startTime = calAnimationStartDate.getTimeInMillis();
-					long endTime = startTime + animationDurationInMillis;
-					
-					Calendar end = Calendar.getInstance();
-					end.setTimeInMillis(endTime);
-					
-					textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
-					animationStep = 0;
-					animationProgress.setProgress(0);
-					
-					// UI switch
-					layoutGraph.setVisibility(View.GONE);
-					
-					layoutSensors.setVisibility(View.GONE);
-					layoutAnimation.setVisibility(View.VISIBLE);
-					layoutContribute.setVisibility(View.GONE);
-
-					
-					graphMode.setBackgroundColor(Color.TRANSPARENT);
-					sensorMode.setBackgroundColor(Color.TRANSPARENT);
-					animationMode.setBackgroundColor(Color.parseColor("#33BBEE"));
-					contributeMode.setBackgroundColor(Color.TRANSPARENT);
-					
-				}
-			}
-		});
 
 		editLocation.setOnClickListener(new OnClickListener() {
 
@@ -1902,21 +1757,11 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 				break;
 			case CbService.MSG_API_RECENTS:
-				if (activeMode.equals("graph")) {
-					statsRecents = (ArrayList<CbStats>) msg.obj;
-					createAndShowChart();
-				} 
+				log("app received MSG_API_RECENTS; useless");
 				break;
 			case CbService.MSG_STATS:
-				log("app receiving stats");
+				log("app receiving MSG_STATS; useless");
 				updateAPICount(-1);
-				try {
-					statsRecents = (ArrayList<CbStats>) msg.obj;
-					log("size " + statsRecents.size());
-					createAndShowChart();
-				} catch(Exception e) {
-					log("msg_stats e " + e.getMessage());
-				}
 				break;
 			case CbService.MSG_API_RESULT_COUNT:
 				int count = msg.arg1;
@@ -1925,8 +1770,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 					//CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
 					//askForCurrentConditionRecents(apiConditions);
-				} else if (activeMode.endsWith("graph")) {
-					createAndShowChart();
 				} else if (activeMode.equals("animation")) {
 					if(calAnimationStartDate != null) {
 						long startTime = calAnimationStartDate.getTimeInMillis();
@@ -2003,108 +1846,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 	}
-		
-	/**
-	 * Take the chart away.
-	 */
-	private void removeChartFromLayout() {
-		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
-
-		try {
-			View testChartView = findViewById(100); // TODO: set a better
-													// constant
-			mainLayout.removeView(testChartView);
-		} catch (Exception e) {
-			// e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Display a chart
-	 */
-	private void createAndShowChart() {
-		if (!activeMode.equals("graph")) {
-			log("createandshowchart called outside of graph mode");
-			return;
-		}
-		if (statsRecents == null) {
-			log("stats recents null RETURNING, no chart");
-			return;
-		} else if (statsRecents.size() == 0) {
-			log("stats recents 0, RETURNING, no chart");
-			displayMapToast(getString(R.string.graphErrorNoData));
-			return;
-		}
-
-		// draw chart
-		log("plotting... " + statsRecents.size());
-		StatsChart chart = new StatsChart(getApplicationContext());
-
-		View chartView = chart.drawChart(statsRecents);
-
-		LinearLayout mainLayout = (LinearLayout) findViewById(R.id.layoutGraph);
-
-		removeChartFromLayout();
-
-		chartView.setId(100); // TODO: what's safe?
-
-		// add to layout
-		// Check screen metrics and orientation, set chart height accordingly
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int chartHeight = 380;
-		try {
-			DisplayMetrics displayMetrics = new DisplayMetrics();
-			displayMetrics = getResources().getDisplayMetrics();
-			log("setting text size, density is " + displayMetrics.densityDpi);
-			switch (displayMetrics.densityDpi) {
-			case DisplayMetrics.DENSITY_LOW:
-				if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					chartHeight = 100;
-				} else {
-					chartHeight = 200;
-				}
-				break;
-			case DisplayMetrics.DENSITY_MEDIUM:
-				if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					chartHeight = 230;
-				} else {
-					chartHeight = 300;
-				}
-				break;
-			case DisplayMetrics.DENSITY_HIGH:
-				if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					chartHeight = 200;
-				} else {
-					chartHeight = 350;
-				}
-				break;
-			case DisplayMetrics.DENSITY_XHIGH:
-				chartHeight = 400;
-				break;
-			case DisplayMetrics.DENSITY_XXHIGH:
-				chartHeight = 450;
-				break;
-			default:
-				break;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT,
-				chartHeight);
-
-		chartView.setBackgroundColor(Color.rgb(238, 238, 238));
-		chartView.setLayoutParams(lparams);
-		if (mainLayout == null) {
-			log("chartlayout null");
-			return;
-		}
-		// TODO: bring the chart back
-		mainLayout.addView(chartView);
-	}
-
 
 	/** 
 	 * Use the app preferences to tell the SDK to poll
@@ -2262,7 +2003,6 @@ public class BarometerNetworkActivity extends Activity implements
 		if (!hasBarometer) {
 			menu.removeItem(R.id.menu_submit_reading);
 			menu.removeItem(R.id.menu_log_viewer);
-			graphMode.setVisibility(View.GONE);
 		}
 		if (!PressureNETConfiguration.DEBUG_MODE) {
 			// hide menu item

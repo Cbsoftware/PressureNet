@@ -5,74 +5,9 @@
     android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@+id/modeSelectionLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:background="#EEEEEE"
-        android:orientation="horizontal"
-        android:visibility="visible" >
-
-        <Button
-            android:id="@+id/buttonContributeMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_sensors"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:text="Info"
-            android:textColor="#004455" />
-
-        <Button
-            android:id="@+id/buttonGraphMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_graph"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:text="Graph"
-            android:textColor="#004455"
-            android:visibility="visible"/>
-        
-        <Button
-            android:id="@+id/buttonSensorMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".19"
-            android:drawableTop="@drawable/ic_sensors"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:textColor="#004455"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/buttonAnimationMode"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_weight=".25"
-            android:drawableTop="@drawable/ic_play"
-            android:paddingBottom="8dp"
-            android:paddingTop="4dp"
-            android:text="Animate"
-            android:textColor="#004455" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layoutMap"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/modeSelectionLayout"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -155,33 +90,6 @@
         android:indeterminateOnly="true"
         android:progressDrawable="@drawable/progress"
         android:visibility="gone"/>
-
-    <LinearLayout
-        android:id="@+id/layoutGraph"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <RelativeLayout
-            android:id="@+id/layoutGraphButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="visible" >
-
-            <TextView
-                android:id="@+id/textChartTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:padding="4dp"
-                android:text="Last 3 days" />
-        </RelativeLayout>
-    </LinearLayout>
 
    
     <LinearLayout
@@ -302,7 +210,7 @@
         android:id="@+id/layoutAnimation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
+        android:layout_alignParentBottom="true"
         android:background="#CCFFFFFF"
         android:gravity="center"
         android:orientation="vertical"
@@ -310,7 +218,7 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="5dp"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <RelativeLayout
             android:id="@+id/layoutAnimationHoriz"
@@ -348,7 +256,8 @@
             android:id="@+id/textAnimationInfo"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:gravity="center" />
+            android:gravity="center"
+            android:paddingBottom="8dp" />
     </LinearLayout>
 
 </RelativeLayout>
