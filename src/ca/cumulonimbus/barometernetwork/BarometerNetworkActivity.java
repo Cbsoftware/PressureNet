@@ -1,9 +1,11 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -15,6 +17,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +63,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -96,6 +107,7 @@ import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 import ca.cumulonimbus.pressurenetsdk.CbStats;
 import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
+import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -532,6 +544,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
+
 	/**
 	 * Get fresh conditions data for the global map
 	 */
@@ -565,6 +578,162 @@ public class BarometerNetworkActivity extends Activity implements
 			log("not making conditions global call, too soon");
 		}
 	}
+	
+	@SuppressWarnings("deprecation")
+	public class ConditionsDownloader extends AsyncTask<String, String, String> {
+
+		Messenger replyToApp = null;
+		private CbApiCall apiCall;
+
+		public CbApiCall getApiCall() {
+			return apiCall;
+		}
+
+		public void setApiCall(CbApiCall apiCall) {
+			this.apiCall = apiCall;
+		}
+
+		public Messenger getReplyToApp() {
+			return replyToApp;
+		}
+
+		public void setReplyToApp(Messenger replyToApp) {
+			this.replyToApp = replyToApp;
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			String responseText = "";
+			try {
+				DefaultHttpClient client = new DefaultHttpClient();
+				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("min_latitude", apiCall
+						.getMinLat() + "" + ""));
+				nvps.add(new BasicNameValuePair("max_latitude", apiCall
+						.getMaxLat() + "" + ""));
+				nvps.add(new BasicNameValuePair("min_longitude", apiCall
+						.getMinLon() + "" + ""));
+				nvps.add(new BasicNameValuePair("max_longitude", apiCall
+						.getMaxLon() + "" + ""));
+				
+				nvps.add(new BasicNameValuePair("api_key", apiCall.getApiKey()));
+				nvps.add(new BasicNameValuePair("format", apiCall.getFormat()));
+				nvps.add(new BasicNameValuePair("limit", apiCall.getLimit()
+						+ ""));
+				nvps.add(new BasicNameValuePair("global", apiCall.isGlobal()
+						+ ""));
+				nvps.add(new BasicNameValuePair("since_last_call", apiCall
+						.isSinceLastCall() + ""));
+				nvps.add(new BasicNameValuePair("sdk_version", CbConfiguration.SDK_VERSION));
+				nvps.add(new BasicNameValuePair("source", "pressurenet"));
+
+				
+
+				String serverURL = CbConfiguration.SERVER_URL_CONDITIONS_QUERY + "?";
+
+				
+				nvps.add(new BasicNameValuePair("start_time", (apiCall
+						.getStartTime() / 1000 )+ ""));
+				nvps.add(new BasicNameValuePair("end_time",(apiCall
+						.getEndTime() / 1000 )+ ""));
+
+				
+				String paramString = URLEncodedUtils.format(nvps, "utf-8");
+
+				serverURL = serverURL + paramString;
+				apiCall.setCallURL(serverURL);
+				log("cbservice api sending " + serverURL);
+				HttpGet get = new HttpGet(serverURL);
+				// Execute the GET call and obtain the response
+				HttpResponse getResponse = client.execute(get);
+				HttpEntity responseEntity = getResponse.getEntity()	;
+				log("response " + responseEntity.getContentLength());
+
+				BufferedReader r = new BufferedReader(new InputStreamReader(
+						responseEntity.getContent()));
+
+				StringBuilder total = new StringBuilder();
+				String line;
+				if (r != null) {
+					while ((line = r.readLine()) != null) {
+						total.append(line);
+					}
+					responseText = total.toString();
+				}
+			} catch (Exception e) {
+				// System.out.println("api error");
+				//e.printStackTrace();
+			}
+			log(responseText);
+			return responseText;
+		}
+
+		protected void onPostExecute(String result) {
+			currentConditionRecents = processJSONConditions(result);
+			conditionsHandler.post(conditionsAdder);
+		}
+
+		
+		private void log(String text) {
+			if(PressureNETConfiguration.DEBUG_MODE) {
+				System.out.println(text);
+			}
+		}
+
+	}
+
+	
+	/**
+	 * Take a JSON string and return the data in a useful structure
+	 * 
+	 * @param resultJSON
+	 */
+	private ArrayList<CbCurrentCondition> processJSONConditions(String resultJSON) {
+		ArrayList<CbCurrentCondition> obsFromJSON = new ArrayList<CbCurrentCondition>();
+		try {
+			JSONArray jsonArray = new JSONArray(resultJSON);
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject jsonObject = jsonArray.getJSONObject(i);
+			
+				//log("json condition " + jsonObject.toString());
+				CbCurrentCondition current = new CbCurrentCondition();
+				Location location = new Location("network");
+				location.setLatitude(jsonObject.getDouble("latitude"));
+				location.setLongitude(jsonObject.getDouble("longitude"));
+				current.setLocation(location);
+				current.setGeneral_condition(jsonObject
+						.getString("general_condition"));
+				current.setTime(jsonObject.getLong("daterecorded"));
+				current.setTzoffset(jsonObject.getInt("tzoffset"));
+				// current.setSharing_policy(jsonObject.getString("sharing"));
+				// current.setUser_id(jsonObject.getString("user_id"));
+				if(jsonObject.has("cloud_type")) {
+					current.setCloud_type(jsonObject.getString("cloud_type"));
+				}
+				current.setWindy(jsonObject.getString("windy"));
+				current.setFog_thickness(jsonObject
+						.getString("fog_thickness"));
+				current.setPrecipitation_type(jsonObject
+						.getString("precipitation_type"));
+				current.setPrecipitation_amount(jsonObject
+						.getDouble("precipitation_amount"));
+				current.setPrecipitation_unit(jsonObject
+						.getString("precipitation_unit"));
+				current.setThunderstorm_intensity(jsonObject
+						.getString("thunderstorm_intensity"));
+				current.setUser_comment(jsonObject.getString("user_comment"));
+				//log("condition from API: \n" + current);
+				obsFromJSON.add(current);
+
+		
+			}
+
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+		return obsFromJSON;
+	}
+	
 
 	/**
 	 * Run map setup, update UI accordingly
@@ -585,7 +754,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					@Override
 					public void onCameraChange(CameraPosition position) {
-						refreshMap();
+						//refreshMap();
 
 					}
 				});
@@ -598,6 +767,15 @@ public class BarometerNetworkActivity extends Activity implements
 						return true;
 					}
 				});
+				
+				// go get the conditions and add them to the map
+				log("app starting download of conditions");
+				ConditionsDownloader conditionsDownloader = new ConditionsDownloader();
+				CbApiCall globalMapCall = composeConditionsGlobalApiCall();
+				conditionsDownloader.setApiCall(globalMapCall);
+				conditionsDownloader.execute("");
+				
+				
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
 						Toast.LENGTH_SHORT).show();
@@ -605,6 +783,19 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 
+	}
+	
+	private CbApiCall composeConditionsGlobalApiCall () {
+		CbApiCall globalMapCall = new CbApiCall();
+		globalMapCall.setMinLat(-90);
+		globalMapCall.setMaxLat(90);
+		globalMapCall.setMinLon(-180);
+		globalMapCall.setMaxLon(180);
+		globalMapCall.setLimit(1000);
+		globalMapCall.setStartTime(System.currentTimeMillis()
+				- (int) (1000 * 60 * 60));
+		globalMapCall.setEndTime(System.currentTimeMillis());
+		return globalMapCall;
 	}
 	
 	private Handler mapHandler = new Handler();
@@ -631,7 +822,7 @@ public class BarometerNetworkActivity extends Activity implements
 				makeStatsAPICall(api);
 			} else if (activeMode.equals("map")) {
 				log("map refresher is in map mode, calling loadrecents");
-				loadRecents();
+				//loadRecents();
 			} else if (activeMode.equals("animation")) {
 				animator.stop();
 				animator.reset();
@@ -1062,7 +1253,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 					// set mode and load data
 					activeMode = "map";
-					loadRecents();
+					//loadRecents();
 										
 				} else {
 
@@ -1096,7 +1287,7 @@ public class BarometerNetworkActivity extends Activity implements
 					contributeMode.setBackgroundColor(Color.parseColor("#33BBEE"));
 					askForContributionData();
 					
-					loadRecents();
+					//loadRecents();
 				}
 			}
 		});
@@ -1732,8 +1923,8 @@ public class BarometerNetworkActivity extends Activity implements
 				updateAPICount(-1);
 				if (activeMode.equals("map")) {
 
-					CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
-					askForCurrentConditionRecents(apiConditions);
+					//CbApiCall apiConditions = buildMapCurrentConditionsCall(2);
+					//askForCurrentConditionRecents(apiConditions);
 				} else if (activeMode.endsWith("graph")) {
 					createAndShowChart();
 				} else if (activeMode.equals("animation")) {
@@ -1752,8 +1943,8 @@ public class BarometerNetworkActivity extends Activity implements
 				if (receivedList != null) {
 					if (receivedList.size() > 0) {
 						if (!activeMode.equals("animation")) {
-							currentConditionRecents = receivedList;
-							conditionsHandler.post(conditionsAdder);
+							//currentConditionRecents = receivedList;
+							//conditionsHandler.post(conditionsAdder);
 						} else {
 							conditionAnimationRecents.clear();
 							conditionAnimationRecents = receivedList;
@@ -1972,8 +2163,8 @@ public class BarometerNetworkActivity extends Activity implements
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
 				try {
-					mMap.clear();
-					makeGlobalConditionsMapCall();
+					//mMap.clear();
+					//makeGlobalConditionsMapCall();
 				} catch(NullPointerException npe) {
 					
 				}
@@ -2638,7 +2829,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void addConditionsToMap() {
 		int currentCur = 0;
-		int totalAllowed = 30;
+		int totalAllowed = 3000;
 		
 		if (currentConditionRecents != null) {
 			log("adding current conditions to map: "
@@ -2698,6 +2889,8 @@ public class BarometerNetworkActivity extends Activity implements
 			addTemperaturesToMap();
 			
 			currentConditionRecents.clear();
+			
+			log("app done adding conditions to map");
 		} else {
 			log("addDatatomap conditions recents is null");
 		}

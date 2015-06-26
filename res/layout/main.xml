@@ -96,6 +96,23 @@
         android:visibility="visible" >
 
         <ImageButton
+                android:id="@+id/buttonMyLocation"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".2"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_location_found" />
+        
+        <View
+            android:id="@+id/searchDiv"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_below="@id/layoutSearchControls"
+            android:background="#004455" />
+        
+        
+        <ImageButton
             android:id="@+id/buttonSearchLocations"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="wrap_content"
@@ -129,37 +146,6 @@
             android:visibility="visible" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layoutMapControls"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/layoutSearchControls"
-        android:layout_below="@id/layoutSearchControls"
-        android:orientation="vertical">
-
-        <View
-            android:id="@+id/searchDiv"
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_below="@id/layoutSearchControls"
-            android:background="#004455" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-
-            <ImageButton
-                android:id="@+id/buttonMyLocation"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".2"
-                android:background="#CCFFFFFF"
-                android:src="@drawable/ic_location_found" />
-        </LinearLayout>
-    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBarAPICalls"
@@ -167,7 +153,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
-        android:progressDrawable="@drawable/progress"/>
+        android:progressDrawable="@drawable/progress"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/layoutGraph"
