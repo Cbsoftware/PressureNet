@@ -774,7 +774,7 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCameraChange(CameraPosition position) {
 						//refreshMap();
-
+						activeMode = "map";
 					}
 				});
 				
@@ -1131,7 +1131,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
-				
+				activeMode = "animation";
 				if (!animationPlaying) {
 					mixpanel.track("Playing Animation", null);
 					if (animationDurationInMillis > 0) {
@@ -2681,7 +2681,7 @@ public class BarometerNetworkActivity extends Activity implements
 		double maxLat = 0;
 		double minLon = 0;
 		double maxLon = 0;
-
+		
 		if (visibleBound != null) {
 			LatLng ne = visibleBound.northeast;
 			LatLng sw = visibleBound.southwest;
@@ -2782,6 +2782,10 @@ public class BarometerNetworkActivity extends Activity implements
 		double minLon = 0;
 		double maxLon = 0;
 
+		LatLngBounds bounds = mMap.getProjection()
+				.getVisibleRegion().latLngBounds;
+		visibleBound = bounds;
+		
 		if (visibleBound != null) {
 			LatLng ne = visibleBound.northeast;
 			LatLng sw = visibleBound.southwest;
@@ -3041,24 +3045,6 @@ public class BarometerNetworkActivity extends Activity implements
 		mixpanel.flush();
 		super.onDestroy();
 	}
-
-	private String displayAltitudeValue(double altitude) {
-		DecimalFormat df = new DecimalFormat("##.#");
-		DistanceUnit unit = new DistanceUnit(preferenceDistanceUnit);
-		unit.setValue(altitude);
-		unit.setAbbreviation(preferenceDistanceUnit);
-		double distanceInPreferredUnit = unit.convertToPreferredUnit();
-		return df.format(distanceInPreferredUnit) + " " + unit.fullToAbbrev();
-	}
-	
-	private double altitudeInPrefUnit(double altitude) {
-		DistanceUnit unit = new DistanceUnit(preferenceDistanceUnit);
-		unit.setValue(altitude);
-		unit.setAbbreviation(preferenceDistanceUnit);
-		double distanceInPreferredUnit = unit.convertToPreferredUnit();
-		return distanceInPreferredUnit;
-	}
-	
 	
 	private String displayPressureValue(double value, double altitude) {
 		if(preferenceMSLP) {
