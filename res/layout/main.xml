@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainParentLayout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <LinearLayout
-        android:id="@+id/layoutMap"
+    <RelativeLayout
+        android:id="@+id/mainParentLayout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:layout_height="fill_parent" >
 
         <LinearLayout
-            android:id="@+id/layoutMapContainer"
+            android:id="@+id/layoutMap"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/layoutMapContainer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layoutSearchControls"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="visible" >
+        <LinearLayout
+            android:id="@+id/layoutSearchControls"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible" >
 
-        <ImageButton
+            <ImageButton
                 android:id="@+id/buttonMyLocation"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
@@ -38,226 +43,234 @@
                 android:layout_weight=".2"
                 android:background="#CCFFFFFF"
                 android:src="@drawable/ic_location_found" />
-        
-        <View
-            android:id="@+id/searchDiv"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_below="@id/layoutSearchControls"
-            android:background="#004455" />
-        
-        
-        <ImageButton
-            android:id="@+id/buttonSearchLocations"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="51dp"
-            android:background="#CCFFFFFF"
-            android:src="@drawable/ic_locations"
-            android:textColor="@android:color/black"
-            android:visibility="visible" />
 
-        <EditText
-            android:id="@+id/editGoLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="51dp"
-            android:layout_weight="1"
-            android:background="#CCFFFFFF"
-            android:cursorVisible="false"
-            android:hint="Search"
-            android:imeOptions="actionDone"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:visibility="visible" />
-
-        <ImageButton
-            android:id="@+id/buttonGoLocation"
-            style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="51dp"
-            android:background="#CCFFFFFF"
-            android:src="@drawable/ic_search"
-            android:textColor="@android:color/black"
-            android:visibility="visible" />
-    </LinearLayout>
-
-
-    <ProgressBar
-        android:id="@+id/progressBarAPICalls"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:indeterminateOnly="true"
-        android:progressDrawable="@drawable/progress"
-        android:visibility="gone"/>
-
-   
-    <LinearLayout
-        android:id="@+id/layoutContribute"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/imageButtonBarometer"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:paddingLeft="10dp"
-                android:drawableLeft="@drawable/ic_pressure"
-                android:textColor="@android:color/black" />
-
-            <Button
-                android:id="@+id/imageButtonThermometer"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:drawableLeft="@drawable/ic_thermometer"
-                android:text=""
-                android:textColor="@android:color/black" />
-
-            <Button
-                android:id="@+id/imageButtonHygrometer"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:drawableLeft="@drawable/ic_hygrometer"
-                android:text=""
-                android:paddingRight="10dp"
-                android:textColor="@android:color/black" />
-        </RelativeLayout>
-
-     
-        <RelativeLayout
-            android:id="@+id/layoutContribDetails"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="12dp" >
-
-            <TextView
-                android:id="@+id/textContribPressureTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="Sensor contributions"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textContribConditionsTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:text="Weather contributions"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textContribPressure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/textContribPressureTitle"
-                android:layout_below="@id/textContribPressureTitle"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/textContribConditions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/textContribConditionsTitle"
-                android:layout_below="@id/textContribConditionsTitle"
-                android:text="" />
-
-            <Button
-                android:id="@+id/inviteFriends"
-                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textContribConditions"
-                android:layout_centerInParent="true"
-                android:drawableLeft="@drawable/ic_share"
-                android:text="Invite your friends!"
-				android:background="@drawable/override" 
-                android:textColor="#000000"
-                android:layout_marginTop="12dp"
-                android:paddingRight="12dp"
-                android:paddingLeft="12dp"/>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutSensorInfo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/modeSelectionLayout"
-        android:background="#CCFFFFFF"
-        android:orientation="vertical"
-        android:padding="12dp"
-        android:visibility="gone" >
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAnimation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#CCFFFFFF"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingBottom="0dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="5dp"
-        android:visibility="visible" >
-
-        <RelativeLayout
-            android:id="@+id/layoutAnimationHoriz"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            <View
+                android:id="@+id/searchDiv"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_below="@id/layoutSearchControls"
+                android:background="#004455" />
 
             <ImageButton
-                android:id="@+id/imageButtonPlay"
+                android:id="@+id/buttonSearchLocations"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:src="@drawable/ic_play" />
+                android:layout_height="51dp"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_locations"
+                android:textColor="@android:color/black"
+                android:visibility="visible" />
+
+            <EditText
+                android:id="@+id/editGoLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="51dp"
+                android:layout_weight="1"
+                android:background="#CCFFFFFF"
+                android:cursorVisible="false"
+                android:hint="Search"
+                android:imeOptions="actionDone"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:visibility="visible" />
 
             <ImageButton
-                android:id="@+id/imageButtonAnimationSettings"
+                android:id="@+id/buttonGoLocation"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_settings" />
+                android:layout_height="51dp"
+                android:background="#CCFFFFFF"
+                android:src="@drawable/ic_search"
+                android:textColor="@android:color/black"
+                android:visibility="visible" />
+        </LinearLayout>
 
-            <SeekBar
-                android:id="@+id/animationProgress"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/imageButtonAnimationSettings"
-                android:layout_toRightOf="@id/imageButtonPlay"
-                android:max="100"
-                android:paddingTop="6dp"
-                android:enabled="false" />
-        </RelativeLayout>
+        <ProgressBar
+            android:id="@+id/progressBarAPICalls"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:indeterminateOnly="true"
+            android:progressDrawable="@drawable/progress"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/textAnimationInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+        <LinearLayout
+            android:id="@+id/layoutContribute"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/modeSelectionLayout"
+            android:background="#CCFFFFFF"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/imageButtonBarometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:drawableLeft="@drawable/ic_pressure"
+                    android:paddingLeft="10dp"
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/imageButtonThermometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:drawableLeft="@drawable/ic_thermometer"
+                    android:text=""
+                    android:textColor="@android:color/black" />
+
+                <Button
+                    android:id="@+id/imageButtonHygrometer"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:drawableLeft="@drawable/ic_hygrometer"
+                    android:paddingRight="10dp"
+                    android:text=""
+                    android:textColor="@android:color/black" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutContribDetails"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp" >
+
+                <TextView
+                    android:id="@+id/textContribPressureTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Sensor contributions"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textContribConditionsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Weather contributions"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textContribPressure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/textContribPressureTitle"
+                    android:layout_below="@id/textContribPressureTitle"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/textContribConditions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@id/textContribConditionsTitle"
+                    android:layout_below="@id/textContribConditionsTitle"
+                    android:text="" />
+
+                <Button
+                    android:id="@+id/inviteFriends"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textContribConditions"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/override"
+                    android:drawableLeft="@drawable/ic_share"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:text="Invite your friends!"
+                    android:textColor="#000000" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutSensorInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/modeSelectionLayout"
+            android:background="#CCFFFFFF"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone" >
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutAnimation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#CCFFFFFF"
             android:gravity="center"
-            android:paddingBottom="8dp" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:paddingBottom="0dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp"
+            android:visibility="visible" >
 
-</RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/layoutAnimationHoriz"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageButton
+                    android:id="@+id/imageButtonPlay"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:src="@drawable/ic_play" />
+
+                <ImageButton
+                    android:id="@+id/imageButtonAnimationSettings"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_settings" />
+
+                <SeekBar
+                    android:id="@+id/animationProgress"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/imageButtonAnimationSettings"
+                    android:layout_toRightOf="@id/imageButtonPlay"
+                    android:enabled="false"
+                    android:max="100"
+                    android:paddingTop="6dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textAnimationInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:paddingBottom="8dp" />
+        </LinearLayout>
+    </RelativeLayout>
+    
+    <!-- The navigation drawer -->
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#111"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+
+</android.support.v4.widget.DrawerLayout>

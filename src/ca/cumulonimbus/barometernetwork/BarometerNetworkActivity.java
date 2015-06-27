@@ -72,6 +72,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -82,13 +83,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -105,16 +108,13 @@ import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
 import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
-import ca.cumulonimbus.pressurenetsdk.CbStats;
 import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
-import ca.cumulonimbus.pressurenetsdk.CbWeather;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -316,6 +316,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private Handler conditionsHandler = new Handler(); 
 	private ConditionsAdder conditionsAdder = new ConditionsAdder();
 	
+	private DrawerLayout drawerLayout;
+	private ListView drawerList;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -323,6 +326,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		appStartTime = System.currentTimeMillis();
 		setContentView(R.layout.main);
+		addDrawerLayout();
 		checkNetwork();
 		checkSensors();
 		setLastKnownLocation();
@@ -339,6 +343,38 @@ public class BarometerNetworkActivity extends Activity implements
 		prepareAnimationSettings();
 	}
 	
+	private void addDrawerLayout() {
+		String[] listContents = {"My Data", "Locations", "Graph", "Settings"};
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        drawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, listContents));
+        // Set the list's click listener
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+	}
+	
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+	    @Override
+	    public void onItemClick(AdapterView parent, View view, int position, long id) {
+	        selectItem(position);
+	    }
+	}
+	
+	/** Swaps fragments in the main content view */
+	private void selectItem(int position) {
+	    // Create a new fragment and specify the planet to show based on position
+		
+
+
+	    // Highlight the selected item, update the title, and close the drawer
+		drawerList.setItemChecked(position, true);
+	    //setTitle(mPlanetTitles[position]);
+	    drawerLayout.closeDrawer(drawerList);
+	    
+	}
+
 	
 	/**
 	 * Set the default dates and parameters for the 
@@ -823,51 +859,6 @@ public class BarometerNetworkActivity extends Activity implements
 		return globalMapCall;
 	}
 	
-	private Handler mapHandler = new Handler();
-	private long lastRefresh = System.currentTimeMillis();
-	
-	private class MapRefresher implements Runnable {
-		
-		@Override
-		public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-			log("map refresh running");
-			
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(
-					editLocation.getWindowToken(), 0);
-			editLocation.setCursorVisible(false);
-
-			LatLngBounds bounds = mMap.getProjection()
-					.getVisibleRegion().latLngBounds;
-			visibleBound = bounds;
-
-			if (activeMode.equals("graph")) {
-				CbStatsAPICall api = buildStatsAPICall(hoursAgoSelected);
-				makeStatsAPICall(api);
-			} else if (activeMode.equals("map")) {
-				log("map refresher is in map mode, calling loadrecents");
-				//loadRecents();
-			} else if (activeMode.equals("animation")) {
-				animator.stop();
-				animator.reset();
-			}
-		}
-	}
-	
-	private void refreshMap() {
-		long now = System.currentTimeMillis();
-		MapRefresher refresh = new MapRefresher();
-		if(now - lastRefresh > 1000) {
-			log("posting map refresh in 100");
-			lastRefresh = System.currentTimeMillis();
-			mapHandler.postDelayed(refresh, 100);
-		} else {
-			log("cancelling map refresh");
-			mapHandler.removeCallbacks(refresh);
-		}
-	}
-
 	/**
 	 * Zoom into the user's location
 	 */
