@@ -167,11 +167,12 @@ public class BarometerNetworkActivity extends Activity implements
 	CbObservation bestPressure;
 	CbSettingsHandler activeSettings;
 
-	private ArrayList<CbObservation> listRecents = new ArrayList<CbObservation>();
-	private ArrayList<CbCurrentCondition> currentConditionRecents = new ArrayList<CbCurrentCondition>();
+	private ArrayList<CbCurrentCondition> globalConditionRecents = new ArrayList<CbCurrentCondition>();
+	
+	
 	private ArrayList<CbCurrentCondition> localConditionRecents = new ArrayList<CbCurrentCondition>();
 	private ArrayList<CbCurrentCondition> conditionAnimationRecents = new ArrayList<CbCurrentCondition>();
-	private ArrayList<CbStats> statsRecents = new ArrayList<CbStats>();
+	
 
 	private int activeAPICallCount = 0;
 
@@ -688,7 +689,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 		protected void onPostExecute(String result) {
-			currentConditionRecents = processJSONConditions(result);
+			globalConditionRecents = processJSONConditions(result);
 			conditionsHandler.post(conditionsAdder);
 		}
 
@@ -774,7 +775,12 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCameraChange(CameraPosition position) {
 						//refreshMap();
-						activeMode = "map";
+						if(!activeMode.equals("map")) {
+							activeMode = "map";
+							mMap.clear();
+							addConditionsToMap();
+						}
+						
 					}
 				});
 				
@@ -1633,30 +1639,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	
-	/**
-	 * Query the database for locally stored observations with the intent to
-	 * display on a time series chart
-	 * 
-	 * @param apiCall
-	 */
-	private void askForGraphRecents(CbStatsAPICall apiCall) {
-		if (mBound) {
-			log("asking for graph recents");
-
-			Message msg = Message.obtain(null,
-					CbService.MSG_MAKE_STATS_CALL, apiCall);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				// e.printStackTrace();
-			}
-		} else {
-			// log("error: not bound");
-		}
-	}
-	
 	/**
 	 * Query the Service for best location
 	 */
@@ -2571,14 +2553,14 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentCur = 0;
 		int totalAllowed = 3000;
 		
-		if (currentConditionRecents != null) {
+		if (globalConditionRecents != null) {
 			log("adding current conditions to map: "
-					+ currentConditionRecents.size());
+					+ globalConditionRecents.size());
 						
 			ConditionsDrawables draws = new ConditionsDrawables(getApplicationContext());
 			
 			// Add Current Conditions
-			for (CbCurrentCondition condition : currentConditionRecents) {
+			for (CbCurrentCondition condition : globalConditionRecents) {
 
 				LatLng point = new LatLng(
 						condition.getLocation().getLatitude(), condition
@@ -2628,7 +2610,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 			addTemperaturesToMap();
 			
-			currentConditionRecents.clear();
+			//globalConditionRecents.clear();
 			
 			log("app done adding conditions to map");
 		} else {
