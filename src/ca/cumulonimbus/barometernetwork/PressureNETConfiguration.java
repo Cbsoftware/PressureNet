@@ -8,4 +8,5 @@ public class PressureNETConfiguration {
 	public static final String MIXPANEL_TOKEN = "";
 	public static final String GA_TOKEN = "";
 	
+	public static final String TEMPERATURE_FORECASTS = "";
 }

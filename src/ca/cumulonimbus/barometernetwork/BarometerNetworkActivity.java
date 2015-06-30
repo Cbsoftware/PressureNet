@@ -348,7 +348,7 @@ public class BarometerNetworkActivity extends Activity implements
 		prepareAnimationSettings();
 	}
 	
-	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!"};
+	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!", "Temp"};
 	private ActionBarDrawerToggle drawerToggle;
 	
 	private void addDrawerLayout() {
@@ -438,11 +438,132 @@ public class BarometerNetworkActivity extends Activity implements
 	    	} else if (position == 6) {
 	    		// Tell your friends
 	    		growPressureNET();
+	    	} else if (position == 7) {
+	    		// Temperature test
+	    		downloadTemperatures();
 	    	} else {
 	    		log("navigation drawer unknown event");
 	    	}
 	    	
 	    }
+	}
+	
+	private void downloadTemperatures() {
+		TemperatureDownloader temps = new TemperatureDownloader();
+		temps.execute("");
+	}
+	
+	@SuppressWarnings("deprecation")
+	public class TemperatureDownloader extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			String responseText = "";
+			try {
+				DefaultHttpClient client = new DefaultHttpClient();
+				
+
+				String serverURL = PressureNETConfiguration.TEMPERATURE_FORECASTS;
+
+				log("app downloading temperature forecasts");
+				HttpGet get = new HttpGet(serverURL);
+				// Execute the GET call and obtain the response
+				HttpResponse getResponse = client.execute(get);
+				HttpEntity responseEntity = getResponse.getEntity()	;
+				log("temperature response " + responseEntity.getContentLength());
+				
+				BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent(), "UTF-8"));
+				responseText = reader.readLine();
+				/*
+				BufferedReader r = new BufferedReader(new InputStreamReader(
+						responseEntity.getContent()));
+				
+				
+
+				StringBuilder total = new StringBuilder();
+				String line;
+				if (r != null) {
+					while ((line = r.readLine()) != null) {
+						total.append(line);
+					}
+					responseText = total.toString();
+				}
+				*/
+			} catch (Exception e) {
+				log("app temperature exception " + e.getMessage());
+			}
+			return responseText;
+		}
+
+		protected void onPostExecute(String result) {
+			processJSONTemperatures(result);
+			
+		}
+
+		
+		private void log(String text) {
+			if(PressureNETConfiguration.DEBUG_MODE) {
+				System.out.println(text);
+			}
+		}
+
+	}
+	
+	private void processJSONTemperatures(String json) {
+		try {
+			log("finished downloading, now processing json temperatures");
+			JSONObject object = new JSONObject(json);
+			JSONArray forecastArray = object.getJSONArray("data");
+			
+			String forecastID;
+			double latitude;
+			double longitude;
+			ArrayList<ForecastLocation> forecastLocations = new ArrayList<ForecastLocation>();
+			ArrayList<TemperatureForecast> temperatureForecasts = new ArrayList<TemperatureForecast>();
+			
+			PnDb db = new PnDb(getApplicationContext());
+			db.open();
+			
+			for(int i = 0; i< forecastArray.length(); i++ ){
+				
+				// Location
+				
+				JSONObject row = forecastArray.getJSONObject(i);
+				forecastID = row.getString("id");
+				JSONObject location = row.getJSONObject("location");
+				latitude = location.getDouble("latitude");
+				longitude = location.getDouble("longitude");
+				forecastLocations.add(new ForecastLocation(forecastID, latitude, longitude));
+				
+				// Temperature forecasts
+				JSONObject forecastObject = row.getJSONObject("temperatureForecast");
+				String forecastTime = forecastObject.getString("date");
+				JSONArray forecastTemps = forecastObject.getJSONArray("forecast");
+				
+				
+				for(int j = 0; j < forecastTemps.length(); j++) {
+					JSONObject forecastRow = forecastTemps.getJSONObject(j);
+					int scale = forecastRow.getInt("scale");
+					double degrees = forecastRow.getDouble("degrees");
+					
+					temperatureForecasts.add(new TemperatureForecast(forecastID, scale, degrees, forecastTime, j));
+				}
+
+			}
+			log("created temperature arraylist, size " + forecastLocations.size() ); 
+			
+			//log("temperature forecast array index 0 is " + forecastArray.getJSONObject(0).toString());
+			
+			db.addTemperatureForecastArrayList(temperatureForecasts);
+			log("added temp forecast array list");
+			db.addForecastLocationArrayList(forecastLocations);
+			db.close();
+			log("finished adding temperature locations to db");
+		} catch(JSONException jsone) {
+			log("app failed to parse temperature json: " + jsone.getMessage());
+		}
+		
+		
 	}
 	
 	/** Swaps fragments in the main content view */
@@ -889,20 +1010,29 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.getUiSettings().setZoomControlsEnabled(false);
 				mMap.getUiSettings().setCompassEnabled(false);
 				
+				//clusterManager = new ClusterManager<MapItem>(this, mMap);
+			//	mMap.setOnCameraChangeListener(clusterManager);
+		    
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-
+					
 					@Override
-					public void onCameraChange(CameraPosition position) {
+					public void onCameraChange(CameraPosition arg0) {
 						//refreshMap();
+					/*
 						if(!activeMode.equals("map")) {
 							activeMode = "map";
-							mMap.clear();
+							
 							addConditionsToMap();
+							addTemperaturesToMap();
 						}
+						*/
+						mMap.clear();
 						
+						addTemperaturesToMap();
+
 					}
 				});
-				
+		        
 				mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 					
 					@Override
@@ -912,13 +1042,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 				
-				// go get the conditions and add them to the map
-				log("app starting download of conditions");
-				ConditionsDownloader conditionsDownloader = new ConditionsDownloader();
-				CbApiCall globalMapCall = composeConditionsGlobalApiCall();
-				conditionsDownloader.setApiCall(globalMapCall);
-				conditionsDownloader.execute("");
-				
+				downloadAndShowConditions();
 				
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
@@ -927,6 +1051,16 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 
+	}
+	
+	private void downloadAndShowConditions() {
+		// go get the conditions and add them to the map
+		log("app starting download of conditions");
+
+		ConditionsDownloader conditionsDownloader = new ConditionsDownloader();
+		CbApiCall globalMapCall = composeConditionsGlobalApiCall();
+		conditionsDownloader.setApiCall(globalMapCall);
+		conditionsDownloader.execute("");
 	}
 	
 	private CbApiCall composeConditionsGlobalApiCall () {
@@ -2482,21 +2616,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	/**
-	 * Check if an observation is from the current device
-	 * 
-	 * @param ob
-	 * @return
-	 */
-	private boolean obsIsMe(CbObservation ob) {
-		return ((ob.getUser_id().equals(android_id)));
-	}
-
-	
-
-	
-	
-
 	public class MapWindowAdapter implements GoogleMap.InfoWindowAdapter {
 		private Context context = null;
 
@@ -2605,11 +2724,59 @@ public class BarometerNetworkActivity extends Activity implements
 		return bitmap;
 	}
 
+	//private ClusterManager<MapItem> clusterManager;
 	
 	private void addTemperaturesToMap() {
 		log("adding temperature icons to map");
 		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
-		//addIcon(iconFactory, "23º C", new LatLng(37.78, -122.5));
+
+		LatLngBounds bounds = mMap.getProjection()
+				.getVisibleRegion().latLngBounds;
+		visibleBound = bounds;
+		
+		double minLat;
+		double maxLat;
+		double minLon;
+		double maxLon;
+		
+		if (visibleBound != null) {
+			LatLng ne = visibleBound.northeast;
+			LatLng sw = visibleBound.southwest;
+			minLat = sw.latitude;
+			maxLat = ne.latitude;
+			minLon = sw.longitude;
+			maxLon = ne.longitude;
+		} else {
+			log("add temperatures to map has failed; no map center, bailing");
+			return;
+		}
+		
+		
+		PnDb db = new PnDb(getApplicationContext());
+		db.open();
+		Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
+		double lat = 0;
+		double lon = 0;
+		double value = 0;
+		
+		
+		int count = 0;
+		log("received " + cursor.getCount() + " temperatures");
+		while(cursor.moveToNext()) {
+			lat = cursor.getDouble(0);
+			lon = cursor.getDouble(1);
+			value = cursor.getDouble(2);
+			addIcon(iconFactory, value + "", new LatLng(lat, lon));
+
+			log("adding temp icon for value " + value);
+			count++;
+			
+			if(count> 20) {
+				break;
+			}
+		}
+		
+		db.close();
 		
 	}
 	
@@ -2619,9 +2786,11 @@ public class BarometerNetworkActivity extends Activity implements
 	                position(position).
 	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
-	        mMap.addMarker(markerOptions);
+	        Marker addedTemp = mMap.addMarker(markerOptions);
+	        
 	        log("added temp icon");
 	  }
+	 
 
 	/**
 	 * Display user-submitted current conditions on the map
@@ -2684,8 +2853,8 @@ public class BarometerNetworkActivity extends Activity implements
 					break;
 				}
 			}
-
-			addTemperaturesToMap();
+			
+			//addTemperaturesToMap();
 			
 			//globalConditionRecents.clear();
 			
@@ -3042,6 +3211,9 @@ public class BarometerNetworkActivity extends Activity implements
 
 		checkSensors();
 		updateVisibleReading();
+		
+		downloadAndShowConditions();
+		addTemperaturesToMap();
 		
 		invalidateOptionsMenu();
 		
