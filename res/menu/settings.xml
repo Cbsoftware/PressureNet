@@ -18,7 +18,7 @@
         android:icon="@drawable/ic_logs"
         android:showAsAction="never"
         android:title="My data"
-        android:visible="true"/>
+        android:visible="false"/>
     <item
         android:id="@+id/menu_submit_reading"
         android:enabled="true"
@@ -43,26 +43,31 @@
         android:enabled="true"
         android:icon="@drawable/ic_menu_dark_settings"
         android:showAsAction="never"
-        android:title="@string/settings"/>
+        android:title="@string/settings"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_help"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Help"/>
+        android:title="Help"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_about"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="@string/about"/>
+        android:title="@string/about"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_rate_pressurenet"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Rate &amp; review"/>
+        android:title="Rate &amp; review"
+        android:visible="false"/>
     <item
         android:id="@+id/menu_grow_pressurenet"
         android:enabled="true"
         android:showAsAction="never"
-        android:title="Tell your friends!"/>
+        android:title="Tell your friends!"
+        android:visible="false"/>
 
 </menu>

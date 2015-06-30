@@ -44,7 +44,7 @@
         android:name="PressureNetApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/PressureNetTheme" >
+        android:theme="@android:style/Theme.Holo.Light.DarkActionBar" >
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true" >
@@ -204,10 +204,9 @@
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:logo="@drawable/ic_launcher"
-            android:theme="@style/CustomTheme" >
+            android:theme="@style/CustomMainTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

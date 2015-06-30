@@ -69,9 +69,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.PersistableBundle;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -125,6 +128,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
@@ -336,29 +341,107 @@ public class BarometerNetworkActivity extends Activity implements
 		setUpUIListeners();
 		setId();
 		setUpFiles();
-		setUpActionBar();
+		//setUpActionBar();
 		checkDb();
 		callExternalAPIs();
 		setUpMixPanel();
 		prepareAnimationSettings();
 	}
 	
+	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!"};
+	private ActionBarDrawerToggle drawerToggle;
+	
 	private void addDrawerLayout() {
-		String[] listContents = {"My Data", "Locations", "Graph", "Settings"};
+		
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.left_drawer);
 
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        
         // Set the adapter for the list view
         drawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, listContents));
+                R.layout.drawer_list_item, drawerListContents));
         // Set the list's click listener
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        
+        // enable ActionBar app icon to behave as action to toggle nav drawer
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+        
+        
+        
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+            
+            
+        };
+
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.setDrawerListener(drawerToggle);
+   
+
+       
 	}
 	
+	@Override
+	public void onPostCreate(Bundle savedInstanceState,
+			PersistableBundle persistentState) {
+		super.onPostCreate(savedInstanceState, persistentState);
+		drawerToggle.syncState();
+	}
+
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 	    @Override
 	    public void onItemClick(AdapterView parent, View view, int position, long id) {
-	        selectItem(position);
+	    	log("navigation drawer selected item position " + position + ", " + drawerListContents[position]);
+	    	selectItem(position);
+	    	
+	    	if(position == 0) {
+	    		// My Data
+	    		viewLog();
+	    	} else if (position == 1) {
+	    		// Locations
+	    		Intent intent = new Intent(getApplicationContext(),
+						SearchLocationsActivity.class);
+				startActivityForResult(intent, REQUEST_LOCATION_CHOICE);
+	    	} else if (position == 2) {
+	    		// Settings
+	    		Intent i = new Intent(getApplicationContext(), PreferencesActivity.class);
+				startActivityForResult(i, REQUEST_SETTINGS);
+	    	} else if (position == 3) {
+	    		// Help
+	    		Intent intent = new Intent(getApplicationContext(),
+						HelpActivity.class);
+				startActivity(intent);
+	    	} else if (position == 4) {
+	    		// About
+	    		Intent intent = new Intent(getApplicationContext(),
+						AboutActivity.class);
+				startActivity(intent);
+	    	} else if (position == 5) {
+	    		// Rate & review
+	    		ratePressureNET();
+	    	} else if (position == 6) {
+	    		// Tell your friends
+	    		growPressureNET();
+	    	} else {
+	    		log("navigation drawer unknown event");
+	    	}
+	    	
 	    }
 	}
 	
@@ -1028,6 +1111,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
+		drawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	/**
@@ -2029,6 +2113,9 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+	     if (drawerToggle.onOptionsItemSelected(item)) {
+	            return true;
+	        }
 		if (item.getItemId() == R.id.menu_settings) {
 			Intent i = new Intent(this, PreferencesActivity.class);
 			startActivityForResult(i, REQUEST_SETTINGS);
@@ -2346,7 +2433,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void setUpActionBar() {
-		// TODO: Compatible Action Bar
 		ActionBar bar = getActionBar();
 		bar.setDisplayUseLogoEnabled(true);
 		bar.setTitle("");

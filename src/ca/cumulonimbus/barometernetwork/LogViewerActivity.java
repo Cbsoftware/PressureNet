@@ -173,14 +173,6 @@ public class LogViewerActivity extends Activity {
 						rawLog += dateString + ": " + valueString + "\n";
 					}
 
-					// display in text form
-					try {
-						logText = (TextView) findViewById(R.id.editLog);
-						logText.setText(rawLog);
-					} catch (NullPointerException npe) {
-						// TODO; fix hack.
-						// log("not loading text");
-					}
 
 					// display in chart form
 					try {
@@ -471,30 +463,6 @@ public class LogViewerActivity extends Activity {
 		fragmentTransaction.add(R.id.layoutLogFragContainer, allLogFrags);
 		fragmentTransaction.commit();
 
-		// ActionBar gets initiated
-		ActionBar actionbar = getActionBar();
-		// Tell the ActionBar we want to use Tabs.
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		// initiating both tabs and set text to it.
-		ActionBar.Tab chartTab = actionbar.newTab().setText("Chart");
-		ActionBar.Tab logTab = actionbar.newTab().setText("Log");
-
-		// create the two fragments we want to use for display content
-		Fragment chartFragment = new ChartFragment();
-		Fragment logFragment = new LogFragment();
-
-		// set the Tab listener. Now we can listen for clicks.
-		chartTab.setTabListener(new DataTabsListener(chartFragment));
-		logTab.setTabListener(new DataTabsListener(logFragment));
-
-		// add the two tabs to the actionbar
-		actionbar.addTab(chartTab);
-		actionbar.addTab(logTab);
-		int actionBarTitleId = getResources().getSystem().getIdentifier(
-				"action_bar_title", "id", "android");
-
-		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
-		actionBarTextView.setTextColor(Color.WHITE);
 
 		ImageView view = (ImageView) findViewById(android.R.id.home);
 		view.setPadding(8, 0, 0, 0);
