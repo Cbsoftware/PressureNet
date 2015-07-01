@@ -183,16 +183,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 	boolean dataReceivedToPlot = false;
 
-	private Button buttonBarometer;
-	private Button buttonThermometer;
-	private Button buttonHygrometer;
+	
 	private int hoursAgoSelected = 12;
 
 	private ProgressBar progressAPI;
 
-	private LinearLayout layoutSensors;
 	private LinearLayout layoutAnimation;
-	private LinearLayout layoutContribute;
 
 	private ImageButton buttonSearchLocations;
 
@@ -201,15 +197,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private SeekBar animationProgress;
 	private ImageButton imageButtonAnimationSettings;
 	
-	private TextView textPressureContributions;
-	private TextView textConditionContributions;
-	private TextView textContribPressureTitle;
-	private TextView textContribConditionsTitle;
-
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
-
-	private Button inviteFriends;
 	
 	Handler timeHandler = new Handler();
 	Handler mapDelayHandler = new Handler();
@@ -1261,18 +1250,13 @@ public class BarometerNetworkActivity extends Activity implements
 	private void setUpUIListeners() {
 		Context context = getApplicationContext();
 		mInflater = LayoutInflater.from(context);
-		buttonBarometer = (Button) findViewById(R.id.imageButtonBarometer);
-		buttonThermometer = (Button) findViewById(R.id.imageButtonThermometer);
-		buttonHygrometer = (Button) findViewById(R.id.imageButtonHygrometer);
-
+		
 		progressAPI = (ProgressBar) findViewById(R.id.progressBarAPICalls);
 
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
 
-		layoutSensors = (LinearLayout) findViewById(R.id.layoutSensorInfo);
 		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
-		layoutContribute = (LinearLayout) findViewById(R.id.layoutContribute);
 		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
@@ -1282,34 +1266,9 @@ public class BarometerNetworkActivity extends Activity implements
 		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
 		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
 	
-		textConditionContributions = (TextView) findViewById(R.id.textContribConditions);
-		textPressureContributions = (TextView) findViewById(R.id.textContribPressure);
-		textContribPressureTitle = (TextView) findViewById(R.id.textContribPressureTitle);
-		textContribConditionsTitle = (TextView) findViewById(R.id.textContribConditionsTitle);
-		
-		
-		inviteFriends = (Button) findViewById(R.id.inviteFriends);
-		
+
 		animationProgress.setEnabled(false);
 	
-		
-		inviteFriends.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				growPressureNET();
-				// Get tracker.
-				Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-				    TrackerName.APP_TRACKER);
-				// Build and send an Event.
-				t.send(new HitBuilders.EventBuilder()
-				    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-				    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-				    .setLabel("invite_your_friends")
-				    .build());
-				mixpanel.track("Invite Friends", null);
-			}
-		});
 		
 		animationProgress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
@@ -2016,16 +1975,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// Used to be a Toast notification, now handled in NotificationSender
 				break;
 			case CbService.MSG_CONTRIBUTIONS:
-				CbContributions contrib = (CbContributions) msg.obj;
-				DecimalFormat df = new DecimalFormat("#,###,###");
-				String pressureContributions = df.format(contrib.getPressureAllTime()) + " total\n" +
-						df.format(contrib.getPressureLast7d()) + " in the last week\n" +
-						df.format(contrib.getPressureLast24h()) + " in the last day";
-				String conditionContributions = df.format(contrib.getConditionsAllTime()) + " total\n" + 
-						df.format(contrib.getConditionsLastWeek()) + " in the last week\n" +
-						df.format(contrib.getConditionsLastDay()) + " in the last day";
-				textPressureContributions.setText(pressureContributions);
-				textConditionContributions.setText(conditionContributions);
+				// Contribution UI removed
 				break;
 			case CbService.MSG_IS_PRIMARY:
 				if (msg.arg1 == 1) {
@@ -2737,6 +2687,12 @@ public class BarometerNetworkActivity extends Activity implements
 		log("adding temperature icons to map");
 		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
 
+		iconFactory.setBackground(null);
+		// iconFactory.setColor(Color.rgb(230, 230, 230));
+		iconFactory.setStyle(R.style.MapTemperatureBackground);
+		iconFactory.setTextAppearance(R.style.MapTemperatureText);
+		
+		
 		LatLngBounds bounds = mMap.getProjection()
 				.getVisibleRegion().latLngBounds;
 		visibleBound = bounds;
@@ -2787,6 +2743,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// unknown scale! 
 				continue;
 			}
+			
 			addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
 
 			log("adding temp icon for value " + value);
@@ -3355,7 +3312,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 	
 			if (toPrint.length() > 2) {
-				buttonBarometer.setText(getBestPressureDisplay());
+				// buttonBarometer.setText(getBestPressureDisplay());
 				
 				ActionBar bar = getActionBar();
 				bar.setTitle(toPrint);
@@ -3369,39 +3326,6 @@ public class BarometerNetworkActivity extends Activity implements
 		} else {
 			//buttonBarometer.setText("No barometer detected.");
 		}
-
-		if (hasThermometer) {
-			String toPrint = displayTemperatureValue(recentTemperatureReading, "##.0");
-			buttonThermometer.setVisibility(View.VISIBLE);
-			buttonThermometer.setText(toPrint);
-		} else {
-			buttonThermometer.setVisibility(View.INVISIBLE);
-		}
-
-		if (hasHygrometer) {
-			String toPrint = displayHumidityValue(recentHumidityReading);
-			buttonHygrometer.setVisibility(View.VISIBLE);
-			buttonHygrometer.setText(toPrint);
-		} else {
-			buttonHygrometer.setVisibility(View.INVISIBLE);
-		}
-		
-		if ( (!hasBarometer) && (!hasHygrometer) && (!hasThermometer) ) {
-			buttonBarometer.setVisibility(View.VISIBLE);
-			buttonThermometer.setVisibility(View.GONE);
-			buttonHygrometer.setVisibility(View.GONE);
-			
-			buttonBarometer.setText(getString(R.string.noSensorsDetected));
-			
-			textContribPressureTitle.setVisibility(View.GONE);
-			textPressureContributions.setVisibility(View.GONE);
-			
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)textContribConditionsTitle.getLayoutParams();
-			params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
-			textContribConditionsTitle.setLayoutParams(params);
-		}
-
 	}
 
 	/**

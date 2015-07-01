@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Collections;
 
 import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -377,40 +376,6 @@ public class LogViewerActivity extends Activity {
 
 	}
 
-	class DataTabsListener implements ActionBar.TabListener {
-		public Fragment fragment;
-
-		public DataTabsListener(Fragment fragment) {
-			this.fragment = fragment;
-		}
-
-		@Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) {
-
-		}
-
-		@Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-			// Get tracker.
-			Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-			    TrackerName.APP_TRACKER);
-			// Build and send an Event.
-			t.send(new HitBuilders.EventBuilder()
-			    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-			    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-			    .setLabel(tab.getText().toString())
-			    .build());
-			ft.replace(R.id.fragment_container, fragment);
-			getRecents(hoursSelected);
-		}
-
-		@Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-			ft.remove(fragment);
-		}
-
-	}
-
 	@Override
 	public void onDestroy() {
 		unBindCbService();
@@ -560,6 +525,13 @@ public class LogViewerActivity extends Activity {
 				getRecents(24 * 7);
 			}
 		});
+		
+		ActionBar bar = getActionBar();
+		int actionBarTitleId = getResources().getSystem().getIdentifier(
+				"action_bar_title", "id", "android");
+
+		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
+		actionBarTextView.setTextColor(Color.WHITE);
 
 	}
 
