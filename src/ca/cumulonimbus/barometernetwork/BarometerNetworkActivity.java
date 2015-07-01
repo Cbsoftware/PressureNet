@@ -366,14 +366,18 @@ public class BarometerNetworkActivity extends Activity implements
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
+            	hideKeyboard();
+            	super.onDrawerClosed(view);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
+            	hideKeyboard();
+            	super.onDrawerOpened(drawerView);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                
             }
             
             
@@ -384,9 +388,14 @@ public class BarometerNetworkActivity extends Activity implements
         // Set the drawer toggle as the DrawerListener
         drawerLayout.setDrawerListener(drawerToggle);
    
-
-       
 	}
+	
+	private void hideKeyboard() {
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(editLocation.getWindowToken(), 0);
+		editLocation.setCursorVisible(false);
+	}
+	
 	
 	@Override
 	public void onPostCreate(Bundle savedInstanceState,
@@ -2714,7 +2723,6 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 		
-		
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();
 		Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
@@ -2725,6 +2733,14 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		int count = 0;
 		log("received " + cursor.getCount() + " temperatures");
+		
+		// limit a few per map quadrant
+		int q1Count = 0;
+		int q2Count = 0;
+		int q3Count = 0;
+		int q4Count = 0;
+		int maxQ = 2;
+		
 		while(cursor.moveToNext()) {
 			lat = cursor.getDouble(0);
 			lon = cursor.getDouble(1);
@@ -2744,6 +2760,30 @@ public class BarometerNetworkActivity extends Activity implements
 				continue;
 			}
 			
+			int q = whichMapQ(lat, lon);
+			log ("considering adding temp to q" + q);
+			if (q == 1) {
+				q1Count++;
+				if(q1Count > maxQ) {
+					continue;
+				}
+			} else if (q == 2) {
+				q2Count++;
+				if(q2Count > maxQ) {
+					continue;
+				}
+			} else if (q == 3) {
+				q3Count++;
+				if(q3Count > maxQ) {
+					continue;
+				}
+			} else if (q == 4) {
+				q4Count++;
+				if(q4Count > maxQ) {
+					continue;
+				}
+			}
+			
 			addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
 
 			log("adding temp icon for value " + value);
@@ -2755,19 +2795,36 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		
 		db.close();
-		
 	}
 	
-	  private void addIcon(IconGenerator iconFactory, String text, LatLng position) {
-	        MarkerOptions markerOptions = new MarkerOptions().
-	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
-	                position(position).
-	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+	private int whichMapQ(double lat, double lon) {
+		LatLng center = mMap.getCameraPosition().target;
+		double mapCenterLat = center.latitude;
+		double mapCenterLon = center.longitude;
+		
+		if( (lat < mapCenterLat) && (lon < mapCenterLon)) {
+			return 1;
+		} else if( (lat > mapCenterLat) && (lon < mapCenterLon)) {
+			return 2;
+		} else if( (lat > mapCenterLat) && (lon > mapCenterLon)) {
+			return 3;
+		} else if( (lat < mapCenterLat) && (lon > mapCenterLon)) {
+			return 4;
+		} else {
+			return 0;	
+		}
+	}
+	
+    private void addIcon(IconGenerator iconFactory, String text, LatLng position) {
+        MarkerOptions markerOptions = new MarkerOptions().
+                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
+                position(position).
+                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
-	        Marker addedTemp = mMap.addMarker(markerOptions);
-	        
-	        log("added temp icon");
-	  }
+        Marker addedTemp = mMap.addMarker(markerOptions);
+        
+        log("added temp icon");
+    }
 	 
 
 	/**
