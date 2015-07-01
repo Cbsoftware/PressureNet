@@ -324,6 +324,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private DrawerLayout drawerLayout;
 	private ListView drawerList;
 	
+	ArrayList<MarkerOptions> liveMarkerOptions = new ArrayList<MarkerOptions>();
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -1018,7 +1020,7 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCameraChange(CameraPosition arg0) {
 						//refreshMap();
-					/*
+						/*
 						if(!activeMode.equals("map")) {
 							activeMode = "map";
 							
@@ -1029,7 +1031,7 @@ public class BarometerNetworkActivity extends Activity implements
 						mMap.clear();
 						
 						addTemperaturesToMap();
-
+						addLiveMarkersToMap();
 					}
 				});
 		        
@@ -1050,7 +1052,12 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 		}
-
+	}
+	
+	private void addLiveMarkersToMap() {
+		for (MarkerOptions markerOptions : liveMarkerOptions) {
+			mMap.addMarker(markerOptions);
+		}
 	}
 	
 	private void downloadAndShowConditions() {
@@ -2799,6 +2806,8 @@ public class BarometerNetworkActivity extends Activity implements
 		int currentCur = 0;
 		int totalAllowed = 3000;
 		
+		liveMarkerOptions.clear();
+		
 		if (globalConditionRecents != null) {
 			log("adding current conditions to map: "
 					+ globalConditionRecents.size());
@@ -2842,11 +2851,14 @@ public class BarometerNetworkActivity extends Activity implements
 					minutesAgoMessage = minutesAgo + " " + getString(R.string.minutesAgo);
 				}
 				
-				Marker marker = mMap.addMarker(new MarkerOptions()
-										.position(point)
-										.title(markerTitle)
-										.snippet(minutesAgoMessage)
-										.icon(BitmapDescriptorFactory.fromBitmap(image)));
+				MarkerOptions options = new MarkerOptions()
+				.position(point)
+				.title(markerTitle)
+				.snippet(minutesAgoMessage)
+				.icon(BitmapDescriptorFactory.fromBitmap(image));
+				
+				Marker marker = mMap.addMarker(options);
+				liveMarkerOptions.add(options);
 				
 				currentCur++;
 				if (currentCur > totalAllowed) {
@@ -2854,7 +2866,6 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 			}
 			
-			//addTemperaturesToMap();
 			
 			//globalConditionRecents.clear();
 			

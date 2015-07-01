@@ -158,7 +158,7 @@ public class PnDb {
 				+ "ON locations." + KEY_FORECAST_LOCATION_ID + "=temperatures." + KEY_FORECAST_LOCATION_ID + " WHERE "
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "
 				+ "locations." + KEY_FORECAST_LONGITUDE + " > ? and locations." + KEY_FORECAST_LONGITUDE + " < ? and temperatures." 
-				+ KEY_TEMP_FORECAST_HOUR + "=0 LIMIT 30";
+				+ KEY_TEMP_FORECAST_HOUR + "=0 LIMIT 10";
 		log("map temperature query " + query);
 		String[] locationParams = new String[] {minLat + "", maxLat + "", minLon + "", maxLon + ""};
 		Cursor cursor = mDB.rawQuery(query, locationParams);
