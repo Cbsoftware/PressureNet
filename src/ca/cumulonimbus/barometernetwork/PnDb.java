@@ -153,7 +153,7 @@ public class PnDb {
 	}
 	
 	public Cursor getMapTemperatures(double minLat, double minLon, double maxLat, double maxLon) {
-		String query = "SELECT " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE 
+		String query = "SELECT " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE + ", " + KEY_TEMP_FORECAST_SCALE
 				+ " FROM " + FORECAST_LOCATIONS + " locations INNER JOIN " + TEMPERATURES + " temperatures "
 				+ "ON locations." + KEY_FORECAST_LOCATION_ID + "=temperatures." + KEY_FORECAST_LOCATION_ID + " WHERE "
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "

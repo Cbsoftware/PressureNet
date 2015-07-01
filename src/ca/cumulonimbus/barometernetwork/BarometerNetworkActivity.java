@@ -2765,7 +2765,7 @@ public class BarometerNetworkActivity extends Activity implements
 		double lat = 0;
 		double lon = 0;
 		double value = 0;
-		
+		int scale = 0;
 		
 		int count = 0;
 		log("received " + cursor.getCount() + " temperatures");
@@ -2773,7 +2773,21 @@ public class BarometerNetworkActivity extends Activity implements
 			lat = cursor.getDouble(0);
 			lon = cursor.getDouble(1);
 			value = cursor.getDouble(2);
-			addIcon(iconFactory, value + "", new LatLng(lat, lon));
+			scale = cursor.getInt(3);
+			
+			String displayTempValue = "";
+			if(scale == 2) {
+				// Temperature arrived in degrees F
+				double tempInC = ((value - 32)*5)/9;
+				displayTempValue = displayTemperatureValue(tempInC, "##");
+			} else if (scale == 1) {
+				// Temperature arrived in degrees C
+				displayTempValue = displayTemperatureValue(value, "##");
+			} else {
+				// unknown scale! 
+				continue;
+			}
+			addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
 
 			log("adding temp icon for value " + value);
 			count++;
@@ -3301,8 +3315,8 @@ public class BarometerNetworkActivity extends Activity implements
 		return df.format(pressureInPreferredUnit) + " " + unit.fullToAbbrev();
 	}
 
-	private String displayTemperatureValue(double value) {
-		DecimalFormat df = new DecimalFormat("##.0");
+	private String displayTemperatureValue(double value, String format) {
+		DecimalFormat df = new DecimalFormat(format);
 		TemperatureUnit unit = new TemperatureUnit(preferenceTemperatureUnit);
 		unit.setValue(value);
 		unit.setAbbreviation(preferenceTemperatureUnit);
@@ -3357,7 +3371,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 		if (hasThermometer) {
-			String toPrint = displayTemperatureValue(recentTemperatureReading);
+			String toPrint = displayTemperatureValue(recentTemperatureReading, "##.0");
 			buttonThermometer.setVisibility(View.VISIBLE);
 			buttonThermometer.setText(toPrint);
 		} else {
