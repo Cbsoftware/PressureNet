@@ -203,6 +203,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private int animationStep = 0;
 
+	private boolean temperatureAnimationPlaying = false;
+	private int temperatureAnimationStep = 0;
+	private TemperatureAnimator temperatureAnimator = new TemperatureAnimator();
+	private ArrayList<MarkerOptions> temperatureAnimationMarkerOptions = new ArrayList<MarkerOptions>();
+	private ArrayList<TemperatureForecast> forecastRecents = new ArrayList<TemperatureForecast>();
+	
 	String apiServerURL = CbConfiguration.SERVER_URL_PRESSURENET + "list/?";
 
 	private boolean locationAvailable = true;
@@ -1292,7 +1298,8 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 					if(fromUser) {
-						animator.showSpecificFrame(progress);	
+						//animator.showSpecificFrame(progress);
+						temperatureAnimator.showTemperatureFrame(progress);
 					}
 			}
 		});
@@ -1317,6 +1324,18 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View v) {
+				
+				
+				if (!temperatureAnimationPlaying) {
+					log("play button pressed, not animating, starting temperature animation");
+					playTemperatureAnimation();
+					
+				} else {
+					log("play button pressed; currently animating temperatures, pausing");
+					temperatureAnimator.pause();
+				}
+				
+				/*
 				activeMode = "animation";
 				if (!animationPlaying) {
 					mixpanel.track("Playing Animation", null);
@@ -1366,7 +1385,9 @@ public class BarometerNetworkActivity extends Activity implements
 					
 					animator.pause();
 				}
+				*/
 			}
+			
 		});
 
 		buttonMyLocation.setOnClickListener(new OnClickListener() {
@@ -2686,12 +2707,151 @@ public class BarometerNetworkActivity extends Activity implements
 		return bitmap;
 	}
 
-	//private ClusterManager<MapItem> clusterManager;
+	/**
+	 * The new condition data for animations has been received. Play the
+	 * animation.
+	 */
+	private void beginTemperatureAnimation(int startFrame) {
+		log("app starting temperature animation with " + forecastRecents.size() + " total items");
+	
+		mMap.clear();
+		temperatureAnimationStep = startFrame;
+		
+		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
+
+		iconFactory.setBackground(null);
+		// iconFactory.setColor(Color.rgb(230, 230, 230));
+		iconFactory.setStyle(R.style.MapTemperatureBackground);
+		iconFactory.setTextAppearance(R.style.MapTemperatureText);
+				
+		
+		
+		for (TemperatureForecast forecast : forecastRecents) {
+			LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
+
+	        MarkerOptions markerOptions = new MarkerOptions().
+	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(displayTemperatureValue(forecast.getTemperatureValue(), "##")))).
+	                position(position).
+	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+
+	        temperatureAnimationMarkerOptions.add(markerOptions);
+		}
+		log("added markers to list, count " + temperatureAnimationMarkerOptions.size());
+
+		animationHandler.post(temperatureAnimator);
+
+	}
+	
+	private void playTemperatureAnimation() {
+		if (mMap == null) {
+			return;
+		}
+		forecastRecents.clear();
+		
+		PnDb db = new PnDb(getApplicationContext());
+		db.open();
+		for(ForecastLocation location : liveMapForecasts) {
+			Cursor forecastCursor = db.getTemperatureForecastsById(location.getLocationID());
+			ArrayList<TemperatureForecast> currentLocationTemperatures = new ArrayList<TemperatureForecast>();
+			while(forecastCursor.moveToNext()) {
+				// id = 1
+				String mapStartTime = forecastCursor.getString(2);
+				int mapHour = forecastCursor.getInt(3);
+				int mapScale = forecastCursor.getInt(4);
+				double mapValue = forecastCursor.getDouble(5);
+				TemperatureForecast forecast = new TemperatureForecast(location.getLocationID(), mapScale, mapValue, mapStartTime, mapHour);
+				forecast.setLatitude(location.getLatitude());
+				forecast.setLongitude(location.getLongitude());
+				forecast.setContext(getApplicationContext());
+				forecast.prepareDisplayValue();
+				currentLocationTemperatures.add(forecast);
+				forecastRecents.add(forecast);
+			}
+			location.setTemperatures(currentLocationTemperatures);
+			log("location " + location.getLocationID() + " has " + location.getTemperatures().size() + " temperature forecasts");
+		}
+		
+		db.close();
+		temperatureAnimationStep = 0;
+		animationProgress.setProgress(0);
+		animationProgress.setMax(8);
+		animationProgress.setEnabled(true);
+		
+		temperatureAnimationPlaying = true;
+		
+		temperatureAnimationMarkerOptions.clear();
+		
+		beginTemperatureAnimation(temperatureAnimationStep);
+	
+	}
+	
+	private void displayTemperatureFrame(int frame) {
+		temperatureAnimationStep = frame;
+		Iterator<TemperatureForecast> temperatureIterator = forecastRecents
+				.iterator();
+		int num = 0;
+		mMap.clear();
+		while (temperatureIterator.hasNext()) {
+			TemperatureForecast forecast = temperatureIterator.next();
+			try {
+				MarkerOptions markerOpts = temperatureAnimationMarkerOptions.get(num);
+				if (forecast.getForecastHour() == frame) {
+					mMap.addMarker(markerOpts);
+				}
+			} catch(IndexOutOfBoundsException ioobe) {
+				// 
+			}
+			num++;
+		}
+	}
+	
+	private class TemperatureAnimator implements Runnable {
+
+		public void stop() {
+			log("stoping temp animation");
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
+			temperatureAnimationPlaying = false;
+		}
+		
+		public void reset() {
+			log("resetting temp animation");
+			temperatureAnimationStep = 0;
+			
+			animationProgress.setProgress(animationStep);
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
+			temperatureAnimationPlaying = true;
+		}
+		
+		public void showTemperatureFrame(int frameNumber) {
+			pause();
+			displayTemperatureFrame(frameNumber);
+		}
+		
+		public void pause() {
+			temperatureAnimationPlaying = false;
+			animationHandler.removeCallbacks(this);
+			imageButtonPlay.setImageResource(R.drawable.ic_play);
+		}
+		
+		public void run() {
+			displayTemperatureFrame(temperatureAnimationStep);
+			imageButtonPlay.setImageResource(R.drawable.ic_pause);
+			animationProgress.setProgress(temperatureAnimationStep);
+			temperatureAnimationStep++;
+			if (temperatureAnimationStep < 8) {
+				animationHandler.postDelayed(this, 500);
+			} else {
+				stop();
+			}
+		}
+	}
 	
 	private void addTemperaturesToMap() {
 		log("adding temperature icons to map");
 		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
 
+		forecastRecents.clear();
+		
 		iconFactory.setBackground(null);
 		// iconFactory.setColor(Color.rgb(230, 230, 230));
 		iconFactory.setStyle(R.style.MapTemperatureBackground);
@@ -2796,24 +2956,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 
-		
-		for(ForecastLocation location : liveMapForecasts) {
-			Cursor forecastCursor = db.getTemperatureForecastsById(location.getLocationID());
-			ArrayList<TemperatureForecast> currentLocationTemperatures = new ArrayList<TemperatureForecast>();
-			while(forecastCursor.moveToNext()) {
-				// id = 1
-				String mapStartTime = forecastCursor.getString(2);
-				int mapHour = forecastCursor.getInt(3);
-				int mapScale = forecastCursor.getInt(4);
-				double mapValue = forecastCursor.getDouble(5);
-				TemperatureForecast forecast = new TemperatureForecast(location.getLocationID(), mapScale, mapValue, mapStartTime, mapHour);
-				
-				currentLocationTemperatures.add(forecast);
-			}
-			location.setTemperatures(currentLocationTemperatures);
-			log("location " + location.getLocationID() + " has " + location.getTemperatures().size() + " temperature forecasts");
-		}
-		
 		db.close();
 	}
 	
