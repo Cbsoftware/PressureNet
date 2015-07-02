@@ -1030,6 +1030,9 @@ public class BarometerNetworkActivity extends Activity implements
 						*/
 						mMap.clear();
 						
+						forecastRecents.clear();
+						temperatureAnimationMarkerOptions.clear();
+						
 						addTemperaturesToMap();
 						addLiveMarkersToMap();
 					}
@@ -2730,7 +2733,7 @@ public class BarometerNetworkActivity extends Activity implements
 			LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
 
 	        MarkerOptions markerOptions = new MarkerOptions().
-	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(displayTemperatureValue(forecast.getTemperatureValue(), "##")))).
+	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(forecast.getDisplayTempValue()))).
 	                position(position).
 	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
@@ -2747,6 +2750,7 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 		forecastRecents.clear();
+		temperatureAnimationMarkerOptions.clear();
 		
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();
@@ -2774,7 +2778,7 @@ public class BarometerNetworkActivity extends Activity implements
 		db.close();
 		temperatureAnimationStep = 0;
 		animationProgress.setProgress(0);
-		animationProgress.setMax(8);
+		animationProgress.setMax(7);
 		animationProgress.setEnabled(true);
 		
 		temperatureAnimationPlaying = true;
