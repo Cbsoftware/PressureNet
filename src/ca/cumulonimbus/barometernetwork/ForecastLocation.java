@@ -1,17 +1,28 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.util.ArrayList;
+
 public class ForecastLocation {
 
 	private String locationID;
 	private double latitude;
 	private double longitude;
 	
+	private ArrayList<TemperatureForecast> temperatures;
+
 	public ForecastLocation(String id, double lat, double lon) {
 		locationID = id;
 		latitude = lat;
 		longitude = lon;
 	}
 
+	public ArrayList<TemperatureForecast> getTemperatures() {
+		return temperatures;
+	}
+	public void setTemperatures(ArrayList<TemperatureForecast> temperatures) {
+		this.temperatures = temperatures;
+	}
+	
 	public String getLocationID() {
 		return locationID;
 	}

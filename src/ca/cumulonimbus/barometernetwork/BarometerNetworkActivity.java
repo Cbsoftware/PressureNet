@@ -90,13 +90,11 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -105,7 +103,6 @@ import android.widget.Toast;
 import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
-import ca.cumulonimbus.pressurenetsdk.CbContributions;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
@@ -275,7 +272,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private long lastSubmitStart = 0;
 
-	private final int DEFAULT_ZOOM = 9;
+	private final int DEFAULT_ZOOM = 10;
 	
 	private static final String moon_phase_name[] = { "New Moon", // 0
 			"Waxing crescent", // 1
@@ -314,6 +311,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private ListView drawerList;
 	
 	ArrayList<MarkerOptions> liveMarkerOptions = new ArrayList<MarkerOptions>();
+	
+	ArrayList<ForecastLocation> liveMapForecasts = new ArrayList<ForecastLocation>();
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -461,7 +460,6 @@ public class BarometerNetworkActivity extends Activity implements
 			String responseText = "";
 			try {
 				DefaultHttpClient client = new DefaultHttpClient();
-				
 
 				String serverURL = PressureNETConfiguration.TEMPERATURE_FORECASTS;
 
@@ -508,7 +506,7 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 
 	}
-	
+
 	private void processJSONTemperatures(String json) {
 		try {
 			log("finished downloading, now processing json temperatures");
@@ -550,15 +548,13 @@ public class BarometerNetworkActivity extends Activity implements
 				}
 
 			}
-			log("created temperature arraylist, size " + forecastLocations.size() ); 
-			
-			//log("temperature forecast array index 0 is " + forecastArray.getJSONObject(0).toString());
+			log("created both arraylists, size " + forecastLocations.size() + ", " + temperatureForecasts.size() ); 
 			
 			db.addTemperatureForecastArrayList(temperatureForecasts);
 			log("added temp forecast array list");
 			db.addForecastLocationArrayList(forecastLocations);
 			db.close();
-			log("finished adding temperature locations to db");
+			log("added locations to db");
 		} catch(JSONException jsone) {
 			log("app failed to parse temperature json: " + jsone.getMessage());
 		}
@@ -2701,7 +2697,6 @@ public class BarometerNetworkActivity extends Activity implements
 		iconFactory.setStyle(R.style.MapTemperatureBackground);
 		iconFactory.setTextAppearance(R.style.MapTemperatureText);
 		
-		
 		LatLngBounds bounds = mMap.getProjection()
 				.getVisibleRegion().latLngBounds;
 		visibleBound = bounds;
@@ -2739,13 +2734,16 @@ public class BarometerNetworkActivity extends Activity implements
 		int q2Count = 0;
 		int q3Count = 0;
 		int q4Count = 0;
-		int maxQ = 2;
+		int maxQ = 1;
+		
+		String forecastID = "";
 		
 		while(cursor.moveToNext()) {
-			lat = cursor.getDouble(0);
-			lon = cursor.getDouble(1);
-			value = cursor.getDouble(2);
-			scale = cursor.getInt(3);
+			forecastID = cursor.getString(0);
+			lat = cursor.getDouble(1);
+			lon = cursor.getDouble(2);
+			value = cursor.getDouble(3);
+			scale = cursor.getInt(4);
 			
 			String displayTempValue = "";
 			if(scale == 2) {
@@ -2761,7 +2759,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			
 			int q = whichMapQ(lat, lon);
-			log ("considering adding temp to q" + q);
+			
 			if (q == 1) {
 				q1Count++;
 				if(q1Count > maxQ) {
@@ -2785,6 +2783,10 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			
 			addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
+			
+			ForecastLocation location = new ForecastLocation(forecastID, lat, lon);
+			liveMapForecasts.add(location);
+			
 
 			log("adding temp icon for value " + value);
 			count++;
@@ -2792,6 +2794,24 @@ public class BarometerNetworkActivity extends Activity implements
 			if(count> 20) {
 				break;
 			}
+		}
+
+		
+		for(ForecastLocation location : liveMapForecasts) {
+			Cursor forecastCursor = db.getTemperatureForecastsById(location.getLocationID());
+			ArrayList<TemperatureForecast> currentLocationTemperatures = new ArrayList<TemperatureForecast>();
+			while(forecastCursor.moveToNext()) {
+				// id = 1
+				String mapStartTime = forecastCursor.getString(2);
+				int mapHour = forecastCursor.getInt(3);
+				int mapScale = forecastCursor.getInt(4);
+				double mapValue = forecastCursor.getDouble(5);
+				TemperatureForecast forecast = new TemperatureForecast(location.getLocationID(), mapScale, mapValue, mapStartTime, mapHour);
+				
+				currentLocationTemperatures.add(forecast);
+			}
+			location.setTemperatures(currentLocationTemperatures);
+			log("location " + location.getLocationID() + " has " + location.getTemperatures().size() + " temperature forecasts");
 		}
 		
 		db.close();

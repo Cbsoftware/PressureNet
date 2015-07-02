@@ -153,7 +153,7 @@ public class PnDb {
 	}
 	
 	public Cursor getMapTemperatures(double minLat, double minLon, double maxLat, double maxLon) {
-		String query = "SELECT " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE + ", " + KEY_TEMP_FORECAST_SCALE
+		String query = "SELECT locations." + KEY_FORECAST_LOCATION_ID + ", " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE + ", " + KEY_TEMP_FORECAST_SCALE
 				+ " FROM " + FORECAST_LOCATIONS + " locations INNER JOIN " + TEMPERATURES + " temperatures "
 				+ "ON locations." + KEY_FORECAST_LOCATION_ID + "=temperatures." + KEY_FORECAST_LOCATION_ID + " WHERE "
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "
@@ -162,7 +162,16 @@ public class PnDb {
 		log("map temperature query " + query);
 		String[] locationParams = new String[] {minLat + "", maxLat + "", minLon + "", maxLon + ""};
 		Cursor cursor = mDB.rawQuery(query, locationParams);
-				
+
+		return cursor;
+	}
+	
+	public Cursor getTemperatureForecastsById(String forecastID) { // start time, hour, scale, value
+		Cursor cursor = mDB.query(false, TEMPERATURES, new String[] {
+				KEY_ROW_ID, KEY_FORECAST_LOCATION_ID, KEY_TEMP_FORECAST_START_TIME, KEY_TEMP_FORECAST_HOUR, KEY_TEMP_FORECAST_SCALE, KEY_TEMP_FORECAST_VALUE },
+				KEY_FORECAST_LOCATION_ID + "=?", new String[] {
+				forecastID}, null, null, null, null);
+		
 		return cursor;
 	}
 	
