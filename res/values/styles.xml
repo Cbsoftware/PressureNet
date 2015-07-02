@@ -48,6 +48,18 @@
         <item name="android:textSize">14sp</item>
     </style>
     
+    <style name="MapTemperatureTextRising" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#FF0000</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    
+    <style name="MapTemperatureTextFalling" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#0000FF</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+        
+        
+        
     <style name="MapTemperatureBackground" parent="@android:style/TextAppearance">
         <item name="android:background">#FFFFFF</item>
     </style>

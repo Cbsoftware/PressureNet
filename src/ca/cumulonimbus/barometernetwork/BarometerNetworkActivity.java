@@ -1032,6 +1032,7 @@ public class BarometerNetworkActivity extends Activity implements
 						
 						forecastRecents.clear();
 						temperatureAnimationMarkerOptions.clear();
+						liveMapForecasts.clear();
 						
 						addTemperaturesToMap();
 						addLiveMarkersToMap();
@@ -2728,16 +2729,26 @@ public class BarometerNetworkActivity extends Activity implements
 		iconFactory.setTextAppearance(R.style.MapTemperatureText);
 				
 		
-		
+		TemperatureForecast previous = forecastRecents.get(0);
 		for (TemperatureForecast forecast : forecastRecents) {
 			LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
 
+			if(previous.getTemperatureValue() < forecast.getTemperatureValue()) {
+				iconFactory.setTextAppearance(R.style.MapTemperatureTextRising);
+			} else if(previous.getTemperatureValue() > forecast.getTemperatureValue()) {
+				iconFactory.setTextAppearance(R.style.MapTemperatureTextFalling);
+			} else {	
+				iconFactory.setTextAppearance(R.style.MapTemperatureText);
+				
+			}
+			
 	        MarkerOptions markerOptions = new MarkerOptions().
 	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(forecast.getDisplayTempValue()))).
 	                position(position).
 	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
 	        temperatureAnimationMarkerOptions.add(markerOptions);
+	        previous = forecast;
 		}
 		log("added markers to list, count " + temperatureAnimationMarkerOptions.size());
 
@@ -2898,7 +2909,7 @@ public class BarometerNetworkActivity extends Activity implements
 		int q2Count = 0;
 		int q3Count = 0;
 		int q4Count = 0;
-		int maxQ = 1;
+		int maxQ = 2;
 		
 		String forecastID = "";
 		
