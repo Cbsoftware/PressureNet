@@ -528,6 +528,8 @@ public class BarometerNetworkActivity extends Activity implements
 			PnDb db = new PnDb(getApplicationContext());
 			db.open();
 			
+			db.deleteAllTemperatureData();
+			
 			for(int i = 0; i< forecastArray.length(); i++ ){
 				
 				// Location

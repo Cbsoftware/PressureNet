@@ -175,6 +175,14 @@ public class PnDb {
 		return cursor;
 	}
 	
+	public void deleteAllTemperatureData() {
+		String deleteLocations = "DELETE FROM " + FORECAST_LOCATIONS;
+		String deleteForecasts = "DELETE FROM " + TEMPERATURES;
+		
+		mDB.execSQL(deleteForecasts);
+		mDB.execSQL(deleteLocations);
+	}
+	
 	/**
 	 * Add new forecast location
 	 * @return
