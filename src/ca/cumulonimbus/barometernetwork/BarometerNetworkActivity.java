@@ -208,6 +208,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private TemperatureAnimator temperatureAnimator = new TemperatureAnimator();
 	private ArrayList<MarkerOptions> temperatureAnimationMarkerOptions = new ArrayList<MarkerOptions>();
 	private ArrayList<TemperatureForecast> forecastRecents = new ArrayList<TemperatureForecast>();
+	private String activeForecastStartTime = "";
 	
 	String apiServerURL = CbConfiguration.SERVER_URL_PRESSURENET + "list/?";
 
@@ -2788,6 +2789,11 @@ public class BarometerNetworkActivity extends Activity implements
 			log("location " + location.getLocationID() + " has " + location.getTemperatures().size() + " temperature forecasts");
 		}
 		
+		activeForecastStartTime = liveMapForecasts.get(0).getTemperatures().get(0).getStartTime();
+		
+		updateAnimationTime(liveMapForecasts.get(0).getTemperatures().get(0).getStartTime(), 0);
+	
+		
 		db.close();
 		temperatureAnimationStep = 0;
 		animationProgress.setProgress(0);
@@ -2800,6 +2806,23 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		beginTemperatureAnimation(temperatureAnimationStep);
 	
+	}
+	
+	private void updateAnimationTime(String startTime, int hour) {
+		try {
+			String dateString = startTime; 
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+			Date d = df.parse(dateString);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(d);
+			cal.add(Calendar.HOUR, hour);
+			
+			SimpleDateFormat display = new SimpleDateFormat("MMM dd HH:mm");
+			textAnimationInfo.setText(display.format(cal.getTime()));
+			
+		} catch (java.text.ParseException e) {
+			log("app parse exception " + e.getMessage());
+		}
 	}
 	
 	private void displayTemperatureFrame(int frame) {
@@ -2820,6 +2843,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			num++;
 		}
+		
+		updateAnimationTime(activeForecastStartTime, frame);
+		
 	}
 	
 	private class TemperatureAnimator implements Runnable {
