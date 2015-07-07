@@ -446,7 +446,8 @@ public class BarometerNetworkActivity extends Activity implements
 	    		growPressureNET();
 	    	} else if (position == 7) {
 	    		// Temperature test
-	    		downloadTemperatures();
+	    		// downloadTemperatures();
+	    		setForecastServiceAlarm();
 	    	} else {
 	    		log("navigation drawer unknown event");
 	    	}
@@ -454,127 +455,17 @@ public class BarometerNetworkActivity extends Activity implements
 	    }
 	}
 	
-	private void downloadTemperatures() {
-		TemperatureDownloader temps = new TemperatureDownloader();
-		temps.execute("");
+	private void setForecastServiceAlarm() {
+		log("app setting forecast service alarm");
+		ForecastAlarm alarm = new ForecastAlarm();
+		long updateFrequency = 1000 * 60 * 60;
+		alarm.setAlarm(getApplicationContext(), updateFrequency);
 	}
 	
-	@SuppressWarnings("deprecation")
-	public class TemperatureDownloader extends AsyncTask<String, String, String> {
 
-		@Override
-		protected String doInBackground(String... params) {
-			String responseText = "";
-			try {
-				DefaultHttpClient client = new DefaultHttpClient();
-
-				String serverURL = PressureNETConfiguration.TEMPERATURE_FORECASTS;
-
-				log("app downloading temperature forecasts");
-				HttpGet get = new HttpGet(serverURL);
-				// Execute the GET call and obtain the response
-				HttpResponse getResponse = client.execute(get);
-				HttpEntity responseEntity = getResponse.getEntity()	;
-				log("temperature response " + responseEntity.getContentLength());
-				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent(), "UTF-8"));
-				responseText = reader.readLine();
-				/*
-				BufferedReader r = new BufferedReader(new InputStreamReader(
-						responseEntity.getContent()));
-				
-				
-
-				StringBuilder total = new StringBuilder();
-				String line;
-				if (r != null) {
-					while ((line = r.readLine()) != null) {
-						total.append(line);
-					}
-					responseText = total.toString();
-				}
-				*/
-			} catch (Exception e) {
-				log("app temperature exception " + e.getMessage());
-			}
-			return responseText;
-		}
-
-		protected void onPostExecute(String result) {
-			processJSONTemperatures(result);
-			
-		}
-
-		
-		private void log(String text) {
-			if(PressureNETConfiguration.DEBUG_MODE) {
-				System.out.println(text);
-			}
-		}
-
-	}
-
-	private void processJSONTemperatures(String json) {
-		try {
-			log("finished downloading, now processing json temperatures");
-			JSONObject object = new JSONObject(json);
-			JSONArray forecastArray = object.getJSONArray("data");
-			
-			String forecastID;
-			double latitude;
-			double longitude;
-			ArrayList<ForecastLocation> forecastLocations = new ArrayList<ForecastLocation>();
-			ArrayList<TemperatureForecast> temperatureForecasts = new ArrayList<TemperatureForecast>();
-			
-			PnDb db = new PnDb(getApplicationContext());
-			db.open();
-			
-			db.deleteAllTemperatureData();
-			
-			for(int i = 0; i< forecastArray.length(); i++ ){
-				
-				// Location
-				
-				JSONObject row = forecastArray.getJSONObject(i);
-				forecastID = row.getString("id");
-				JSONObject location = row.getJSONObject("location");
-				latitude = location.getDouble("latitude");
-				longitude = location.getDouble("longitude");
-				forecastLocations.add(new ForecastLocation(forecastID, latitude, longitude));
-				
-				// Temperature forecasts
-				JSONObject forecastObject = row.getJSONObject("temperatureForecast");
-				String forecastTime = forecastObject.getString("date");
-				JSONArray forecastTemps = forecastObject.getJSONArray("forecast");
-				
-				
-				for(int j = 0; j < forecastTemps.length(); j++) {
-					JSONObject forecastRow = forecastTemps.getJSONObject(j);
-					int scale = forecastRow.getInt("scale");
-					double degrees = forecastRow.getDouble("degrees");
-					
-					temperatureForecasts.add(new TemperatureForecast(forecastID, scale, degrees, forecastTime, j));
-				}
-
-			}
-			log("created both arraylists, size " + forecastLocations.size() + ", " + temperatureForecasts.size() ); 
-			
-			db.addTemperatureForecastArrayList(temperatureForecasts);
-			log("added temp forecast array list");
-			db.addForecastLocationArrayList(forecastLocations);
-			db.close();
-			log("added locations to db");
-		} catch(JSONException jsone) {
-			log("app failed to parse temperature json: " + jsone.getMessage());
-		}
-		
-		
-	}
-	
 	/** Swaps fragments in the main content view */
 	private void selectItem(int position) {
 	    // Create a new fragment and specify the planet to show based on position
-		
 
 
 	    // Highlight the selected item, update the title, and close the drawer
@@ -2765,6 +2656,11 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		forecastRecents.clear();
 		temperatureAnimationMarkerOptions.clear();
+		
+		if(liveMapForecasts.size()<1) {
+			log("app attempting to play temperature animation; size 0, bailing");
+			return;
+		}
 		
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();

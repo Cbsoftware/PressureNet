@@ -93,6 +93,11 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="ca.cumulonimbus.barometernetwork.ForecastService"
+            android:enabled="true" >
+        </service>
+        
         <activity android:name="org.achartengine.GraphicalActivity" />
         <activity
             android:name="ca.cumulonimbus.barometernetwork.NewWelcomeActivity"
@@ -269,6 +274,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name="ca.cumulonimbus.barometernetwork.ForecastAlarm">
+            <intent-filter>
+                <action android:name="ca.cumulonimbus.barometernetwork.ACTION_UPDATE_FORECAST" >
+                </action>
+            </intent-filter>
+        </receiver>
+        
         <service
             android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
             android:enabled="true" >
@@ -276,25 +289,6 @@
                 <action android:name="ca.cumulonimbus.barometernetwork.WidgetProvider.ACTION_UPDATEUI" />
             </intent-filter>
         </service>
-        <!--
-        Service in charge of handling requests from AlarmPad to update the data to be displayed 
-		when the alarm rings. AlarmPad integration not yet active.
-        -->
-        <!--
-        <service android:name="ca.cumulonimbus.extensions.alarmpad.AlarmPadExtension"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/app_name"
-            android:permission="com.mindmeapp.extensions.permission.READ_EXTENSION_DATA">
-            <intent-filter>
-                <action android:name="com.mindmeapp.extensions.Extension" />
-            </intent-filter>
-            <meta-data android:name="protocolVersion" android:value="1" />
-            <meta-data android:name="worldReadable" android:value="true" />
-            <meta-data android:name="description"
-                android:value="@string/extension_description" />
-        </service>
-        -->
-
         <uses-library android:name="com.google.android.maps" />
 
         <meta-data
