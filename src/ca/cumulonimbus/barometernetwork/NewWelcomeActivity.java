@@ -75,6 +75,15 @@ public class NewWelcomeActivity extends FragmentActivity {
 
 		TextView actionBarTextView = (TextView) findViewById(actionBarTitleId);
 		actionBarTextView.setTextColor(Color.WHITE);
+		
+		setForecastServiceAlarm();
+	}
+	
+	private void setForecastServiceAlarm() {
+		log("app setting forecast service alarm");
+		ForecastAlarm alarm = new ForecastAlarm();
+		long updateFrequency = 1000 * 60 * 60;
+		alarm.setAlarm(getApplicationContext(), updateFrequency);
 	}
 
 	/**

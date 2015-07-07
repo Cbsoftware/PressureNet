@@ -43,6 +43,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -320,6 +321,7 @@ public class BarometerNetworkActivity extends Activity implements
 	ArrayList<MarkerOptions> liveMarkerOptions = new ArrayList<MarkerOptions>();
 	
 	ArrayList<ForecastLocation> liveMapForecasts = new ArrayList<ForecastLocation>();
+	private String mapStartTime = "";
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -1226,6 +1228,7 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				if (!temperatureAnimationPlaying) {
 					log("play button pressed, not animating, starting temperature animation");
+					prepareTemperatureAnimation();
 					playTemperatureAnimation();
 					
 				} else {
@@ -2650,7 +2653,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 	
-	private void playTemperatureAnimation() {
+	private void prepareTemperatureAnimation() {
 		if (mMap == null) {
 			return;
 		}
@@ -2687,10 +2690,14 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		activeForecastStartTime = liveMapForecasts.get(0).getTemperatures().get(0).getStartTime();
 		
-		updateAnimationTime(liveMapForecasts.get(0).getTemperatures().get(0).getStartTime(), 0);
-	
 		
 		db.close();
+	
+	}
+	
+	private void playTemperatureAnimation() {
+		
+		updateAnimationTime(liveMapForecasts.get(0).getTemperatures().get(0).getStartTime(), 0);
 		temperatureAnimationStep = 0;
 		animationProgress.setProgress(0);
 		animationProgress.setMax(7);
@@ -2709,11 +2716,16 @@ public class BarometerNetworkActivity extends Activity implements
 			String dateString = startTime; 
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 			Date d = df.parse(dateString);
+			
 			Calendar cal = Calendar.getInstance();
+			
+			// time zone hack
+			int offset = cal.getTimeZone().getRawOffset() / 1000;
 			cal.setTime(d);
 			cal.add(Calendar.HOUR, hour);
+			cal.add(Calendar.SECOND, offset);
 			
-			SimpleDateFormat display = new SimpleDateFormat("MMM dd HH:mm");
+			SimpleDateFormat display = new SimpleDateFormat("MMM d h:mm a");
 			textAnimationInfo.setText(display.format(cal.getTime()));
 			
 		} catch (java.text.ParseException e) {
@@ -2817,85 +2829,97 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 		
-		PnDb db = new PnDb(getApplicationContext());
-		db.open();
-		Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
-		double lat = 0;
-		double lon = 0;
-		double value = 0;
-		int scale = 0;
-		
-		int count = 0;
-		log("received " + cursor.getCount() + " temperatures");
-		
-		// limit a few per map quadrant
-		int q1Count = 0;
-		int q2Count = 0;
-		int q3Count = 0;
-		int q4Count = 0;
-		int maxQ = 2;
-		
-		String forecastID = "";
-		
-		while(cursor.moveToNext()) {
-			forecastID = cursor.getString(0);
-			lat = cursor.getDouble(1);
-			lon = cursor.getDouble(2);
-			value = cursor.getDouble(3);
-			scale = cursor.getInt(4);
+		try {
+			PnDb db = new PnDb(getApplicationContext());
+			db.open();
+			Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
+			double lat = 0;
+			double lon = 0;
+			double value = 0;
+			int scale = 0;
+			String startTime = "";
 			
-			String displayTempValue = "";
-			if(scale == 2) {
-				// Temperature arrived in degrees F
-				double tempInC = ((value - 32)*5)/9;
-				displayTempValue = displayTemperatureValue(tempInC, "##");
-			} else if (scale == 1) {
-				// Temperature arrived in degrees C
-				displayTempValue = displayTemperatureValue(value, "##");
-			} else {
-				// unknown scale! 
-				continue;
-			}
+			int count = 0;
+			log("received " + cursor.getCount() + " temperatures");
 			
-			int q = whichMapQ(lat, lon);
+			// limit a few per map quadrant
+			int q1Count = 0;
+			int q2Count = 0;
+			int q3Count = 0;
+			int q4Count = 0;
+			int maxQ = 2;
 			
-			if (q == 1) {
-				q1Count++;
-				if(q1Count > maxQ) {
+			String forecastID = "";
+			
+			while(cursor.moveToNext()) {
+				forecastID = cursor.getString(0);
+				lat = cursor.getDouble(1);
+				lon = cursor.getDouble(2);
+				value = cursor.getDouble(3);
+				scale = cursor.getInt(4);
+				startTime = cursor.getString(5);
+				
+				
+				String displayTempValue = "";
+				if(scale == 2) {
+					// Temperature arrived in degrees F
+					double tempInC = ((value - 32)*5)/9;
+					displayTempValue = displayTemperatureValue(tempInC, "##");
+				} else if (scale == 1) {
+					// Temperature arrived in degrees C
+					displayTempValue = displayTemperatureValue(value, "##");
+				} else {
+					// unknown scale! 
 					continue;
 				}
-			} else if (q == 2) {
-				q2Count++;
-				if(q2Count > maxQ) {
-					continue;
+				
+				int q = whichMapQ(lat, lon);
+				
+				if (q == 1) {
+					q1Count++;
+					if(q1Count > maxQ) {
+						continue;
+					}
+				} else if (q == 2) {
+					q2Count++;
+					if(q2Count > maxQ) {
+						continue;
+					}
+				} else if (q == 3) {
+					q3Count++;
+					if(q3Count > maxQ) {
+						continue;
+					}
+				} else if (q == 4) {
+					q4Count++;
+					if(q4Count > maxQ) {
+						continue;
+					}
 				}
-			} else if (q == 3) {
-				q3Count++;
-				if(q3Count > maxQ) {
-					continue;
-				}
-			} else if (q == 4) {
-				q4Count++;
-				if(q4Count > maxQ) {
-					continue;
-				}
-			}
-			
-			addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
-			
-			ForecastLocation location = new ForecastLocation(forecastID, lat, lon);
-			liveMapForecasts.add(location);
-			
+				
+				addIcon(iconFactory, displayTempValue, new LatLng(lat, lon));
+				
+				ForecastLocation location = new ForecastLocation(forecastID, lat, lon);
+				liveMapForecasts.add(location);
+				
 
-			log("adding temp icon for value " + value);
-			count++;
-			
-			if(count> 20) {
-				break;
+				log("adding temp icon for value " + value);
+				count++;
+				
+				if(count> 20) {
+					break;
+				}
 			}
+			mapStartTime = startTime;
+
+			updateAnimationTime(mapStartTime, 0);
+			
+			db.close();
+		} catch (SQLiteDatabaseLockedException locke) {
+			log ("app db locked, cannot add forecast map temps");
 		}
-
-		db.close();
+		
+		//prepareTemperatureAnimation();
 	}
 	
 	private int whichMapQ(double lat, double lon) {

@@ -51,15 +51,15 @@ public class PnDb {
 	private static final String KEY_ALERT_ISSUE_TIME = "issue_time";
 	
 	// Forecast Locations
-	private static final String KEY_FORECAST_LOCATION_ID = "forecast_id";
-	private static final String KEY_FORECAST_LATITUDE = "latitude";
-	private static final String KEY_FORECAST_LONGITUDE = "longitude";
+	public static final String KEY_FORECAST_LOCATION_ID = "forecast_id";
+	public static final String KEY_FORECAST_LATITUDE = "latitude";
+	public static final String KEY_FORECAST_LONGITUDE = "longitude";
 	
 	// Temperature Forecasts
-	private static final String KEY_TEMP_FORECAST_START_TIME = "temperature_forecast_start";
-	private static final String KEY_TEMP_FORECAST_HOUR = "temperature_forecast_hour";
-	private static final String KEY_TEMP_FORECAST_SCALE = "temperature_forecast_scale";
-	private static final String KEY_TEMP_FORECAST_VALUE = "temperature_forecast_value";
+	public static final String KEY_TEMP_FORECAST_START_TIME = "temperature_forecast_start";
+	public static final String KEY_TEMP_FORECAST_HOUR = "temperature_forecast_hour";
+	public static final String KEY_TEMP_FORECAST_SCALE = "temperature_forecast_scale";
+	public static final String KEY_TEMP_FORECAST_VALUE = "temperature_forecast_value";
 	
 	private Context mContext;
 
@@ -130,6 +130,10 @@ public class PnDb {
 		mDbHelper.close();
 	}
 	
+	public SQLiteDatabase getDB() {
+		return mDB;
+	}
+	
 	private static final String FORECAST_LOCATION_INDEX = "forecast_location_idx";
 	private static final String FORECAST_HOUR_INDEX = "forecast_hour_idx";
 	
@@ -153,7 +157,7 @@ public class PnDb {
 	}
 	
 	public Cursor getMapTemperatures(double minLat, double minLon, double maxLat, double maxLon) {
-		String query = "SELECT locations." + KEY_FORECAST_LOCATION_ID + ", " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE + ", " + KEY_TEMP_FORECAST_SCALE
+		String query = "SELECT locations." + KEY_FORECAST_LOCATION_ID + ", " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ", " + KEY_TEMP_FORECAST_VALUE + ", " + KEY_TEMP_FORECAST_SCALE + ", temperatures." + KEY_TEMP_FORECAST_START_TIME 
 				+ " FROM " + FORECAST_LOCATIONS + " locations INNER JOIN " + TEMPERATURES + " temperatures "
 				+ "ON locations." + KEY_FORECAST_LOCATION_ID + "=temperatures." + KEY_FORECAST_LOCATION_ID + " WHERE "
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "
