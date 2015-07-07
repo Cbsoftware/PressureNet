@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
 
 public class ForecastService extends Service {
@@ -37,10 +38,22 @@ public class ForecastService extends Service {
 	}
 	
 	
+	private class DelayedTemperatureDownloader implements Runnable {
+
+		@Override
+		public void run() {
+			TemperatureDownloader temps = new TemperatureDownloader();
+			temps.execute("");
+		}
+		
+	}
+	
 	private void downloadTemperatures() {
 		log("forecast service downloading temperature data");
-		TemperatureDownloader temps = new TemperatureDownloader();
-		temps.execute("");
+		
+		
+		Handler handle = new Handler();
+		handle.postDelayed(new DelayedTemperatureDownloader(), 1000*30);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -170,7 +183,8 @@ public class ForecastService extends Service {
 		}
 
 		protected void onPostExecute(String result) {
-			processJSONTemperatures(result);	
+			// notify app that data is ready
+			
 		}
 		
 		private void log(String text) {
@@ -181,11 +195,6 @@ public class ForecastService extends Service {
 
 	}
 
-	private void processJSONTemperatures(String json) {
-	
-		
-	}
-	
 	
 	@Override
 	public IBinder onBind(Intent intent) {

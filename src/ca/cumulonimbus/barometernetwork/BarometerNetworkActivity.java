@@ -347,7 +347,7 @@ public class BarometerNetworkActivity extends Activity implements
 		prepareAnimationSettings();
 	}
 	
-	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!", "Temp"};
+	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!"};
 	private ActionBarDrawerToggle drawerToggle;
 	
 	private void addDrawerLayout() {
@@ -446,22 +446,11 @@ public class BarometerNetworkActivity extends Activity implements
 	    	} else if (position == 6) {
 	    		// Tell your friends
 	    		growPressureNET();
-	    	} else if (position == 7) {
-	    		// Temperature test
-	    		// downloadTemperatures();
-	    		setForecastServiceAlarm();
 	    	} else {
 	    		log("navigation drawer unknown event");
 	    	}
 	    	
 	    }
-	}
-	
-	private void setForecastServiceAlarm() {
-		log("app setting forecast service alarm");
-		ForecastAlarm alarm = new ForecastAlarm();
-		long updateFrequency = 1000 * 60 * 60;
-		alarm.setAlarm(getApplicationContext(), updateFrequency);
 	}
 	
 
@@ -945,6 +934,7 @@ public class BarometerNetworkActivity extends Activity implements
 				});
 				
 				downloadAndShowConditions();
+				addTemperaturesToMap();
 				
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
@@ -952,6 +942,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 
 		}
+		
 	}
 	
 	private void addLiveMarkersToMap() {

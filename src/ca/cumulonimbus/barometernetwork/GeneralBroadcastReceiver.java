@@ -34,22 +34,35 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 	private Context mContext;
 	private String mAppDir = "";
 	
+	private String ACTION_BOOT = "android.intent.action.BOOT_COMPLETED";
+	private String QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON";
+	
 	
     @Override
     public void onReceive(Context context, Intent intent) {
     	mContext = context;
     	
-    	try {
-    		setUpFiles();
-    	} catch (Exception e) {
-    		log(e.getStackTrace().toString());
+    	if(intent.getAction().equals(ACTION_BOOT) || intent.getAction().equals(QUICKBOOT_POWERON)) {
+    		try {
+        		setUpFiles();
+        	} catch (Exception e) {
+        		log(e.getStackTrace().toString());
+        	}
+        	
+        	try {
+        		startCbService();
+        	} catch (Exception e) {
+        		log(e.getStackTrace().toString());
+        	}
+        	
+        	
+    		log("app setting forecast service alarm");
+    		ForecastAlarm alarm = new ForecastAlarm();
+    		long updateFrequency = 1000 * 60 * 60;
+    		alarm.setAlarm(context, updateFrequency);
     	}
     	
-    	try {
-    		startCbService();
-    	} catch (Exception e) {
-    		log(e.getStackTrace().toString());
-    	}
+    	
     }
     
 	/**
