@@ -2700,7 +2700,14 @@ public class BarometerNetworkActivity extends Activity implements
 			cal.add(Calendar.HOUR, hour);
 			cal.add(Calendar.SECOND, offset);
 			
-			SimpleDateFormat display = new SimpleDateFormat("MMM d h:mm a");
+			if(cal.get(Calendar.MINUTE) >= 30) {
+				cal.add(Calendar.HOUR, 1);
+				cal.set(Calendar.MINUTE, 0);
+			} else {
+				cal.set(Calendar.MINUTE, 0);
+			}
+			
+			SimpleDateFormat display = new SimpleDateFormat("h a");
 			textAnimationInfo.setText(display.format(cal.getTime()));
 			
 		} catch (java.text.ParseException e) {
