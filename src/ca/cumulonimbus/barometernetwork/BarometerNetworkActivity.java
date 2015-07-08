@@ -280,7 +280,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private long lastSubmitStart = 0;
 
-	private final int DEFAULT_ZOOM = 10;
+	private final int DEFAULT_ZOOM = 11;
 	
 	private static final String moon_phase_name[] = { "New Moon", // 0
 			"Waxing crescent", // 1
@@ -2436,6 +2436,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			Intent intent = new Intent(this, LogViewerActivity.class);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -2908,6 +2909,8 @@ public class BarometerNetworkActivity extends Activity implements
 			db.close();
 		} catch (SQLiteDatabaseLockedException locke) {
 			log ("app db locked, cannot add forecast map temps");
+		} catch (Exception e) {
+			log ("app sql error? " + e.getMessage());
 		}
 		
 		//prepareTemperatureAnimation();

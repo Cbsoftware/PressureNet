@@ -81,6 +81,16 @@ public class LogViewerActivity extends Activity {
 		inflater.inflate(R.menu.my_data_menu, menu);
 		return true;
 	}
+	
+	
+
+	@Override
+	public void onBackPressed() {
+		overridePendingTransition(0,0);
+		super.onBackPressed();
+	}
+
+
 
 	/**
 	 * Check the available storage options. Used for logging to SD card.

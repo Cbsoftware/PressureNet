@@ -32,28 +32,16 @@ public class ForecastService extends Service {
 		
 		downloadTemperatures();
 		
-		
-	
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
 	
-	private class DelayedTemperatureDownloader implements Runnable {
-
-		@Override
-		public void run() {
-			TemperatureDownloader temps = new TemperatureDownloader();
-			temps.execute("");
-		}
-		
-	}
 	
 	private void downloadTemperatures() {
 		log("forecast service downloading temperature data");
 		
 		
-		Handler handle = new Handler();
-		handle.postDelayed(new DelayedTemperatureDownloader(), 1000*30);
+	    (new TemperatureDownloader()).execute(""); 
 	}
 	
 	@SuppressWarnings("deprecation")
