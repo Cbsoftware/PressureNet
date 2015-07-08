@@ -193,7 +193,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonMyLocation;
 
 	private SeekBar animationProgress;
-	private ImageButton imageButtonAnimationSettings;
 	
 	private Calendar calAnimationStartDate;
 	private long animationDurationInMillis = 0;
@@ -1165,7 +1164,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
-		imageButtonAnimationSettings = (ImageButton) findViewById(R.id.imageButtonAnimationSettings);
+		
 		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
 	
 
@@ -1195,22 +1194,6 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		});
 		
-		imageButtonAnimationSettings.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				Intent intent = new Intent(getApplicationContext(),
-						ConditionsAnimationSettingsActivity.class);
-				
-				intent.putExtra("animationDuration", animationDurationInMillis);
-				if(calAnimationStartDate== null) {
-					calAnimationStartDate = Calendar.getInstance();
-				}
-				intent.putExtra("calAnimationStartDate", calAnimationStartDate.getTimeInMillis());
-				startActivityForResult(intent, REQUEST_ANIMATION_PARAMS);
-			}
-		});
-
 		imageButtonPlay.setOnClickListener(new OnClickListener() {
 
 			@Override

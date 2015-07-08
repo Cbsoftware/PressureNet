@@ -218,13 +218,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="ca.cumulonimbus.barometernetwork.ConditionsAnimationSettingsActivity"
-            android:configChanges="orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:label="Animation settings"
-            android:theme="@style/CustomThemeDialog" >
-        </activity>
 
         <receiver android:name="ca.cumulonimbus.barometernetwork.NotificationSender" >
             <intent-filter>

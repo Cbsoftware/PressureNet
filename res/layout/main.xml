@@ -123,19 +123,10 @@
                     android:layout_alignParentLeft="true"
                     android:src="@drawable/ic_play" />
 
-                <ImageButton
-                    android:id="@+id/imageButtonAnimationSettings"
-                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/ic_settings" />
-
                 <SeekBar
                     android:id="@+id/animationProgress"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/imageButtonAnimationSettings"
                     android:layout_toRightOf="@id/imageButtonPlay"
                     android:enabled="false"
                     android:max="100"
