@@ -186,12 +186,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ProgressBar progressAPI;
 
-	private LinearLayout layoutAnimation;
-
 	private ImageButton buttonSearchLocations;
 
 	private ImageButton buttonMyLocation;
-
+	private String locationButtonMode = "conditions";
+	
 	private SeekBar animationProgress;
 	
 	private Calendar calAnimationStartDate;
@@ -344,6 +343,12 @@ public class BarometerNetworkActivity extends Activity implements
 		callExternalAPIs();
 		setUpMixPanel();
 		prepareAnimationSettings();
+		
+	}
+	
+	private void downloadTemperatureData() {
+		Intent tempIntent = new Intent(this, ForecastService.class);
+		startService(tempIntent);
 	}
 	
 	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!"};
@@ -902,7 +907,8 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 					
 					@Override
-					public void onCameraChange(CameraPosition arg0) {
+					public void onCameraChange(CameraPosition cameraPos) {
+						hideKeyboard();
 						//refreshMap();
 						/*
 						if(!activeMode.equals("map")) {
@@ -920,6 +926,55 @@ public class BarometerNetworkActivity extends Activity implements
 						
 						addTemperaturesToMap();
 						addLiveMarkersToMap();
+						
+						//mMap.setMyLocationEnabled(true);
+						
+						
+						// if the user location is off the map, change the Current Conditions icon to the 
+						// Go to My Location icon
+						
+						Location userLocation;
+						
+						if(bestLocation != null) {
+							userLocation = bestLocation;
+
+						} else {
+							LocationManager lm = (LocationManager) getApplicationContext()
+									.getSystemService(Context.LOCATION_SERVICE);
+							Location loc = lm
+									.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+							userLocation = loc; 
+						}
+						LatLngBounds bounds = mMap.getProjection()
+								.getVisibleRegion().latLngBounds;
+						visibleBound = bounds;
+						
+						double minLat;
+						double maxLat;
+						double minLon;
+						double maxLon;
+						
+						if (visibleBound != null) {
+							LatLng ne = visibleBound.northeast;
+							LatLng sw = visibleBound.southwest;
+							minLat = sw.latitude;
+							maxLat = ne.latitude;
+							minLon = sw.longitude;
+							maxLon = ne.longitude;
+						
+							if( (userLocation.getLatitude() < minLat) || 
+									(userLocation.getLatitude() > maxLat) ||
+									(userLocation.getLongitude() < minLon) || 
+									(userLocation.getLongitude() > maxLon)) {
+								buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
+								locationButtonMode = "locations";
+							} else {
+								buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+								locationButtonMode = "conditions";
+							}
+							
+							
+						} 
 					}
 				});
 		        
@@ -1006,6 +1061,8 @@ public class BarometerNetworkActivity extends Activity implements
 		} catch (Exception e) {
 
 		}
+		buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+		locationButtonMode = "conditions";
 	}
 
 
@@ -1029,6 +1086,8 @@ public class BarometerNetworkActivity extends Activity implements
 		} catch (Exception e) {
 
 		}
+		buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+		locationButtonMode = "conditions";
 	}
 
 	/**
@@ -1112,6 +1171,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.getString("temperature_units", "Celsius (°C)");
 	}
 
+	
 	/**
 	 * Round the api call location values to improve performance (caching)
 	 * 
@@ -1157,7 +1217,6 @@ public class BarometerNetworkActivity extends Activity implements
 		buttonGoLocation = (ImageButton) findViewById(R.id.buttonGoLocation);
 		editLocation = (EditText) findViewById(R.id.editGoLocation);
 
-		layoutAnimation = (LinearLayout) findViewById(R.id.layoutAnimation);
 		
 		buttonSearchLocations = (ImageButton) findViewById(R.id.buttonSearchLocations);
 		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
@@ -1269,23 +1328,27 @@ public class BarometerNetworkActivity extends Activity implements
 
 			@Override
 			public void onClick(View arg0) {
-				if(locationAvailable) {
-					displayMapToast(getString(R.string.locatingUser));
-
-					// Get tracker.
-					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-					    TrackerName.APP_TRACKER);
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder()
-					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-					    .setLabel("my_location")
-					    .build());
-					
-					
-					goToMyLocation(); 
+				if(locationButtonMode.equals("conditions")) {
+					launchCurrentConditionsActivity();	
 				} else {
-					displayMapToast(getString(R.string.locationServicesError));
+					if(locationAvailable) {
+						displayMapToast(getString(R.string.locatingUser));
+
+						// Get tracker.
+						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+						    TrackerName.APP_TRACKER);
+						// Build and send an Event.
+						t.send(new HitBuilders.EventBuilder()
+						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+						    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+						    .setLabel("my_location")
+						    .build());
+						
+						
+						goToMyLocation(); 
+					} else {
+						displayMapToast(getString(R.string.locationServicesError));
+					}	
 				}
 			}
 		});
@@ -2752,7 +2815,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			animationProgress.setProgress(animationStep);
 			imageButtonPlay.setImageResource(R.drawable.ic_play);
-			temperatureAnimationPlaying = true;
+			temperatureAnimationPlaying = false;
 		}
 		
 		public void showTemperatureFrame(int frameNumber) {
@@ -2874,7 +2937,7 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				} else if (q == 4) {
 					q4Count++;
-					if(q4Count > maxQ) {
+					if(q4Count > 0) {
 						continue;
 					}
 				}
@@ -2888,13 +2951,11 @@ public class BarometerNetworkActivity extends Activity implements
 				log("adding temp icon for value " + value);
 				count++;
 				
-				if(count> 20) {
-					break;
-				}
 			}
 			mapStartTime = startTime;
 
 			updateAnimationTime(mapStartTime, 0);
+			temperatureAnimator.reset();
 			
 			db.close();
 		} catch (SQLiteDatabaseLockedException locke) {

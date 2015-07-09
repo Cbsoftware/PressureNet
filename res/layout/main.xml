@@ -124,10 +124,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/round_button"
-            android:src="@drawable/ic_location_found"
+            android:src="@drawable/ic_current_map"
             android:layout_alignRight="@id/layoutAnimationHoriz"
             android:layout_above="@id/layoutAnimationHoriz"
-            android:layout_margin="12dp" />  
+            android:layout_margin="18dp" />  
 
     </RelativeLayout>
          

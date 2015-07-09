@@ -5,7 +5,8 @@
         android:enabled="true"
         android:icon="@drawable/ic_current"
         android:showAsAction="ifRoom|withText"
-        android:title="What&apos;s it like outside?"/>
+        android:title="What&apos;s it like outside?"
+        android:visible="false"/>
    	<item
 	    android:id="@+id/menu_test_forecastalerts"
 	    android:enabled="true"
