@@ -55,30 +55,11 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver  {
         	} catch (Exception e) {
         		log(e.getStackTrace().toString());
         	}
-        	
-        	
-        	Handler handler = new Handler();
-        	
-        	DelayedTemperatureDownloader downloader = new DelayedTemperatureDownloader();
-        	handler.postDelayed(downloader, 1000*30);
     	}
     	
     	
     }
     
-    
-    
-	private class DelayedTemperatureDownloader implements Runnable {
-
-		@Override
-		public void run() {
-			log("app setting forecast service alarm");
-    		ForecastAlarm alarm = new ForecastAlarm();
-    		long updateFrequency = 1000 * 60 * 60;
-    		alarm.setAlarm(mContext, updateFrequency);
-		}
-		
-	}
     
 	/**
 	 * Initiate the CbService

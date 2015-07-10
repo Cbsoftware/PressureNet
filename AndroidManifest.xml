@@ -268,14 +268,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name="ca.cumulonimbus.barometernetwork.ForecastAlarm">
-            <intent-filter>
-                <action android:name="ca.cumulonimbus.barometernetwork.ACTION_UPDATE_FORECAST" >
-                </action>
-            </intent-filter>
-        </receiver>
-        
         <service
             android:name="ca.cumulonimbus.barometernetwork.WidgetButtonService"
             android:enabled="true" >
