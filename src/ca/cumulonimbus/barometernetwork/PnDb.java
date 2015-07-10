@@ -123,6 +123,7 @@ public class PnDb {
 	public PnDb open() throws SQLException {
 		mDbHelper = new DatabaseHelper(mContext);
 		mDB = mDbHelper.getWritableDatabase();
+		mDB.enableWriteAheadLogging();
 		return this;
 	}
 
@@ -163,7 +164,7 @@ public class PnDb {
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "
 				+ "locations." + KEY_FORECAST_LONGITUDE + " > ? and locations." + KEY_FORECAST_LONGITUDE + " < ? and temperatures." 
 				+ KEY_TEMP_FORECAST_HOUR + "=0 LIMIT 20";
-		log("map temperature query " + query);
+		// log("map temperature query " + query);
 		String[] locationParams = new String[] {minLat + "", maxLat + "", minLon + "", maxLon + ""};
 		Cursor cursor = mDB.rawQuery(query, locationParams);
 

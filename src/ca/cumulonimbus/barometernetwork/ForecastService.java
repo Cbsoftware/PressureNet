@@ -104,7 +104,8 @@ public class ForecastService extends Service {
 				db.deleteAllTemperatureData();
 				
 				SQLiteDatabase mDB = db.getDB();
-				mDB.beginTransaction();
+				mDB.enableWriteAheadLogging();
+				mDB.beginTransactionNonExclusive();
 				
 				String insertTemperatureSQL = "INSERT INTO "
 						+ PnDb.TEMPERATURES

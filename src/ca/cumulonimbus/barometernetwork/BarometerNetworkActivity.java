@@ -360,6 +360,7 @@ public class BarometerNetworkActivity extends Activity implements
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
+	        	addTemperaturesToMap();
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
 	            	// make another call, this time global
@@ -857,7 +858,7 @@ public class BarometerNetworkActivity extends Activity implements
 				// System.out.println("api error");
 				//e.printStackTrace();
 			}
-			log(responseText);
+			//log(responseText);
 			return responseText;
 		}
 
@@ -959,7 +960,7 @@ public class BarometerNetworkActivity extends Activity implements
 							addTemperaturesToMap();
 						}
 						*/
-						mMap.clear();
+						
 						
 						forecastRecents.clear();
 						temperatureAnimationMarkerOptions.clear();
@@ -2922,6 +2923,8 @@ public class BarometerNetworkActivity extends Activity implements
 			PnDb db = new PnDb(getApplicationContext());
 			db.open();
 			Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
+			
+			
 			double lat = 0;
 			double lon = 0;
 			double value = 0;
@@ -2930,6 +2933,10 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			int count = 0;
 			log("received " + cursor.getCount() + " temperatures");
+			
+			if(cursor.getCount() != 0) {
+				mMap.clear();
+			}
 			
 			// limit a few per map quadrant
 			int q1Count = 0;
@@ -2992,7 +2999,7 @@ public class BarometerNetworkActivity extends Activity implements
 				liveMapForecasts.add(location);
 				
 
-				log("adding temp icon for value " + value);
+				//log("adding temp icon for value " + value);
 				count++;
 				
 			}
@@ -3037,7 +3044,7 @@ public class BarometerNetworkActivity extends Activity implements
 
         Marker addedTemp = mMap.addMarker(markerOptions);
         
-        log("added temp icon");
+        //log("added temp icon");
     }
 	 
 
