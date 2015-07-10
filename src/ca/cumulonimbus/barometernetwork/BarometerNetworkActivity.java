@@ -107,6 +107,7 @@ import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
 import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbDb;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -321,6 +322,8 @@ public class BarometerNetworkActivity extends Activity implements
 	ArrayList<ForecastLocation> liveMapForecasts = new ArrayList<ForecastLocation>();
 	private String mapStartTime = "";
 	
+	private long lastGlobalForecastCall = 0;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -359,12 +362,20 @@ public class BarometerNetworkActivity extends Activity implements
 	private BroadcastReceiver bReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
+	    	long now = System.currentTimeMillis();
 	        if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
 	        	addTemperaturesToMap();
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
 	            	// make another call, this time global
-	            	downloadTemperatureData(10);
+	            	if(now - lastGlobalForecastCall > 1000 * 60 * 60) {
+	            		log("app says it's been more than 1h since last global forecast temperature call. go ahead!");
+	            		downloadTemperatureData(10);
+		            	lastGlobalForecastCall = System.currentTimeMillis();	
+	            	} else {
+	            		log("app considered making global forecast call, but hasn't been 1h yet");
+	            	}
+	            	
 	            }
 	        }
 	    }
@@ -859,12 +870,14 @@ public class BarometerNetworkActivity extends Activity implements
 				//e.printStackTrace();
 			}
 			//log(responseText);
+			
+			globalConditionRecents = processJSONConditions(responseText);
+			conditionsHandler.post(conditionsAdder);
 			return responseText;
 		}
 
 		protected void onPostExecute(String result) {
-			globalConditionRecents = processJSONConditions(result);
-			conditionsHandler.post(conditionsAdder);
+			
 		}
 
 		
@@ -2936,6 +2949,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			if(cursor.getCount() != 0) {
 				mMap.clear();
+				addConditionsToMap();
 			}
 			
 			// limit a few per map quadrant
@@ -3047,7 +3061,103 @@ public class BarometerNetworkActivity extends Activity implements
         //log("added temp icon");
     }
 	 
+	private CbApiCall buildLocalCurrentConditionsCall(double hoursAgo) {
+		log("building map conditions call for hours: "
+				+ hoursAgo);
+		long startTime = System.currentTimeMillis()
+				- (int) ((hoursAgo * 60 * 60 * 1000));
+		long endTime = System.currentTimeMillis();
+		CbApiCall api = new CbApiCall();
 
+		double minLat = 0;
+		double maxLat = 0;
+		double minLon = 0;
+		double maxLon = 0;
+		
+		try {
+			Location userLocation;
+			if(bestLocation != null) {
+				userLocation = bestLocation;
+			} else {
+				LocationManager lm = (LocationManager) getApplicationContext()
+						.getSystemService(Context.LOCATION_SERVICE);
+				Location loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				userLocation = loc; 
+			}
+			if(userLocation.getLatitude() != 0) {
+				minLat = userLocation.getLatitude() - .1;
+				maxLat = userLocation.getLatitude() + .1;
+				minLon = userLocation.getLongitude() - .1;
+				maxLon = userLocation.getLongitude() + .1;
+			} else {
+				log("no location, bailing on csll");
+				return null;
+			}
+				
+			api.setMinLat(minLat);
+			api.setMaxLat(maxLat);
+			api.setMinLon(minLon);
+			api.setMaxLon(maxLon);
+			api.setStartTime(startTime);
+			api.setEndTime(endTime);
+			api.setLimit(500);
+			api.setCallType("Conditions");
+		} catch(NullPointerException npe) {
+			// 
+		}
+		return api;
+	}
+    
+	private ArrayList<CbCurrentCondition> getCurrentConditionsFromLocalAPI(CbApiCall currentConditionAPI) {
+		ArrayList<CbCurrentCondition> conditions = new ArrayList<CbCurrentCondition>();
+		CbDb db = new CbDb(getApplicationContext());
+		try {
+			db.open();
+			Cursor ccCursor = db.getCurrentConditions(
+					currentConditionAPI.getMinLat(),
+					currentConditionAPI.getMaxLat(),
+					currentConditionAPI.getMinLon(),
+					currentConditionAPI.getMaxLon(),
+					currentConditionAPI.getStartTime(),
+					currentConditionAPI.getEndTime(), 1000);
+
+			while (ccCursor.moveToNext()) {
+				CbCurrentCondition cur = new CbCurrentCondition();
+				Location location = new Location("network");
+				double latitude = ccCursor.getDouble(1);
+				double longitude = ccCursor.getDouble(2);
+				location.setLatitude(latitude);
+				location.setLongitude(longitude);
+				cur.setLat(latitude);
+				cur.setLon(longitude);
+				location.setAltitude(ccCursor.getDouble(3));
+				location.setAccuracy(ccCursor.getInt(4));
+				location.setProvider(ccCursor.getString(5));
+				cur.setLocation(location);
+				cur.setSharing_policy(ccCursor.getString(6));
+				cur.setTime(ccCursor.getLong(7));
+				cur.setTzoffset(ccCursor.getInt(8));
+				cur.setUser_id(ccCursor.getString(9));
+				cur.setGeneral_condition(ccCursor.getString(10));
+				cur.setWindy(ccCursor.getString(11));
+				cur.setFog_thickness(ccCursor.getString(12));
+				cur.setCloud_type(ccCursor.getString(13));
+				cur.setPrecipitation_type(ccCursor.getString(14));
+				cur.setPrecipitation_amount(ccCursor.getDouble(15));
+				cur.setPrecipitation_unit(ccCursor.getString(16));
+				cur.setThunderstorm_intensity(ccCursor.getString(17));
+				cur.setUser_comment(ccCursor.getString(18));
+				conditions.add(cur);
+			}
+		} catch (Exception e) {
+			log("app get_current_conditions failed " + e.getMessage());
+		} finally {
+			db.close();
+		}
+		return conditions;
+	}
+	
 	/**
 	 * Display user-submitted current conditions on the map
 	 */
@@ -3056,6 +3166,19 @@ public class BarometerNetworkActivity extends Activity implements
 		int totalAllowed = 3000;
 		
 		liveMarkerOptions.clear();
+		
+		try {
+			
+			
+			CbApiCall apiCall = buildLocalCurrentConditionsCall(1);
+			ArrayList<CbCurrentCondition> dbRecents = getCurrentConditionsFromLocalAPI(apiCall);
+			globalConditionRecents.addAll(dbRecents);
+			
+		} catch(Exception e) {
+			log("app failed to add recent condition deliveries to the map " + e.getMessage());
+		}
+		
+		
 		
 		if (globalConditionRecents != null) {
 			log("adding current conditions to map: "
@@ -3472,8 +3595,9 @@ public class BarometerNetworkActivity extends Activity implements
 		checkSensors();
 		updateVisibleReading();
 		
-		downloadAndShowConditions();
+		
 		addTemperaturesToMap();
+		downloadAndShowConditions();
 		
 		invalidateOptionsMenu();
 		
