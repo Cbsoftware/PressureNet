@@ -2158,6 +2158,7 @@ public class BarometerNetworkActivity extends Activity implements
 			intent.putExtra("longitude", mLongitude);
 			log("starting condition " + mLatitude + " , " + mLongitude);
 			startActivity(intent);
+			overridePendingTransition(R.anim.open_current_conditions, R.anim.close_current_conditions);
 			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
