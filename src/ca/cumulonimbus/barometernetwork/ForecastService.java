@@ -17,12 +17,17 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 
 public class ForecastService extends Service {
 
 	public static String ACTION_UPDATE_FORECAST = "ca.cumulonimbus.barometernetwork.ACTION_UPDATE_FORECAST";
+	
+	private double longitudeParam;
+	private double latitudeParam;
+	private double deltaParam;
+	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -30,18 +35,26 @@ public class ForecastService extends Service {
 		// Run a forecast update
 		log("app received action_update_forecast, running temperature forecast updates");
 		
-		downloadTemperatures();
+		downloadTemperatures(intent);
 		
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
 	
 	
-	private void downloadTemperatures() {
-		log("forecast service downloading temperature data");
+	private void downloadTemperatures(Intent intent) {
+		latitudeParam = intent.getDoubleExtra("latitude", 0.0);
+		longitudeParam = intent.getDoubleExtra("longitude", 0.0);
+		deltaParam = intent.getDoubleExtra("delta", 0.0);
 		
-		
-	    (new TemperatureDownloader()).execute(""); 
+		if(latitudeParam != 0.0) {
+			log("forecast service downloading temperature data lat " + latitudeParam + ", lon " + longitudeParam + ", delta " + deltaParam);
+			
+			(new TemperatureDownloader()).execute("");
+			
+		} else {
+			log("params are null, app not downloading temperature forecasts");
+		}
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -53,8 +66,12 @@ public class ForecastService extends Service {
 			try {
 				DefaultHttpClient client = new DefaultHttpClient();
 
+				// make a global API call unless the delta parameter is less than five, in which case add the location parameters
 				String serverURL = PressureNETConfiguration.TEMPERATURE_FORECASTS;
-
+				if(deltaParam < 5) {
+					serverURL = PressureNETConfiguration.TEMPERATURE_FORECASTS + "?latitude=" + latitudeParam + "&longitude=" + longitudeParam + "&longitudeDelta=" + deltaParam;	
+				}
+				
 				log("app downloading temperature forecasts");
 				HttpGet get = new HttpGet(serverURL);
 				// Execute the GET call and obtain the response
@@ -151,7 +168,6 @@ public class ForecastService extends Service {
 						insertTemperatures.bindDouble(5, degrees);
 						insertTemperatures.executeInsert();
 					}
-
 				}
 				mDB.setTransactionSuccessful();
 				mDB.endTransaction();
@@ -172,6 +188,9 @@ public class ForecastService extends Service {
 
 		protected void onPostExecute(String result) {
 			// notify app that data is ready
+			Intent intent = new Intent(BarometerNetworkActivity.DATA_DOWNLOAD_RESULTS);
+			intent.putExtra("delta", deltaParam);
+			LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 			
 		}
 		

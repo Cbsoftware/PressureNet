@@ -32,10 +32,12 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -75,6 +77,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.DisplayMetrics;
@@ -93,7 +96,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -131,8 +133,6 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
-
-
 	
 	public static final int NOTIFICATION_ID = 101325;
 
@@ -334,6 +334,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setLastKnownLocation();
 		startLog();
 		getStoredPreferences();
+		registerForDownloadResults();
 		setUpMap();
 		setUpUIListeners();
 		setId();
@@ -346,8 +347,49 @@ public class BarometerNetworkActivity extends Activity implements
 		
 	}
 	
-	private void downloadTemperatureData() {
+	private void registerForDownloadResults() {
+		LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(DATA_DOWNLOAD_RESULTS);
+		bManager.registerReceiver(bReceiver, intentFilter);
+	}
+	
+	public static final String DATA_DOWNLOAD_RESULTS = "ca.cumulonimbus.barometernetwork.DATA_DOWNLOAD";
+
+	private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
+	            double deltaExtra = intent.getDoubleExtra("delta", 0);
+	            if(deltaExtra < 3) {
+	            	// make another call, this time global
+	            	downloadTemperatureData(10);
+	            }
+	        }
+	    }
+	};
+	
+	private void downloadTemperatureData(double delta) {
+		log("app starting to download temperature forecast data");
+		Location userLocation;
+		if(bestLocation != null) {
+			userLocation = bestLocation;
+		} else {
+			LocationManager lm = (LocationManager) getApplicationContext()
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			userLocation = loc; 
+		}
+		
+		double latitude = userLocation.getLatitude();
+		double longitude = userLocation.getLongitude();
+		
 		Intent tempIntent = new Intent(this, ForecastService.class);
+		tempIntent.putExtra("latitude", latitude);
+		tempIntent.putExtra("longitude", longitude);
+		tempIntent.putExtra("delta", delta);
+		
 		startService(tempIntent);
 	}
 	
@@ -885,7 +927,6 @@ public class BarometerNetworkActivity extends Activity implements
 		return obsFromJSON;
 	}
 	
-
 	/**
 	 * Run map setup, update UI accordingly
 	 */
@@ -986,6 +1027,8 @@ public class BarometerNetworkActivity extends Activity implements
 						return true;
 					}
 				});
+				
+				downloadTemperatureData(2);
 				
 				downloadAndShowConditions();
 				addTemperaturesToMap();
