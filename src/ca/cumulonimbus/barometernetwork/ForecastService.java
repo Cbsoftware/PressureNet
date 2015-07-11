@@ -100,8 +100,7 @@ public class ForecastService extends Service {
 				
 				PnDb db = new PnDb(getApplicationContext());
 				db.open();
-				
-				db.deleteAllTemperatureData();
+				db.deleteOldTemperatureData();
 				
 				SQLiteDatabase mDB = db.getDB();
 				mDB.enableWriteAheadLogging();
@@ -119,7 +118,9 @@ public class ForecastService extends Service {
 						+ PnDb.KEY_TEMP_FORECAST_SCALE
 						+ ", "
 						+ PnDb.KEY_TEMP_FORECAST_VALUE
-						+ ") values (?, ?, ?, ?, ?)";
+						+ ", "
+						+ PnDb.KEY_TEMP_INSERT_TIME
+						+ ") values (?, ?, ?, ?, ?, ?)";
 				
 				String insertLocationSQL = "INSERT INTO "
 						+ PnDb.FORECAST_LOCATIONS
@@ -167,6 +168,7 @@ public class ForecastService extends Service {
 						insertTemperatures.bindLong(3, j);
 						insertTemperatures.bindLong(4, scale);
 						insertTemperatures.bindDouble(5, degrees);
+						insertTemperatures.bindLong(6, System.currentTimeMillis());
 						insertTemperatures.executeInsert();
 					}
 				}

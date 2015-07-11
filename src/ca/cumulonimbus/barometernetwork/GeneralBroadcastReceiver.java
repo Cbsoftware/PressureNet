@@ -5,30 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import ca.cumulonimbus.barometernetwork.BarometerNetworkActivity.IncomingHandler;
-import ca.cumulonimbus.barometernetwork.ForecastService.TemperatureDownloader;
-import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbService;
-import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
 
 public class GeneralBroadcastReceiver extends BroadcastReceiver  {
 

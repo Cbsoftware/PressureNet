@@ -60,6 +60,7 @@ public class PnDb {
 	public static final String KEY_TEMP_FORECAST_HOUR = "temperature_forecast_hour";
 	public static final String KEY_TEMP_FORECAST_SCALE = "temperature_forecast_scale";
 	public static final String KEY_TEMP_FORECAST_VALUE = "temperature_forecast_value";
+	public static final String KEY_TEMP_INSERT_TIME = "temperature_forecast_insert_time";
 	
 	private Context mContext;
 
@@ -92,7 +93,7 @@ public class PnDb {
 			+ " (_id integer primary key autoincrement, "
 			+ KEY_FORECAST_LOCATION_ID + " text not null, "
 			+ KEY_FORECAST_LATITUDE + " real not null, " 
-			+ KEY_FORECAST_LONGITUDE + " real not null)";
+			+ KEY_FORECAST_LONGITUDE + " real not null, UNIQUE (" + KEY_FORECAST_LOCATION_ID + ") ON CONFLICT IGNORE)";
 	
 	private static final String TEMPERATURES_TABLE_CREATE = "create table "
 			+ TEMPERATURES
@@ -101,7 +102,8 @@ public class PnDb {
 			+ KEY_TEMP_FORECAST_START_TIME + " text not null, "
 			+ KEY_TEMP_FORECAST_HOUR + " real not null, " 
 			+ KEY_TEMP_FORECAST_SCALE + " real not null,"
-			+ KEY_TEMP_FORECAST_VALUE + " real not null)";
+			+ KEY_TEMP_FORECAST_VALUE + " real not null,"
+			+ KEY_TEMP_INSERT_TIME + " real not null)";
 	
 
 	private static final String DATABASE_NAME = "PnDb";
@@ -163,7 +165,7 @@ public class PnDb {
 				+ "ON locations." + KEY_FORECAST_LOCATION_ID + "=temperatures." + KEY_FORECAST_LOCATION_ID + " WHERE "
 				+ "locations." + KEY_FORECAST_LATITUDE + " > ? and locations." + KEY_FORECAST_LATITUDE + " < ? and "
 				+ "locations." + KEY_FORECAST_LONGITUDE + " > ? and locations." + KEY_FORECAST_LONGITUDE + " < ? and temperatures." 
-				+ KEY_TEMP_FORECAST_HOUR + "=0 LIMIT 20";
+				+ KEY_TEMP_FORECAST_HOUR + "=0 ORDER BY RANDOM() LIMIT 30";
 		// log("map temperature query " + query);
 		String[] locationParams = new String[] {minLat + "", maxLat + "", minLon + "", maxLon + ""};
 		Cursor cursor = mDB.rawQuery(query, locationParams);
@@ -180,12 +182,13 @@ public class PnDb {
 		return cursor;
 	}
 	
-	public void deleteAllTemperatureData() {
-		String deleteLocations = "DELETE FROM " + FORECAST_LOCATIONS;
-		String deleteForecasts = "DELETE FROM " + TEMPERATURES;
-		
-		mDB.execSQL(deleteForecasts);
-		mDB.execSQL(deleteLocations);
+	public void deleteOldTemperatureData() {
+		log("starting delete of old temperature forecast data");
+		String deleteTemperatures = "DELETE FROM " + TEMPERATURES + " WHERE " + KEY_TEMP_INSERT_TIME + "< " + (System.currentTimeMillis() - (1000*60*60*24));
+		//String deleteForecasts = "DELETE FROM " + FORECAST_LOCATIONS; // + " WHERE " + KEY_TEMP_INSERT_TIME + "< " + (System.currentTimeMillis() - (1000*60*60*24));
+		//mDB.execSQL(deleteForecasts);
+		mDB.execSQL(deleteTemperatures);
+		log("finished delete of old temperature forecast data");
 	}
 	
 	/**

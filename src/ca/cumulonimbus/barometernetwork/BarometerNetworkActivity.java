@@ -322,8 +322,6 @@ public class BarometerNetworkActivity extends Activity implements
 	ArrayList<ForecastLocation> liveMapForecasts = new ArrayList<ForecastLocation>();
 	private String mapStartTime = "";
 	
-	private long lastGlobalForecastCall = 0;
-	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -362,22 +360,37 @@ public class BarometerNetworkActivity extends Activity implements
 	private BroadcastReceiver bReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
+	    	SharedPreferences sharedPreferences = PreferenceManager
+					.getDefaultSharedPreferences(getApplicationContext());
+			long lastGlobalForecastCall = sharedPreferences.getLong("lastGlobalForecastCall", 0);
+			
+		
+			long waitDiff = 1000 * 60 * 60; // one hour wait
 	    	long now = System.currentTimeMillis();
-	        if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
+	        
+	    	if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
 	        	addTemperaturesToMap();
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
 	            	// make another call, this time global
-	            	if(now - lastGlobalForecastCall > 1000 * 60 * 60) {
+	            	if(now - lastGlobalForecastCall > waitDiff) {
 	            		log("app says it's been more than 1h since last global forecast temperature call. go ahead!");
+	            		
 	            		downloadTemperatureData(10);
-		            	lastGlobalForecastCall = System.currentTimeMillis();	
+	            		
 	            	} else {
 	            		log("app considered making global forecast call, but hasn't been 1h yet");
 	            	}
 	            	
+	            } else {
+	            	log("app returned from making global forecast call");
+            		SharedPreferences.Editor editor = sharedPreferences.edit();
+            		lastGlobalForecastCall = System.currentTimeMillis();
+	            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
+	            	editor.commit();
 	            }
 	        }
+	        
 	    }
 	};
 	
@@ -405,7 +418,7 @@ public class BarometerNetworkActivity extends Activity implements
 		startService(tempIntent);
 	}
 	
-	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Tell your friends!"};
+	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Invite your friends!"};
 	private ActionBarDrawerToggle drawerToggle;
 	
 	private void addDrawerLayout() {
@@ -872,7 +885,8 @@ public class BarometerNetworkActivity extends Activity implements
 			//log(responseText);
 			
 			globalConditionRecents = processJSONConditions(responseText);
-			conditionsHandler.post(conditionsAdder);
+			conditionsAdder = new ConditionsAdder();
+			conditionsAdder.execute("");
 			return responseText;
 		}
 
@@ -964,26 +978,7 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCameraChange(CameraPosition cameraPos) {
 						hideKeyboard();
-						//refreshMap();
-						/*
-						if(!activeMode.equals("map")) {
-							activeMode = "map";
-							
-							addConditionsToMap();
-							addTemperaturesToMap();
-						}
-						*/
-						
-						
-						forecastRecents.clear();
-						temperatureAnimationMarkerOptions.clear();
-						liveMapForecasts.clear();
-						
-						addTemperaturesToMap();
-						addLiveMarkersToMap();
-						
-						//mMap.setMyLocationEnabled(true);
-						
+						refreshMap();
 						
 						// if the user location is off the map, change the Current Conditions icon to the 
 						// Go to My Location icon
@@ -1042,16 +1037,47 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 				
+				addTemperaturesToMap();
 				downloadTemperatureData(2);
 				
 				downloadAndShowConditions();
-				addTemperaturesToMap();
 				
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
 						Toast.LENGTH_SHORT).show();
 			}
 
+		}
+		
+	}
+	
+	private long lastMapRefresh = 0;
+	
+	public class MapRefresher implements Runnable {
+
+		@Override
+		public void run() {
+			forecastRecents.clear();
+			temperatureAnimationMarkerOptions.clear();
+			liveMapForecasts.clear();
+			
+			addTemperaturesToMap();
+			addLiveMarkersToMap();
+			lastMapRefresh = System.currentTimeMillis();
+		}
+		
+	}
+	
+	private void refreshMap() {
+		long now = System.currentTimeMillis();
+		long waitBeforeRefresh = 100; 
+		
+		if(now - lastMapRefresh > waitBeforeRefresh) {
+			Handler handler = new Handler();
+			MapRefresher refresh = new MapRefresher();
+			
+			handler.postDelayed(refresh, 100);
+			
 		}
 		
 	}
@@ -2148,20 +2174,6 @@ public class BarometerNetworkActivity extends Activity implements
 			return "--";
 		}
 	}
-
-	DialogInterface.OnClickListener dialogDeleteClickListener = new DialogInterface.OnClickListener() {
-		@Override
-		public void onClick(DialogInterface dialog, int which) {
-			switch (which) {
-			case DialogInterface.BUTTON_POSITIVE:
-				// TODO: Implement
-				break;
-
-			case DialogInterface.BUTTON_NEGATIVE:
-				break;
-			}
-		}
-	};
 	
 	/**
 	 * Some devices have barometers, other's don't. Fix up the UI a bit so that
@@ -2900,6 +2912,24 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
+	private class TemperatureAdder extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			addTemperaturesToMap();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			
+			super.onPostExecute(result);
+		}
+		
+		
+		
+	}
+	
 	private void addTemperaturesToMap() {
 		log("adding temperature icons to map");
 		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
@@ -2932,8 +2962,10 @@ public class BarometerNetworkActivity extends Activity implements
 			return;
 		}
 		
+		PnDb db = new PnDb(getApplicationContext());
+		
 		try {
-			PnDb db = new PnDb(getApplicationContext());
+			
 			db.open();
 			Cursor cursor = db.getMapTemperatures(minLat, minLon, maxLat, maxLon);
 			
@@ -2949,7 +2981,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			if(cursor.getCount() != 0) {
 				mMap.clear();
-				addConditionsToMap();
+				addLiveMarkersToMap();
 			}
 			
 			// limit a few per map quadrant
@@ -2988,21 +3020,25 @@ public class BarometerNetworkActivity extends Activity implements
 				if (q == 1) {
 					q1Count++;
 					if(q1Count > maxQ) {
+						//log("too many temp in q1");
 						continue;
 					}
 				} else if (q == 2) {
 					q2Count++;
 					if(q2Count > maxQ) {
+						//log("too many temp in q2");
 						continue;
 					}
 				} else if (q == 3) {
 					q3Count++;
 					if(q3Count > maxQ) {
+						//log("too many temp in q3");
 						continue;
 					}
 				} else if (q == 4) {
 					q4Count++;
 					if(q4Count > 0) {
+						//log("too many temp in q4");
 						continue;
 					}
 				}
@@ -3013,7 +3049,7 @@ public class BarometerNetworkActivity extends Activity implements
 				liveMapForecasts.add(location);
 				
 
-				//log("adding temp icon for value " + value);
+				log("adding temp icon for value " + value);
 				count++;
 				
 			}
@@ -3027,6 +3063,8 @@ public class BarometerNetworkActivity extends Activity implements
 			log ("app db locked, cannot add forecast map temps");
 		} catch (Exception e) {
 			log ("app sql error? " + e.getMessage());
+		} finally {
+			db.close();
 		}
 		
 		//prepareTemperatureAnimation();
@@ -3109,18 +3147,18 @@ public class BarometerNetworkActivity extends Activity implements
 		return api;
 	}
     
-	private ArrayList<CbCurrentCondition> getCurrentConditionsFromLocalAPI(CbApiCall currentConditionAPI) {
+	private ArrayList<CbCurrentCondition> getMyCurrentConditionsFromLocalAPI(CbApiCall currentConditionAPI) {
 		ArrayList<CbCurrentCondition> conditions = new ArrayList<CbCurrentCondition>();
 		CbDb db = new CbDb(getApplicationContext());
 		try {
 			db.open();
-			Cursor ccCursor = db.getCurrentConditions(
+			Cursor ccCursor = db.getMyCurrentConditions(
 					currentConditionAPI.getMinLat(),
 					currentConditionAPI.getMaxLat(),
 					currentConditionAPI.getMinLon(),
 					currentConditionAPI.getMaxLon(),
 					currentConditionAPI.getStartTime(),
-					currentConditionAPI.getEndTime(), 1000);
+					currentConditionAPI.getEndTime(), 1000, getID());
 
 			while (ccCursor.moveToNext()) {
 				CbCurrentCondition cur = new CbCurrentCondition();
@@ -3166,13 +3204,14 @@ public class BarometerNetworkActivity extends Activity implements
 		int totalAllowed = 3000;
 		
 		liveMarkerOptions.clear();
-		
+		log("about to add current conditions to map: "
+				+ globalConditionRecents.size());
 		try {
 			
 			
-			CbApiCall apiCall = buildLocalCurrentConditionsCall(1);
-			ArrayList<CbCurrentCondition> dbRecents = getCurrentConditionsFromLocalAPI(apiCall);
-			globalConditionRecents.addAll(dbRecents);
+			//CbApiCall apiCall = buildLocalCurrentConditionsCall(1);
+			//ArrayList<CbCurrentCondition> dbRecents = getMyCurrentConditionsFromLocalAPI(apiCall);
+			//globalConditionRecents.addAll(dbRecents);
 			
 		} catch(Exception e) {
 			log("app failed to add recent condition deliveries to the map " + e.getMessage());
@@ -3229,7 +3268,7 @@ public class BarometerNetworkActivity extends Activity implements
 				.snippet(minutesAgoMessage)
 				.icon(BitmapDescriptorFactory.fromBitmap(image));
 				
-				Marker marker = mMap.addMarker(options);
+				//Marker marker = mMap.addMarker(options);
 				liveMarkerOptions.add(options);
 				
 				currentCur++;
@@ -3247,12 +3286,20 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	public class ConditionsAdder implements Runnable {
+	public class ConditionsAdder extends AsyncTask<String, String, String> {
 
 		@Override
-		public void run() {
-			android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		protected String doInBackground(String... arg0) {
 			addConditionsToMap();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			for(MarkerOptions options : liveMarkerOptions) {
+				Marker marker = mMap.addMarker(options);	
+			}
+			super.onPostExecute(result);
 		}
 		
 		
