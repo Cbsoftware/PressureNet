@@ -369,7 +369,9 @@ public class BarometerNetworkActivity extends Activity implements
 	    	long now = System.currentTimeMillis();
 	        
 	    	if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
-	        	addTemperaturesToMap();
+	        	if(!temperatureAnimationPlaying) {
+	        		addTemperaturesToMap();	
+	        	}
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
 	            	// make another call, this time global
@@ -990,16 +992,16 @@ public class BarometerNetworkActivity extends Activity implements
 									(userLocation.getLatitude() > maxLat) ||
 									(userLocation.getLongitude() < minLon) || 
 									(userLocation.getLongitude() > maxLon)) {
-								if(mMap.getCameraPosition().zoom < 11) {
 									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
 									locationButtonMode = "locations";	
-								} else {
+							} else {
+								if(mMap.getCameraPosition().zoom >= DEFAULT_ZOOM) {
 									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
 									locationButtonMode = "conditions";
+								} else {
+									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
+									locationButtonMode = "locations";	
 								}
-							} else {
-								buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
-								locationButtonMode = "conditions";
 							}
 							
 							
@@ -1018,7 +1020,6 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 				
-				//addTemperaturesToMap();
 				
 				downloadTemperatureData(2);
 				
@@ -1039,13 +1040,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 		@Override
 		public void run() {
-			forecastRecents.clear();
-			temperatureAnimationMarkerOptions.clear();
-			liveMapForecasts.clear();
-			
-			addTemperaturesToMap();
-			addLiveMarkersToMap();
-			lastMapRefresh = System.currentTimeMillis();
+			if(!temperatureAnimationPlaying) {
+				forecastRecents.clear();
+				temperatureAnimationMarkerOptions.clear();
+				liveMapForecasts.clear();
+				addTemperaturesToMap();
+				addLiveMarkersToMap();
+				lastMapRefresh = System.currentTimeMillis();	
+			}
 		}
 		
 	}
