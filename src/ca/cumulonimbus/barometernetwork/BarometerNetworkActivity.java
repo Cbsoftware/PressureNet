@@ -160,7 +160,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private String mTendency = "";
 
 	public String statusText = "";
-	private int mapFontSize = 18;
+	private int mapFontSize = 18; 
 
 	Intent serviceIntent;
 
@@ -342,8 +342,9 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutNoConditionsPrompt;
 	private LinearLayout layoutNoConditionsThanks;
 	private Button buttonNotifyMe;
-	private Button buttonCloseNoConditions;
+	private ImageButton buttonCloseNoConditions;
 	private Button inviteFriends3;
+	private ImageButton buttonCloseNoConditionsPrompt;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -1035,7 +1036,7 @@ public class BarometerNetworkActivity extends Activity implements
 				});
 				
 				
-				if(isWithinSupportedGeography()) {
+				if(!isWithinSupportedGeography()) {
 					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 					buttonMyLocation.setVisibility(View.VISIBLE);
 					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
@@ -1358,11 +1359,23 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutNoConditionsThanks = (LinearLayout) findViewById(R.id.layoutNoConditionsThanks);
 
 		buttonNotifyMe = (Button) findViewById(R.id.buttonNotifyMe);
-		buttonCloseNoConditions = (Button) findViewById(R.id.buttonNoConditionsClose);
+		buttonCloseNoConditions = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt2);
+		
 		inviteFriends3 = (Button) findViewById(R.id.inviteFriends3);
+		
+		buttonCloseNoConditionsPrompt = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt);
 		
 		animationProgress.setEnabled(false);
 	
+		buttonCloseNoConditionsPrompt.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				closeNoConditionsAndLoadData();
+				
+			}
+		});
+		
 		inviteFriends3.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -1375,18 +1388,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			@Override
 			public void onClick(View v) {
-				layoutNoConditionsThanks.setVisibility(View.GONE);
-				
-				buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-				buttonMyLocation.setVisibility(View.VISIBLE);
-				RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
-				layoutAnimationHoriz.setVisibility(View.VISIBLE);
-				
-				layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
-				layoutNoConditionsPrompt.setVisibility(View.GONE);
-				
-				downloadTemperatureData(2);
-				downloadAndShowConditions();
+				closeNoConditionsAndLoadData();
 			}
 		});
 		
@@ -1611,6 +1613,20 @@ public class BarometerNetworkActivity extends Activity implements
 		});
 	}
 	
+	private void closeNoConditionsAndLoadData() {
+		layoutNoConditionsThanks.setVisibility(View.GONE);
+		
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+		buttonMyLocation.setVisibility(View.VISIBLE);
+		RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+		layoutAnimationHoriz.setVisibility(View.VISIBLE);
+		
+		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+		layoutNoConditionsPrompt.setVisibility(View.GONE);
+		
+		downloadTemperatureData(2);
+		downloadAndShowConditions();
+	}
 	
 	private void displayMapToast(String message) {
 		Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);

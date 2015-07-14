@@ -76,11 +76,11 @@
                 android:id="@+id/animationProgress"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
                 android:layout_toRightOf="@id/imageButtonPlay"
                 android:enabled="false"
                 android:max="100"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
                 android:paddingTop="6dp" />
 
             <RelativeLayout
@@ -137,44 +137,41 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/layoutAnimationHoriz"
+            android:layout_alignParentBottom="true"
             android:background="#CCFFFFFF"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingBottom="12dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:visibility="visible"
-            android:layout_alignParentBottom="true" >
+            android:paddingLeft="10dp"
+            android:paddingRight="2dp"
+            android:visibility="visible" >
 
-            <Button
+            <ImageButton
                 android:id="@+id/buttonCloseNoConditionsPrompt"
                 style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:drawableRight="@drawable/ic_menu_light_close"
-                android:text=""
-                android:textColor="@android:color/black" 
-                android:visibility="gone"/>
+                android:src="@drawable/ic_close_noconditions"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/textNoConditionsPrompt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:paddingBottom="12dp"
+                android:paddingLeft="6dp"
                 android:text="Bring PressureNet to my area!"
-                android:textSize="24sp"
-                android:paddingTop="12dp" />
-            
+                android:textSize="22sp" />
+
             <TextView
                 android:id="@+id/textNoConditionsDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/geography_description"
-                android:padding="12dp"/>
-            
-           
+                android:padding="12dp"
+                android:text="@string/geography_description" />
 
             <LinearLayout
                 android:id="@+id/layoutNoConditionsPromptButtons"
@@ -184,61 +181,67 @@
                 android:padding="4dp"
                 android:visibility="visible" >
 
-              	<EditText 
-	                android:id="@+id/editTextEmail"
-	                android:inputType="textEmailAddress"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:ems="10"
-	                android:maxEms="15"
-	                android:hint="E-mail address"
-	                android:layout_weight=".5"/>
-              	
-              	<Button 
-              	    android:id="@+id/buttonNotifyMe"
-              	    android:layout_width="wrap_content"
-              	    android:layout_height="wrap_content"
-              	    android:text="Notify me!"
-              	    android:layout_weight=".5"
-              	    android:background="@drawable/override_small"
-              	    android:padding="12dp"
-              	    android:layout_marginLeft="12dp"
-              	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
-	                
+                <EditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:ems="10"
+                    android:hint="E-mail address"
+                    android:inputType="textEmailAddress"
+                    android:maxEms="15" />
+
+                <Button
+                    android:id="@+id/buttonNotifyMe"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:layout_weight=".5"
+                    android:background="@drawable/override_small"
+                    android:padding="12dp"
+                    android:text="Notify me!" />
             </LinearLayout>
         </LinearLayout>
-        
-         <LinearLayout
+
+        <LinearLayout
             android:id="@+id/layoutNoConditionsThanks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:background="#CCFFFFFF"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingBottom="12dp"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
-            android:visibility="gone"
-            android:layout_alignParentBottom="true" >
+            android:visibility="gone" >
+
+            <ImageButton
+                android:id="@+id/buttonCloseNoConditionsPrompt2"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_close_noconditions"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/textNoConditionsThanks"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:paddingTop="12dp"
                 android:text="Awesome!"
-                android:textSize="24sp"
-                android:paddingTop="12dp" />
-            
+                android:textSize="24sp" />
+
             <TextView
                 android:id="@+id/textNoConditionsThanksDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/geography_thanks"
-                android:padding="12dp"/>
-            
-           
+                android:padding="12dp"
+                android:text="@string/geography_thanks" />
 
             <LinearLayout
                 android:id="@+id/layoutNoConditionsPromptShareButtons"
@@ -248,32 +251,21 @@
                 android:padding="4dp"
                 android:visibility="visible" >
 
-              	
-              	<Button 
-              	    android:id="@+id/buttonNoConditionsClose"
-              	    android:layout_width="wrap_content"
-              	    android:layout_height="wrap_content"
-              	    android:text="Close"
-              	    android:layout_weight=".5"
-              	    android:background="@drawable/override_small"
-              	    android:padding="12dp"
-              	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
-	                
                 <Button
                     android:id="@+id/inviteFriends3"
                     style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:layout_marginLeft="16dp"
+                    android:layout_weight=".7"
                     android:background="@drawable/override_small"
                     android:drawableLeft="@drawable/ic_share"
                     android:paddingLeft="12dp"
                     android:paddingRight="12dp"
-                    android:layout_marginLeft="16dp"
                     android:text="Invite your friends!"
-                    android:textColor="#000000" 
-                    android:visibility="visible"
-                    android:layout_weight=".5"/>
+                    android:textColor="#000000"
+                    android:visibility="visible" />
             </LinearLayout>
         </LinearLayout>
 
