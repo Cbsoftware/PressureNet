@@ -3639,6 +3639,11 @@ public class BarometerNetworkActivity extends Activity implements
 
 		invalidateOptionsMenu();
 		
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		drawerList.setItemChecked(-1, false);
+		drawerList.clearChoices();
+		
+		
 		if(hasBarometer) {
 			startSensorListeners();
 		}
