@@ -852,7 +852,7 @@ public class CurrentConditionsActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-		overridePendingTransition(R.anim.close_current_conditions, R.anim.open_current_conditions);
+		//overridePendingTransition(0, R.anim.close_current_conditions);
 	}
 
 	@Override
@@ -1075,8 +1075,8 @@ public class CurrentConditionsActivity extends Activity {
 				    .setLabel("Cancel")
 				    .build());
 				mixpanel.track("Cancel Condition", null);
-				overridePendingTransition(R.anim.close_current_conditions, R.anim.open_current_conditions);
 				finish();
+				//overridePendingTransition(0, R.anim.close_current_conditions);
 			}
 		});
 
