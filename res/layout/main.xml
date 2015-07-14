@@ -13,9 +13,9 @@
             android:id="@+id/layoutSearchControls"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:orientation="horizontal"
-            android:visibility="visible"
-            android:layout_alignParentTop="true" >
+            android:visibility="visible" >
 
             <View
                 android:id="@+id/searchDiv"
@@ -58,7 +58,7 @@
                 android:visibility="visible" />
         </LinearLayout>
 
-          <RelativeLayout
+        <RelativeLayout
             android:id="@+id/layoutAnimationHoriz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,38 +79,35 @@
                 android:layout_toRightOf="@id/imageButtonPlay"
                 android:enabled="false"
                 android:max="100"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
                 android:paddingTop="6dp" />
-	
-            <RelativeLayout 
+
+            <RelativeLayout
                 android:id="@+id/animationLabelsLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/animationProgress"
-                android:layout_alignLeft="@id/animationProgress">
-            
-	            <TextView
-	                android:id="@+id/textAnimationInfoLeft"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:gravity="left" 
-	                android:padding="12dp"
-	                android:layout_alignParentLeft="true"/>
+                android:layout_alignLeft="@id/animationProgress"
+                android:layout_below="@id/animationProgress" >
 
-	           	<TextView
-	                android:id="@+id/textAnimationInfoRight"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:gravity="left" 
-	                android:padding="12dp"
-	                android:layout_alignParentRight="true"/>
-	            
+                <TextView
+                    android:id="@+id/textAnimationInfoLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="left"
+                    android:padding="12dp" />
+
+                <TextView
+                    android:id="@+id/textAnimationInfoRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:gravity="left"
+                    android:padding="12dp" />
             </RelativeLayout>
-            
-            
         </RelativeLayout>
-        
-       
-        
+
         <ProgressBar
             android:id="@+id/progressBarAPICalls"
             style="?android:attr/progressBarStyleHorizontal"
@@ -120,14 +117,13 @@
             android:progressDrawable="@drawable/progress"
             android:visibility="gone" />
 
-        
-         <LinearLayout
+        <LinearLayout
             android:id="@+id/layoutMap"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" 
+            android:layout_above="@id/layoutAnimationHoriz"
             android:layout_below="@id/layoutSearchControls"
-            android:layout_above="@id/layoutAnimationHoriz">
+            android:orientation="vertical" >
 
             <fragment
                 android:id="@+id/map"
@@ -135,21 +131,164 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutNoConditionsPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/layoutAnimationHoriz"
+            android:background="#CCFFFFFF"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="12dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:visibility="visible"
+            android:layout_alignParentBottom="true" >
+
+            <Button
+                android:id="@+id/buttonCloseNoConditionsPrompt"
+                style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:drawableRight="@drawable/ic_menu_light_close"
+                android:text=""
+                android:textColor="@android:color/black" 
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/textNoConditionsPrompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Bring PressureNet to my area!"
+                android:textSize="24sp"
+                android:paddingTop="12dp" />
+            
+            <TextView
+                android:id="@+id/textNoConditionsDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/geography_description"
+                android:padding="12dp"/>
+            
+           
+
+            <LinearLayout
+                android:id="@+id/layoutNoConditionsPromptButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:visibility="visible" >
+
+              	<EditText 
+	                android:id="@+id/editTextEmail"
+	                android:inputType="textEmailAddress"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:ems="10"
+	                android:maxEms="15"
+	                android:hint="E-mail address"
+	                android:layout_weight=".5"/>
+              	
+              	<Button 
+              	    android:id="@+id/buttonNotifyMe"
+              	    android:layout_width="wrap_content"
+              	    android:layout_height="wrap_content"
+              	    android:text="Notify me!"
+              	    android:layout_weight=".5"
+              	    android:background="@drawable/override_small"
+              	    android:padding="12dp"
+              	    android:layout_marginLeft="12dp"
+              	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
+	                
+            </LinearLayout>
+        </LinearLayout>
         
-         
+         <LinearLayout
+            android:id="@+id/layoutNoConditionsThanks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#CCFFFFFF"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="12dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true" >
+
+            <TextView
+                android:id="@+id/textNoConditionsThanks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Awesome!"
+                android:textSize="24sp"
+                android:paddingTop="12dp" />
+            
+            <TextView
+                android:id="@+id/textNoConditionsThanksDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/geography_thanks"
+                android:padding="12dp"/>
+            
+           
+
+            <LinearLayout
+                android:id="@+id/layoutNoConditionsPromptShareButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:visibility="visible" >
+
+              	
+              	<Button 
+              	    android:id="@+id/buttonNoConditionsClose"
+              	    android:layout_width="wrap_content"
+              	    android:layout_height="wrap_content"
+              	    android:text="Close"
+              	    android:layout_weight=".5"
+              	    android:background="@drawable/override_small"
+              	    android:padding="12dp"
+              	    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"/>
+	                
+                <Button
+                    android:id="@+id/inviteFriends3"
+                    style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/override_small"
+                    android:drawableLeft="@drawable/ic_share"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:layout_marginLeft="16dp"
+                    android:text="Invite your friends!"
+                    android:textColor="#000000" 
+                    android:visibility="visible"
+                    android:layout_weight=".5"/>
+            </LinearLayout>
+        </LinearLayout>
+
         <ImageButton
             android:id="@+id/buttonMyLocation"
             style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/round_button"
-            android:src="@drawable/ic_current_map"
-            android:layout_alignRight="@id/layoutAnimationHoriz"
             android:layout_above="@id/layoutAnimationHoriz"
-            android:layout_margin="18dp" />  
-
+            android:layout_alignRight="@id/layoutAnimationHoriz"
+            android:layout_margin="18dp"
+            android:background="@drawable/round_button"
+            android:src="@drawable/ic_current_map" />
     </RelativeLayout>
-         
+
     <!-- The navigation drawer -->
 
     <ListView

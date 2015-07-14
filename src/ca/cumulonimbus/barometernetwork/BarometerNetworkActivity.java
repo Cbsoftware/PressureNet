@@ -36,7 +36,6 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -95,10 +94,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -324,6 +326,25 @@ public class BarometerNetworkActivity extends Activity implements
 	ArrayList<ForecastLocation> liveMapForecasts = new ArrayList<ForecastLocation>();
 	private String mapStartTime = "";
 	
+	String[] drawerListContents = {"My data", "Locations", "Settings", "About", "Rate & review", "Invite your friends!"};
+	private ActionBarDrawerToggle drawerToggle;
+	
+	public static final String DATA_DOWNLOAD_RESULTS = "ca.cumulonimbus.barometernetwork.DATA_DOWNLOAD";
+	
+	private long lastMapRefresh = 0;
+	
+	// Supported Geography limits (map & forecast temperatures)
+	private double minSupportedLatitude = 20;
+	private double maxSupportedLatitude = 70;
+	private double minSupportedLongitude = -165;
+	private double maxSupportedLongitude = -45;
+	
+	private LinearLayout layoutNoConditionsPrompt;
+	private LinearLayout layoutNoConditionsThanks;
+	private Button buttonNotifyMe;
+	private Button buttonCloseNoConditions;
+	private Button inviteFriends3;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -354,8 +375,6 @@ public class BarometerNetworkActivity extends Activity implements
 		intentFilter.addAction(DATA_DOWNLOAD_RESULTS);
 		bManager.registerReceiver(bReceiver, intentFilter);
 	}
-	
-	public static final String DATA_DOWNLOAD_RESULTS = "ca.cumulonimbus.barometernetwork.DATA_DOWNLOAD";
 
 	private BroadcastReceiver bReceiver = new BroadcastReceiver() {
 	    @Override
@@ -419,9 +438,6 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		startService(tempIntent);
 	}
-	
-	String[] drawerListContents = {"My data", "Locations", "Settings", "About", "Rate & review", "Invite your friends!"};
-	private ActionBarDrawerToggle drawerToggle;
 	
 	private void addDrawerLayout() {
 		
@@ -1019,9 +1035,32 @@ public class BarometerNetworkActivity extends Activity implements
 				});
 				
 				
-				downloadTemperatureData(2);
+				if(isWithinSupportedGeography()) {
+					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+					buttonMyLocation.setVisibility(View.VISIBLE);
+					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+					layoutAnimationHoriz.setVisibility(View.VISIBLE);
+					
+					layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+					layoutNoConditionsPrompt.setVisibility(View.GONE);
+					
+					downloadTemperatureData(2);
+					downloadAndShowConditions();
+				} else {
+					// show message that we don't support the region
+					
+					layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+					imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+					animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+					
+					layoutAnimationHoriz.setVisibility(View.GONE);
+					
+					layoutNoConditionsPrompt.setVisibility(View.VISIBLE);
+					buttonMyLocation.setVisibility(View.GONE);
+				}
 				
-				downloadAndShowConditions();
 				
 			} else {
 				Toast.makeText(getApplicationContext(), getString(R.string.mapError),
@@ -1030,9 +1069,32 @@ public class BarometerNetworkActivity extends Activity implements
 
 		}
 		
+	}	
+	
+	private boolean isWithinSupportedGeography() {
+		Location userLocation;
+		
+		if(bestLocation != null) {
+			userLocation = bestLocation;
+
+		} else {
+			LocationManager lm = (LocationManager) getApplicationContext()
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			userLocation = loc; 
+		}
+		
+		if( (userLocation.getLatitude() > minSupportedLatitude) &&
+				(userLocation.getLatitude() < maxSupportedLatitude) &&
+				(userLocation.getLongitude() > minSupportedLongitude) &&
+				(userLocation.getLongitude() < maxSupportedLongitude)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
-	private long lastMapRefresh = 0;
 	
 	public class MapRefresher implements Runnable {
 
@@ -1292,9 +1354,50 @@ public class BarometerNetworkActivity extends Activity implements
 		textAnimationInfoLeft = (TextView) findViewById(R.id.textAnimationInfoLeft);
 		textAnimationInfoRight = (TextView) findViewById(R.id.textAnimationInfoRight);
 	
+		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+		layoutNoConditionsThanks = (LinearLayout) findViewById(R.id.layoutNoConditionsThanks);
 
+		buttonNotifyMe = (Button) findViewById(R.id.buttonNotifyMe);
+		buttonCloseNoConditions = (Button) findViewById(R.id.buttonNoConditionsClose);
+		inviteFriends3 = (Button) findViewById(R.id.inviteFriends3);
+		
 		animationProgress.setEnabled(false);
 	
+		inviteFriends3.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				growPressureNET();
+			}
+		});
+		
+		buttonCloseNoConditions.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				layoutNoConditionsThanks.setVisibility(View.GONE);
+				
+				buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+				buttonMyLocation.setVisibility(View.VISIBLE);
+				RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+				layoutAnimationHoriz.setVisibility(View.VISIBLE);
+				
+				layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+				layoutNoConditionsPrompt.setVisibility(View.GONE);
+				
+				downloadTemperatureData(2);
+				downloadAndShowConditions();
+			}
+		});
+		
+		buttonNotifyMe.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				layoutNoConditionsPrompt.setVisibility(View.GONE);
+				layoutNoConditionsThanks.setVisibility(View.VISIBLE);
+			}
+		});
 		
 		animationProgress.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			

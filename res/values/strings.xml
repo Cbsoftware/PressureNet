@@ -240,5 +240,7 @@
     <string name="yes_please">Yes please!</string>
     <string name="no_thanks">No thanks</string>
     <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>	
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="geography_description">PressureNet is a hyper-local weather app that currently supports North America. We don\'t have enough data yet elsewhere, but we will soon! Sign up, invite your friends, and we\'ll let you know when we\'re ready for you!</string>
+    <string name="geography_thanks">Thanks for signing up! We\'ll launch in the places with highest demand - so invite your friends to help us reach you sooner!</string>	
 </resources>
