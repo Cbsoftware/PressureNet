@@ -370,7 +370,8 @@ public class BarometerNetworkActivity extends Activity implements
 	        
 	    	if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
 	        	if(!temperatureAnimationPlaying) {
-	        		addTemperaturesToMap();	
+	        		addTemperaturesToMap();
+	        		addConditionMarkersToMap();
 	        	}
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
@@ -1336,58 +1337,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("play button pressed; currently animating temperatures, pausing");
 					temperatureAnimator.pause();
 				}
-				
-				/*
-				activeMode = "animation";
-				if (!animationPlaying) {
-					mixpanel.track("Playing Animation", null);
-					if (animationDurationInMillis > 0) {
-						// Get tracker.
-						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-						    TrackerName.APP_TRACKER);
-						// Build and send an Event.
-						t.send(new HitBuilders.EventBuilder()
-						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-						    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-						    .setLabel("animation_play")
-						    .build());
-						
-						log("animation onclick, duration "
-								+ animationDurationInMillis);
-						playConditionsAnimation();
-					} else {
-						// Get tracker.
-						Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-						    TrackerName.APP_TRACKER);
-						// Build and send an Event.
-						t.send(new HitBuilders.EventBuilder()
-						    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-						    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-						    .setLabel("animation_play")
-						    .build());
-						
-						log("animation onclick, no duration, default 24h");
-						animationDurationInMillis = 1000 * 60 * 60 * 24;
-						calAnimationStartDate = Calendar.getInstance();
-						calAnimationStartDate.add(Calendar.DAY_OF_MONTH, -1);
-						calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
-						calAnimationStartDate.set(Calendar.MINUTE, 0);
-						playConditionsAnimation();
-					}
-				} else {
-					// Get tracker.
-					Tracker t = ((PressureNetApplication) getApplication()).getTracker(
-					    TrackerName.APP_TRACKER);
-					// Build and send an Event.
-					t.send(new HitBuilders.EventBuilder()
-					    .setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
-					    .setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
-					    .setLabel("animation_pause")
-					    .build());
-					
-					animator.pause();
-				}
-				*/
+			
 			}
 			
 		});
@@ -1977,6 +1927,7 @@ public class BarometerNetworkActivity extends Activity implements
 						if (!activeMode.equals("animation")) {
 							//currentConditionRecents = receivedList;
 							//conditionsHandler.post(conditionsAdder);
+							addConditionMarkersToMap();
 						} else {
 							conditionAnimationRecents.clear();
 							conditionAnimationRecents = receivedList;
@@ -2908,6 +2859,7 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.clear();
 				//conditionsAdder = new ConditionsAdder();
 				//conditionsAdder.execute("");
+				addConditionMarkersToMap();
 			}
 			
 			// limit a few per map quadrant
@@ -3134,7 +3086,7 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Display user-submitted current conditions on the map
 	 */
-	private void addConditionsToMap() {
+	private void prepareConditionMarkersForMap() {
 		int currentCur = 0;
 		int totalAllowed = 3000;
 		
@@ -3225,7 +3177,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			addConditionsToMap();
+			prepareConditionMarkersForMap();
 			return null;
 		}
 
@@ -3236,8 +3188,12 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			super.onPostExecute(result);
 		}
-		
-		
+	}
+	
+	private void addConditionMarkersToMap() {
+		for(MarkerOptions options : liveMarkerOptions) {
+			Marker marker = mMap.addMarker(options);	
+		}
 	}
 	
 	/**
