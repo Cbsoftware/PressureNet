@@ -1,9 +1,11 @@
 package ca.cumulonimbus.barometernetwork;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
@@ -28,6 +30,26 @@ public class PreferencesActivity extends PreferenceActivity {
 		ImageView view = (ImageView) findViewById(android.R.id.home);
 		view.setPadding(8, 0, 0, 0);
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+			return true;	
+		}
+		
+ 		return super.onOptionsItemSelected(item);
+	}
+
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(R.anim.log_viewer_to_main_open, R.anim.log_viewer_to_main_close);
+	}
+
+
 
 	@Override
 	protected void onStart() {

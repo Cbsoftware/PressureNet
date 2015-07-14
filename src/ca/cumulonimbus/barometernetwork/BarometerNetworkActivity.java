@@ -419,7 +419,7 @@ public class BarometerNetworkActivity extends Activity implements
 		startService(tempIntent);
 	}
 	
-	String[] drawerListContents = {"My data", "Locations", "Settings", "Help", "About", "Rate & review", "Invite your friends!"};
+	String[] drawerListContents = {"My data", "Locations", "Settings", "About", "Rate & review", "Invite your friends!"};
 	private ActionBarDrawerToggle drawerToggle;
 	
 	private void addDrawerLayout() {
@@ -502,20 +502,17 @@ public class BarometerNetworkActivity extends Activity implements
 	    		// Settings
 	    		Intent i = new Intent(getApplicationContext(), PreferencesActivity.class);
 				startActivityForResult(i, REQUEST_SETTINGS);
+				overridePendingTransition(R.anim.main_to_log_viewer_open, R.anim.main_to_log_viewer_close);
 	    	} else if (position == 3) {
-	    		// Help
-	    		Intent intent = new Intent(getApplicationContext(),
-						HelpActivity.class);
-				startActivity(intent);
-	    	} else if (position == 4) {
 	    		// About
 	    		Intent intent = new Intent(getApplicationContext(),
 						AboutActivity.class);
 				startActivity(intent);
-	    	} else if (position == 5) {
+				overridePendingTransition(R.anim.main_to_log_viewer_open, R.anim.main_to_log_viewer_close);
+	    	} else if (position == 4) {
 	    		// Rate & review
 	    		ratePressureNET();
-	    	} else if (position == 6) {
+	    	} else if (position == 5) {
 	    		// Tell your friends
 	    		growPressureNET();
 	    	} else {

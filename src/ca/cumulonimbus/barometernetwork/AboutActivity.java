@@ -37,6 +37,16 @@ public class AboutActivity extends Activity {
 		startActivity(intent);
 	}
 
+	
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(R.anim.log_viewer_to_main_open, R.anim.log_viewer_to_main_close);
+	}
+
+
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menu_legal_notices) {
@@ -45,8 +55,12 @@ public class AboutActivity extends Activity {
 			startActivity(intent);
 		} else if (item.getItemId() == R.id.menu_whats_new) {
 			showWhatsNew();
+		} else if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+			return true;
+			
 		}
-		return super.onOptionsItemSelected(item);
+ 		return super.onOptionsItemSelected(item);
 	}
 
 	private void showWhatsNew() {
