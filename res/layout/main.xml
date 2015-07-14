@@ -80,14 +80,33 @@
                 android:enabled="false"
                 android:max="100"
                 android:paddingTop="6dp" />
-
-            <TextView
-                android:id="@+id/textAnimationInfo"
-                android:layout_width="wrap_content"
+	
+            <RelativeLayout 
+                android:id="@+id/animationLabelsLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center" 
-                android:padding="12dp"
-                android:layout_below="@id/animationProgress" />
+                android:layout_below="@id/animationProgress"
+                android:layout_alignLeft="@id/animationProgress">
+            
+	            <TextView
+	                android:id="@+id/textAnimationInfoLeft"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:gravity="left" 
+	                android:padding="12dp"
+	                android:layout_alignParentLeft="true"/>
+
+	           	<TextView
+	                android:id="@+id/textAnimationInfoRight"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:gravity="left" 
+	                android:padding="12dp"
+	                android:layout_alignParentRight="true"/>
+	            
+            </RelativeLayout>
+            
+            
         </RelativeLayout>
         
        

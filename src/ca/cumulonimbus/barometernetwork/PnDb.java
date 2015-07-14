@@ -103,7 +103,8 @@ public class PnDb {
 			+ KEY_TEMP_FORECAST_HOUR + " real not null, " 
 			+ KEY_TEMP_FORECAST_SCALE + " real not null,"
 			+ KEY_TEMP_FORECAST_VALUE + " real not null,"
-			+ KEY_TEMP_INSERT_TIME + " real not null)";
+			+ KEY_TEMP_INSERT_TIME + " real not null, UNIQUE (" 
+			+ KEY_FORECAST_LOCATION_ID + ", " + KEY_TEMP_FORECAST_START_TIME + ", " + KEY_TEMP_FORECAST_HOUR + ") ON CONFLICT REPLACE)";
 	
 
 	private static final String DATABASE_NAME = "PnDb";
@@ -142,7 +143,7 @@ public class PnDb {
 	
 	private void createIndex(SQLiteDatabase db) {
 		String forecastLocationIndex = "Create Index IF NOT EXISTS " + FORECAST_LOCATION_INDEX + " ON " + FORECAST_LOCATIONS + "(" + KEY_FORECAST_LOCATION_ID + ", " + KEY_FORECAST_LATITUDE + ", " + KEY_FORECAST_LONGITUDE + ")";
-		String forecastHourIndex = "Create Index IF NOT EXISTS " + FORECAST_HOUR_INDEX + " ON " + TEMPERATURES + "(" + KEY_FORECAST_LOCATION_ID + ", " + KEY_TEMP_FORECAST_HOUR + ")";
+		String forecastHourIndex = "Create Index IF NOT EXISTS " + FORECAST_HOUR_INDEX + " ON " + TEMPERATURES + "(" + KEY_FORECAST_LOCATION_ID + ", " + KEY_TEMP_FORECAST_HOUR + ", " + KEY_TEMP_INSERT_TIME + ")";
 		
 
 		db.execSQL(forecastLocationIndex);
@@ -184,7 +185,7 @@ public class PnDb {
 	
 	public void deleteOldTemperatureData() {
 		log("starting delete of old temperature forecast data");
-		String deleteTemperatures = "DELETE FROM " + TEMPERATURES + " WHERE " + KEY_TEMP_INSERT_TIME + "< " + (System.currentTimeMillis() - (1000*60*60*24));
+		String deleteTemperatures = "DELETE FROM " + TEMPERATURES + " WHERE " + KEY_TEMP_INSERT_TIME + "<" + ((System.currentTimeMillis()/1000) - (60*60));
 		//String deleteForecasts = "DELETE FROM " + FORECAST_LOCATIONS; // + " WHERE " + KEY_TEMP_INSERT_TIME + "< " + (System.currentTimeMillis() - (1000*60*60*24));
 		//mDB.execSQL(deleteForecasts);
 		mDB.execSQL(deleteTemperatures);

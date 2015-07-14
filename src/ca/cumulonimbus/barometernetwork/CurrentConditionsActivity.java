@@ -851,8 +851,8 @@ public class CurrentConditionsActivity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		overridePendingTransition(R.anim.close_current_conditions, R.anim.open_current_conditions);
 		super.onBackPressed();
+		overridePendingTransition(R.anim.close_current_conditions, R.anim.open_current_conditions);
 	}
 
 	@Override

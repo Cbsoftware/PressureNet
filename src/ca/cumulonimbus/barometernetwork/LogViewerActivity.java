@@ -86,11 +86,10 @@ public class LogViewerActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		overridePendingTransition(0,0);
 		super.onBackPressed();
+		overridePendingTransition(R.anim.log_viewer_to_main_open, R.anim.log_viewer_to_main_close);
+
 	}
-
-
 
 	/**
 	 * Check the available storage options. Used for logging to SD card.
@@ -157,6 +156,10 @@ public class LogViewerActivity extends Activity {
 								+ export.getAbsolutePath(), Toast.LENGTH_LONG)
 						.show();
 			}
+		} else if (item.getItemId() == android.R.id.home) {
+			onBackPressed();
+			return true;
+			//overridePendingTransition(R.anim.log_viewer_to_main_open, R.anim.log_viewer_to_main_close);
 		}
 		return super.onOptionsItemSelected(item);
 	}

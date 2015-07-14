@@ -22,7 +22,6 @@ import android.support.v4.content.LocalBroadcastManager;
 
 public class ForecastService extends Service {
 
-	public static String ACTION_UPDATE_FORECAST = "ca.cumulonimbus.barometernetwork.ACTION_UPDATE_FORECAST";
 	
 	private double longitudeParam;
 	private double latitudeParam;
@@ -33,10 +32,13 @@ public class ForecastService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
 		// Run a forecast update
-		log("app received action_update_forecast, running temperature forecast updates");
+		log("forecast service received start intent, running temperature forecast updates");
 		
-		downloadTemperatures(intent);
-		
+		if(intent != null) {
+			downloadTemperatures(intent);
+		} else {
+			log("forecast service intent is null, bailing");
+		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 	
@@ -168,7 +170,7 @@ public class ForecastService extends Service {
 						insertTemperatures.bindLong(3, j);
 						insertTemperatures.bindLong(4, scale);
 						insertTemperatures.bindDouble(5, degrees);
-						insertTemperatures.bindLong(6, System.currentTimeMillis());
+						insertTemperatures.bindLong(6, (System.currentTimeMillis()/1000));
 						insertTemperatures.executeInsert();
 					}
 				}

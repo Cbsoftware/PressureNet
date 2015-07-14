@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -257,7 +258,8 @@ public class BarometerNetworkActivity extends Activity implements
 	private EditText editLocation;
 
 	private ImageButton imageButtonPlay;
-	private TextView textAnimationInfo;
+	private TextView textAnimationInfoLeft;
+	private TextView textAnimationInfoRight;
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
@@ -343,9 +345,7 @@ public class BarometerNetworkActivity extends Activity implements
 		//setUpActionBar();
 		checkDb();
 		callExternalAPIs();
-		setUpMixPanel();
-		prepareAnimationSettings();
-		
+		setUpMixPanel();		
 	}
 	
 	private void registerForDownloadResults() {
@@ -389,8 +389,7 @@ public class BarometerNetworkActivity extends Activity implements
 	            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
 	            	editor.commit();
 	            }
-	        }
-	        
+	        }	        
 	    }
 	};
 	
@@ -538,31 +537,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	
-	/**
-	 * Set the default dates and parameters for the 
-	 * animation feature. 
-	 */
-	private void prepareAnimationSettings() {
-
-		if (calAnimationStartDate == null) {
-			calAnimationStartDate = Calendar.getInstance();
-			calAnimationStartDate.set(Calendar.HOUR_OF_DAY, 0);
-			calAnimationStartDate.set(Calendar.MINUTE, 0);
-			calAnimationStartDate.set(Calendar.SECOND, 0);
-			animationDurationInMillis = 1000 * 60 * 60 * 24;
-		}
-		
-		long startTime = calAnimationStartDate.getTimeInMillis();
-		long endTime = startTime + animationDurationInMillis;
-		
-		Calendar end = Calendar.getInstance();
-		end.setTimeInMillis(endTime);
-		
-		textAnimationInfo.setText(buildHumanDateRangeFormat(calAnimationStartDate, end));
-		animationStep = 0;
-		animationProgress.setProgress(0);
-	}
-		
 	/**
 	 * Show a red icon in the Action bar if there are alerts.
 	 * Show a default icon otherwise.
@@ -978,7 +952,7 @@ public class BarometerNetworkActivity extends Activity implements
 					@Override
 					public void onCameraChange(CameraPosition cameraPos) {
 						hideKeyboard();
-						refreshMap();
+						
 						
 						// if the user location is off the map, change the Current Conditions icon to the 
 						// Go to My Location icon
@@ -1016,8 +990,13 @@ public class BarometerNetworkActivity extends Activity implements
 									(userLocation.getLatitude() > maxLat) ||
 									(userLocation.getLongitude() < minLon) || 
 									(userLocation.getLongitude() > maxLon)) {
-								buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
-								locationButtonMode = "locations";
+								if(mMap.getCameraPosition().zoom < 11) {
+									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
+									locationButtonMode = "locations";	
+								} else {
+									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+									locationButtonMode = "conditions";
+								}
 							} else {
 								buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
 								locationButtonMode = "conditions";
@@ -1025,6 +1004,8 @@ public class BarometerNetworkActivity extends Activity implements
 							
 							
 						} 
+						
+						refreshMap();
 					}
 				});
 		        
@@ -1037,7 +1018,8 @@ public class BarometerNetworkActivity extends Activity implements
 					}
 				});
 				
-				addTemperaturesToMap();
+				//addTemperaturesToMap();
+				
 				downloadTemperatureData(2);
 				
 				downloadAndShowConditions();
@@ -1307,7 +1289,8 @@ public class BarometerNetworkActivity extends Activity implements
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
 		
-		textAnimationInfo = (TextView) findViewById(R.id.textAnimationInfo);
+		textAnimationInfoLeft = (TextView) findViewById(R.id.textAnimationInfoLeft);
+		textAnimationInfoRight = (TextView) findViewById(R.id.textAnimationInfoRight);
 	
 
 		animationProgress.setEnabled(false);
@@ -1344,8 +1327,11 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				if (!temperatureAnimationPlaying) {
 					log("play button pressed, not animating, starting temperature animation");
-					prepareTemperatureAnimation();
-					playTemperatureAnimation();
+					if(prepareTemperatureAnimation()) {
+						playTemperatureAnimation();	
+					} else {
+						Toast.makeText(getApplicationContext(), "Animation error", Toast.LENGTH_SHORT).show();
+					}
 					
 				} else {
 					log("play button pressed; currently animating temperatures, pausing");
@@ -2227,7 +2213,7 @@ public class BarometerNetworkActivity extends Activity implements
 			intent.putExtra("longitude", mLongitude);
 			log("starting condition " + mLatitude + " , " + mLongitude);
 			startActivity(intent);
-			overridePendingTransition(R.anim.open_current_conditions, R.anim.close_current_conditions);
+			overridePendingTransition(R.anim.open_current_conditions, 0);
 			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
@@ -2460,80 +2446,11 @@ public class BarometerNetworkActivity extends Activity implements
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
 			}
-		} else if (requestCode == REQUEST_ANIMATION_PARAMS) {
-			// update animation parameters with new data
-			if (data != null) {
-				if (data.getExtras() != null) {
-					Bundle bundle = data.getExtras();
-					Calendar startDate = (Calendar) bundle.get("startDate");
-					long rangeInMs = (Long) bundle.get("animationRange");
-					calAnimationStartDate = startDate;
-					animationDurationInMillis = rangeInMs;
-					log("barometernetworkactivity receiving animation params: "
-							+ calAnimationStartDate + ", "
-							+ animationDurationInMillis);
-					
-					Calendar endDate = (Calendar) calAnimationStartDate.clone();
-					endDate.add(Calendar.MILLISECOND, (int)animationDurationInMillis);
-					
-					textAnimationInfo.setText(buildHumanDateRangeFormat(startDate, endDate));
-					
-				
-				} else {
-					log("barometernetworkactivity data bundle . getExtras is null");
-				}
-
-			} else {
+		} else {
 				log("barometernetworkactivity received data intent null:");
-			}
-		} 
+		}
+		 
 		super.onActivityResult(requestCode, resultCode, data);
-	}
-	
-	public static String buildHumanDateRangeFormat(Calendar start, Calendar end) {
-		String yearFormat = "";
-		String monthFormat = "MMM ";
-		String dayFormat = "d";
-		String timeFormat = "";
-		
-		boolean showSecondPrefix = true;
-		
-		// if the years are both this year, don't show the value
-		if( (start.get(Calendar.YEAR) == end.get(Calendar.YEAR)) && (start.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR) )) {
-			yearFormat = "";
-			
-			if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH)) {
-				if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
-					showSecondPrefix = false;
-				}
-			}
-		} else {
-			yearFormat = ", yyyy";
-		}
-		
-		if(start.get(Calendar.HOUR_OF_DAY) == 0 && end.get(Calendar.HOUR_OF_DAY) == 0) {
-			if (start.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH)) {
-				timeFormat = " H:mm";
-			} else {
-				timeFormat = "";
-			}
-		} else {
-			timeFormat = " H:mm";
-		}
-		
-		String format = monthFormat + dayFormat + yearFormat + timeFormat;
-		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		
-		String returnText = "";
-		if(showSecondPrefix) {
-			returnText = sdf.format(start.getTimeInMillis()) + " to " + sdf.format(end.getTimeInMillis());
-		} else {
-			String secondFormat = "H:mm";
-			SimpleDateFormat second = new SimpleDateFormat(secondFormat);
-			returnText = sdf.format(start.getTimeInMillis()) + " to " + second.format(end.getTimeInMillis());
-		}
-		
-		return returnText;
 	}
 
 	private void focusSearch() {
@@ -2552,7 +2469,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			Intent intent = new Intent(this, LogViewerActivity.class);
 			startActivity(intent);
-			overridePendingTransition(0, 0);
+			overridePendingTransition(R.anim.main_to_log_viewer_open, R.anim.main_to_log_viewer_close);
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
@@ -2738,17 +2655,19 @@ public class BarometerNetworkActivity extends Activity implements
 		for (TemperatureForecast forecast : forecastRecents) {
 			LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
 
+			String displayValue = forecast.getDisplayTempValue();
+			
 			if(previous.getTemperatureValue() < forecast.getTemperatureValue()) {
-				iconFactory.setTextAppearance(R.style.MapTemperatureTextRising);
+				displayValue += " ↑";
 			} else if(previous.getTemperatureValue() > forecast.getTemperatureValue()) {
-				iconFactory.setTextAppearance(R.style.MapTemperatureTextFalling);
+				displayValue += " ↓";
 			} else {	
-				iconFactory.setTextAppearance(R.style.MapTemperatureText);
+				displayValue += "  ";
 				
 			}
 			
 	        MarkerOptions markerOptions = new MarkerOptions().
-	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(forecast.getDisplayTempValue()))).
+	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(displayValue))).
 	                position(position).
 	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
@@ -2761,16 +2680,16 @@ public class BarometerNetworkActivity extends Activity implements
 
 	}
 	
-	private void prepareTemperatureAnimation() {
+	private boolean prepareTemperatureAnimation() {
 		if (mMap == null) {
-			return;
+			return false;
 		}
 		forecastRecents.clear();
 		temperatureAnimationMarkerOptions.clear();
 		
 		if(liveMapForecasts.size()<1) {
 			log("app attempting to play temperature animation; size 0, bailing");
-			return;
+			return false;
 		}
 		
 		PnDb db = new PnDb(getApplicationContext());
@@ -2796,19 +2715,29 @@ public class BarometerNetworkActivity extends Activity implements
 			log("location " + location.getLocationID() + " has " + location.getTemperatures().size() + " temperature forecasts");
 		}
 		
-		activeForecastStartTime = liveMapForecasts.get(0).getTemperatures().get(0).getStartTime();
+		if(liveMapForecasts.size()>0){
+			if(liveMapForecasts.get(0).getTemperatures().size()>0) {
+				int animationLength = liveMapForecasts.get(0).getTemperatures().size() - 1;
+				activeForecastStartTime = liveMapForecasts.get(0).getTemperatures().get(0).getStartTime();
+				animationProgress.setMax(animationLength);
+				updateAnimationTime("left", activeForecastStartTime, 0);
+				updateAnimationTime("right", activeForecastStartTime, animationLength);
+			}
+		}
 		
 		
 		db.close();
+		return true;
 	
 	}
 	
 	private void playTemperatureAnimation() {
 		
-		updateAnimationTime(liveMapForecasts.get(0).getTemperatures().get(0).getStartTime(), 0);
+		//updateAnimationTime(liveMapForecasts.get(0).getTemperatures().get(0).getStartTime(), 0);
 		temperatureAnimationStep = 0;
 		animationProgress.setProgress(0);
-		animationProgress.setMax(7);
+		
+		
 		animationProgress.setEnabled(true);
 		
 		temperatureAnimationPlaying = true;
@@ -2819,19 +2748,20 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	}
 	
-	private void updateAnimationTime(String startTime, int hour) {
+	private void updateAnimationTime(String whichText, String startTime, int hour) {
 		try {
 			String dateString = startTime; 
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+			df.setTimeZone(TimeZone.getTimeZone("UTC"));
 			Date d = df.parse(dateString);
 			
-			Calendar cal = Calendar.getInstance();
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 			
-			// time zone hack
-			int offset = cal.getTimeZone().getRawOffset() / 1000;
+			// time zone conversion
 			cal.setTime(d);
 			cal.add(Calendar.HOUR, hour);
-			cal.add(Calendar.SECOND, offset);
+			
+			TimeZone local = TimeZone.getDefault();
 			
 			if(cal.get(Calendar.MINUTE) >= 30) {
 				cal.add(Calendar.HOUR, 1);
@@ -2841,8 +2771,14 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			
 			SimpleDateFormat display = new SimpleDateFormat("h a");
-			textAnimationInfo.setText(display.format(cal.getTime()));
+			display.setTimeZone(local);
 			
+			if(whichText.equals("left")) {
+				textAnimationInfoLeft.setText(display.format(cal.getTime()));	
+			} else if (whichText.equals("right")) {
+				textAnimationInfoRight.setText(display.format(cal.getTime()));
+			}
+				
 		} catch (java.text.ParseException e) {
 			log("app parse exception " + e.getMessage());
 		}
@@ -2867,7 +2803,7 @@ public class BarometerNetworkActivity extends Activity implements
 			num++;
 		}
 		
-		updateAnimationTime(activeForecastStartTime, frame);
+		//updateAnimationTime(activeForecastStartTime, frame);
 		
 	}
 	
@@ -2912,23 +2848,20 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 	
-	private class TemperatureAdder extends AsyncTask<String, String, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-			addTemperaturesToMap();
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			
-			super.onPostExecute(result);
-		}
-		
-		
-		
-	}
+	
+	
+	/***
+	 * 
+	 * 
+	 * 
+	 * Split this up
+	 * 
+	 * Do the database access (and quadrant calculations?) in another thread
+	 * Store the results of the marker details that we'll have to add in the UI thread
+	 * In a new AsyncTask, run the database access in the background
+	 * and in onPostExecute, add the data to the map
+	 * 
+	 */
 	
 	private void addTemperaturesToMap() {
 		log("adding temperature icons to map");
@@ -2940,27 +2873,20 @@ public class BarometerNetworkActivity extends Activity implements
 		// iconFactory.setColor(Color.rgb(230, 230, 230));
 		iconFactory.setStyle(R.style.MapTemperatureBackground);
 		iconFactory.setTextAppearance(R.style.MapTemperatureText);
-		
-		LatLngBounds bounds = mMap.getProjection()
-				.getVisibleRegion().latLngBounds;
-		visibleBound = bounds;
-		
-		double minLat;
-		double maxLat;
-		double minLon;
-		double maxLon;
-		
-		if (visibleBound != null) {
-			LatLng ne = visibleBound.northeast;
-			LatLng sw = visibleBound.southwest;
-			minLat = sw.latitude;
-			maxLat = ne.latitude;
-			minLon = sw.longitude;
-			maxLon = ne.longitude;
-		} else {
-			log("add temperatures to map has failed; no map center, bailing");
-			return;
+	
+		if(visibleBound == null) {
+			visibleBound = mMap.getProjection()
+					.getVisibleRegion().latLngBounds;
+			
 		}
+	
+		LatLng ne = visibleBound.northeast;
+		LatLng sw = visibleBound.southwest;
+		double minLat = sw.latitude;
+		double maxLat = ne.latitude;
+		double minLon = sw.longitude;
+		double maxLon = ne.longitude;
+
 		
 		PnDb db = new PnDb(getApplicationContext());
 		
@@ -2981,7 +2907,8 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			if(cursor.getCount() != 0) {
 				mMap.clear();
-				addLiveMarkersToMap();
+				//conditionsAdder = new ConditionsAdder();
+				//conditionsAdder.execute("");
 			}
 			
 			// limit a few per map quadrant
@@ -3055,8 +2982,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			mapStartTime = startTime;
 
-			updateAnimationTime(mapStartTime, 0);
-			temperatureAnimator.reset();
+			
+			
+			
 			
 			db.close();
 		} catch (SQLiteDatabaseLockedException locke) {
@@ -3067,7 +2995,15 @@ public class BarometerNetworkActivity extends Activity implements
 			db.close();
 		}
 		
-		//prepareTemperatureAnimation();
+		
+		
+		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+		prepareTemperatureAnimation();
+		temperatureAnimator.reset();
+		updateAnimationTime("left", activeForecastStartTime, 0);
+		updateAnimationTime("right", activeForecastStartTime, animationProgress.getMax());	
+
 	}
 	
 	private int whichMapQ(double lat, double lon) {
@@ -3209,9 +3145,9 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			
 			
-			//CbApiCall apiCall = buildLocalCurrentConditionsCall(1);
-			//ArrayList<CbCurrentCondition> dbRecents = getMyCurrentConditionsFromLocalAPI(apiCall);
-			//globalConditionRecents.addAll(dbRecents);
+			CbApiCall apiCall = buildLocalCurrentConditionsCall(1);
+			ArrayList<CbCurrentCondition> dbRecents = getMyCurrentConditionsFromLocalAPI(apiCall);
+			globalConditionRecents.addAll(dbRecents);
 			
 		} catch(Exception e) {
 			log("app failed to add recent condition deliveries to the map " + e.getMessage());
@@ -3635,17 +3571,14 @@ public class BarometerNetworkActivity extends Activity implements
 
 		getStoredPreferences();
 
-		// askForBestLocation();
+		registerForDownloadResults();
 		
-		// addDataToMap();
 
+		setUpMapIfNeeded();
+		
 		checkSensors();
 		updateVisibleReading();
-		
-		
-		addTemperaturesToMap();
-		downloadAndShowConditions();
-		
+
 		invalidateOptionsMenu();
 		
 		if(hasBarometer) {

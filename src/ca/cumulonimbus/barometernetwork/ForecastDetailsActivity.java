@@ -187,28 +187,34 @@ public class ForecastDetailsActivity extends Activity {
 			}
 		});
 		
-		
-		db = new PnDb(getApplicationContext());
-		// Query for items from the database and get a cursor back
-		db.open();
-		db.deleteOldForecastAlerts();
-		Cursor cursor = db.fetchRecentForecastAlerts();
-		
-		log("forecast details cursor count " + cursor.getCount());
-		if(cursor.getCount() == 0 ) {
-			textNoForecastAlerts = (TextView) findViewById(R.id.textNoForecastAlerts);
-			textNoForecastAlerts.setVisibility(View.VISIBLE);
+		try {
+			db = new PnDb(getApplicationContext());
+			// Query for items from the database and get a cursor back
+			db.open();
+			db.deleteOldForecastAlerts();
+			
+			Cursor cursor = db.fetchRecentForecastAlerts();
+			
+			log("forecast details cursor count " + cursor.getCount());
+			if(cursor.getCount() == 0 ) {
+				textNoForecastAlerts = (TextView) findViewById(R.id.textNoForecastAlerts);
+				textNoForecastAlerts.setVisibility(View.VISIBLE);
+			}
+			
+			// Find ListView to populate
+			ListView lvItems = (ListView) findViewById(R.id.listForecastAlerts);
+			// Setup cursor adapter using cursor from last step
+			CustomForecastAdapter forecastAdapter = new CustomForecastAdapter(getApplicationContext(), cursor);
+			// Attach cursor adapter to the ListView 
+			lvItems.setAdapter(forecastAdapter);
+			
+			
+			registerForContextMenu(lvItems);
+			db.close();
+		} catch(Exception e) {
+			log("app SQL exception " + e.getMessage());
 		}
 		
-		// Find ListView to populate
-		ListView lvItems = (ListView) findViewById(R.id.listForecastAlerts);
-		// Setup cursor adapter using cursor from last step
-		CustomForecastAdapter forecastAdapter = new CustomForecastAdapter(getApplicationContext(), cursor);
-		// Attach cursor adapter to the ListView 
-		lvItems.setAdapter(forecastAdapter);
-		
-		
-		registerForContextMenu(lvItems);
 		
 		try {
 			log("cancelling existing notification");
