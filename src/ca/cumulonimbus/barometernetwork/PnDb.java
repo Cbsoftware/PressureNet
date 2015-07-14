@@ -177,8 +177,8 @@ public class PnDb {
 	public Cursor getTemperatureForecastsById(String forecastID) { // start time, hour, scale, value
 		Cursor cursor = mDB.query(false, TEMPERATURES, new String[] {
 				KEY_ROW_ID, KEY_FORECAST_LOCATION_ID, KEY_TEMP_FORECAST_START_TIME, KEY_TEMP_FORECAST_HOUR, KEY_TEMP_FORECAST_SCALE, KEY_TEMP_FORECAST_VALUE },
-				KEY_FORECAST_LOCATION_ID + "=?", new String[] {
-				forecastID}, null, null, null, null);
+				KEY_FORECAST_LOCATION_ID + "=? and " + KEY_TEMP_INSERT_TIME + ">?", new String[] {
+				forecastID, ((System.currentTimeMillis()/1000) - (60*60)) + ""}, null, null, null, null);
 		
 		return cursor;
 	}
