@@ -104,31 +104,32 @@ public class ForecastDetailsActivity extends Activity {
 	    			location = lm
 	    					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 	    			
+	    			condition.setLocation(location);
+		        	
+		    		condition.setTime(alertTime);
+		        	Calendar cal = Calendar.getInstance();
+		        	int offset = cal.getTimeZone().getRawOffset();
+		        	condition.setTzoffset(offset);
+					
+		        	ConditionsDrawables draws = new ConditionsDrawables(getApplicationContext());
+					LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition,
+							null);
+					if (drLayer == null) {
+						log("drlayer null, next!");
+						
+					}
+					
+					Drawable draw = draws.getSingleDrawable(drLayer);
+					
+					Bitmap image = ((BitmapDrawable) draw).getBitmap();
+					
+					
+		            ImageView imageAlert = (ImageView) view.findViewById(R.id.imageConditionAlert);
+		            imageAlert.setImageBitmap(image);
 	    		} catch (Exception e) {
 	    			log("notificationreceiver no location " + e.getMessage());
 	    		}
-	    		condition.setLocation(location);
-	        	
-	    		condition.setTime(alertTime);
-	        	Calendar cal = Calendar.getInstance();
-	        	int offset = cal.getTimeZone().getRawOffset();
-	        	condition.setTzoffset(offset);
-				
-	        	ConditionsDrawables draws = new ConditionsDrawables(getApplicationContext());
-				LayerDrawable drLayer = draws.getCurrentConditionDrawable(condition,
-						null);
-				if (drLayer == null) {
-					log("drlayer null, next!");
-					
-				}
-				
-				Drawable draw = draws.getSingleDrawable(drLayer);
-				
-				Bitmap image = ((BitmapDrawable) draw).getBitmap();
-				
-				
-	            ImageView imageAlert = (ImageView) view.findViewById(R.id.imageConditionAlert);
-	            imageAlert.setImageBitmap(image);
+	    		
 
 	            
 	            TextView textForecastDescription = (TextView) view.findViewById(R.id.textForecastDescription);

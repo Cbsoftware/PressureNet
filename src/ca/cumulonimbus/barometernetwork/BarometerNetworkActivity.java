@@ -341,7 +341,7 @@ public class BarometerNetworkActivity extends Activity implements
 	// Supported Geography limits (map & forecast temperatures)
 	private double minSupportedLatitude = 20;
 	private double maxSupportedLatitude = 70;
-	private double minSupportedLongitude = -105;
+	private double minSupportedLongitude = -165;
 	private double maxSupportedLongitude = -45;
 	
 	private LinearLayout layoutNoConditionsPrompt;
@@ -396,6 +396,7 @@ public class BarometerNetworkActivity extends Activity implements
 	        
 	    	if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
 	        	if(!temperatureAnimationPlaying) {
+	        		liveMapForecasts.clear();
 	        		addTemperaturesToMap();
 	        		addConditionMarkersToMap();
 	        	}
@@ -1148,8 +1149,8 @@ public class BarometerNetworkActivity extends Activity implements
         				double longitude = userLocation.getLongitude();
         				
         			 
-        				object.put("latitude", latitude + "");
-        				object.put("longitude", longitude + "");
+        				object.put("latitude", latitude );
+        				object.put("longitude", longitude );
         				
         				try {
         					

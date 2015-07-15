@@ -13,4 +13,6 @@
     <!-- The screen names that will appear in reports -->
     <string name="ca.cumulonimbus.barometernetwork">PressureNet - Main</string>
 
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+    
 </resources>

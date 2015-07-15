@@ -23,7 +23,7 @@
             android:layout_below="@id/textWhatsNewTitle"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
-            android:text="• 2-hour weather forecast alerts\n• More accurate current condition notifications\n"
+            android:text="• 8-hour local temperature forecasts\n• New, modern UI\n• 2-hour forecast alerts\n"
             android:textSize="16dp" />
         
 
