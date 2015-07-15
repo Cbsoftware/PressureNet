@@ -1,6 +1,12 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.security.MessageDigest;
 import java.util.Calendar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,6 +18,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.provider.Settings.Secure;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -25,9 +32,52 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 	
 	public static String ACTION_UPDATEUI = "UpdateUIConditions";
 
+	MixpanelAPI mixpanel;
+	
+	/**
+	 * Get a unique ID by fetching the phone ID and hashing it
+	 * 
+	 * @return
+	 */
+	private String getID() {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			String actual_id = Secure.getString(mContext
+					.getContentResolver(), Secure.ANDROID_ID);
+			byte[] bytes = actual_id.getBytes();
+			byte[] digest = md.digest(bytes);
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < digest.length; i++) {
+				hexString.append(Integer.toHexString(0xFF & digest[i]));
+			}
+			return hexString.toString();
+		} catch (Exception e) {
+			return "--";
+		}
+	}
+	
 	@Override
 	public void onEnabled(Context context) {
 		mContext = context;
+		mixpanel = MixpanelAPI.getInstance(context, PressureNETConfiguration.MIXPANEL_TOKEN);
+		mixpanel.identify(getID());
+		
+		mixpanel.getPeople().identify(getID());
+		mixpanel.getPeople().set("UserID", getID());
+		
+		JSONObject props = new JSONObject();
+
+		JSONObject hashedUserIdProps = new JSONObject();
+		try {
+			hashedUserIdProps.put("user_id", getID());
+			mixpanel.registerSuperProperties(hashedUserIdProps);
+		} catch (JSONException e) {
+			log("setupmixpanel json exception " + e.getMessage());
+			e.printStackTrace();
+		}
+		mixpanel.track("Conditions Widget enabled", null);
+		mixpanel.flush();
 		super.onEnabled(context);
 	}
 

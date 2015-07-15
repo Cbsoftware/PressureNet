@@ -1,5 +1,12 @@
 package ca.cumulonimbus.barometernetwork;
 
+import java.security.MessageDigest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.appwidget.AppWidgetManager;
@@ -7,6 +14,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.SensorManager;
+import android.provider.Settings.Secure;
 import android.widget.RemoteViews;
 
 public class WidgetProvider extends AppWidgetProvider {
@@ -20,11 +28,53 @@ public class WidgetProvider extends AppWidgetProvider {
 	
 	double mReading = 0.0;
 	
+	MixpanelAPI mixpanel;
+	
 	@Override
 	public void onEnabled(Context context) {
 		mContext = context;
-		// TODO Auto-generated method stub
+		mixpanel = MixpanelAPI.getInstance(context, PressureNETConfiguration.MIXPANEL_TOKEN);
+		mixpanel.identify(getID());
+		
+		mixpanel.getPeople().identify(getID());
+		mixpanel.getPeople().set("UserID", getID());
+		
+		JSONObject props = new JSONObject();
+
+		JSONObject hashedUserIdProps = new JSONObject();
+		try {
+			hashedUserIdProps.put("user_id", getID());
+			mixpanel.registerSuperProperties(hashedUserIdProps);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		mixpanel.track("Small Widget enabled", null);
+		mixpanel.flush();
 		super.onEnabled(context);
+	}
+	
+	
+	/**
+	 * Get a unique ID by fetching the phone ID and hashing it
+	 * 
+	 * @return
+	 */
+	private String getID() {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			String actual_id = Secure.getString(mContext
+					.getContentResolver(), Secure.ANDROID_ID);
+			byte[] bytes = actual_id.getBytes();
+			byte[] digest = md.digest(bytes);
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < digest.length; i++) {
+				hexString.append(Integer.toHexString(0xFF & digest[i]));
+			}
+			return hexString.toString();
+		} catch (Exception e) {
+			return "--";
+		}
 	}
 
 	@Override

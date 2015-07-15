@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -21,10 +22,14 @@ import java.util.TimeZone;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -336,7 +341,7 @@ public class BarometerNetworkActivity extends Activity implements
 	// Supported Geography limits (map & forecast temperatures)
 	private double minSupportedLatitude = 20;
 	private double maxSupportedLatitude = 70;
-	private double minSupportedLongitude = -165;
+	private double minSupportedLongitude = -105;
 	private double maxSupportedLongitude = -45;
 	
 	private LinearLayout layoutNoConditionsPrompt;
@@ -345,6 +350,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private ImageButton buttonCloseNoConditions;
 	private Button inviteFriends3;
 	private ImageButton buttonCloseNoConditionsPrompt;
+	private EditText editTextEmail;
 	
 	/** Called when the activity is first created. */
 	@Override
@@ -1040,29 +1046,26 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				
 				if(isWithinSupportedGeography()) {
-					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-					buttonMyLocation.setVisibility(View.VISIBLE);
-					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
-					layoutAnimationHoriz.setVisibility(View.VISIBLE);
-					
-					layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
-					layoutNoConditionsPrompt.setVisibility(View.GONE);
-					
-					downloadTemperatureData(2);
-					downloadAndShowConditions();
+					hideEmailNotify();
 				} else {
 					// show message that we don't support the region
 					
-					layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
-					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-					imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
-					animationProgress = (SeekBar) findViewById(R.id.animationProgress);
-					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+					// only on first launch
 					
-					layoutAnimationHoriz.setVisibility(View.GONE);
+					SharedPreferences sharedPreferences = PreferenceManager
+							.getDefaultSharedPreferences(this);
+					boolean firstLaunch = sharedPreferences.getBoolean("firstLaunch", true);
 					
-					layoutNoConditionsPrompt.setVisibility(View.VISIBLE);
-					buttonMyLocation.setVisibility(View.GONE);
+					if (firstLaunch) {
+						showEmailNotify();
+					} else {
+						hideEmailNotify();
+					}
+					SharedPreferences.Editor editor = sharedPreferences.edit();
+					editor.putBoolean("firstLaunch", false);
+					editor.commit();
+					
+					
 				}
 				
 				
@@ -1074,6 +1077,142 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 		
 	}	
+	
+	
+	private void showEmailNotify() {
+		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
+		RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+		
+		layoutAnimationHoriz.setVisibility(View.GONE);
+		
+		layoutNoConditionsPrompt.setVisibility(View.VISIBLE);
+		buttonMyLocation.setVisibility(View.GONE);
+	}
+	
+	private void hideEmailNotify() {
+		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
+		buttonMyLocation.setVisibility(View.VISIBLE);
+		RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
+		layoutAnimationHoriz.setVisibility(View.VISIBLE);
+		
+		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
+		layoutNoConditionsPrompt.setVisibility(View.GONE);
+		
+		downloadTemperatureData(2);
+		downloadAndShowConditions();
+	}
+
+	/**
+	 * Register with the server for push notifications
+	 */
+	@SuppressWarnings("unchecked")
+	private void sendEmailRegistrationToServer(final String id, final String email) {
+		
+		log("cbservice sending token to server : " + email);
+		
+		 new AsyncTask(){
+	            protected Object doInBackground(final Object... params) {
+	            
+	                String token;
+	                try {
+	                	String serverURL = CbConfiguration.SERVER_URL_EMAIL_REGISTRATION;
+	                	String userID = getID();
+	                	DefaultHttpClient client = new DefaultHttpClient();
+	                	
+	                	
+	                	
+	                	JSONObject object = new JSONObject();
+	                	JSONObject data = new JSONObject();
+	                	JSONArray jsonArray = new JSONArray();
+	        			 //nvps.add(new BasicNameValuePair("device_id", id));
+	        			 
+	                	
+	        			 object.put("email", email);
+	        			 
+	        			 Location userLocation;
+        	 			 if(bestLocation != null) {
+        			 		userLocation = bestLocation;
+
+        				 } else {
+        					LocationManager lm = (LocationManager) getApplicationContext()
+        							.getSystemService(Context.LOCATION_SERVICE);
+        					Location loc = lm
+        							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        					userLocation = loc; 
+        				 }
+        				
+        				double latitude = userLocation.getLatitude();
+        				double longitude = userLocation.getLongitude();
+        				
+        			 
+        				object.put("latitude", latitude + "");
+        				object.put("longitude", longitude + "");
+        				
+        				try {
+        					
+        					jsonArray.put(object);
+        					data.put("data", jsonArray);
+        				}catch(JSONException jsone) {
+        					log("json error " + jsone.getMessage());
+        				}
+        				
+	        			 HttpPost httppost = new HttpPost(serverURL);
+	        			 
+	        			 String message;
+	    				 
+	     				try {
+	     			        message = object.toString();
+	     				  
+	     				  httppost.setEntity(new StringEntity(message, "UTF8"));
+	     				  httppost.setHeader("Content-type", "application/json");
+	     				  httppost.addHeader("Accept","application/json");
+	     				} catch(Exception e) {
+	     					
+	     				}
+	        			 
+	        		
+	     				log("POST Email: " + EntityUtils.toString(httppost.getEntity()));
+	     				
+	    				
+	    				HttpResponse resp = client.execute(httppost);
+	    				HttpEntity responseEntity = resp.getEntity();
+	    	
+	    				String addResp = "";
+	    				BufferedReader r = new BufferedReader(new InputStreamReader(
+	    						responseEntity.getContent()));
+	    	
+	    				StringBuilder total = new StringBuilder();
+	    				String line;
+	    				if (r != null) {
+	    					while ((line = r.readLine()) != null) {
+	    						total.append(line);
+	    					}
+	    					addResp = total.toString();
+	    					
+	    				}
+	    				log("email notify registration sent to server " + addResp);
+	                } 
+	                catch (Exception e) {
+	                    log("app email registration error " + e.getMessage());
+	                }
+	                return true;
+	            }
+	        }.execute(null, null, null);
+	}
+	
+	
+	private void sendEmailRegistration() {
+		String id = getID();
+		String email = editTextEmail.getText().toString();
+		
+		
+		sendEmailRegistrationToServer(id, email);
+		
+		
+	}
 	
 	private boolean isWithinSupportedGeography() {
 		Location userLocation;
@@ -1210,7 +1349,7 @@ public class BarometerNetworkActivity extends Activity implements
 				Location loc = lm
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 				if (loc.getLatitude() != 0) {
-					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), DEFAULT_ZOOM));
+					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
 				} 
 			}
 
@@ -1368,6 +1507,8 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		buttonCloseNoConditionsPrompt = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt);
 		
+		editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+		
 		animationProgress.setEnabled(true);
 	
 		buttonCloseNoConditionsPrompt.setOnClickListener(new OnClickListener() {
@@ -1384,6 +1525,7 @@ public class BarometerNetworkActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				growPressureNET();
+				closeNoConditionsAndLoadData();
 			}
 		});
 		
@@ -1401,6 +1543,14 @@ public class BarometerNetworkActivity extends Activity implements
 			public void onClick(View v) {
 				layoutNoConditionsPrompt.setVisibility(View.GONE);
 				layoutNoConditionsThanks.setVisibility(View.VISIBLE);
+				
+				if(editTextEmail.getText().length()<2) {
+					displayMapToast("Please enter an email address");
+					return;
+				} 
+				
+				hideKeyboard();
+				sendEmailRegistration();
 			}
 		});
 		
@@ -1437,6 +1587,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("play button pressed, not animating, starting temperature animation");
 					if(prepareTemperatureAnimation()) {
 						playTemperatureAnimation();	
+						mixpanel.track("Play Temperature Animation", null);
 					} else {
 						Toast.makeText(getApplicationContext(), "Animation error", Toast.LENGTH_SHORT).show();
 					}
@@ -2304,9 +2455,6 @@ public class BarometerNetworkActivity extends Activity implements
 			startActivityForResult(i, REQUEST_SETTINGS);
 		} else if (item.getItemId() == R.id.menu_log_viewer) {
 			viewLog();
-		} else if (item.getItemId() == R.id.send_debug_log) {
-			// send logs to Cumulonimbus
-			emailLogs();
 		} else if (item.getItemId() == R.id.menu_current_conditions) {
 			launchCurrentConditionsActivity();
 		} else if (item.getItemId() == R.id.menu_about) {
@@ -2377,30 +2525,6 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	/**
-	 * Email software@cumulonimbus.ca for feedback
-	 */
-	private void sendFeedback() {
-		String address = "software@cumulonimbus.ca";
-		String subject = getString(R.string.feedbackEmailSubject);
-		String emailtext = "";
-		final Intent emailIntent = new Intent(
-				android.content.Intent.ACTION_SEND);
-
-		emailIntent.setType("plain/text");
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-				new String[] { address });
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
-
-		startActivityForResult(
-				Intent.createChooser(emailIntent, "Send mail..."),
-				REQUEST_MAILED_LOG);
-	}
-
-	/**
 	 * Send a share intent to encourage network growth
 	 */
 	private void growPressureNET() {
@@ -2414,52 +2538,6 @@ public class BarometerNetworkActivity extends Activity implements
 		startActivity(sendIntent);
 	}
 
-	/**
-	 * 
-	 * Email debug logs to Cumulonimbus.
-	 * 
-	 */
-	private void emailLogs() {
-		try {
-			String strFile = mAppDir + "/log.txt";
-
-			File file = new File(strFile);
-			if (!file.exists())
-				file.mkdirs();
-
-			final Intent emailIntent = new Intent(
-					android.content.Intent.ACTION_SEND);
-
-			PackageInfo pInfo = getPackageManager().getPackageInfo(
-					getPackageName(), 0);
-			String version = pInfo.versionName;
-
-			String address = "software@cumulonimbus.ca";
-			String subject = getString(R.string.pressureNet) + version + getString(R.string.debugLog);
-			String emailtext = getString(R.string.debugLogSent)
-					+ (new Date()).toLocaleString();
-
-			emailIntent.setType("plain/text");
-
-			emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-					new String[] { address });
-
-			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-
-			emailIntent.putExtra(Intent.EXTRA_STREAM,
-					Uri.parse("file://" + strFile));
-
-			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
-
-			startActivityForResult(
-					Intent.createChooser(emailIntent, "Send mail..."),
-					REQUEST_MAILED_LOG);
-
-		} catch (Throwable t) {
-			Toast.makeText(this, getString(R.string.requestFailed) + t.toString(),
-					Toast.LENGTH_LONG).show();
-		}
-	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -3351,9 +3429,14 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void addConditionMarkersToMap() {
-		for(MarkerOptions options : liveMarkerOptions) {
-			Marker marker = mMap.addMarker(options);	
+		try {
+			for(MarkerOptions options : liveMarkerOptions) {
+				Marker marker = mMap.addMarker(options);	
+			}	
+		} catch(ConcurrentModificationException cme) {
+			log("concurrentmodificationexception adding markers to map " + cme.getMessage());
 		}
+		
 	}
 	
 	/**
