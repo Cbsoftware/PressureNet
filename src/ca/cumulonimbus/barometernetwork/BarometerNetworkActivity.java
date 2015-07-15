@@ -681,6 +681,8 @@ public class BarometerNetworkActivity extends Activity implements
 			log("app could not set image alpha");
 		} catch(RuntimeException re) {
 			log("my location button error");
+		} catch (Exception e) {
+			log("unknown imagealphaerror " + e.getMessage());
 		}
 		
 		locationAvailable = true;
@@ -2763,7 +2765,20 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		if(liveMapForecasts.size()<1) {
 			log("app attempting to play temperature animation; size 0, bailing");
+			noAnimationResults();
 			return false;
+		} else {
+			animationProgress.setEnabled(true);
+			imageButtonPlay.setEnabled(true);
+			try {
+				imageButtonPlay.setImageAlpha(255);	
+			} catch (NoSuchMethodError nsme) {
+				log("app could not set image alpha");
+			} catch(RuntimeException re) {
+				log("my location button error");
+			} catch (Exception e) {
+				log("unknown imagealphaerror " + e.getMessage());
+			}
 		}
 		
 		PnDb db = new PnDb(getApplicationContext());
@@ -2792,19 +2807,37 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		if(liveMapForecasts.size()>0){
 			if(liveMapForecasts.get(0).getTemperatures().size()>0) {
+				
+				
+				
 				int animationLength = liveMapForecasts.get(0).getTemperatures().size() - 1;
 				activeForecastStartTime = liveMapForecasts.get(0).getTemperatures().get(0).getStartTime();
 				animationProgress.setMax(animationLength);
 				updateAnimationTime("left", activeForecastStartTime, 0);
 				updateAnimationTime("right", activeForecastStartTime, animationLength);
-			}
-		}
+			} 
+		} 
 		
 		db.close();
 		
 		prepareTemperatureAnimationMarkers(temperatureAnimationStep);
 		return true;
 	
+	}
+	
+	private void noAnimationResults() {
+		log("there are no forecast results");
+		animationProgress.setEnabled(false);
+		imageButtonPlay.setEnabled(false);
+		try {
+			imageButtonPlay.setImageAlpha(200);	
+		} catch (NoSuchMethodError nsme) {
+			log("app could not set image alpha");
+		} catch(RuntimeException re) {
+			log("my location button error");
+		} catch (Exception e) {
+			log("unknown imagealphaerror " + e.getMessage());
+		}
 	}
 	
 	private void playTemperatureAnimation() {
