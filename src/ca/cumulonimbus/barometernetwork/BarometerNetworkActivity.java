@@ -1023,6 +1023,7 @@ public class BarometerNetworkActivity extends Activity implements
 						} 
 						
 						refreshMap();
+						
 					}
 				});
 		        
@@ -1365,7 +1366,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		buttonCloseNoConditionsPrompt = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt);
 		
-		animationProgress.setEnabled(false);
+		animationProgress.setEnabled(true);
 	
 		buttonCloseNoConditionsPrompt.setOnClickListener(new OnClickListener() {
 			
@@ -2706,11 +2707,18 @@ public class BarometerNetworkActivity extends Activity implements
 	 * The new condition data for animations has been received. Play the
 	 * animation.
 	 */
-	private void beginTemperatureAnimation(int startFrame) {
+	private void beginTemperatureAnimation() {
 		log("app starting temperature animation with " + forecastRecents.size() + " total items");
+		
+		
+
+		animationHandler.post(temperatureAnimator);
+
+	}
 	
-		mMap.clear();
+	private void prepareTemperatureAnimationMarkers(int startFrame) {
 		temperatureAnimationStep = startFrame;
+		temperatureAnimationMarkerOptions.clear();
 		
 		IconGenerator iconFactory = new IconGenerator(getApplicationContext());
 
@@ -2744,9 +2752,6 @@ public class BarometerNetworkActivity extends Activity implements
 	        previous = forecast;
 		}
 		log("added markers to list, count " + temperatureAnimationMarkerOptions.size());
-
-		animationHandler.post(temperatureAnimator);
-
 	}
 	
 	private boolean prepareTemperatureAnimation() {
@@ -2795,8 +2800,9 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		}
 		
-		
 		db.close();
+		
+		prepareTemperatureAnimationMarkers(temperatureAnimationStep);
 		return true;
 	
 	}
@@ -2812,9 +2818,10 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		temperatureAnimationPlaying = true;
 		
-		temperatureAnimationMarkerOptions.clear();
+		mMap.clear();
 		
-		beginTemperatureAnimation(temperatureAnimationStep);
+		prepareTemperatureAnimationMarkers(temperatureAnimationStep);
+		beginTemperatureAnimation();
 	
 	}
 	
