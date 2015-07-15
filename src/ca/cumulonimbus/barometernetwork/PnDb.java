@@ -104,7 +104,7 @@ public class PnDb {
 			+ KEY_TEMP_FORECAST_SCALE + " real not null,"
 			+ KEY_TEMP_FORECAST_VALUE + " real not null,"
 			+ KEY_TEMP_INSERT_TIME + " real not null, UNIQUE (" 
-			+ KEY_FORECAST_LOCATION_ID + ", " + KEY_TEMP_FORECAST_START_TIME + ", " + KEY_TEMP_FORECAST_HOUR + ") ON CONFLICT REPLACE)";
+			+ KEY_FORECAST_LOCATION_ID  + ", " + KEY_TEMP_FORECAST_HOUR + ") ON CONFLICT REPLACE)";
 	
 
 	private static final String DATABASE_NAME = "PnDb";

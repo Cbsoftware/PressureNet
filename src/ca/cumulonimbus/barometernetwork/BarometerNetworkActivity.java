@@ -1036,7 +1036,7 @@ public class BarometerNetworkActivity extends Activity implements
 				});
 				
 				
-				if(!isWithinSupportedGeography()) {
+				if(isWithinSupportedGeography()) {
 					buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
 					buttonMyLocation.setVisibility(View.VISIBLE);
 					RelativeLayout layoutAnimationHoriz = (RelativeLayout) findViewById(R.id.layoutAnimationHoriz);
@@ -2778,6 +2778,7 @@ public class BarometerNetworkActivity extends Activity implements
 				forecast.setContext(getApplicationContext());
 				forecast.prepareDisplayValue();
 				currentLocationTemperatures.add(forecast);
+				// log("forecast temp details " + mapValue + " " + mapStartTime + " " + mapHour);
 				forecastRecents.add(forecast);
 			}
 			location.setTemperatures(currentLocationTemperatures);
