@@ -1598,7 +1598,7 @@ public class BarometerNetworkActivity extends Activity implements
 						playTemperatureAnimation();	
 						mixpanel.track("Play Temperature Animation", null);
 					} else {
-						Toast.makeText(getApplicationContext(), "Animation error", Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), "Unable to play temperature animation, no data is available", Toast.LENGTH_SHORT).show();
 					}
 					
 				} else {
@@ -2815,31 +2815,38 @@ public class BarometerNetworkActivity extends Activity implements
 		iconFactory.setStyle(R.style.MapTemperatureBackground);
 		iconFactory.setTextAppearance(R.style.MapTemperatureText);
 				
-		
-		TemperatureForecast previous = forecastRecents.get(0);
-		for (TemperatureForecast forecast : forecastRecents) {
-			LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
+		if(forecastRecents!=null) {
+			if(forecastRecents.size()>0) {
+				TemperatureForecast previous = forecastRecents.get(0);
+				for (TemperatureForecast forecast : forecastRecents) {
+					LatLng position = new LatLng(forecast.getLatitude(), forecast.getLongitude());
 
-			String displayValue = forecast.getDisplayTempValue();
-			
-			if(previous.getTemperatureValue() < forecast.getTemperatureValue()) {
-				displayValue += " ↑";
-			} else if(previous.getTemperatureValue() > forecast.getTemperatureValue()) {
-				displayValue += " ↓";
-			} else {	
-				displayValue += "  ";
-				
-			}
-			
-	        MarkerOptions markerOptions = new MarkerOptions().
-	                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(displayValue))).
-	                position(position).
-	                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+					String displayValue = forecast.getDisplayTempValue();
+					
+					if(previous.getTemperatureValue() < forecast.getTemperatureValue()) {
+						displayValue += " ↑";
+					} else if(previous.getTemperatureValue() > forecast.getTemperatureValue()) {
+						displayValue += " ↓";
+					} else {	
+						displayValue += "  ";
+						
+					}
+					
+			        MarkerOptions markerOptions = new MarkerOptions().
+			                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(displayValue))).
+			                position(position).
+			                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
 
-	        temperatureAnimationMarkerOptions.add(markerOptions);
-	        previous = forecast;
+			        temperatureAnimationMarkerOptions.add(markerOptions);
+			        previous = forecast;
+				}
+				log("added markers to list, count " + temperatureAnimationMarkerOptions.size());
+			} else {
+				log("forecast recents is size 0, not preparing temperature animation markers");
+			}	
+		} else {
+			log("forecast recents is null, not preparing temperature animation markers");
 		}
-		log("added markers to list, count " + temperatureAnimationMarkerOptions.size());
 	}
 	
 	private boolean prepareTemperatureAnimation() {

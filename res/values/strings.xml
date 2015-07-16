@@ -199,7 +199,7 @@
     <string name="noLocationFound">No location found, can\'t submit current condition</string>
     <string name="sendMailChooser">Send mail...</string>
     <string name="feedbackEmailSubject">PressureNet feedback</string>
-    <string name="shareIntentText">PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork</string>
+    <string name="shareIntentText">PressureNet crowdsources Android sensor data to improve weather forecasting. Free app: http://bit.ly/1IvRM8w</string>
     <string name="pressureNet">PressureNet </string>
     <string name="debugLog"> Debug Log</string>
     <string name="debugLogSent">Debug log sent </string>
