@@ -406,6 +406,11 @@ public class BarometerNetworkActivity extends Activity implements
 	            	if(now - lastGlobalForecastCall > waitDiff) {
 	            		log("app says it's been more than 1h since last global forecast temperature call. go ahead!");
 	            		
+	            		SharedPreferences.Editor editor = sharedPreferences.edit();
+	            		lastGlobalForecastCall = System.currentTimeMillis();
+		            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
+		            	editor.commit();
+	            		
 	            		downloadTemperatureData(10);
 	            		
 	            	} else {
@@ -414,10 +419,7 @@ public class BarometerNetworkActivity extends Activity implements
 	            	
 	            } else {
 	            	log("app returned from making global forecast call");
-            		SharedPreferences.Editor editor = sharedPreferences.edit();
-            		lastGlobalForecastCall = System.currentTimeMillis();
-	            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
-	            	editor.commit();
+            		
 	            }
 	        }	        
 	    }
@@ -1048,6 +1050,7 @@ public class BarometerNetworkActivity extends Activity implements
 				
 				if(isWithinSupportedGeography()) {
 					hideEmailNotify();
+					downloadLocalData();
 				} else {
 					// show message that we don't support the region
 					
@@ -1061,6 +1064,7 @@ public class BarometerNetworkActivity extends Activity implements
 						showEmailNotify();
 					} else {
 						hideEmailNotify();
+						downloadLocalData();
 					}
 					SharedPreferences.Editor editor = sharedPreferences.edit();
 					editor.putBoolean("firstLaunch", false);
@@ -1101,7 +1105,9 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
 		layoutNoConditionsPrompt.setVisibility(View.GONE);
-		
+	}
+	
+	private void downloadLocalData() {
 		downloadTemperatureData(2);
 		downloadAndShowConditions();
 	}
@@ -1248,9 +1254,10 @@ public class BarometerNetworkActivity extends Activity implements
 				forecastRecents.clear();
 				temperatureAnimationMarkerOptions.clear();
 				liveMapForecasts.clear();
+				
 				addTemperaturesToMap();
 				addLiveMarkersToMap();
-				lastMapRefresh = System.currentTimeMillis();	
+					
 			}
 		}
 		
@@ -1258,13 +1265,14 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private void refreshMap() {
 		long now = System.currentTimeMillis();
-		long waitBeforeRefresh = 100; 
+		long waitBeforeRefresh = 200; 
 		
 		if(now - lastMapRefresh > waitBeforeRefresh) {
 			Handler handler = new Handler();
+			lastMapRefresh = System.currentTimeMillis();
 			MapRefresher refresh = new MapRefresher();
 			
-			handler.postDelayed(refresh, 100);
+			handler.postDelayed(refresh, 200);
 			
 		}
 		
@@ -1779,8 +1787,7 @@ public class BarometerNetworkActivity extends Activity implements
 		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
 		layoutNoConditionsPrompt.setVisibility(View.GONE);
 		
-		downloadTemperatureData(2);
-		downloadAndShowConditions();
+		downloadLocalData();
 	}
 	
 	private void displayMapToast(String message) {
@@ -3189,12 +3196,18 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
 		imageButtonPlay = (ImageButton) findViewById(R.id.imageButtonPlay);
+		
+		
 		prepareTemperatureAnimation();
+		
+
 		temperatureAnimator.reset();
 		updateAnimationTime("left", activeForecastStartTime, 0);
-		updateAnimationTime("right", activeForecastStartTime, animationProgress.getMax());	
+		updateAnimationTime("right", activeForecastStartTime, animationProgress.getMax());
+		
 
 	}
+	
 	
 	private int whichMapQ(double lat, double lon) {
 		LatLng center = mMap.getCameraPosition().target;
