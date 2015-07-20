@@ -386,41 +386,14 @@ public class BarometerNetworkActivity extends Activity implements
 	private BroadcastReceiver bReceiver = new BroadcastReceiver() {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	    	SharedPreferences sharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(getApplicationContext());
-			long lastGlobalForecastCall = sharedPreferences.getLong("lastGlobalForecastCall", 0);
-			
-		
-			long waitDiff = 1000 * 60 * 60; // one hour wait
-	    	long now = System.currentTimeMillis();
-	        
+	
 	    	if(intent.getAction().equals(DATA_DOWNLOAD_RESULTS)) {
 	        	if(!temperatureAnimationPlaying) {
-	        		liveMapForecasts.clear();
-	        		addTemperaturesToMap();
-	        		addConditionMarkersToMap();
+	        		if(liveMapForecasts.size() == 0) {
+	        			refreshMap();
+	        		}
 	        	}
-	            double deltaExtra = intent.getDoubleExtra("delta", 0);
-	            if(deltaExtra < 3) {
-	            	
-	            	// make another call, this time global
-	            	if(now - lastGlobalForecastCall > waitDiff) {
-	            		log("app says it's been more than 1h since last global forecast temperature call. go ahead!");
-	            		
-	            		SharedPreferences.Editor editor = sharedPreferences.edit();
-	            		lastGlobalForecastCall = System.currentTimeMillis();
-		            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
-		            	editor.commit();
-	            		//downloadTemperatureData(10);
-	            		
-	            	} else {
-	            		log("app considered making global forecast call, but hasn't been 1h yet");
-	            	}
-	            	
-	            } else {
-	            	log("app returned from making global forecast call");
-            		
-	            }
+	           
 	        }	        
 	    }
 	};
@@ -1323,18 +1296,14 @@ public class BarometerNetworkActivity extends Activity implements
 		
 	}
 	
+	MapRefresher refresher = new MapRefresher();
+	Handler refreshHandler = new Handler();
+	
 	private void refreshMap() {
-		long now = System.currentTimeMillis();
-		long waitBeforeRefresh = 200; 
-		
-		if(now - lastMapRefresh > waitBeforeRefresh) {
-			Handler handler = new Handler();
-			lastMapRefresh = System.currentTimeMillis();
-			MapRefresher refresh = new MapRefresher();
-			
-			handler.postDelayed(refresh, 200);
-			
-		}
+
+		refreshHandler.removeCallbacks(refresher);
+		refreshHandler.postDelayed(refresher, 200);
+
 	}
 	
 	private void addLiveMarkersToMap() {
