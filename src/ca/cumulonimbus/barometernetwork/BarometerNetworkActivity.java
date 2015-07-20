@@ -438,15 +438,19 @@ public class BarometerNetworkActivity extends Activity implements
 			userLocation = loc; 
 		}
 		
-		double latitude = userLocation.getLatitude();
-		double longitude = userLocation.getLongitude();
+		if(userLocation != null) {
+			double latitude = userLocation.getLatitude();
+			double longitude = userLocation.getLongitude();
+			
+			Intent tempIntent = new Intent(this, ForecastService.class);
+			tempIntent.putExtra("latitude", latitude);
+			tempIntent.putExtra("longitude", longitude);
+			tempIntent.putExtra("delta", delta);
+			
+			startService(tempIntent);
+		}
 		
-		Intent tempIntent = new Intent(this, ForecastService.class);
-		tempIntent.putExtra("latitude", latitude);
-		tempIntent.putExtra("longitude", longitude);
-		tempIntent.putExtra("delta", delta);
-		
-		startService(tempIntent);
+	
 	}
 	
 	private void addDrawerLayout() {
@@ -1014,20 +1018,23 @@ public class BarometerNetworkActivity extends Activity implements
 							minLon = sw.longitude;
 							maxLon = ne.longitude;
 						
-							if( (userLocation.getLatitude() < minLat) || 
-									(userLocation.getLatitude() > maxLat) ||
-									(userLocation.getLongitude() < minLon) || 
-									(userLocation.getLongitude() > maxLon)) {
-									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
-									locationButtonMode = "locations";	
-							} else {
-								if(mMap.getCameraPosition().zoom >= DEFAULT_ZOOM) {
-									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
-									locationButtonMode = "conditions";
+							if(userLocation != null) {
+								if( (userLocation.getLatitude() < minLat) || 
+										(userLocation.getLatitude() > maxLat) ||
+										(userLocation.getLongitude() < minLon) || 
+										(userLocation.getLongitude() > maxLon)) {
+										buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
+										locationButtonMode = "locations";	
 								} else {
-									buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
-									locationButtonMode = "locations";	
+									if(mMap.getCameraPosition().zoom >= DEFAULT_ZOOM) {
+										buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+										locationButtonMode = "conditions";
+									} else {
+										buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
+										locationButtonMode = "locations";	
+									}
 								}
+								
 							}
 							
 							
@@ -1235,14 +1242,21 @@ public class BarometerNetworkActivity extends Activity implements
 			userLocation = loc; 
 		}
 		
-		if( (userLocation.getLatitude() > minSupportedLatitude) &&
-				(userLocation.getLatitude() < maxSupportedLatitude) &&
-				(userLocation.getLongitude() > minSupportedLongitude) &&
-				(userLocation.getLongitude() < maxSupportedLongitude)) {
-			return true;
+		if(userLocation != null) {
+			if( (userLocation.getLatitude() > minSupportedLatitude) &&
+					(userLocation.getLatitude() < maxSupportedLatitude) &&
+					(userLocation.getLongitude() > minSupportedLongitude) &&
+					(userLocation.getLongitude() < maxSupportedLongitude)) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
+			displayMapToast("Unable to access location services");
 			return false;
 		}
+		
+		
 	}
 	
 	
