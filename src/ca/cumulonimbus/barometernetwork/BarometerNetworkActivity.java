@@ -365,7 +365,7 @@ public class BarometerNetworkActivity extends Activity implements
 		setLastKnownLocation();
 		startLog();
 		getStoredPreferences();
-		registerForDownloadResults();
+		//registerForDownloadResults();
 		setUpMap();
 		setUpUIListeners();
 		setId();
@@ -402,6 +402,7 @@ public class BarometerNetworkActivity extends Activity implements
 	        	}
 	            double deltaExtra = intent.getDoubleExtra("delta", 0);
 	            if(deltaExtra < 3) {
+	            	
 	            	// make another call, this time global
 	            	if(now - lastGlobalForecastCall > waitDiff) {
 	            		log("app says it's been more than 1h since last global forecast temperature call. go ahead!");
@@ -410,8 +411,7 @@ public class BarometerNetworkActivity extends Activity implements
 	            		lastGlobalForecastCall = System.currentTimeMillis();
 		            	editor.putLong("lastGlobalForecastCall", lastGlobalForecastCall);
 		            	editor.commit();
-	            		
-	            		downloadTemperatureData(10);
+	            		//downloadTemperatureData(10);
 	            		
 	            	} else {
 	            		log("app considered making global forecast call, but hasn't been 1h yet");
@@ -425,7 +425,47 @@ public class BarometerNetworkActivity extends Activity implements
 	    }
 	};
 	
-	private void downloadTemperatureData(double delta) {
+	Handler mapHandler = new Handler();
+	DelayedMapDownloader downloader = new DelayedMapDownloader();
+	
+	private void delayMapDownload() {
+		mapHandler.removeCallbacks(downloader);
+		mapHandler.postDelayed(downloader, 2000);
+	}
+	
+	private class DelayedMapDownloader implements Runnable {
+
+		@Override
+		public void run() {
+			
+			downloadMapTemperatureData(2);
+			
+		}
+		
+	}
+
+	private void downloadMapTemperatureData(double delta) {
+		log("app starting to download temperature forecast data");
+	
+		
+		
+		if(mMap != null) {
+			
+			LatLng center = mMap.getCameraPosition().target;
+			double mapCenterLat = center.latitude;
+			double mapCenterLon = center.longitude;
+			
+			
+			Intent tempIntent = new Intent(this, ForecastService.class);
+			tempIntent.putExtra("latitude", mapCenterLat);
+			tempIntent.putExtra("longitude", mapCenterLon);
+			tempIntent.putExtra("delta", delta);
+			
+			startService(tempIntent);
+		}
+	}
+	
+	private void downloadLocalTemperatureData(double delta) {
 		log("app starting to download temperature forecast data");
 		Location userLocation;
 		if(bestLocation != null) {
@@ -449,8 +489,6 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			startService(tempIntent);
 		}
-		
-	
 	}
 	
 	private void addDrawerLayout() {
@@ -961,6 +999,8 @@ public class BarometerNetworkActivity extends Activity implements
 		return obsFromJSON;
 	}
 	
+	private int minZoom = 8;
+	
 	/**
 	 * Run map setup, update UI accordingly
 	 */
@@ -985,6 +1025,12 @@ public class BarometerNetworkActivity extends Activity implements
 					public void onCameraChange(CameraPosition cameraPos) {
 						hideKeyboard();
 						
+						log("new zoom level " + cameraPos.zoom);
+						if(cameraPos.zoom < minZoom) {
+							mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
+						}
+						
+						delayMapDownload();
 						
 						// if the user location is off the map, change the Current Conditions icon to the 
 						// Go to My Location icon
@@ -1115,7 +1161,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private void downloadLocalData() {
-		downloadTemperatureData(2);
+		downloadLocalTemperatureData(2);
 		downloadAndShowConditions();
 	}
 
@@ -1289,7 +1335,6 @@ public class BarometerNetworkActivity extends Activity implements
 			handler.postDelayed(refresh, 200);
 			
 		}
-		
 	}
 	
 	private void addLiveMarkersToMap() {
@@ -3719,6 +3764,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void updateProgressBar() {
+		progressAPI = (ProgressBar) findViewById(R.id.progressBarAPICalls);
 		if (activeAPICallCount > 0) {
 			progressAPI.setVisibility(View.VISIBLE);
 		} else {
