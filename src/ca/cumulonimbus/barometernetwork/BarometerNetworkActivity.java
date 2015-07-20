@@ -3442,9 +3442,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		@Override
 		protected void onPostExecute(String result) {
-			for(MarkerOptions options : liveMarkerOptions) {
-				Marker marker = mMap.addMarker(options);	
-			}
+			addConditionMarkersToMap();
 			super.onPostExecute(result);
 		}
 	}
