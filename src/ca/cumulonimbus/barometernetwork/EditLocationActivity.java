@@ -99,7 +99,7 @@ public class EditLocationActivity extends Activity {
 				pn.deleteLocation(initialRowId);
 				pn.close();
 				Toast.makeText(getApplicationContext(),
-						getString(R.string.deleted) + initialName,
+						getString(R.string.deleted) + " " + initialName,
 						Toast.LENGTH_SHORT).show();
 				finish();
 			}
