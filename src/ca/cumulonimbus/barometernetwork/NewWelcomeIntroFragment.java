@@ -13,18 +13,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 
-public class NewWelcomeIntroFragment extends Fragment implements OnClickListener, OnItemSelectedListener {
+public class NewWelcomeIntroFragment extends Fragment implements OnClickListener {
 
 	Context context;
 	boolean hasBarometer = true;
-	Spinner spinnerWelcomeSharing;
 	Button nextButton;
+	TextView welcomeNewDescription; 
 	
 	public static final String PREFS_NAME = "ca.cumulonimbus.barometernetwork_preferences";
 	
@@ -57,35 +57,24 @@ public class NewWelcomeIntroFragment extends Fragment implements OnClickListener
 		nextButton = (Button) v.findViewById(R.id.buttonNewWelcomeNext);
 		nextButton.setOnClickListener(this);
 		
-		ArrayAdapter<CharSequence> adapterSharing = ArrayAdapter
-				.createFromResource(context, R.array.privacy_settings,
-						R.layout.welcome_spinner);
-		adapterSharing
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerWelcomeSharing = (Spinner) v.findViewById(R.id.spinnerNewWelcomeSharing);
-		spinnerWelcomeSharing.setAdapter(adapterSharing);
-
-		String[] sharingArray = getResources().getStringArray(
-				R.array.privacy_settings);
-		String share = settings.getString("sharing_preference",
-				"Us, Researchers and Forecasters");
-		int positionShare = 0;
-		for (int i = 0; i < sharingArray.length; i++) {
-			if (sharingArray[i].equals(share)) {
-				positionShare = i;
-			}
-		}
-		spinnerWelcomeSharing.setSelection(positionShare);
+		checkBarometer();
 		
-		spinnerWelcomeSharing.setOnItemSelectedListener(this);
-	
+		welcomeNewDescription = (TextView) v.findViewById(R.id.welcome_new_description);
+		
+		if(!hasBarometer) {
+			welcomeNewDescription.setText(getString(R.string.newWelcomeNoBarometerIntro));
+		} else {
+			welcomeNewDescription.setText(getString(R.string.newWelcomeBarometerIntro));
+		}
+		
+		
 		// set default units that are region aware/localized
 		Locale current = getResources().getConfiguration().locale;
 		if(current.getCountry().equals("US")) {
 			// default to 'ft' and 'F'
 		      SharedPreferences.Editor editor = settings.edit();
 		      editor.putString("distance_units", "Feet (ft)");
-		      editor.putString("temperature_units", "Fahrenheit (¡F)");
+		      editor.putString("temperature_units", "Fahrenheit (Â°F)");
 		      editor.commit();
 		}
 		
@@ -106,30 +95,4 @@ public class NewWelcomeIntroFragment extends Fragment implements OnClickListener
 		}
 	}
 
-	@Override
-	public void onItemSelected(AdapterView<?> v, View view,
-			int position, long id) {
-		if(v.getId()== R.id.spinnerNewWelcomeSharing) {
-			String[] array = getResources().getStringArray(R.array.privacy_settings);
-			saveSharingPrivacy(array[position]);
-			
-		} else {
-			System.out.println("setting preference none");
-		}
-		
-	}
-
-	public void saveSharingPrivacy(String value) {
-	      SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-	      SharedPreferences.Editor editor = settings.edit();
-	      System.out.println("setting preference " + value);
-	      editor.putString("sharing_preference", value);
-	      editor.commit();
-	}
-	
-	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
-		
-		
-	}
 }

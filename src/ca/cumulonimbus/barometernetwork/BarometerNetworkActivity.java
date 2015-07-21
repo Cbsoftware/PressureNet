@@ -394,7 +394,7 @@ public class BarometerNetworkActivity extends Activity implements
 	        		}
 	        	}
 	           
-	        }	        
+	    	}
 	    }
 	};
 	
@@ -403,7 +403,7 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private void delayMapDownload() {
 		mapHandler.removeCallbacks(downloader);
-		mapHandler.postDelayed(downloader, 2000);
+		mapHandler.postDelayed(downloader, 1000);
 	}
 	
 	private class DelayedMapDownloader implements Runnable {

@@ -102,30 +102,17 @@
     </string-array>
 
     <string name="welcomeToPressureNET">Welcome to PressureNet</string>
-    <string name="appAndSharingDescritption">You\'re helping us make a better weather forecast!
-        \n\nWe\'re using the barometer inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
-        by telling us what the weather is actually like where you are.  
-        \n\nThis app periodically collects sensor data: your location and your atmospheric pressure. We\'ll share this data according to your wishes,
-        which you can change below or through Settings.
-        \n\nThe more people that use PressureNet, the better it gets, so tell your friends! Thank you!</string>
-    <string name="appDescritptionNoBarometer">You\'re helping us make a better weather forecast!
-        \n\nWe\'re using sensors inside new phones to automatically crowdsource live data. You can also help us validate our forecasts
-        by telling us what the weather is actually like where you are.  
-        \n\nYour device doesn\'t have a barometer, but you can still help us out! Send weather reports, and we\'ll share this data according to your wishes,
-        which you can change below or through Settings.
-        \n\nThe more people that use PressureNet, the better it gets, so tell your friends! Thank you!</string>
-    
+
     <string name="newWelcomeBarometerIntro">PressureNet is a crowdsourced weather app. 
-        Your phone has a barometer which provides new weather data to scientists. 
-        
-        </string>
+        Your phone has a barometer which we use to improve your weather forecast!    
+    </string>
     
     <string name="newWelcomeNoBarometerIntro">PressureNet is a crowdsourced weather app. 
         Your phone doesn\'t have a barometer, but that\'s okay, you can still help!
     </string>    
  
     <string name="newWelcomeSharingDescription">PressureNet collects sensor data: location and atmospheric pressure. 
-        We\'ll share this according to your preference, which you can change below and in Settings.
+        
     </string>
 
     <string name="newWelcomeNotificationIntro">Users nearby you will deliver the most accurate weather notifications

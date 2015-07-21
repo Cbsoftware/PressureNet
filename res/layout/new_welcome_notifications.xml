@@ -100,7 +100,7 @@
         android:textSize="16dip" />
 
      <LinearLayout
-        android:id="@+id/new_welcome_pagination"
+        android:id="@+id/new_welcome_pagination2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -129,7 +129,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/notifications_question"
-        android:layout_above="@id/new_welcome_pagination"
+        android:layout_above="@id/new_welcome_pagination2"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/conditions_no_button"
@@ -149,11 +149,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/notification_screenshot_demo"
-        android:layout_above="@id/new_welcome_pagination"
+        android:layout_above="@id/new_welcome_pagination2"
         android:layout_marginRight="8dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/conditions_yes_button"
-        android:gravity="center"
         android:minHeight="0dp"
         android:minWidth="0dp"
         android:paddingBottom="6dp"

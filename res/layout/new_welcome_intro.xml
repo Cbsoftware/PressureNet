@@ -42,7 +42,9 @@
         android:orientation="vertical"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:paddingTop="6dp" >
+        android:paddingTop="6dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" >
 
         <TextView
             android:id="@+id/welcome_new_description"
@@ -51,7 +53,8 @@
             android:layout_weight=".3"
             android:paddingTop="8dip"
             android:text="@string/newWelcomeBarometerIntro"
-            android:textSize="16dip" />
+            android:textSize="16dip"
+            android:layout_marginBottom="12dp" />
 
         <ImageView
             android:id="@+id/welcome_weather_screenshot"
@@ -60,57 +63,20 @@
             android:layout_weight=".3"
             android:paddingBottom="4dip"
             android:paddingTop="8dip"
+            android:layout_marginTop="12dp"
             android:src="@drawable/weather_screenshot" />
 
-        <TextView
-            android:id="@+id/welcome_new_sharing_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight=".3"
-            android:paddingTop="8dip"
-            android:text="@string/newWelcomeSharingDescription"
-            android:textSize="14dip" />
     </LinearLayout>
 
-    <Spinner
-        android:id="@+id/spinnerNewWelcomeSharing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
-        android:layout_marginLeft="8dp"
-        android:paddingRight="18dp"
-        android:paddingTop="10dp" >
-    </Spinner>
-
-    <Button
-        android:id="@+id/buttonNewWelcomeNext"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/newWelcomeIntroDescriptionLayout"
-        android:layout_below="@id/newWelcomeIntroDescriptionLayout"
-        android:layout_alignTop="@id/spinnerNewWelcomeSharing"
-        android:layout_marginRight="8dp"
-        android:background="@drawable/conditions_yes_button"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:paddingBottom="6dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingTop="6dp"
-        android:text="@string/next"
-        android:textColor="#FFFFFF"
-        android:textSize="18dp" />
-
-    <LinearLayout
+         <LinearLayout
         android:id="@+id/new_welcome_pagination"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:padding="8dp" >
+        android:paddingBottom="8dp"
+        android:paddingTop="20dp" >
 
         <ImageView
             android:id="@+id/new_welcome_intro_paging_1"
@@ -126,4 +92,24 @@
             android:src="@drawable/ic_paginate" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/buttonNewWelcomeNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/new_welcome_pagination"
+        android:layout_alignRight="@id/newWelcomeIntroDescriptionLayout"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/conditions_yes_button"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:text="@string/next"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
+
+    
 </RelativeLayout>
