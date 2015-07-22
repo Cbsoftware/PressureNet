@@ -1047,7 +1047,7 @@ public class BarometerNetworkActivity extends Activity implements
 										buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_location_found));
 										locationButtonMode = "locations";	
 								} else {
-									if(mMap.getCameraPosition().zoom >= DEFAULT_ZOOM) {
+									if(mMap.getCameraPosition().zoom >= (DEFAULT_ZOOM-1.5)) {
 										buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
 										locationButtonMode = "conditions";
 									} else {
