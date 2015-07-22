@@ -243,6 +243,8 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final String GA_ACTION_BUTTON = "button_press";
 	
 	
+	private static final int CONDITIONS_REQUEST_CODE = 28;
+	
 	/**
 	 * preferences
 	 */
@@ -1305,6 +1307,7 @@ public class BarometerNetworkActivity extends Activity implements
 		refreshHandler.postDelayed(refresher, 200);
 
 	}
+	
 	
 	private void addLiveMarkersToMap() {
 		for (MarkerOptions markerOptions : liveMarkerOptions) {
@@ -2451,7 +2454,7 @@ public class BarometerNetworkActivity extends Activity implements
 		cleanUI(menu);
 		return super.onPrepareOptionsMenu(menu);
 	}
-
+	
 	private void launchCurrentConditionsActivity() {
 		Intent intent = new Intent(getApplicationContext(),
 				CurrentConditionsActivity.class);
@@ -2471,7 +2474,7 @@ public class BarometerNetworkActivity extends Activity implements
 			intent.putExtra("latitude", mLatitude);
 			intent.putExtra("longitude", mLongitude);
 			log("starting condition " + mLatitude + " , " + mLongitude);
-			startActivity(intent);
+			startActivityForResult(intent, CONDITIONS_REQUEST_CODE);
 			overridePendingTransition(R.anim.open_current_conditions, 0);
 			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
@@ -2632,8 +2635,10 @@ public class BarometerNetworkActivity extends Activity implements
 				editor.putLong("lastGlobalAPICall", lastGlobalApiCall);
 				editor.commit();
 			}
+		} else if (requestCode == CONDITIONS_REQUEST_CODE)  {
+			downloadAndShowConditions();
 		} else {
-				log("barometernetworkactivity received data intent null:");
+			log("barometernetworkactivity received data intent null:");
 		}
 		 
 		super.onActivityResult(requestCode, resultCode, data);
