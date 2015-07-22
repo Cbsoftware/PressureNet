@@ -1310,9 +1310,14 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	
 	private void addLiveMarkersToMap() {
-		for (MarkerOptions markerOptions : liveMarkerOptions) {
-			mMap.addMarker(markerOptions);
+		try {
+			for (MarkerOptions markerOptions : liveMarkerOptions) {
+				mMap.addMarker(markerOptions);
+			}			
+		} catch(ConcurrentModificationException cme) {
+			// 
 		}
+
 	}
 	
 	private void downloadAndShowConditions() {
