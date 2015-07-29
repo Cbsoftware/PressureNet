@@ -3,27 +3,23 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:1.2.3'
     }
 }
-apply plugin: 'android'
-
-dependencies {
-    compile files('../../../achartengine-1.0.0.jar')
-}
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "17"
+    compileSdkVersion 21
+    buildToolsVersion "21"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 17
+        targetSdkVersion 21
     }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src','sdk-src']
+            java.srcDirs = ['src','../PressureNet-SDK/src']
             resources.srcDirs = ['src']
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
@@ -33,4 +29,19 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repository-achartengine.forge.cloudbees.com/snapshot/"
+    }
+}
+
+dependencies {
+    compile group: 'org.achartengine', name: 'achartengine', version: '1.2.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.maps.android:android-maps-utils:0.3+'
+    compile 'com.mixpanel.android:mixpanel-android:4.6.2'
+    compile files('../sun.jar')
 }

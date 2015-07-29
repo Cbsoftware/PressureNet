@@ -11,6 +11,17 @@
 # generated files
 bin/
 gen/
+.idea
+.gradle
+build/
+
+gradle/
+gradlew
+gradlew.bat
+
+# old
+PressureNet.iml
+pressureNET.iml
 
 # Local configuration file (sdk path, etc)
 local.properties
