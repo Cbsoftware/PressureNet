@@ -29,6 +29,10 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
@@ -40,8 +44,13 @@ repositories {
 
 dependencies {
     compile group: 'org.achartengine', name: 'achartengine', version: '1.2.0'
-    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.android.gms:play-services-maps:7.5.0'
+    compile 'com.google.android.gms:play-services-gcm:7.5.0'
     compile 'com.google.maps.android:android-maps-utils:0.3+'
     compile 'com.mixpanel.android:mixpanel-android:4.6.2'
+    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:appcompat-v7:21.0.0'
+    compile 'com.google.android.gms:play-services-analytics:7.5.0'
     compile files('../sun.jar')
 }
+
