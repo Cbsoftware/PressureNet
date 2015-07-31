@@ -560,7 +560,7 @@ public class BarometerNetworkActivity extends Activity implements
 	    		// Tell your friends
 	    		growPressureNET();
 	    	} else if (position == 6) {
-				sendTestWeatherAlert();
+				//sendTestWeatherAlert();
 			} else {
 	    		log("navigation drawer unknown event");
 	    	}
