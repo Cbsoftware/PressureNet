@@ -23,8 +23,10 @@
 
     </style>
 
-    <style name="CustomThemeDialogDark" parent="android:Theme.Holo.Dialog">
-        <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    <style name="CustomThemeDialogDark" parent="android:Theme.Holo">
+        <item name="android:displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="displayOptions">showHome|homeAsUp|showTitle</item>
+        <item name="android:icon">@android:color/transparent</item> <!-- This does the magic! -->
 
     </style>
 

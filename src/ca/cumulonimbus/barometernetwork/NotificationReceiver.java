@@ -42,26 +42,31 @@ public class NotificationReceiver extends BroadcastReceiver {
                         			CbForecastAlert alert = createForecastAlertFromJSONNotification(alertString);
                                 	CbCurrentCondition condition = createSmallConditionForAlert(alertString);
                                 	if(alert!=null) {
-                                		alert.setCondition(condition);
-                                		alert.composeNotificationText();
-                                		
-                                		if(alert.getAlertTime() < System.currentTimeMillis()) {
-                                			log("negative alert, bailing");
-                                			return;
-                                		}
-                                		
-                                		sendAlert(alert, condition);
-                                		
-                                		// add to the database
-                                		
-                                		PnDb db = new PnDb(mContext);
-                                		db.open();
-                                		long d = db.addForecastAlert(condition.getGeneral_condition(), alert.getAlertTime(), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
-                                		db.close();
-                                		log("notificationreceiver adding forecast alert to database " + d + ", " + condition.getGeneral_condition() + " " + alert.getAlertTime());
-                                	} else {
-                                		log("notificationreceiver not sending alert, alert is null");
-                                	} 
+										if(condition!=null) {
+											alert.setCondition(condition);
+											alert.composeNotificationText();
+
+											if(alert.getAlertTime() < System.currentTimeMillis()) {
+												log("negative alert, bailing");
+												return;
+											}
+
+											sendAlert(alert, condition);
+
+											// add to the database
+
+											PnDb db = new PnDb(mContext);
+											db.open();
+											long d = db.addForecastAlert(condition.getGeneral_condition(), alert.getAlertTime(), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
+											db.close();
+											log("notificationreceiver adding forecast alert to database " + d + ", " + condition.getGeneral_condition() + " " + alert.getAlertTime());
+										} else {
+											log("notificationreceiver not sending alert, condition is null");
+										}
+									} else {
+										log("notificationreceiver not sending alert, alert is null");
+									}
+
                         		} catch(JSONException e) {
                         			log("json exception e" + e.getMessage());
                         		}
@@ -99,7 +104,20 @@ public class NotificationReceiver extends BroadcastReceiver {
 		intent.putExtra("ca.cumulonimbus.pressurenetsdk.alertNotificationCondition", condition);
 		mContext.sendBroadcast(intent);
     }
-    
+/*
+	3 => 'rain',
+			4 => 'snow',
+			5 => 'sleet',
+			6 => 'wind',
+			7 => 'fog',
+			11 => 'hail',
+			12 => 'thunderstorm',
+			13 => 'tornado',
+			16 => 'drizzle',
+			17 => 'light-rain',
+			18 => 'moderate-rain',
+			19 => 'heavy-rain’
+	*/
     private CbCurrentCondition createSmallConditionForAlert(String json) {
     	try {
     		log("notification receiver creating small condition from " + json);
@@ -129,11 +147,11 @@ public class NotificationReceiver extends BroadcastReceiver {
     				condition.setGeneral_condition("Precipitation");
     				condition.setPrecipitation_type("Rain");
     				condition.setPrecipitation_amount(0);
-    			} if(event.equals("moderate-rain")) {
+    			} else if(event.equals("moderate-rain")) {
     				condition.setGeneral_condition("Precipitation");
     				condition.setPrecipitation_type("Rain");
     				condition.setPrecipitation_amount(1);
-    			} if(event.equals("heavy-rain")) {
+    			} else if(event.equals("heavy-rain")) {
     				condition.setGeneral_condition("Precipitation");
     				condition.setPrecipitation_type("Rain");
     				condition.setPrecipitation_amount(2);
@@ -145,7 +163,9 @@ public class NotificationReceiver extends BroadcastReceiver {
     				condition.setPrecipitation_type("Snow");
     			} else if (event.equals("thunderstorm")) {
     				condition.setGeneral_condition("Thunderstorm");
-    			} 
+    			} else {
+					return null;
+				}
     		}
     		return condition;
     	} catch (Exception e) {
@@ -156,7 +176,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
     
     private CbForecastAlert createForecastAlertFromJSONNotification(String json) {
-    	log("creating forecast alert from JSON "  + json);
+    	log("creating forecast alert from JSON " + json);
     	try {
     		JSONObject object = new JSONObject(json);
     		

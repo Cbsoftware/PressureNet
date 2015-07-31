@@ -142,11 +142,11 @@ public class NotificationSender extends BroadcastReceiver {
 			// potentially notify about weather forecasts
 			SharedPreferences sharedPreferences = PreferenceManager
 					.getDefaultSharedPreferences(mContext);
-	
+
 				CbForecastAlert alert = (CbForecastAlert) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.alertNotification");
 				CbCurrentCondition condition = (CbCurrentCondition) intent.getSerializableExtra("ca.cumulonimbus.pressurenetsdk.alertNotificationCondition");
 				if(alert != null) {
-					
+
 					if(condition != null) {
 						log("notificationsender alert condition is good, assigning a location");
 						Location loc = new Location("network");
@@ -157,13 +157,13 @@ public class NotificationSender extends BroadcastReceiver {
 						loc.setLongitude(condition.getLon());
 						condition.setLocation(loc);
 						alert.setCondition(condition);
-						
-						Calendar cal = Calendar.getInstance(); 
+
+						Calendar cal = Calendar.getInstance();
 						condition.setTzoffset(cal.getTimeZone().getRawOffset());
-						
-						
+
+
 						alert.setCondition(condition);
-						
+
 						log("delivering weather forecast alert");
 						boolean isOkayToDeliver = sharedPreferences.getBoolean("send_condition_notifications", false);
 						if(isOkayToDeliver) {
@@ -226,7 +226,7 @@ public class NotificationSender extends BroadcastReceiver {
 			log("no matching code for " + intent.getAction());
 		}	
 	}
-	
+
 	/**
 	 * Check the Android SharedPreferences for important values. Save relevant
 	 * ones to CbSettings for easy access in submitting readings
@@ -267,8 +267,7 @@ public class NotificationSender extends BroadcastReceiver {
 	/**
 	 * Send an Android notification to the user about 
 	 * weather forecast details
-	 * 
-	 * @param tendencyChange
+	 *
 	 */
 	private void deliverAlertNotification(CbForecastAlert alert) {
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -397,13 +396,40 @@ public class NotificationSender extends BroadcastReceiver {
 			}
 		} 
 		alert.composeNotificationText();
-		
+
+
+
+		// Current Conditions activity likes to know the location in the Intent
+		// Also needed for Haversine calculation
+		double notificationLatitude = 0.0;
+		double notificationLongitude = 0.0;
+		try {
+			LocationManager lm = (LocationManager) mContext
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location loc = lm
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (loc.getLatitude() != 0) {
+				notificationLatitude = loc.getLatitude();
+				notificationLongitude = loc.getLongitude();
+			}
+		} catch (Exception e) {
+
+		}
+
+
 		Notification.Builder mBuilder = new Notification.Builder(
 				mContext).setSmallIcon(icon)
 				.setContentTitle(alert.getNotificationTitle()).setContentText(alert.getNotificationContent());
 		// Creates an explicit intent for an activity
 		Intent resultIntent = new Intent(mContext,
-				ForecastDetailsActivity.class);
+				CurrentConditionsActivity.class);
+
+
+		resultIntent.putExtra("latitude", notificationLatitude);
+		resultIntent.putExtra("longitude", notificationLongitude);
+		resultIntent.putExtra("cancelNotification", true);
+		resultIntent.putExtra("initial", initial);
+		resultIntent.putExtra("backToApp", true);
 
 		try {
 		
@@ -467,8 +493,7 @@ public class NotificationSender extends BroadcastReceiver {
 	/**
 	 * Send an Android notification to the user about nearby users
 	 * reporting current conditions.
-	 * 
-	 * @param tendencyChange
+	 *
 	 */
 	private void deliverConditionNotification(CbCurrentCondition condition) {
 		SharedPreferences sharedPreferences = PreferenceManager
@@ -698,6 +723,7 @@ public class NotificationSender extends BroadcastReceiver {
 		resultIntent.putExtra("longitude", notificationLongitude);
 		resultIntent.putExtra("cancelNotification", true);
 		resultIntent.putExtra("initial", initial);
+		resultIntent.putExtra("backToApp", true);
 
 		try {
 		

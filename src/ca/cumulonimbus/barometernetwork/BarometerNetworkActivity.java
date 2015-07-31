@@ -116,6 +116,7 @@ import ca.cumulonimbus.pressurenetsdk.CbApiCall;
 import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
 import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
 import ca.cumulonimbus.pressurenetsdk.CbDb;
+import ca.cumulonimbus.pressurenetsdk.CbForecastAlert;
 import ca.cumulonimbus.pressurenetsdk.CbObservation;
 import ca.cumulonimbus.pressurenetsdk.CbScience;
 import ca.cumulonimbus.pressurenetsdk.CbService;
@@ -243,7 +244,7 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final String GA_ACTION_BUTTON = "button_press";
 	
 	
-	private static final int CONDITIONS_REQUEST_CODE = 28;
+	public static final int CONDITIONS_REQUEST_CODE = 28;
 	
 	/**
 	 * preferences
@@ -268,7 +269,6 @@ public class BarometerNetworkActivity extends Activity implements
 
 	private ImageButton imageButtonPlay;
 	private TextView textAnimationInfoLeft;
-	private TextView textAnimationInfoRight;
 
 	private ArrayList<SearchLocation> searchedLocations = new ArrayList<SearchLocation>();
 
@@ -350,7 +350,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private LinearLayout layoutNoConditionsThanks;
 	private Button buttonNotifyMe;
 	private ImageButton buttonCloseNoConditions;
-	private Button inviteFriends3;
 	private ImageButton buttonCloseNoConditionsPrompt;
 	private EditText editTextEmail;
 	
@@ -358,6 +357,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		log("barometernetworkactivity oncreate");
 		dataReceivedToPlot = false;
 		appStartTime = System.currentTimeMillis();
 		setContentView(R.layout.main);
@@ -559,13 +559,162 @@ public class BarometerNetworkActivity extends Activity implements
 	    	} else if (position == 5) {
 	    		// Tell your friends
 	    		growPressureNET();
-	    	} else {
+	    	} else if (position == 6) {
+				sendTestWeatherAlert();
+			} else {
 	    		log("navigation drawer unknown event");
 	    	}
 	    	
 	    }
 	}
-	
+
+/*
+	private CbCurrentCondition createSmallConditionForAlert(String json) {
+		try {
+			log("notification receiver creating small condition from " + json);
+			JSONObject object = new JSONObject(json);
+			CbCurrentCondition condition = new CbCurrentCondition();
+			Location loc = new Location("network");
+			try {
+				LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+				loc = lm
+						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+			} catch (Exception e) {
+				log("notificationreceiver no location " + e.getMessage());
+			}
+			condition.setLocation(loc);
+
+			// Weather conditions
+			if(object.has("event")) {
+				String event = object.getString("event").toLowerCase();
+				log("notification receiver event is " + event);
+				if(event.equals("rain")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Rain");
+					condition.setPrecipitation_amount(-1);
+				} else if(event.equals("light-rain")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Rain");
+					condition.setPrecipitation_amount(0);
+				} else if(event.equals("moderate-rain")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Rain");
+					condition.setPrecipitation_amount(1);
+				} else if(event.equals("heavy-rain")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Rain");
+					condition.setPrecipitation_amount(2);
+				} else if (event.equals("hail")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Hail");
+				} else if (event.equals("snow")) {
+					condition.setGeneral_condition("Precipitation");
+					condition.setPrecipitation_type("Snow");
+				} else if (event.equals("thunderstorm")) {
+					condition.setGeneral_condition("Thunderstorm");
+				} else {
+					return null;
+				}
+			}
+			return condition;
+		} catch (Exception e) {
+			log("notificationreceiver exception" + e.getMessage());
+			return null;
+		}
+
+	}
+
+	private CbForecastAlert createForecastAlertFromJSONNotification(String json) {
+		log("creating forecast alert from JSON "  + json);
+		try {
+			JSONObject object = new JSONObject(json);
+
+			CbForecastAlert alert = new CbForecastAlert();
+
+
+			if(object.has("temperature")) {
+				try {
+					alert.setTemperature(Double.parseDouble(object.getString("temperature")));
+					log("notificationreceiver setting temperature " + alert.getTemperature());
+				} catch(Exception e) {
+					log("number errorl " + e.getMessage());
+				}
+			}
+			if(object.has("temperatureUnit")) {
+				try {
+					alert.setTemperatureUnit(object.getString("temperatureUnit"));
+					log("notificationreceiver setting temperature unit " + alert.getTemperatureUnit());
+				} catch(Exception e) {
+					log("number errorl " + e.getMessage());
+				}
+				if(alert.getTemperatureUnit().toLowerCase().contains("f")) {
+					double temp = ((alert.getTemperature() - 32) / 1.8);
+					alert.setTemperature(temp);
+					alert.setTemperatureUnit("c");
+				}
+			}
+
+
+
+			if(object.has("time")) {
+				try {
+					long alertTime  = Long.parseLong(object.getString("time")) * 1000;
+					alert.setAlertTime(alertTime);
+				} catch(Exception e) {
+					log("number errorl " + e.getMessage());
+				}
+			}
+
+			return alert;
+		} catch(JSONException jsone) {
+			log("JSON error : " + jsone.getMessage());
+		} catch (Exception e) {
+			log("other JSON error: " + e.getMessage());
+		}
+		return null;
+	}
+
+
+	private void sendAlert(CbForecastAlert alert, CbCurrentCondition condition) {
+		// potentially notify about nearby conditions
+		Intent intent = new Intent();
+		log("notification receiver sending weather alert intent");
+		intent.setAction(CbService.WEATHER_FORECAST_ALERT);
+		intent.putExtra("ca.cumulonimbus.pressurenetsdk.alertNotification", alert);
+		intent.putExtra("ca.cumulonimbus.pressurenetsdk.alertNotificationCondition", condition);
+		sendBroadcast(intent);
+	}
+
+
+	private void sendTestWeatherAlert() {
+		String alertString = "{'temperature':25.5, 'event':'rain', 'temperatureUnit':'c', 'time':1438365783}";
+		CbForecastAlert alert = createForecastAlertFromJSONNotification(alertString);
+		CbCurrentCondition condition = createSmallConditionForAlert(alertString);
+		if(alert!=null) {
+			if(condition!=null) {
+				alert.setCondition(condition);
+				alert.composeNotificationText();
+
+				if (alert.getAlertTime() < System.currentTimeMillis()) {
+					log("negative alert, bailing");
+					return;
+				}
+
+				sendAlert(alert, condition);
+
+				// add to the database
+
+				PnDb db = new PnDb(getApplicationContext());
+				db.open();
+				long d = db.addForecastAlert(condition.getGeneral_condition(), alert.getAlertTime(), alert.getTemperature(), alert.getTagLine(), condition.getPrecipitation_type());
+				db.close();
+			}
+
+		}
+	}
+*/
+
 
 	/** Swaps fragments in the main content view */
 	private void selectItem(int position) {
@@ -1540,16 +1689,13 @@ public class BarometerNetworkActivity extends Activity implements
 		animationProgress = (SeekBar) findViewById(R.id.animationProgress);
 		
 		textAnimationInfoLeft = (TextView) findViewById(R.id.textAnimationInfoLeft);
-		textAnimationInfoRight = (TextView) findViewById(R.id.textAnimationInfoRight);
 	
 		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
 		layoutNoConditionsThanks = (LinearLayout) findViewById(R.id.layoutNoConditionsThanks);
 
 		buttonNotifyMe = (Button) findViewById(R.id.buttonNotifyMe);
 		buttonCloseNoConditions = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt2);
-		
-		inviteFriends3 = (Button) findViewById(R.id.inviteFriends3);
-		
+
 		buttonCloseNoConditionsPrompt = (ImageButton) findViewById(R.id.buttonCloseNoConditionsPrompt);
 		
 		editTextEmail = (EditText) findViewById(R.id.editTextEmail);
@@ -1564,16 +1710,7 @@ public class BarometerNetworkActivity extends Activity implements
 				
 			}
 		});
-		
-		inviteFriends3.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				growPressureNET();
-				closeNoConditionsAndLoadData();
-			}
-		});
-		
+
 		buttonCloseNoConditions.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -2093,7 +2230,6 @@ public class BarometerNetworkActivity extends Activity implements
 	/**
 	 * Query the database for locally stored current conditions
 	 * 
-	 * @param api
 	 */
 	private void askForLocalConditionRecents() {
 
@@ -2479,7 +2615,7 @@ public class BarometerNetworkActivity extends Activity implements
 			intent.putExtra("latitude", mLatitude);
 			intent.putExtra("longitude", mLongitude);
 			log("starting condition " + mLatitude + " , " + mLongitude);
-			startActivityForResult(intent, CONDITIONS_REQUEST_CODE);
+			startActivity(intent);
 			overridePendingTransition(R.anim.open_current_conditions, 0);
 			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
@@ -2572,6 +2708,18 @@ public class BarometerNetworkActivity extends Activity implements
 	 * Send a share intent to encourage network growth
 	 */
 	private void growPressureNET() {
+		mixpanel.track("Invite your friends!");
+
+		// Get tracker.
+		Tracker t = ((PressureNetApplication) getApplication()).getTracker(
+				TrackerName.APP_TRACKER);
+		// Build and send an Event.
+		t.send(new HitBuilders.EventBuilder()
+				.setCategory(BarometerNetworkActivity.GA_CATEGORY_MAIN_APP)
+				.setAction(BarometerNetworkActivity.GA_ACTION_BUTTON)
+				.setLabel("Invite your friends!")
+				.build());
+
 		Intent sendIntent = new Intent();
 		sendIntent.setAction(Intent.ACTION_SEND);
 		sendIntent
@@ -3017,7 +3165,7 @@ public class BarometerNetworkActivity extends Activity implements
 			if(whichText.equals("left")) {
 				textAnimationInfoLeft.setText(display.format(cal.getTime()));	
 			} else if (whichText.equals("right")) {
-				textAnimationInfoRight.setText(display.format(cal.getTime()));
+
 			}
 				
 		} catch (java.text.ParseException e) {
@@ -3044,7 +3192,7 @@ public class BarometerNetworkActivity extends Activity implements
 			num++;
 		}
 		
-		//updateAnimationTime(activeForecastStartTime, frame);
+		updateAnimationTime("left", activeForecastStartTime, frame);
 		
 	}
 	
@@ -3248,7 +3396,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 		temperatureAnimator.reset();
 		updateAnimationTime("left", activeForecastStartTime, 0);
-		updateAnimationTime("right", activeForecastStartTime, animationProgress.getMax());
+		//updateAnimationTime("right", activeForecastStartTime, animationProgress.getMax());
 		
 
 	}
@@ -3500,8 +3648,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * 
 	 * Users will save locations and we will cache data for those locations.
 	 * Build a general API call to cache a location.
-	 * 
-	 * @param locationRowId
+	 *
 	 * @return
 	 */
 	private CbApiCall buildSearchLocationAPICall(SearchLocation loc) {
@@ -3813,6 +3960,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
+		log("barometernetworkactivity onpause");
 		unBindCbService();
 		stopSensorListeners();
 	}
@@ -3821,9 +3969,11 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		log("barometernetworkactivity onresume");
 		checkNetwork();
 		displayNetworkOfflineToast();
+
+		downloadAndShowConditions();
 
 		getStoredPreferences();
 
@@ -3873,7 +4023,7 @@ public class BarometerNetworkActivity extends Activity implements
 		dataReceivedToPlot = false;
 		// bindCbService();
 		super.onStart();
-		
+		log("barometernetworkactivity onstart");
 		// Get tracker.
 		Tracker t = ((PressureNetApplication) getApplication()).getTracker(
 		    TrackerName.APP_TRACKER);
@@ -3889,6 +4039,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onStop() {
 		stopSensorListeners();
+		log("barometernetworkactivity onstop");
 		dataReceivedToPlot = false;
 		unBindCbService();
 		super.onStop();
@@ -3897,6 +4048,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		dataReceivedToPlot = false;
+		log("barometernetworkactivity ondestroy");
 		unBindCbService();
 		mixpanel.flush();
 		super.onDestroy();

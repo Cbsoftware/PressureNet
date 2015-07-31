@@ -394,11 +394,10 @@ public class CurrentConditionsActivity extends Activity {
 			imageHrFoggy.setVisibility(View.GONE);
 			imageHrCloudy.setVisibility(View.GONE);
 
-			if (!lightningStateSelected) {
-				scrollLightning.setVisibility(View.GONE);
-				textLightningDescription.setVisibility(View.GONE);
-				imageHrLightning.setVisibility(View.GONE);
-			}
+
+			scrollLightning.setVisibility(View.GONE);
+			textLightningDescription.setVisibility(View.GONE);
+			imageHrLightning.setVisibility(View.GONE);
 
 			hrExtreme.setVisibility(View.GONE);
 			layoutExtreme.setVisibility(View.GONE);
@@ -412,11 +411,12 @@ public class CurrentConditionsActivity extends Activity {
 			scrollPrecipitation.setVisibility(View.GONE);
 			textPrecipitationDescription.setVisibility(View.GONE);
 			imageHrPrecipitation.setVisibility(View.GONE);
-			if (!lightningStateSelected) {
-				scrollLightning.setVisibility(View.GONE);
-				textLightningDescription.setVisibility(View.GONE);
-				imageHrLightning.setVisibility(View.GONE);
-			}
+
+
+			scrollLightning.setVisibility(View.GONE);
+			textLightningDescription.setVisibility(View.GONE);
+			imageHrLightning.setVisibility(View.GONE);
+
 			scrollPrecipitationAmount.setVisibility(View.GONE);
 			textPrecipitationAmountDescription.setVisibility(View.GONE);
 			imageHrPrecipitationAmount.setVisibility(View.GONE);
@@ -1053,6 +1053,14 @@ public class CurrentConditionsActivity extends Activity {
 					log("current conditions not sharing to twitter");
 				}
 
+				Intent intent = getIntent();
+				if(intent.hasExtra("backToApp")) {
+					if(intent.getBooleanExtra("backToApp", false) == true) {
+						Intent i = new Intent(getApplicationContext(), BarometerNetworkActivity.class);
+						startActivity(i);
+					}
+				}
+
 				finish();
 
 			}
@@ -1437,6 +1445,7 @@ public class CurrentConditionsActivity extends Activity {
 			if (intent.hasExtra("cancelNotification")) {
 				if (intent.getBooleanExtra("cancelNotification", false)) {
 					cancelNotification(BarometerNetworkActivity.NOTIFICATION_ID);
+					cancelNotification(NotificationSender.ALERT_NOTIFICATION_ID);
 				}
 			}
 		} catch (Exception e) {

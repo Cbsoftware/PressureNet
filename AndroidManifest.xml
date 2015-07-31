@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0500084"
-    android:versionName="5.0.8" >
+    android:versionCode="0501003"
+    android:versionName="5.1.0RC" >
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="16"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -154,7 +154,12 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="What's it like outside?"
-            android:theme="@style/CustomThemeDialogDark" >
+            android:theme="@style/CustomThemeDialogDark"
+            android:parentActivityName="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.cumulonimbus.barometernetwork.BarometerNetworkActivity" />
         </activity>
         <activity
             android:name="ca.cumulonimbus.barometernetwork.PreferencesActivity"
@@ -183,12 +188,7 @@
             android:label="@string/pndv"
             android:theme="@style/CustomTheme" >
         </activity>
-        <activity
-            android:name="ca.cumulonimbus.barometernetwork.WelcomeActivity"
-            android:excludeFromRecents="true"
-            android:label="@string/welcomeToPressureNET"
-            android:theme="@style/CustomThemeDialog" >
-        </activity>
+
         <activity
             android:name="ca.cumulonimbus.barometernetwork.WhatsNewActivity"
             android:excludeFromRecents="true"
