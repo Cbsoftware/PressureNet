@@ -1482,22 +1482,17 @@ public class BarometerNetworkActivity extends Activity implements
 	        			 
 	                	
 	        			 object.put("email", email);
-	        			 
-	        			 Location userLocation;
-        	 			 if(bestLocation != null) {
-        			 		userLocation = bestLocation;
 
-        				 } else {
-        					LocationManager lm = (LocationManager) getApplicationContext()
-        							.getSystemService(Context.LOCATION_SERVICE);
-        					Location loc = lm
-        							.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        					userLocation = loc; 
-        				 }
-        				
-        				double latitude = userLocation.getLatitude();
-        				double longitude = userLocation.getLongitude();
-        				
+						double latitude = 0.0;
+						double longitude = 0.0;
+
+						if(bestLocation != null) {
+							latitude = bestLocation.getLatitude();
+							longitude = bestLocation.getLongitude();
+
+						}
+
+
         			 
         				object.put("latitude", latitude );
         				object.put("longitude", longitude );
