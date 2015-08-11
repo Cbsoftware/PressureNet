@@ -67,6 +67,7 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -364,11 +365,13 @@ public class BarometerNetworkActivity extends Activity implements
 		addDrawerLayout();
 		checkNetwork();
 		checkSensors();
-		setLastKnownLocation();
 		startLog();
 		getStoredPreferences();
+		appLaunchLocationUpdate();
+		//setAppBestLocation();
 		//registerForDownloadResults();
 		setUpMap();
+		appStartGoToMyLocation();
 		setUpUIListeners();
 		setId();
 		setUpFiles();
@@ -377,6 +380,224 @@ public class BarometerNetworkActivity extends Activity implements
 		callExternalAPIs();
 		setUpMixPanel();		
 	}
+
+	private LocationManager networkLocationManager;
+	private LocationManager gpsLocationManager;
+	private LocationListener locationListener;
+	private static final int TEN_MINUTES = 1000 * 60 * 10;
+	private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+
+	private int minDistance = 0;
+	private int minTime = TEN_MINUTES;
+	private int minTimeGPS = 5000;
+	private Handler locationHandler = new Handler();
+
+	/**
+	 * Stop all location listeners
+	 * @return
+	 */
+	public boolean stopGettingLocations() {
+		boolean stopped = false;
+		try {
+			if(gpsLocationManager!=null) {
+				log("app stopping gps locations");
+				gpsLocationManager.removeUpdates(locationListener);
+				stopped = true;
+			}
+		} catch(Exception e ) {
+			e.printStackTrace();
+		}
+		try {
+			if(locationListener!=null) {
+				if(networkLocationManager!=null) {
+					log("app stopping network location");
+					networkLocationManager.removeUpdates(locationListener);
+					stopped = true;
+				}
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+
+
+		if(stopped) {
+			if(bestLocation==null) {
+				displayMapToast("Unable to find location");
+			}
+		}
+
+		return true;
+	}
+
+	private class LocationStopper implements Runnable  {
+
+		@Override
+		public void run() {
+			stopGettingLocations();
+		}
+
+	}
+
+
+	/** Checks whether two providers are the same */
+	private boolean isSameProvider(String provider1, String provider2) {
+		if (provider1 == null) {
+			return provider2 == null;
+		}
+		return provider1.equals(provider2);
+	}
+
+
+
+	/** Determines whether one Location reading is better than the current Location fix
+	 * @param location  The new Location that you want to evaluate
+	 */
+	protected boolean isBetterLocation(Location location) {
+		if (bestLocation == null) {
+			// A new location is always better than no location
+			log("new location is always better than no location");
+			return true;
+		}
+
+		// Check whether the new location fix is newer or older
+		long timeDelta = location.getTime() - bestLocation.getTime();
+		boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+		boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+		boolean isNewer = timeDelta > 0;
+
+
+
+		// If it's been more than two minutes since the current location, use the new location
+		// because the user has likely moved
+		if (isSignificantlyNewer) {
+			log("new location is significantly newer");
+			return true;
+			// If the new location is more than two minutes older, it must be worse
+		} else if (isSignificantlyOlder) {
+			log("new location is significantly older");
+			return false;
+		}
+
+
+		// Check whether the new location fix is more or less accurate
+		int accuracyDelta = (int) (location.getAccuracy() - bestLocation.getAccuracy());
+		boolean isLessAccurate = accuracyDelta > 0;
+		boolean isMoreAccurate = accuracyDelta < 0;
+		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+		// Check if the old and new location are from the same provider
+		boolean isFromSameProvider = isSameProvider(location.getProvider(),
+				bestLocation.getProvider());
+
+
+
+		// Determine location quality using a combination of timeliness, accuracy, and completeness (altitude)
+		if (isMoreAccurate && isNewer) {
+			return true;
+		} else if (isNewer && !isLessAccurate) {
+			return true;
+		} else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+			return true;
+		}
+		return false;
+	}
+
+	private void setPassiveLocation() {
+		LocationManager passiveLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		Location passiveLocation = passiveLocationManager.getLastKnownLocation("passive");
+		if(passiveLocation != null ) {
+			log("app setting bestlocation to passive location");
+			bestLocation = passiveLocation;
+		} else {
+			log("app can't bestlocation to passive location, passive unavailable");
+		}
+
+	}
+
+	private void appLaunchLocationUpdate() {
+		displayLongMapToast("Updating location and weather data...");
+
+		// start with passive
+
+
+		networkLocationManager = (LocationManager)  getSystemService(Context.LOCATION_SERVICE);
+		gpsLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		setPassiveLocation();
+
+		String preferredSerivce = "network";
+		if(networkLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) == null) {
+			preferredSerivce = "gps";
+		}
+
+		locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location provider.
+				if (isBetterLocation(location)) {
+					log("found a better location " + location.getProvider() + " " + location.getAltitude());
+					bestLocation = location;
+					setUpMap();
+				} else {
+					log("new location, it's not any better " + location.getProvider() + ", best altitude is " + bestLocation.getAltitude());
+				}
+				LocationStopper stopLater = new LocationStopper();
+				locationHandler.postDelayed(stopLater, 1000 * 2);
+			}
+
+			public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+			public void onProviderEnabled(String provider) {}
+
+			public void onProviderDisabled(String provider) {}
+		};
+
+		// Register the listener with the Location Manager to receive location updates
+		try {
+			networkLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, locationListener);
+			if(preferredSerivce.equals("gps")) {
+				log("app starting gps location updates");
+				gpsLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeGPS, minDistance, locationListener);
+			} else {
+				log("app NOT starting gps location updates");
+			}
+		} catch(Exception e) {
+			log("app location problem " + e.getMessage());
+			e.printStackTrace();
+
+		}
+
+	}
+
+	private Location setAppBestLocation() {
+		log("app setting best location");
+		LocationManager lm = (LocationManager) getApplicationContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		Location networkLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		Location gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		if(networkLocation != null) {
+			bestLocation = networkLocation;
+			log("best location is network since its available");
+		} else {
+			if (gpsLocation != null) {
+				bestLocation = gpsLocation;
+				log("best location is gps since its available and network is not");
+			} else {
+				setPassiveLocation();
+				// we have no location at all
+				//Toast.makeText(getApplicationContext(), "Location services unavailable", Toast.LENGTH_SHORT).show();
+				//log("best location will be set to null since neither gps nor network is available");
+				//bestLocation = null;
+			}
+		}
+
+		return bestLocation;
+
+	}
+
 	
 	private void registerForDownloadResults() {
 		LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
@@ -442,20 +663,11 @@ public class BarometerNetworkActivity extends Activity implements
 	
 	private void downloadLocalTemperatureData(double delta) {
 		log("app starting to download temperature forecast data");
-		Location userLocation;
-		if(bestLocation != null) {
-			userLocation = bestLocation;
-		} else {
-			LocationManager lm = (LocationManager) getApplicationContext()
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			userLocation = loc; 
-		}
+
 		
-		if(userLocation != null) {
-			double latitude = userLocation.getLatitude();
-			double longitude = userLocation.getLongitude();
+		if(bestLocation != null) {
+			double latitude = bestLocation.getLatitude();
+			double longitude = bestLocation.getLongitude();
 			
 			Intent tempIntent = new Intent(this, ForecastService.class);
 			tempIntent.putExtra("latitude", latitude);
@@ -463,6 +675,8 @@ public class BarometerNetworkActivity extends Activity implements
 			tempIntent.putExtra("delta", delta);
 			
 			startService(tempIntent);
+		} else {
+			log("app cannot download local temperature data due to no location");
 		}
 	}
 	
@@ -800,8 +1014,6 @@ public class BarometerNetworkActivity extends Activity implements
 	 */
 	private void checkSensors() {
 		checkBarometer();
-		checkThermometer();
-		checkHygrometer();
 	}
 	
 	/**
@@ -818,50 +1030,6 @@ public class BarometerNetworkActivity extends Activity implements
 		PnDb db = new PnDb(getApplicationContext());
 		db.open();
 		db.close();
-	}
-	
-	/**
-	 * Update local location data with the last known location.
-	 */
-	private void setLastKnownLocation() {
-
-		LocationManager lm = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
-		Location loc = lm
-				.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		if (loc == null) {
-			loc = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-			log("last known network location null, trying passive");
-		}
-		
-		if (loc == null) {
-			log("location still null, no other options");
-			locationAvailable = false;
-			return;
-		}
-		
-		bestLocation = loc;
-
-		double latitude = loc.getLatitude();
-		double longitude = loc.getLongitude();
-		double altitude = loc.getAltitude();
-		mLatitude = latitude;
-		mLongitude = longitude;
-		mAltitude = altitude;
-		
-		buttonMyLocation = (ImageButton) findViewById(R.id.buttonMyLocation);
-		try {
-			buttonMyLocation.setImageAlpha(255);	
-		} catch (NoSuchMethodError nsme) {
-			log("app could not set image alpha");
-		} catch(RuntimeException re) {
-			log("my location button error");
-		} catch (Exception e) {
-			log("unknown imagealphaerror " + e.getMessage());
-		}
-		
-		locationAvailable = true;
-		
 	}
 
 	/**
@@ -1159,17 +1327,15 @@ public class BarometerNetworkActivity extends Activity implements
 						// if the user location is off the map, change the Current Conditions icon to the 
 						// Go to My Location icon
 						
-						Location userLocation;
+						Location userLocation = null;
 						
 						if(bestLocation != null) {
 							userLocation = bestLocation;
 
-						} else {
-							LocationManager lm = (LocationManager) getApplicationContext()
-									.getSystemService(Context.LOCATION_SERVICE);
-							Location loc = lm
-									.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-							userLocation = loc; 
+						}
+
+						if(userLocation == null) {
+							log("app can't set up map, location is null");
 						}
 						LatLngBounds bounds = mMap.getProjection()
 								.getVisibleRegion().latLngBounds;
@@ -1399,34 +1565,21 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private boolean isWithinSupportedGeography() {
-		Location userLocation;
-		
-		if(bestLocation != null) {
-			userLocation = bestLocation;
 
-		} else {
-			LocationManager lm = (LocationManager) getApplicationContext()
-					.getSystemService(Context.LOCATION_SERVICE);
-			Location loc = lm
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			userLocation = loc; 
-		}
-		
-		if(userLocation != null) {
-			if( (userLocation.getLatitude() > minSupportedLatitude) &&
-					(userLocation.getLatitude() < maxSupportedLatitude) &&
-					(userLocation.getLongitude() > minSupportedLongitude) &&
-					(userLocation.getLongitude() < maxSupportedLongitude)) {
+
+		if(bestLocation != null) {
+			if( (bestLocation.getLatitude() > minSupportedLatitude) &&
+					(bestLocation.getLatitude() < maxSupportedLatitude) &&
+					(bestLocation.getLongitude() > minSupportedLongitude) &&
+					(bestLocation.getLongitude() < maxSupportedLongitude)) {
 				return true;
 			} else {
 				return false;
 			}
 		} else {
-			displayMapToast("Unable to access location services");
+			log("app cannot identify user location for supported geography test");
 			return false;
 		}
-		
-		
 	}
 	
 	
@@ -1498,11 +1651,20 @@ public class BarometerNetworkActivity extends Activity implements
 	public void setUpMap() {
 		setUpMapIfNeeded();
 
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		try {
+			mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+					.getMap();
 
-		// Set default coordinates (centered around the user's location)
-		appStartGoToMyLocation();
+			// Set default coordinates (centered around the user's location)
+			//appStartGoToMyLocation();
+		} catch(NullPointerException npe) {
+			log("app can't set up map due to location problem");
+			if(bestLocation == null) {
+
+				displayMapToast("Location is unavailable for weather map");
+			}
+		}
+
 	}
 	
 	/**
@@ -1512,16 +1674,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			if(bestLocation != null) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
-			} else {
-				LocationManager lm = (LocationManager) this
-						.getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				if (loc.getLatitude() != 0) {
-					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(loc.getLatitude(), loc.getLongitude()), DEFAULT_ZOOM));
-				} 
 			}
-
 		} catch (Exception e) {
 
 		}
@@ -1537,14 +1690,6 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			if(bestLocation != null) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
-			} else {
-				LocationManager lm = (LocationManager) this
-						.getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				if (loc.getLatitude() != 0) {
-					mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
-				} 
 			}
 
 		} catch (Exception e) {
@@ -1561,7 +1706,7 @@ public class BarometerNetworkActivity extends Activity implements
 	 * @param longitude
 	 */
 	private void moveMapTo(double latitude, double longitude) {
-		setUpMapIfNeeded();
+
 
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -1959,7 +2104,7 @@ public class BarometerNetworkActivity extends Activity implements
 		
 		layoutNoConditionsPrompt = (LinearLayout) findViewById(R.id.layoutNoConditionsPrompt);
 		layoutNoConditionsPrompt.setVisibility(View.GONE);
-		
+
 		downloadLocalData();
 	}
 	
@@ -1983,6 +2128,26 @@ public class BarometerNetworkActivity extends Activity implements
 			log("app directing CbService to send registration info");
 			Message msg = Message.obtain(null,
 					CbService.MSG_REGISTER_NOTIFICATIONS, 0, 0);
+			try {
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				// e.printStackTrace();
+			}
+		} else {
+			// log("error: not bound");
+		}
+	}
+
+
+	/**
+	 * Query the Service for best location
+	 */
+	private void askForBestLocation() {
+		if (mBound) {
+			log("app asking for best location");
+
+			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_LOCATION, 0, 0);
 			try {
 				msg.replyTo = mMessenger;
 				mService.send(msg);
@@ -2249,25 +2414,6 @@ public class BarometerNetworkActivity extends Activity implements
 		}
 	}
 
-	/**
-	 * Query the Service for best location
-	 */
-	private void askForBestLocation() {
-		if (mBound) {
-			log("app asking for best location");
-
-			Message msg = Message.obtain(null, CbService.MSG_GET_BEST_LOCATION, 0, 0);
-			try {
-				msg.replyTo = mMessenger;
-				mService.send(msg);
-			} catch (RemoteException e) {
-				// e.printStackTrace();
-			}
-		} else {
-			// log("error: not bound");
-		}
-	}
-
 
 	public void unBindCbService() {
 		if (mBound) {
@@ -2317,11 +2463,19 @@ public class BarometerNetworkActivity extends Activity implements
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CbService.MSG_BEST_LOCATION:
-				bestLocation = (Location) msg.obj;
-				if (bestLocation != null) {
+				Location serviceLocation = (Location) msg.obj;
+				if (serviceLocation != null) {
 					log("Client Received new location from service "
-							+ bestLocation.getLatitude());
-					
+							+ serviceLocation.getLatitude());
+
+					if(isBetterLocation(serviceLocation)) {
+						log("app asked for sdk location and its better");
+						bestLocation = serviceLocation;
+						setUpMap();
+						//appStartGoToMyLocation();
+					} else {
+						log("app asked for sdk location but its no better");
+					}
 				} else {
 					log("location null");
 				}
@@ -2479,6 +2633,7 @@ public class BarometerNetworkActivity extends Activity implements
 			
 			sendChangeNotification();
 			getStoredPreferences();
+
 			askForBestLocation();
 						
 			setNotificationDeliverySDKPreference();
@@ -2760,6 +2915,7 @@ public class BarometerNetworkActivity extends Activity implements
 							editLocation.setText(search,
 									TextView.BufferType.EDITABLE);
 							displayMapToast(getString(R.string.goingTo) + " " + search);
+							log("app going to location " + lat + ", " + lon);
 							moveMapTo(lat, lon);
 						}
 					}
@@ -3445,34 +3601,31 @@ public class BarometerNetworkActivity extends Activity implements
 		double maxLon = 0;
 		
 		try {
-			Location userLocation;
+			Location userLocation = null;
 			if(bestLocation != null) {
 				userLocation = bestLocation;
-			} else {
-				LocationManager lm = (LocationManager) getApplicationContext()
-						.getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				userLocation = loc; 
 			}
-			if(userLocation.getLatitude() != 0) {
-				minLat = userLocation.getLatitude() - .1;
-				maxLat = userLocation.getLatitude() + .1;
-				minLon = userLocation.getLongitude() - .1;
-				maxLon = userLocation.getLongitude() + .1;
-			} else {
-				log("no location, bailing on csll");
-				return null;
+			if(userLocation != null) {
+				if(userLocation.getLatitude() != 0) {
+					minLat = userLocation.getLatitude() - .1;
+					maxLat = userLocation.getLatitude() + .1;
+					minLon = userLocation.getLongitude() - .1;
+					maxLon = userLocation.getLongitude() + .1;
+				} else {
+					log("no location, bailing on csll");
+					return null;
+				}
+
+				api.setMinLat(minLat);
+				api.setMaxLat(maxLat);
+				api.setMinLon(minLon);
+				api.setMaxLon(maxLon);
+				api.setStartTime(startTime);
+				api.setEndTime(endTime);
+				api.setLimit(500);
+				api.setCallType("Conditions");
 			}
-				
-			api.setMinLat(minLat);
-			api.setMaxLat(maxLat);
-			api.setMinLon(minLon);
-			api.setMaxLon(maxLon);
-			api.setStartTime(startTime);
-			api.setEndTime(endTime);
-			api.setLimit(500);
-			api.setCallType("Conditions");
+
 		} catch(NullPointerException npe) {
 			// 
 		}
@@ -3843,9 +3996,7 @@ public class BarometerNetworkActivity extends Activity implements
 	private void sendSingleObservation() {
 		// check location and bail/notify if it's unavailable
 		if (mLatitude == 0.0) {
-			Toast.makeText(getApplicationContext(),
-					getString(R.string.locationUnavailable), Toast.LENGTH_LONG)
-					.show();
+			log("app not sending single obs, location is unavailable");
 			return;
 		}
 
@@ -3978,9 +4129,10 @@ public class BarometerNetworkActivity extends Activity implements
 		getStoredPreferences();
 
 		registerForDownloadResults();
-		
 
-		setUpMapIfNeeded();
+		setAppBestLocation();
+
+		setUpMap();
 		
 		checkSensors();
 		updateVisibleReading();
