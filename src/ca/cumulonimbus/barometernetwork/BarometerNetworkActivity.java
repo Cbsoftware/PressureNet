@@ -1,39 +1,5 @@
 package ca.cumulonimbus.barometernetwork;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TimeZone;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -112,17 +78,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
-import ca.cumulonimbus.pressurenetsdk.CbApiCall;
-import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
-import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
-import ca.cumulonimbus.pressurenetsdk.CbDb;
-import ca.cumulonimbus.pressurenetsdk.CbForecastAlert;
-import ca.cumulonimbus.pressurenetsdk.CbObservation;
-import ca.cumulonimbus.pressurenetsdk.CbScience;
-import ca.cumulonimbus.pressurenetsdk.CbService;
-import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
-import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -140,7 +95,49 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TimeZone;
+
+import ca.cumulonimbus.barometernetwork.PressureNetApplication.TrackerName;
+import ca.cumulonimbus.pressurenetsdk.CbApiCall;
+import ca.cumulonimbus.pressurenetsdk.CbConfiguration;
+import ca.cumulonimbus.pressurenetsdk.CbCurrentCondition;
+import ca.cumulonimbus.pressurenetsdk.CbDb;
+import ca.cumulonimbus.pressurenetsdk.CbObservation;
+import ca.cumulonimbus.pressurenetsdk.CbScience;
+import ca.cumulonimbus.pressurenetsdk.CbService;
+import ca.cumulonimbus.pressurenetsdk.CbSettingsHandler;
+import ca.cumulonimbus.pressurenetsdk.CbStatsAPICall;
 
 public class BarometerNetworkActivity extends Activity implements
 		SensorEventListener {
@@ -1293,7 +1290,16 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 	
 	private int minZoom = 8;
-	
+
+	private double mapLatitude = 0;
+	private double mapLongitude = 0;
+
+	private void updateMapCoords () {
+		LatLng mapCenter = mMap.getCameraPosition().target;
+		mapLatitude = mapCenter.latitude;
+		mapLongitude = mapCenter.longitude;
+	}
+
 	/**
 	 * Run map setup, update UI accordingly
 	 */
@@ -1322,7 +1328,9 @@ public class BarometerNetworkActivity extends Activity implements
 						if(cameraPos.zoom < minZoom) {
 							mMap.animateCamera(CameraUpdateFactory.zoomTo(minZoom));
 						}
-						
+
+						updateMapCoords();
+
 						delayMapDownload();
 						
 						// if the user location is off the map, change the Current Conditions icon to the 
@@ -3309,12 +3317,14 @@ public class BarometerNetworkActivity extends Activity implements
 			Date d = df.parse(dateString);
 			
 			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			
+
+			String tzId = TimeZoneMapper.latLngToTimezoneString(mapLatitude, mapLongitude);
+
 			// time zone conversion
 			cal.setTime(d);
 			cal.add(Calendar.HOUR, hour);
 			
-			TimeZone local = TimeZone.getDefault();
+			TimeZone targetTZ = TimeZone.getTimeZone(tzId);
 			
 			if(cal.get(Calendar.MINUTE) >= 30) {
 				cal.add(Calendar.HOUR, 1);
@@ -3324,7 +3334,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 			
 			SimpleDateFormat display = new SimpleDateFormat("h a");
-			display.setTimeZone(local);
+			display.setTimeZone(targetTZ);
 			
 			if(whichText.equals("left")) {
 				textAnimationInfoLeft.setText(display.format(cal.getTime()));	
