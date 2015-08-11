@@ -2952,6 +2952,8 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		} else if (requestCode == CONDITIONS_REQUEST_CODE)  {
 			downloadAndShowConditions();
+		} else if (requestCode == REQUEST_SETTINGS) {
+			refreshMap();
 		} else {
 			log("barometernetworkactivity received data intent null:");
 		}
