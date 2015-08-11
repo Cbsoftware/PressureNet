@@ -544,7 +544,7 @@ public class BarometerNetworkActivity extends Activity implements
 					log("new location, it's not any better " + location.getProvider() + ", best altitude is " + bestLocation.getAltitude());
 				}
 				LocationStopper stopLater = new LocationStopper();
-				locationHandler.postDelayed(stopLater, 1000 * 2);
+				locationHandler.postDelayed(stopLater, 1000 * 10);
 			}
 
 			public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -1579,6 +1579,7 @@ public class BarometerNetworkActivity extends Activity implements
 			}
 		} else {
 			log("app cannot identify user location for supported geography test");
+
 			return false;
 		}
 	}
@@ -1678,6 +1679,7 @@ public class BarometerNetworkActivity extends Activity implements
 		try {
 			if(bestLocation != null) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
+				registerForNotifications();
 			}
 		} catch (Exception e) {
 
@@ -2637,15 +2639,15 @@ public class BarometerNetworkActivity extends Activity implements
 			Message msg = Message.obtain(null, CbService.MSG_OKAY);
 			log("client received " + msg.arg1 + " " + msg.arg2);
 			askForSettings();
-			
+
 			sendChangeNotification();
 			getStoredPreferences();
 
 			askForBestLocation();
 						
 			setNotificationDeliverySDKPreference();
-			
-			registerForNotifications();
+
+
 			
 			// Refresh the data unless we're in animation mode
 			if(!activeMode.equals("animation")) {
@@ -2762,24 +2764,25 @@ public class BarometerNetworkActivity extends Activity implements
 		Intent intent = new Intent(getApplicationContext(),
 				CurrentConditionsActivity.class);
 		try {
-			if (mLatitude == 0.0) {
-				LocationManager lm = (LocationManager) this
-						.getSystemService(Context.LOCATION_SERVICE);
-				Location loc = lm
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				mLatitude = loc.getLatitude();
-				mLongitude = loc.getLongitude();
-				mAltitude = loc.getAltitude();
-				mLocationAccuracy = loc.getAccuracy();
+			if (bestLocation != null) {
+
+				mLatitude = bestLocation.getLatitude();
+				mLongitude = bestLocation.getLongitude();
+
+
+				intent.putExtra("appdir", mAppDir);
+				intent.putExtra("latitude", mLatitude);
+				intent.putExtra("longitude", mLongitude);
+				log("starting condition " + mLatitude + " , " + mLongitude);
+				startActivity(intent);
+				overridePendingTransition(R.anim.open_current_conditions, 0);
+				mixpanel.track("Open Current Conditions", null);
+			} else {
+				Toast.makeText(getApplicationContext(),
+						getString(R.string.noLocationFound),
+						Toast.LENGTH_LONG).show();
 			}
 
-			intent.putExtra("appdir", mAppDir);
-			intent.putExtra("latitude", mLatitude);
-			intent.putExtra("longitude", mLongitude);
-			log("starting condition " + mLatitude + " , " + mLongitude);
-			startActivity(intent);
-			overridePendingTransition(R.anim.open_current_conditions, 0);
-			mixpanel.track("Open Current Conditions", null);
 		} catch (NullPointerException e) {
 			Toast.makeText(getApplicationContext(),
 					getString(R.string.noLocationFound),
