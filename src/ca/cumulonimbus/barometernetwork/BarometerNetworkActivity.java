@@ -340,7 +340,9 @@ public class BarometerNetworkActivity extends Activity implements
 	public static final String DATA_DOWNLOAD_RESULTS = "ca.cumulonimbus.barometernetwork.DATA_DOWNLOAD";
 	
 	private long lastMapRefresh = 0;
-	
+
+	boolean fromActivityResult = false;
+
 	// Supported Geography limits (map & forecast temperatures)
 	private double minSupportedLatitude = 20;
 	private double maxSupportedLatitude = 70;
@@ -392,7 +394,6 @@ public class BarometerNetworkActivity extends Activity implements
 	private int minTime = TEN_MINUTES;
 	private int minTimeGPS = 5000;
 	private Handler locationHandler = new Handler();
-
 	/**
 	 * Stop all location listeners
 	 * @return
@@ -1656,7 +1657,10 @@ public class BarometerNetworkActivity extends Activity implements
 					.getMap();
 
 			// Set default coordinates (centered around the user's location)
-			//appStartGoToMyLocation();
+			if(!fromActivityResult)  {
+				appStartGoToMyLocation();
+			}
+
 		} catch(NullPointerException npe) {
 			log("app can't set up map due to location problem");
 			if(bestLocation == null) {
@@ -2470,9 +2474,12 @@ public class BarometerNetworkActivity extends Activity implements
 
 					if(isBetterLocation(serviceLocation)) {
 						log("app asked for sdk location and its better");
+						boolean shouldGoToTolocation = false;
+
 						bestLocation = serviceLocation;
 						setUpMap();
-						//appStartGoToMyLocation();
+
+						//
 					} else {
 						log("app asked for sdk location but its no better");
 					}
@@ -2888,6 +2895,7 @@ public class BarometerNetworkActivity extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		fromActivityResult = true;
 		if (requestCode == REQUEST_MAILED_LOG) {
 			// Clear the log
 			String strFile = mAppDir + "/log.txt";
