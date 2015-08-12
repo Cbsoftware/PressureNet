@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.cumulonimbus.barometernetwork"
-    android:versionCode="0501003"
-    android:versionName="5.1.0RC" >
+    android:versionCode="0501054"
+    android:versionName="5.1.5" >
 
     <uses-sdk
         android:minSdkVersion="16"
