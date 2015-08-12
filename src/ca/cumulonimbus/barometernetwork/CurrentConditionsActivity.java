@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -124,6 +125,7 @@ public class CurrentConditionsActivity extends Activity {
 
 	// private CheckBox addPhoto;
 
+	private Location bestLocation;
 	private double mLatitude = 0.0;
 	private double mLongitude = 0.0;
 	private CbCurrentCondition condition;
@@ -860,6 +862,9 @@ public class CurrentConditionsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.current_conditions);
 		log("currentconditions oncreate");
+
+		setAppBestLocation();
+
 		bindCbService();
 		try {
 			String ns = Context.NOTIFICATION_SERVICE;
@@ -1424,6 +1429,10 @@ public class CurrentConditionsActivity extends Activity {
 			// mAppDir = bundle.getString("appdir");
 			mLatitude = intent.getDoubleExtra("latitude", 0.0);
 			mLongitude = intent.getDoubleExtra("longitude", -1.0);
+			if(mLatitude == 0.0) {
+				setAppBestLocation();
+			}
+
 			Location location = new Location("network");
 			location.setLatitude(mLatitude);
 			location.setLongitude(mLongitude);
@@ -1516,6 +1525,34 @@ public class CurrentConditionsActivity extends Activity {
 		// buttonIsCalm.setImageResource(R.drawable.ic_on_wind0);
 		// textWindyDescription.setText(getString(R.string.calm));
 		// condition.setWindy(0 + "");
+	}
+
+	private Location setAppBestLocation() {
+		log("app setting best location");
+		LocationManager lm = (LocationManager) getApplicationContext()
+				.getSystemService(Context.LOCATION_SERVICE);
+
+		Location networkLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		Location gpsLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		if(networkLocation != null) {
+			bestLocation = networkLocation;
+			log("best location is network since its available");
+		} else {
+			if (gpsLocation != null) {
+				bestLocation = gpsLocation;
+				log("best location is gps since its available and network is not");
+			} else {
+
+				// we have no location at all
+				//Toast.makeText(getApplicationContext(), "Location services unavailable", Toast.LENGTH_SHORT).show();
+				//log("best location will be set to null since neither gps nor network is available");
+				//bestLocation = null;
+			}
+		}
+
+		return bestLocation;
+
 	}
 
 	private void sendTwitterIntent() {

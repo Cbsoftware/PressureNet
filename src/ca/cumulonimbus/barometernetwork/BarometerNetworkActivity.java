@@ -1414,20 +1414,22 @@ public class BarometerNetworkActivity extends Activity implements
 					// show message that we don't support the region
 					
 					// only on first launch
-					
-					SharedPreferences sharedPreferences = PreferenceManager
-							.getDefaultSharedPreferences(this);
-					boolean firstLaunch = sharedPreferences.getBoolean("firstLaunch", true);
-					
-					if (firstLaunch) {
-						showEmailNotify();
-					} else {
-						hideEmailNotify();
-						downloadLocalData();
+					if(bestLocation!=null) {
+						SharedPreferences sharedPreferences = PreferenceManager
+								.getDefaultSharedPreferences(this);
+						boolean firstLaunch = sharedPreferences.getBoolean("firstLaunch", true);
+
+						if (firstLaunch) {
+							showEmailNotify();
+						} else {
+							hideEmailNotify();
+							downloadLocalData();
+						}
+						SharedPreferences.Editor editor = sharedPreferences.edit();
+						editor.putBoolean("firstLaunch", false);
+						editor.commit();
 					}
-					SharedPreferences.Editor editor = sharedPreferences.edit();
-					editor.putBoolean("firstLaunch", false);
-					editor.commit();
+
 					
 					
 				}

@@ -124,10 +124,20 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 					.getSystemService(Context.LOCATION_SERVICE);
 			Location loc = lm
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			if (loc.getLatitude() != 0) {
-				notificationLatitude = loc.getLatitude();
-				notificationLongitude = loc.getLongitude();
+			if(loc==null) {
+				 loc = lm
+						.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				if (loc.getLatitude() != 0) {
+					notificationLatitude = loc.getLatitude();
+					notificationLongitude = loc.getLongitude();
+				}
+			} else {
+				if (loc.getLatitude() != 0) {
+					notificationLatitude = loc.getLatitude();
+					notificationLongitude = loc.getLongitude();
+				}
 			}
+
 		} catch (Exception e) {
 
 		}
@@ -342,7 +352,8 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 			pickAndSetMoonIcon(on);
 		}
     }
-    
+
+
 
 	/**
 	 * Update local location data with the last known location.
@@ -353,6 +364,10 @@ public class ConditionsWidgetProvider extends AppWidgetProvider {
 					.getSystemService(Context.LOCATION_SERVICE);
 			Location loc = lm
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if(loc==null) {
+				loc = lm
+						.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			}
 		
 			double latitude = loc.getLatitude();
 			double longitude = loc.getLongitude();
