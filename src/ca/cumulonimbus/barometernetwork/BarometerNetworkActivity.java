@@ -515,7 +515,7 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void appLaunchLocationUpdate() {
-		displayLongMapToast("Updating location and weather data...");
+		Toast.makeText(getApplicationContext(), "Updating location and weather data...",Toast.LENGTH_LONG).show();
 
 		// start with passive
 
@@ -3186,7 +3186,7 @@ public class BarometerNetworkActivity extends Activity implements
 					} else if(previous.getTemperatureValue() > forecast.getTemperatureValue()) {
 						displayValue += " ↓";
 					} else {	
-						displayValue += "  ";
+						displayValue += "    ";
 						
 					}
 					
