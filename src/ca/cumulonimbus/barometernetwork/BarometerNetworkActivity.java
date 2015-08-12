@@ -515,7 +515,14 @@ public class BarometerNetworkActivity extends Activity implements
 	}
 
 	private void appLaunchLocationUpdate() {
-		Toast.makeText(getApplicationContext(), "Updating location and weather data...",Toast.LENGTH_LONG).show();
+
+		SharedPreferences sharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		boolean firstLaunch = sharedPreferences.getBoolean("firstLaunch", true);
+		if(!firstLaunch) {
+			displayLongMapToast("Updating location and weather data...");
+		}
+
 
 		// start with passive
 
@@ -4129,6 +4136,7 @@ public class BarometerNetworkActivity extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
+
 		log("barometernetworkactivity onpause");
 		unBindCbService();
 		stopSensorListeners();
@@ -4137,7 +4145,9 @@ public class BarometerNetworkActivity extends Activity implements
 	// Register a broadcast listener
 	@Override
 	protected void onResume() {
+
 		super.onResume();
+
 		log("barometernetworkactivity onresume");
 		checkNetwork();
 		displayNetworkOfflineToast();
