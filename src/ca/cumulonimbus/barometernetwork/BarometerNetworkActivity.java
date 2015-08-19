@@ -1693,10 +1693,11 @@ public class BarometerNetworkActivity extends Activity implements
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
 				registerForNotifications();
 			}
+			buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
 		} catch (Exception e) {
 
 		}
-		buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+
 		locationButtonMode = "conditions";
 	}
 
@@ -1709,11 +1710,11 @@ public class BarometerNetworkActivity extends Activity implements
 			if(bestLocation != null) {
 				mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), DEFAULT_ZOOM));
 			}
-
+			buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
 		} catch (Exception e) {
 
 		}
-		buttonMyLocation.setImageDrawable(getResources().getDrawable(R.drawable.ic_current_map));
+
 		locationButtonMode = "conditions";
 	}
 
